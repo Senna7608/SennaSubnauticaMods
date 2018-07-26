@@ -1,0 +1,4 @@
+D:\Subnautica\QMods\CheatManager\CheatManager.dll
+c:\Users\Senna\source\repos\CheatManager\CheatManager\obj\Release\CheatManager.csproj.CoreCompileInputs.cache
+c:\Users\Senna\source\repos\CheatManager\CheatManager\obj\Release\CheatManager.dll
+c:\Users\Senna\source\repos\CheatManager\CheatManager\obj\Release\CheatManager.csprojAssemblyReference.cache

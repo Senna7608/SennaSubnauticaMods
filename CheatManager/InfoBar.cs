@@ -4,9 +4,9 @@ using Common.MyGUI;
 
 namespace CheatManager
 {
-    public class InfoBar : MonoBehaviour
+    internal class InfoBar : MonoBehaviour
     {
-        private Rect windowRect = new Rect(0, Screen.height-120, 450, 120);
+        private Rect windowRect = new Rect(400, Screen.height-23, Screen.width - 905, 23);
         public static InfoBar _Instance = null;
         public static bool isShow;
 
@@ -14,15 +14,16 @@ namespace CheatManager
         private static string currentBiome = "";
         private static int day = 0;
         private static float playerInfectionLevel = 0;
-        private static string[] daynightstr = { "Day", "Night" };
+        private static readonly string[] daynightstr = { "Day", "Night" };
         private static int isDay;
         private static Vector3 currentWorldPos = new Vector3();       
-        private static StringBuilder stringBuilder;       
-
+        private static StringBuilder stringBuilder;
+               
         public void Awake()
         {
-            _Instance = this;
             useGUILayout = false;
+            _Instance = this;
+            DontDestroyOnLoad(this);            
         }
 
         public void Start()
@@ -45,23 +46,16 @@ namespace CheatManager
                 day = (int)DayNightCycle.main.GetDay();
                 playerInfectionLevel = Player.main.infectedMixin.GetInfectedAmount() * 100f;
 
-                if (DayNightCycle.main.IsDay())
-                    isDay = 0;
-                else
-                    isDay = 1;
+                isDay = DayNightCycle.main.IsDay()? 0 : 1;
 
                 stringBuilder.Remove(0, stringBuilder.Length);
                 
-                stringBuilder.AppendFormat("Last used command: {0} Code: [{1}]\nCurrent Biome: {2}\nCurrent World Position: {4}\nCurrent Batch: {5}\nPlayer infection level: {6}%\nDay: {3}\nDay/Night: {7}",
-                                                   CheatManager.lastCheat,
-                                                   CheatManager.lastCheatCode,
-                                                   currentBiome,
-                                                   day,
-                                                   currentWorldPos,
-                                                   currentBatch,
-                                                   playerInfectionLevel,
-                                                   daynightstr[isDay]
-                                                   );
+                stringBuilder.AppendFormat($"Current Biome: {currentBiome}" +
+                    $"  Current World Position: {currentWorldPos}" +
+                    $"    Current Batch: {currentBatch}" +
+                    $"    Player infection level: {playerInfectionLevel}%" +
+                    $"    Day: {day}" +
+                    $"    Day/Night: {daynightstr[isDay]}");
             }            
             
         }
@@ -72,15 +66,15 @@ namespace CheatManager
             if (!isShow)
             {
                 return;
-            }           
+            } 
 
-            GUI_Tools.CreatePopupWindow(windowRect, null);            
-
+            GUI_Tools.CreatePopupWindow(windowRect, null);
+            GUI.contentColor = Color.green;            
             GUI.Label(windowRect, stringBuilder.ToString());
         }
-        
 
-        public static InfoBar Instance
+
+        internal static InfoBar Instance
         {
             get
             {
@@ -102,11 +96,12 @@ namespace CheatManager
             }
         }
 
-        public static void InitInfoBar(bool show)
+        internal static void InitInfoBar(bool show)
         {
             Instance.Awake();
             isShow = show;
         }
+        
 
     }
 }

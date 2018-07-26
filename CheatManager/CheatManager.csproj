@@ -72,20 +72,18 @@
     <Compile Include="ButtonControl.cs" />
     <Compile Include="ButtonText.cs" />
     <Compile Include="CheatManager.cs" />
+    <Compile Include="CyclopsOverDrive.cs" />
     <Compile Include="InfoBar.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Main.cs" />
-    <Compile Include="PatchConstants.cs" />
-    <Compile Include="Patches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ExosuitOverDrive.cs" />
     <Compile Include="TechMatrix.cs" />
     <Compile Include="TestWindow.cs" />
-    <Compile Include="VehicleControl.cs" />
+    <Compile Include="SeamothOverDrive.cs" />
     <Compile Include="WarpTargets.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="MyGUI\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="..\GUI_Tools\GUI_Tools.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

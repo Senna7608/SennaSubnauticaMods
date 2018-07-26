@@ -1,25 +1,59 @@
 ﻿using System.Collections.Generic;
 using Common.MyGUI;
+using System;
+using System.Reflection;
+using UWE;
 
 namespace CheatManager
 {
     internal static class ButtonControl
     {
+        internal static void NormalButtonControl(int normalButtonID, ref List<GUI_Tools.ButtonInfo> Buttons, ref List<GUI_Tools.ButtonInfo> toggleButtons)
+        {
+            switch (normalButtonID)
+            {
+                case 0 when toggleButtons[17].Pressed == true:
+                case 1 when toggleButtons[17].Pressed == true:
+                    break;
+                case 0:
+                case 1:
+                case 2:
+                case 4:
+                case 5:
+                case 6:
+                    CheatManager.ExecuteCommand("Send command to console: " + Buttons[normalButtonID].Name, Buttons[normalButtonID].Name, normalButtonID);
+                    break;
 
-        public static void ToggleButtonControl (int toggleButtonID, ref bool[] isToggle, ref List<GUI_Tools.ButtonInfo> toggleButtons, ref float playerPrevInfectionLevel)
+                case 3:
+                    ErrorMessage.AddMessage("Inventory Cleared");
+                    Inventory.main.container.Clear(false);                    
+                    break;
+
+                case 7:
+                    CheatManager.ExecuteCommand("warp" + " to: " + CheatManager.prevCwPos, "warp " + CheatManager.prevCwPos, normalButtonID);
+                    Utils.PlayFMODAsset(CheatManager.warpSound, Player.main.transform, 20f);
+                    CheatManager.prevCwPos = null;
+                    Buttons[7].Enabled = false;
+                    break;
+            }
+
+        }
+
+
+        internal static void ToggleButtonControl (int toggleButtonID, ref List<GUI_Tools.ButtonInfo> toggleButtons)
         {
             switch (toggleButtonID)
             {
-                case 9 when isToggle[1] == true:
+                case 9 when toggleButtons[1].Pressed == true:
                     break;
-                case 11 when isToggle[1] == true:
-                case 11 when isToggle[0] == true:
+                case 11 when toggleButtons[1].Pressed == true:
+                case 11 when toggleButtons[0].Pressed == true:
                     break;
-                case 12 when isToggle[1] == true:
+                case 12 when toggleButtons[1].Pressed == true:
                     break;
-                case 13 when isToggle[1] == true:
+                case 13 when toggleButtons[1].Pressed == true:
                     break;
-                case 14 when isToggle[1] == true:
+                case 14 when toggleButtons[1].Pressed == true:
                     break;
                 case 0:
                 case 1:
@@ -39,22 +73,21 @@ namespace CheatManager
                     CheatManager.ExecuteCommand("", toggleButtons[toggleButtonID].Name, toggleButtonID);
                     break;
                 case 15:
-                    isToggle[15] = !isToggle[15];
-                    CheatManager.ExecuteCommand(isToggle[15] ? "shotgun cheat is now True" : "shotgun cheat is now False", toggleButtons[toggleButtonID].Name, toggleButtonID);
+                    toggleButtons[15].Pressed = !toggleButtons[15].Pressed;
+                    CheatManager.ExecuteCommand(toggleButtons[15].Pressed ? "shotgun cheat is now True" : "shotgun cheat is now False", toggleButtons[toggleButtonID].Name, toggleButtonID);
                     break;
                 case 8:
-                    isToggle[8] = !isToggle[8];
-                    CheatManager.ExecuteCommand(isToggle[8] ? "filterFast cheat is now True" : "filterFast cheat is now False", toggleButtons[toggleButtonID].Name, toggleButtonID);
+                    toggleButtons[8].Pressed = !toggleButtons[8].Pressed;
+                    CheatManager.ExecuteCommand(toggleButtons[8].Pressed ? "filterFast cheat is now True" : "filterFast cheat is now False", toggleButtons[toggleButtonID].Name, toggleButtonID);
                     break;
                 case 17:
-                    isToggle[17] = !isToggle[17];
-                    if (isToggle[17])
+                    toggleButtons[17].Pressed = !toggleButtons[17].Pressed;
+                    if (toggleButtons[17].Pressed)
                     {
                         ErrorMessage.AddMessage("alwaysDay cheat is now True");
                         DayNightCycle.main.sunRiseTime = 70F;
                         DayNightCycle.main.sunSetTime = 200F;
                     }
-
                     else
                     {
                         ErrorMessage.AddMessage("alwaysDay cheat is now False");
@@ -63,44 +96,74 @@ namespace CheatManager
                     }
                     break;
                 case 18:
-                    if (!isToggle[18])
+                    if (!toggleButtons[18].Pressed)
                     {
-                        playerPrevInfectionLevel = Player.main.infectedMixin.GetInfectedAmount();
+                        CheatManager.playerPrevInfectionLevel = Player.main.infectedMixin.GetInfectedAmount();
                     }
                     else
                     {
-                        Player.main.infectedMixin.SetInfectedAmount(playerPrevInfectionLevel);
+                        Player.main.infectedMixin.SetInfectedAmount(CheatManager.playerPrevInfectionLevel);
                     }
 
-                    isToggle[18] = !isToggle[18];
-                    ErrorMessage.AddMessage(isToggle[18] ? "noInfect cheat is now True" : "noInfect cheat is now False");
+                    toggleButtons[18].Pressed = !toggleButtons[18].Pressed;
+                    ErrorMessage.AddMessage(toggleButtons[18].Pressed ? "noInfect cheat is now True" : "noInfect cheat is now False");
                     break;
-#if DEBUG
+
                 case 19:
-                    isToggle[19] = !isToggle[19];
-                    if (isToggle[19])
-                    {
-                        Player.main.liveMixin.data.maxHealth = 999f;
-                        Player.main.liveMixin.health = 999f;
-                        survival.food = 999f;
-                        survival.water = 999f;
-                    }
-                    else
-                    {
-                        Player.main.liveMixin.data.maxHealth = 100f;
-                        Player.main.liveMixin.health = 100f;
-                        survival.food = 100f;
-                        survival.water = 100f;
-                    }
-                    break;
-#endif
+                    toggleButtons[19].Pressed = !toggleButtons[19].Pressed;
+                    OverPower(toggleButtons[19].Pressed);                    
+                    ErrorMessage.AddMessage(toggleButtons[19].Pressed ? "overPower cheat is now True" : "overPower cheat is now False");
+                    break;  
             }
 
+            CheatManager.ReadGameValues();
+        }
+       
+        internal static readonly float[] DayNightSpeed = { 0.1f, 0.25f, 0.5f, 0.75f, 1f, 2f };
+
+        internal static void DayNightButtonControl(int daynightTabID, ref int currentdaynightTab, ref List<GUI_Tools.ButtonInfo> daynightTab)
+        {
+            if (daynightTabID != currentdaynightTab)
+            {
+                daynightTab[currentdaynightTab].Pressed = false;
+                daynightTab[daynightTabID].Pressed = true;
+                currentdaynightTab = daynightTabID;
+                DevConsole.SendConsoleCommand("daynightspeed " + DayNightSpeed[daynightTabID]);
+            }
         }
 
+        internal static void OverPower(bool enable)
+        {
+            Survival survival = Player.main.GetComponent<Survival>();
+            FieldInfo kUpdateHungerInterval_field = survival.GetType().GetField("kUpdateHungerInterval", BindingFlags.NonPublic | BindingFlags.Instance);
+            Oxygen o2 = Player.main.GetComponent<OxygenManager>().GetComponent<Oxygen>();
 
+            if (enable)
+            {                
+                kUpdateHungerInterval_field.SetValue(survival, 1f);
+                
+                if (o2.isPlayer)
+                {
+                    o2.oxygenCapacity = 180f;
+                }
 
+                Player.main.liveMixin.data.maxHealth = 200f;
+                Player.main.liveMixin.health = 200f;
+            }
+            else
+            {                
+                kUpdateHungerInterval_field.SetValue(survival, 10f);
+                
+                if (o2.isPlayer)
+                {
+                    o2.oxygenCapacity = 45f;
+                    o2.oxygenAvailable = 45f;
+                }
 
+                Player.main.liveMixin.data.maxHealth = 100f;
+                Player.main.liveMixin.health = 100f;
+            }
+        }
 
 
 

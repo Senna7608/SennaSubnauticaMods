@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace Common.MyGUI
 {
-    public class GUI_Tools
+    internal class GUI_Tools
     {
-        public enum BUTTONTYPE
+        internal enum BUTTONTYPE
         {
             NORMAL_LEFTALIGN,
             NORMAL_CENTER,
@@ -20,7 +20,7 @@ namespace Common.MyGUI
             TAB_RIGHTALIGN,
         }
 
-        public class ButtonInfo
+        internal class ButtonInfo
         {
             public string Name { get; set; }
             public bool Enabled { get; set; }
@@ -28,7 +28,7 @@ namespace Common.MyGUI
             public BUTTONTYPE Type { get; set; }            
         }
 
-        public static Rect CreatePopupWindow(Rect windowRect, object title)
+        internal static Rect CreatePopupWindow(Rect windowRect, object title)
         {
 
             GUI.Box(windowRect, "");
@@ -42,9 +42,8 @@ namespace Common.MyGUI
             return windowRect;
         }
 
-        public static bool CreateButtonsList(string[] names, BUTTONTYPE type, ref List<ButtonInfo> buttonInfos)
-        {           
-
+        internal static bool CreateButtonsList(string[] names, BUTTONTYPE type, ref List<ButtonInfo> buttonInfos)
+        {
             for (int i = 0; i < names.Length; i++)
             {
                 buttonInfos.Add(new ButtonInfo()
@@ -59,7 +58,7 @@ namespace Common.MyGUI
             return true;
         }
 
-        public static int DivideRoundUP(float a, float b)
+        internal static int DivideRoundUP(float a, float b)
         {
             int x = (int)(a / b);
 
@@ -70,7 +69,7 @@ namespace Common.MyGUI
         }
 
 
-        public static int CreateButtonsGrid(Rect targetRect, float space, int columns, List<ButtonInfo> Buttons, out float lastYcoord)
+        internal static int CreateButtonsGrid(Rect targetRect, float space, int columns, List<ButtonInfo> Buttons, out float lastYcoord)
         {
             float x = targetRect.x;
             float y = targetRect.y + space;
@@ -115,14 +114,14 @@ namespace Common.MyGUI
             lastYcoord = targetRect.y + (totalRows * (22 + space));
             return -1;
         }
-        
-        public static GUIStyle Normal;        
-        public static GUIStyle Toggle;
-        public static GUIStyle Tab;
-        public static GUIStyle Label;
-        public static GUIStyle Box;
 
-        public static bool SetCustomStyles()
+        internal static GUIStyle Normal;
+        internal static GUIStyle Toggle;
+        internal static GUIStyle Tab;
+        internal static GUIStyle Label;        
+        internal static GUIStyle Box;
+
+        internal static bool SetCustomStyles()
         {
             Normal = new GUIStyle(GUI.skin.button)
             {
@@ -152,11 +151,11 @@ namespace Common.MyGUI
             {
                 fontStyle = FontStyle.Bold,
                 alignment = TextAnchor.MiddleCenter,
-            };
+            };            
             return true;
         }
 
-        public static GUIStyle GetCustomStyle(bool pressed, BUTTONTYPE type)
+        internal static GUIStyle GetCustomStyle(bool pressed, BUTTONTYPE type)
         {
             switch(type)
             {

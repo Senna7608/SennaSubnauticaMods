@@ -75,7 +75,8 @@ namespace CheatManager
             _Instance = this;
             DontDestroyOnLoad(this);            
             useGUILayout = false;
-            
+            InfoBar.InitInfoBar(show);
+
 #if DEBUG
             show = true;
 #endif
@@ -108,22 +109,30 @@ namespace CheatManager
                 }
             }
 
-            if (count == 1)
+            
+            if (count == 1 && s.Length < 70)
             {
-                int x = GUI_Tools.DivideRoundUP(s.Length, 76);
+                return 21f;
+            }
 
-                if (count == x)
-                    return count * 21f;
-                else
-                    return x * 17f;
-            }            
+            if (count == 1 && s.Length >= 70)
+            {
+                int x = GUI_Tools.DivideRoundUP(s.Length, 70);
+                return (x * 18f);
+            }
 
-            return (count * 17f);            
+            if ((count * 70) < s.Length)
+            {
+                return (count * 15f);
+            }
+            else
+            {
+                return (count + 1) * 18f;
+            }
         }
 
-
         void OnGUI()
-        {
+        { 
             
             if (!show)
             {
@@ -141,24 +150,33 @@ namespace CheatManager
                     drawingPos = scrollRect.y;
                 }
 
-                GUI.contentColor = logTypeColors[logMessage[i].type];
-
                 contentHeight = CalcTextHeight(logMessage[i].message);
+                                
+                GUI.skin.textArea.wordWrap = true;
                 
-                GUI.Label(new Rect(scrollRect.x + 5, drawingPos, 10, 21), "> ");
+                GUI.contentColor = logTypeColors[logMessage[i].type];                
+                
+                GUI.Label(new Rect(scrollRect.x + 5, drawingPos, 15, 21), "> ");
 
                 GUI.Label(new Rect(scrollRect.x + 20, drawingPos, scrollRect.width - 40, contentHeight), logMessage[i].message);
 
-                drawingPos += contentHeight;
-
+                drawingPos += contentHeight + 1;
+#if DEBUG
+                GUI.TextArea(new Rect(scrollRect.x + 20, drawingPos, scrollRect.width - 40, 21), $"Length: {logMessage[i].message.Length.ToString()}");
+                drawingPos += 22;
+#endif
                 if (logMessage[i].stackTrace != "")
                 {
                     contentHeight = CalcTextHeight(logMessage[i].stackTrace);                   
                     
                     GUI.Label(new Rect(scrollRect.x + 20, drawingPos, scrollRect.width - 40, contentHeight), logMessage[i].stackTrace);
 
-                    drawingPos += contentHeight;
-                }              
+                    drawingPos += contentHeight + 1;
+#if DEBUG
+                    GUI.TextArea(new Rect(scrollRect.x + 20, drawingPos, scrollRect.width - 40, 21), $"Length: {logMessage[i].stackTrace.Length.ToString()}");
+                    drawingPos += 22;
+#endif
+                }
             }
 
             if (messageCount != logMessage.Count)
@@ -212,13 +230,11 @@ namespace CheatManager
         {
             if (Input.GetKeyDown(toggleKey))
             {
-                show = !show;                
+                show = !show;
+                InfoBar.isShow = show;
             }
 
-            if (Player.main != null)
-            {
-                InfoBar.InitInfoBar(show);
-            }            
+                      
         }        
 
         private void Write(string message)
@@ -270,11 +286,10 @@ namespace CheatManager
         }
 
         private void Write(string message, string stacktrace, LogType type)
-        {
-            string temp;
-
+        {            
             if (stacktrace != "")
             {
+                string temp;
                 temp = "<<STACKTRACE>>\n" + stacktrace;
                 stacktrace = temp;
             }

@@ -14,7 +14,7 @@ namespace CheatManager
             try
             {
                 HarmonyInstance.Create("subnautica.cheatmanager.mod").PatchAll(Assembly.GetExecutingAssembly());
-                //Patch();
+                Patch();
                 SceneManager.sceneLoaded += new UnityAction<Scene, LoadSceneMode>(OnSceneLoaded); 
             }
             catch (Exception ex)
@@ -29,7 +29,7 @@ namespace CheatManager
             {
                 CheatManager.Load();
 #if DEBUG
-                TestWindow.InitTestWindow(true);
+                //TestWindow.InitTestWindow(true);
 #endif
             }
 
@@ -41,8 +41,7 @@ namespace CheatManager
         
         private static void Patch()
         {
-
-
+            DevConsole.disableConsole = false;
         }
 
     }  
