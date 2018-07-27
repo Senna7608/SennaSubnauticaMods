@@ -112,8 +112,11 @@ namespace CheatManager
             warpSound.path = "event:/tools/gravcannon/fire";
             TechnologyMatrix = new List<TechMatrix.TechTypeData>[TechMatrix.techMatrix.Length];
 
-            TechMatrix.InitTechMatrixList(ref TechnologyMatrix);            
-            TechMatrix.IsExistsPrimeSonicTechTypes(ref TechnologyMatrix);
+            TechMatrix.InitTechMatrixList(ref TechnologyMatrix);
+            
+            TechMatrix.IsExistsModdersTechTypes(ref TechnologyMatrix, TechMatrix.Known_AHK1221_TechTypes);
+            TechMatrix.IsExistsModdersTechTypes(ref TechnologyMatrix, TechMatrix.Known_PrimeSonic_TechTypes);
+
             TechMatrix.SortTechLists(ref TechnologyMatrix);
 
             Buttons = new List<GUI_Tools.ButtonInfo>();
@@ -215,35 +218,27 @@ namespace CheatManager
                 {
                     Vehicle seamoth = Player.main.GetVehicle();
 
-                    if (seamoth != null)
+                    if (seamoth != null && seamoth.gameObject.GetComponent<SeamothOverDrive>() == null)
                     {
-                        if (seamoth.gameObject.GetComponent<SeamothOverDrive>() == null)
-                        {
-                            seamoth.gameObject.AddComponent<SeamothOverDrive>();
-                        }
+                        seamoth.gameObject.AddComponent<SeamothOverDrive>();
                     }
+                    
                 }
                 
                 if (Player.main.inExosuit)
                 {
                     Vehicle exosuit = Player.main.GetVehicle();
-
-                    if (exosuit != null)
+                    if (exosuit != null && exosuit.gameObject.GetComponent<ExosuitOverDrive>() == null)
                     {
-                        if (exosuit.gameObject.GetComponent<ExosuitOverDrive>() == null)
-                        {
-                            exosuit.gameObject.AddComponent<ExosuitOverDrive>();
-                        }
+                        exosuit.gameObject.AddComponent<ExosuitOverDrive>();
                     }
                 }
-               
-                if (Player.main.IsInSubmarine())
+
+                if (Player.main.IsInSubmarine() && Player.main.currentSub.gameObject.GetComponent<SubControl>().gameObject.GetComponent<CyclopsOverDrive>() == null)
                 {
-                  if (Player.main.currentSub.gameObject.GetComponent<SubControl>().gameObject.GetComponent<CyclopsOverDrive>() == null)
-                    {
-                        Player.main.currentSub.gameObject.GetComponent<SubControl>().gameObject.AddComponent<CyclopsOverDrive>();
-                    }                  
-                }
+                    Player.main.currentSub.gameObject.GetComponent<SubControl>().gameObject.AddComponent<CyclopsOverDrive>();
+                }                  
+               
 
                 if (seaGlideFastSpeed)
                 {
@@ -257,23 +252,21 @@ namespace CheatManager
                     {
                         Player.main.playerController.activeController.acceleration = 20;
                         Player.main.playerController.activeController.verticalMaxSpeed = 5f;
-
                     }
                 }
 
                 if (vehicleSettingsID != -1)
                 {
-                    switch (vehicleSettingsID)
+                    if (vehicleSettingsID == 0)
                     {
-                        case 0:
-                            seamothCanFly = !seamothCanFly;
-                            vehicleSettings[0].Pressed = seamothCanFly;                            
-                            break;
-                        case 1:
-                            seaGlideFastSpeed = !seaGlideFastSpeed;
-                            vehicleSettings[1].Pressed = seaGlideFastSpeed;
-                            break;
+                        seamothCanFly = !seamothCanFly;
+                        vehicleSettings[0].Pressed = seamothCanFly;
                     }
+                    else if (vehicleSettingsID == 1)
+                    {
+                        seaGlideFastSpeed = !seaGlideFastSpeed;
+                        vehicleSettings[1].Pressed = seaGlideFastSpeed;
+                    }                    
                 }               
             }
         }       
@@ -470,7 +463,18 @@ namespace CheatManager
                         case 19:
                             currentWorldPos = MainCamera.camera.transform.position;
                             prevCwPos = string.Format("{0:D} {1:D} {2:D}", (int)currentWorldPos.x, (int)currentWorldPos.y, (int)currentWorldPos.z);
-                            ExecuteCommand($"Player Warped to: {itemName}\n({selectedTech})", $"warp {selectedTech}", i);                            
+                            if (ButtonControl.IsPlayerInVehicle())
+                            {                                                                
+                                Vehicle vehicle = Player.main.GetVehicle();                                
+                                vehicle.TeleportVehicle(WarpTargets.ConvertStringPosToVector3(selectedTech), vehicle.transform.rotation);
+                                Player.main.CompleteTeleportation();
+                                ErrorMessage.AddMessage($"Vehicle and Player Warped to: {itemName}\n({selectedTech})");
+                            }
+                            else
+                            {
+                                ExecuteCommand($"Player Warped to: {itemName}\n({selectedTech})", $"warp {selectedTech}", i);
+                            }
+
                             Utils.PlayFMODAsset(warpSound, Player.main.transform, 20f);
                             Buttons[7].Enabled = true;
                             break;

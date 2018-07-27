@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using SMLHelper.V2.Handlers;
-using System.Collections;
 
 namespace CheatManager
 {
@@ -70,21 +69,23 @@ namespace CheatManager
             }            
         }
 
-        public static void IsExistsPrimeSonicTechTypes(ref List<TechTypeData>[] TechnologyMatrix)
+        public static void IsExistsModdersTechTypes(ref List<TechTypeData>[] TechnologyMatrix, Dictionary<string, CATEGORY> dictionary)
         {
-            foreach (KeyValuePair<string, CATEGORY> pair in KnownPrimeSonicTechTypes)
+            foreach (KeyValuePair<string, CATEGORY> pair in dictionary)
             {
                 if (pair.Value == CATEGORY.BaseModule)
                 {
                     continue;
                 }
 
-                if (TechTypeHandler.TryGetModdedTechType(pair.Key, out TechType value))
+                if (TechTypeHandler.TryGetModdedTechType(pair.Key, out TechType techType))
                 {
-                    if (TechTypeExtensions.AsString(value, false) == pair.Key)
+                    if (TechTypeExtensions.AsString(techType, false) == pair.Key)
                     {
-                        TechnologyMatrix[(int)pair.Value].Add(new TechTypeData(value, Language.main.Get(TechTypeExtensions.AsString(value, false))));
-                        addedTechTypes.Add(value);
+                        TechnologyMatrix[(int)pair.Value].Add(new TechTypeData(techType, Language.main.Get(TechTypeExtensions.AsString(techType, false))));
+
+                        addedTechTypes.Add(techType);
+
                         Debug.Log($"CMLog: {pair.Key} found in TechTypeExtensions and added to TechMatrix.");
                     }
                 }
@@ -116,10 +117,19 @@ namespace CheatManager
             BaseModule,
         };
 
+        public static readonly Dictionary<string, CATEGORY> Known_AHK1221_TechTypes = new Dictionary<string, CATEGORY>
+        {
+            { "SeamothHullModule4", CATEGORY.Upgrades },
+            { "SeamothHullModule5", CATEGORY.Upgrades },
+            { "SeamothDrillModule", CATEGORY.Upgrades },
+            { "SeamothThermalModule", CATEGORY.Upgrades },
+        };
 
-        public static readonly Dictionary<string, CATEGORY> KnownPrimeSonicTechTypes = new Dictionary<string, CATEGORY>
+
+        public static readonly Dictionary<string, CATEGORY> Known_PrimeSonic_TechTypes = new Dictionary<string, CATEGORY>
         {
             { "SeaMothMk2", CATEGORY.Vehicles },
+            { "SeaMothMk3", CATEGORY.Vehicles },
             { "ExosuitMk2", CATEGORY.Vehicles },
             { "SpeedModule", CATEGORY.Upgrades },
             { "VehiclePowerCore", CATEGORY.Electronics },
@@ -133,7 +143,8 @@ namespace CheatManager
             { "DepletedCyclopsNuclearModule", CATEGORY.Upgrades },
             { "CyclopsNuclearModuleRefil", CATEGORY.Upgrades },
             { "NuclearFabricator", CATEGORY.BaseModule },
-            { "AuxCyUpgradeConsole", CATEGORY.BaseModule }
+            { "AuxCyUpgradeConsole", CATEGORY.BaseModule },
+            { "VModFabricator", CATEGORY.BaseModule }
         };
 
         public static readonly TechType[][] techMatrix = new TechType[][]

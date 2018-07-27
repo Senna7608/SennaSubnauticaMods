@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using Common.MyGUI;
-using System;
 using System.Reflection;
-using UWE;
 
 namespace CheatManager
 {
@@ -165,7 +163,15 @@ namespace CheatManager
             }
         }
 
+        internal static bool IsPlayerInVehicle()
+        {
+            if (Player.main.inSeamoth == true || Player.main.inExosuit == true)
+            {
+                return true;
+            }
 
+            return false;
+        }
 
 
 
