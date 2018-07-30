@@ -44,5 +44,39 @@ namespace CheatManager
             DevConsole.disableConsole = false;
         }
 
+
+        [HarmonyPatch(typeof(SeaMoth))]
+        [HarmonyPatch("Start")]
+        internal class SeaMoth_Start_Patcher
+        {
+            [HarmonyPostfix]
+            internal static void Postfix(SeaMoth __instance)
+            {
+                __instance.gameObject.AddComponent<SeamothOverDrive>();
+            }
+        }
+
+        [HarmonyPatch(typeof(Exosuit))]
+        [HarmonyPatch("Start")]
+        internal class Exosuit_Start_Patcher
+        {
+            [HarmonyPostfix]
+            internal static void Postfix(Exosuit __instance)
+            {
+                __instance.gameObject.AddComponent<ExosuitOverDrive>();
+            }
+        }
+
+        [HarmonyPatch(typeof(SubRoot))]
+        [HarmonyPatch("Start")]
+        internal class SubControl_Start_Patcher
+        {
+            [HarmonyPostfix]
+            internal static void Postfix(SubRoot __instance)
+            {
+                if (__instance.isCyclops)
+                   __instance.gameObject.AddComponent<CyclopsOverDrive>();                
+            }
+        }
     }  
 }

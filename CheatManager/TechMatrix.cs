@@ -86,7 +86,7 @@ namespace CheatManager
 
                         addedTechTypes.Add(techType);
 
-                        Debug.Log($"CMLog: {pair.Key} found in TechTypeExtensions and added to TechMatrix.");
+                        Debug.Log($"[CheatManager]:\n '{pair.Key}' found in TechTypeExtensions and added to TechMatrix.");
                     }
                 }
             }

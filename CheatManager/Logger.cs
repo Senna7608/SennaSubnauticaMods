@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿//#define DEBUG_LOGGER
+
+using System.Collections.Generic;
 using UnityEngine;
 using Common.MyGUI;
 
@@ -161,7 +163,7 @@ namespace CheatManager
                 GUI.Label(new Rect(scrollRect.x + 20, drawingPos, scrollRect.width - 40, contentHeight), logMessage[i].message);
 
                 drawingPos += contentHeight + 1;
-#if DEBUG
+#if DEBUG_LOGGER
                 GUI.TextArea(new Rect(scrollRect.x + 20, drawingPos, scrollRect.width - 40, 21), $"Length: {logMessage[i].message.Length.ToString()}");
                 drawingPos += 22;
 #endif
@@ -172,7 +174,7 @@ namespace CheatManager
                     GUI.Label(new Rect(scrollRect.x + 20, drawingPos, scrollRect.width - 40, contentHeight), logMessage[i].stackTrace);
 
                     drawingPos += contentHeight + 1;
-#if DEBUG
+#if DEBUG_LOGGER
                     GUI.TextArea(new Rect(scrollRect.x + 20, drawingPos, scrollRect.width - 40, 21), $"Length: {logMessage[i].stackTrace.Length.ToString()}");
                     drawingPos += 22;
 #endif

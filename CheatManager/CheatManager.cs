@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Diagnostics;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using Common.MyGUI;
 
 namespace CheatManager
@@ -61,7 +64,8 @@ namespace CheatManager
         private static List<GUI_Tools.ButtonInfo> vehicleSettings;
 
         private bool initToggleButtons = false;
-       
+
+                
         public static CheatManager Load()
         {
             _Instance = FindObjectOfType(typeof(CheatManager)) as CheatManager;            
@@ -72,15 +76,15 @@ namespace CheatManager
                 cheatmanager.name = "CheatManager";
                 _Instance = cheatmanager.GetComponent<CheatManager>();
             }
-
+            
             return _Instance;
         }
-        
+
         public void Awake()
         {            
-            _Instance = this;
-           useGUILayout = false;           
-        }
+           _Instance = this;
+           useGUILayout = false;            
+        }        
 
         public void OnDestroy()
         {
@@ -97,8 +101,7 @@ namespace CheatManager
             isActive = false;
             seamothCanFly = false;
             seaGlideFastSpeed = false;
-            initStyles = false;
-            
+            initStyles = false;            
         }
 
         public void Start()
@@ -155,10 +158,8 @@ namespace CheatManager
             seamothSpeedMultiplier = 1;
             exosuitSpeedMultiplier = 1;
             cyclopsSpeedMultiplier = 1;
-
-    }
-
-       
+            
+        }         
 
         public void Update()
         {
@@ -191,55 +192,43 @@ namespace CheatManager
                     {
                         ButtonControl.ToggleButtonControl(toggleButtonID, ref toggleButtons);                        
                     }
+
+                    if (daynightTabID != -1)
+                    {
+                        ButtonControl.DayNightButtonControl(daynightTabID, ref currentdaynightTab, ref daynightTab);
+                    }
+
+                    if (categoriesTabID != -1)
+                    {
+                        if (categoriesTabID != currentTab)
+                        {
+                            categoriesTab[currentTab].Pressed = false;
+                            categoriesTab[categoriesTabID].Pressed = true;
+                            currentTab = categoriesTabID;
+                            scrollPos = Vector2.zero;
+                        }
+                    }
+
+                    if (vehicleSettingsID != -1)
+                    {
+                        if (vehicleSettingsID == 0)
+                        {
+                            seamothCanFly = !seamothCanFly;
+                            vehicleSettings[0].Pressed = seamothCanFly;
+                        }
+                        else if (vehicleSettingsID == 1)
+                        {
+                            seaGlideFastSpeed = !seaGlideFastSpeed;
+                            vehicleSettings[1].Pressed = seaGlideFastSpeed;
+                        }
+                    }
                 }
                 
                 if (toggleButtons[18].Pressed)
                 {
                     Player.main.infectedMixin.SetInfectedAmount(0f);
-                }
-
-                if (daynightTabID != -1)
-                {
-                    ButtonControl.DayNightButtonControl(daynightTabID, ref currentdaynightTab, ref daynightTab);
-                }
-
-                if (categoriesTabID != -1)
-                {
-                    if (categoriesTabID != currentTab)
-                    {
-                        categoriesTab[currentTab].Pressed = false;
-                        categoriesTab[categoriesTabID].Pressed = true;
-                        currentTab = categoriesTabID;
-                        scrollPos = Vector2.zero;
-                    }
-                }                
-               
-                if (Player.main.inSeamoth)
-                {
-                    Vehicle seamoth = Player.main.GetVehicle();
-
-                    if (seamoth != null && seamoth.gameObject.GetComponent<SeamothOverDrive>() == null)
-                    {
-                        seamoth.gameObject.AddComponent<SeamothOverDrive>();
-                    }
-                    
-                }
+                }                            
                 
-                if (Player.main.inExosuit)
-                {
-                    Vehicle exosuit = Player.main.GetVehicle();
-                    if (exosuit != null && exosuit.gameObject.GetComponent<ExosuitOverDrive>() == null)
-                    {
-                        exosuit.gameObject.AddComponent<ExosuitOverDrive>();
-                    }
-                }
-
-                if (Player.main.IsInSubmarine() && Player.main.currentSub.gameObject.GetComponent<SubControl>().gameObject.GetComponent<CyclopsOverDrive>() == null)
-                {
-                    Player.main.currentSub.gameObject.GetComponent<SubControl>().gameObject.AddComponent<CyclopsOverDrive>();
-                }                  
-               
-
                 if (seaGlideFastSpeed)
                 {
                     if (Player.main.motorMode == Player.MotorMode.Seaglide)
@@ -253,21 +242,7 @@ namespace CheatManager
                         Player.main.playerController.activeController.acceleration = 20;
                         Player.main.playerController.activeController.verticalMaxSpeed = 5f;
                     }
-                }
-
-                if (vehicleSettingsID != -1)
-                {
-                    if (vehicleSettingsID == 0)
-                    {
-                        seamothCanFly = !seamothCanFly;
-                        vehicleSettings[0].Pressed = seamothCanFly;
-                    }
-                    else if (vehicleSettingsID == 1)
-                    {
-                        seaGlideFastSpeed = !seaGlideFastSpeed;
-                        vehicleSettings[1].Pressed = seaGlideFastSpeed;
-                    }                    
-                }               
+                }                              
             }
         }       
 
@@ -506,9 +481,7 @@ namespace CheatManager
                 
             }    
             
-        }
-
-              
+        }        
     }
 }
 
