@@ -1,5 +1,5 @@
 ﻿//#define DEBUG_LOGGER
-
+#define DEBUG_GAMELOG
 using System.Collections.Generic;
 using UnityEngine;
 using Common.MyGUI;
@@ -78,6 +78,7 @@ namespace CheatManager
             DontDestroyOnLoad(this);            
             useGUILayout = false;
             InfoBar.InitInfoBar(show);
+           
 
 #if DEBUG
             show = true;
@@ -89,6 +90,7 @@ namespace CheatManager
             logMessage.Clear();
         }
 
+#if DEBUG_GAMELOG
         public void OnEnable()
         {
             Application.logMessageReceived += HandleLog;            
@@ -98,7 +100,7 @@ namespace CheatManager
         {
             Application.logMessageReceived -= HandleLog;            
         }             
-
+#endif
         private static float CalcTextHeight(string s)
         {
             int count = 1;            

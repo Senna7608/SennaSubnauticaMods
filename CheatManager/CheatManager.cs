@@ -1,21 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
 using System.Diagnostics;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.EventSystems;
 using Common.MyGUI;
+using UWE;
 
 namespace CheatManager
 {
     public class CheatManager : MonoBehaviour
     {
-        public static CheatManager _Instance { get; private set; }
+        public static CheatManager instance { get; private set; }
 
         private static readonly KeyCode MainHotkey = KeyCode.F5;
         private static readonly KeyCode ToggleHotkey = KeyCode.F4;
-
+        
         private static bool initStyles = false;
 
         private static Vector2 scrollPos = Vector2.zero;
@@ -32,7 +30,7 @@ namespace CheatManager
 
         public static bool seamothCanFly = false;
 
-        private static bool seaGlideFastSpeed = false;
+        public Utils.MonitoredValue<bool> isSeaglideFast = new Utils.MonitoredValue<bool>();       
 
         public static float seamothSpeedMultiplier;
         public static float exosuitSpeedMultiplier;
@@ -64,25 +62,24 @@ namespace CheatManager
         private static List<GUI_Tools.ButtonInfo> vehicleSettings;
 
         private bool initToggleButtons = false;
-
                 
         public static CheatManager Load()
         {
-            _Instance = FindObjectOfType(typeof(CheatManager)) as CheatManager;            
+            instance = FindObjectOfType(typeof(CheatManager)) as CheatManager;            
 
-            if (_Instance == null)
+            if (instance == null)
             {
                 GameObject cheatmanager = new GameObject().AddComponent<CheatManager>().gameObject;
                 cheatmanager.name = "CheatManager";
-                _Instance = cheatmanager.GetComponent<CheatManager>();
+                instance = cheatmanager.GetComponent<CheatManager>();
             }
             
-            return _Instance;
+            return instance;
         }
 
         public void Awake()
         {            
-           _Instance = this;
+           instance = this;
            useGUILayout = false;            
         }        
 
@@ -99,8 +96,7 @@ namespace CheatManager
             warpSound = null;
             currentWorldPos = Vector3.zero;
             isActive = false;
-            seamothCanFly = false;
-            seaGlideFastSpeed = false;
+            seamothCanFly = false;            
             initStyles = false;            
         }
 
@@ -116,9 +112,16 @@ namespace CheatManager
             TechnologyMatrix = new List<TechMatrix.TechTypeData>[TechMatrix.techMatrix.Length];
 
             TechMatrix.InitTechMatrixList(ref TechnologyMatrix);
-            
-            TechMatrix.IsExistsModdersTechTypes(ref TechnologyMatrix, TechMatrix.Known_AHK1221_TechTypes);
-            TechMatrix.IsExistsModdersTechTypes(ref TechnologyMatrix, TechMatrix.Known_PrimeSonic_TechTypes);
+
+            if (Main.isExistsSMLHelperV2)
+            {
+                TechMatrix.IsExistsModdersTechTypes(ref TechnologyMatrix, TechMatrix.Known_AHK1221_TechTypes);
+                TechMatrix.IsExistsModdersTechTypes(ref TechnologyMatrix, TechMatrix.Known_PrimeSonic_TechTypes);
+            }
+            else
+            {
+                Logger.Log("[CheatManager] Warning:\n'SMLHelper.V2' not found! Some functions are not available!", LogType.Warning);
+            }
 
             TechMatrix.SortTechLists(ref TechnologyMatrix);
 
@@ -154,12 +157,17 @@ namespace CheatManager
             toggleButtons[17].Pressed = false;
             Buttons[7].Enabled = false;
             Buttons[7].Pressed = true;
-
-            seamothSpeedMultiplier = 1;
+           
             exosuitSpeedMultiplier = 1;
             cyclopsSpeedMultiplier = 1;
-            
-        }         
+
+            isSeaglideFast.changedEvent.AddHandler(this, new Event<Utils.MonitoredValue<bool>>.HandleFunction(IsSeaglideFast));            
+        }             
+
+        private void IsSeaglideFast(Utils.MonitoredValue<bool> parms)
+        {
+            SeaglideOverDrive.Main.SetSeaglideSpeed();            
+        }
 
         public void Update()
         {
@@ -213,13 +221,29 @@ namespace CheatManager
                     {
                         if (vehicleSettingsID == 0)
                         {
-                            seamothCanFly = !seamothCanFly;
-                            vehicleSettings[0].Pressed = seamothCanFly;
+                            if (SeamothOverDrive.Main != null)
+                            {
+                                seamothCanFly = !seamothCanFly;
+                                vehicleSettings[0].Pressed = seamothCanFly;
+                            }
+                            else
+                            {
+                                ErrorMessage.AddMessage("CheatManager Error!\nYou do not have a Seamoth!");
+                            }
                         }
-                        else if (vehicleSettingsID == 1)
+
+                        if (vehicleSettingsID == 1)
                         {
-                            seaGlideFastSpeed = !seaGlideFastSpeed;
-                            vehicleSettings[1].Pressed = seaGlideFastSpeed;
+                            if (SeaglideOverDrive.Main != null)
+                            {
+                                isSeaglideFast.Update(!isSeaglideFast.value);
+                                vehicleSettings[1].Pressed = isSeaglideFast.value;
+                            }
+                            else
+                            {
+                                ErrorMessage.AddMessage("CheatManager Error!\nYou do not have a Seaglide!");
+                            }
+                            
                         }
                     }
                 }
@@ -227,24 +251,10 @@ namespace CheatManager
                 if (toggleButtons[18].Pressed)
                 {
                     Player.main.infectedMixin.SetInfectedAmount(0f);
-                }                            
-                
-                if (seaGlideFastSpeed)
-                {
-                    if (Player.main.motorMode == Player.MotorMode.Seaglide)
-                    {
-                        Player.main.playerController.activeController.acceleration = 60f;
-                        Player.main.playerController.activeController.verticalMaxSpeed = 75f;
-
-                    }
-                    else
-                    {
-                        Player.main.playerController.activeController.acceleration = 20;
-                        Player.main.playerController.activeController.verticalMaxSpeed = 5f;
-                    }
-                }                              
+                }                                        
             }
         }       
+
 
         internal static void ReadGameValues()
         {            
@@ -268,8 +278,7 @@ namespace CheatManager
           //toggleButtons[17].Pressed = alwaysDay cheat
           //toggleButtons[18].Pressed = noInfect cheat                      
             toggleButtons[19].Enabled = GameModeUtils.RequiresSurvival();
-            vehicleSettings[0].Pressed = seamothCanFly;
-            vehicleSettings[1].Pressed = seaGlideFastSpeed;
+            vehicleSettings[0].Pressed = seamothCanFly;            
         }
         
 
@@ -405,10 +414,15 @@ namespace CheatManager
                     switch (category)
                     {
                         case 0:
-                            if (TechnologyMatrix[category][i].TechType == TechType.Cyclops)                           
-                                ExecuteCommand($"{itemName}  has spawned", "sub cyclops", (int)TechnologyMatrix[category][i].TechType);                            
-                            else                           
-                                ExecuteCommand($"{itemName}  has spawned", $"spawn {selectedTech}", (int)TechnologyMatrix[category][i].TechType);                                                                                   
+                            if (!Player.main.IsInBase() && !Player.main.IsInSubmarine() && !Player.main.escapePod.value)
+                            {
+                                if (TechnologyMatrix[category][i].TechType == TechType.Cyclops)
+                                    ExecuteCommand($"{itemName}  has spawned", "sub cyclops", (int)TechnologyMatrix[category][i].TechType);
+                                else
+                                    ExecuteCommand($"{itemName}  has spawned", $"spawn {selectedTech}", (int)TechnologyMatrix[category][i].TechType);
+                                break;
+                            }
+                            ErrorMessage.AddMessage("CheatManager Error!\nVehicles cannot spawn inside Lifepod, Base or Submarine!");
                             break;
 
                         case 1:
@@ -471,7 +485,7 @@ namespace CheatManager
                 
                 GUI.Label(new Rect(scrollRect.x, scrollRect.y + 53, 250, 22), seamothName + " speed multiplier: " + string.Format("{0:#.##}", seamothSpeedMultiplier));
                 
-                seamothSpeedMultiplier = GUI.HorizontalSlider(new Rect(scrollRect.x, scrollRect.y + 79, scrollRect.width, 10), seamothSpeedMultiplier, 1f, 5f);
+                seamothSpeedMultiplier = (GUI.HorizontalSlider(new Rect(scrollRect.x, scrollRect.y + 79, scrollRect.width, 10), seamothSpeedMultiplier, 1f, 5f));
 
                 GUI.Label(new Rect(scrollRect.x, scrollRect.y + 93 , 250, 22), exosuitName + " speed multiplier: " + string.Format("{0:#.##}",exosuitSpeedMultiplier));
                 exosuitSpeedMultiplier = GUI.HorizontalSlider(new Rect(scrollRect.x, scrollRect.y + 119, scrollRect.width, 10), exosuitSpeedMultiplier, 1f, 5f);

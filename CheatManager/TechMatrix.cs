@@ -68,7 +68,7 @@ namespace CheatManager
                 item.Sort();
             }            
         }
-
+        
         public static void IsExistsModdersTechTypes(ref List<TechTypeData>[] TechnologyMatrix, Dictionary<string, CATEGORY> dictionary)
         {
             foreach (KeyValuePair<string, CATEGORY> pair in dictionary)
@@ -83,9 +83,7 @@ namespace CheatManager
                     if (TechTypeExtensions.AsString(techType, false) == pair.Key)
                     {
                         TechnologyMatrix[(int)pair.Value].Add(new TechTypeData(techType, Language.main.Get(TechTypeExtensions.AsString(techType, false))));
-
                         addedTechTypes.Add(techType);
-
                         Debug.Log($"[CheatManager]:\n '{pair.Key}' found in TechTypeExtensions and added to TechMatrix.");
                     }
                 }

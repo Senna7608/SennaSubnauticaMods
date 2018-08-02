@@ -9,18 +9,22 @@ namespace CheatManager
 {
     public class Main
     {
+        public static bool isExistsSMLHelperV2;
+
         public static void Load()
         {
             try
             {
-                HarmonyInstance.Create("subnautica.cheatmanager.mod").PatchAll(Assembly.GetExecutingAssembly());
-                Patch();
+                HarmonyInstance.Create("Subnautica.CheatManager.mod").PatchAll(Assembly.GetExecutingAssembly());
+                EnableConsole();
                 SceneManager.sceneLoaded += new UnityAction<Scene, LoadSceneMode>(OnSceneLoaded); 
             }
             catch (Exception ex)
             {
                 Debug.LogException(ex);
             }
+
+            isExistsSMLHelperV2 = IsNamespaceExists("SMLHelper.V2");            
         }
         
         private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -28,9 +32,6 @@ namespace CheatManager
             if (scene.name == "Main")
             {
                 CheatManager.Load();
-#if DEBUG
-                //TestWindow.InitTestWindow(true);
-#endif
             }
 
             if (scene.name == "StartScreen")
@@ -39,15 +40,27 @@ namespace CheatManager
             }
         }
         
-        private static void Patch()
+        private static void EnableConsole()
         {
             DevConsole.disableConsole = false;
         }
 
+        public static bool IsNamespaceExists(string desiredNamespace)
+        {
+            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                foreach (Type type in assembly.GetTypes())
+                {
+                    if (type.Namespace == desiredNamespace)
+                        return true;
+                }
+            }
+            return false;
+        }
 
         [HarmonyPatch(typeof(SeaMoth))]
         [HarmonyPatch("Start")]
-        internal class SeaMoth_Start_Patcher
+        internal class SeaMoth_Start_Patch
         {
             [HarmonyPostfix]
             internal static void Postfix(SeaMoth __instance)
@@ -58,7 +71,7 @@ namespace CheatManager
 
         [HarmonyPatch(typeof(Exosuit))]
         [HarmonyPatch("Start")]
-        internal class Exosuit_Start_Patcher
+        internal class Exosuit_Start_Patch
         {
             [HarmonyPostfix]
             internal static void Postfix(Exosuit __instance)
@@ -66,16 +79,26 @@ namespace CheatManager
                 __instance.gameObject.AddComponent<ExosuitOverDrive>();
             }
         }
-
-        [HarmonyPatch(typeof(SubRoot))]
+        
+        [HarmonyPatch(typeof(CyclopsMotorMode))]
         [HarmonyPatch("Start")]
-        internal class SubControl_Start_Patcher
+        internal class CyclopsMotorMode_Start_Patch
         {
             [HarmonyPostfix]
-            internal static void Postfix(SubRoot __instance)
+            internal static void Postfix(CyclopsMotorMode __instance)
             {
-                if (__instance.isCyclops)
-                   __instance.gameObject.AddComponent<CyclopsOverDrive>();                
+                __instance.gameObject.AddComponent<CyclopsOverDrive>();                
+            }
+        }
+        
+        [HarmonyPatch(typeof(Seaglide))]
+        [HarmonyPatch("Awake")]
+        internal class Seaglide_Awake_Patch
+        {
+            internal static void Postfix(Seaglide __instance)
+            {
+                __instance.gameObject.AddComponent<SeaglideOverDrive>();
+                
             }
         }
     }  

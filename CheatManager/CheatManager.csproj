@@ -78,8 +78,8 @@
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ExosuitOverDrive.cs" />
+    <Compile Include="SeaglideOverDrive.cs" />
     <Compile Include="TechMatrix.cs" />
-    <Compile Include="TestWindow.cs" />
     <Compile Include="SeamothOverDrive.cs" />
     <Compile Include="WarpTargets.cs" />
   </ItemGroup>
