@@ -115,6 +115,12 @@ namespace CheatManager
             BaseModule,
         };
 
+        public static readonly Dictionary<string, CATEGORY> Known_Senna7608_TechTypes = new Dictionary<string, CATEGORY>
+        {
+            { "ScannerModule", CATEGORY.Upgrades }
+        };
+
+
         public static readonly Dictionary<string, CATEGORY> Known_AHK1221_TechTypes = new Dictionary<string, CATEGORY>
         {
             { "SeamothHullModule4", CATEGORY.Upgrades },

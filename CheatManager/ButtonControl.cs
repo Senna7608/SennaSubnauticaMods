@@ -19,7 +19,7 @@ namespace CheatManager
                 case 4:
                 case 5:
                 case 6:
-                    CheatManager.ExecuteCommand("Send command to console: " + Buttons[normalButtonID].Name, Buttons[normalButtonID].Name, normalButtonID);
+                    CheatManager.ExecuteCommand("Send command to console: " + Buttons[normalButtonID].Name, Buttons[normalButtonID].Name);
                     break;
 
                 case 3:
@@ -28,7 +28,7 @@ namespace CheatManager
                     break;
 
                 case 7:
-                    CheatManager.ExecuteCommand("warp" + " to: " + CheatManager.prevCwPos, "warp " + CheatManager.prevCwPos, normalButtonID);
+                    CheatManager.ExecuteCommand("warp" + " to: " + CheatManager.prevCwPos, "warp " + CheatManager.prevCwPos);
                     Utils.PlayFMODAsset(CheatManager.warpSound, Player.main.transform, 20f);
                     CheatManager.prevCwPos = null;
                     Buttons[7].Enabled = false;
@@ -68,15 +68,15 @@ namespace CheatManager
                 case 13:
                 case 14:
                 case 16:
-                    CheatManager.ExecuteCommand("", toggleButtons[toggleButtonID].Name, toggleButtonID);
+                    CheatManager.ExecuteCommand("", toggleButtons[toggleButtonID].Name);
                     break;
                 case 15:
                     toggleButtons[15].Pressed = !toggleButtons[15].Pressed;
-                    CheatManager.ExecuteCommand(toggleButtons[15].Pressed ? "shotgun cheat is now True" : "shotgun cheat is now False", toggleButtons[toggleButtonID].Name, toggleButtonID);
+                    CheatManager.ExecuteCommand(toggleButtons[15].Pressed ? "shotgun cheat is now True" : "shotgun cheat is now False", toggleButtons[toggleButtonID].Name);
                     break;
                 case 8:
                     toggleButtons[8].Pressed = !toggleButtons[8].Pressed;
-                    CheatManager.ExecuteCommand(toggleButtons[8].Pressed ? "filterFast cheat is now True" : "filterFast cheat is now False", toggleButtons[toggleButtonID].Name, toggleButtonID);
+                    CheatManager.ExecuteCommand(toggleButtons[8].Pressed ? "filterFast cheat is now True" : "filterFast cheat is now False", toggleButtons[toggleButtonID].Name);
                     break;
                 case 17:
                     toggleButtons[17].Pressed = !toggleButtons[17].Pressed;
@@ -162,22 +162,6 @@ namespace CheatManager
                 Player.main.liveMixin.health = 100f;
             }
         }
-
-        internal static bool IsPlayerInVehicle()
-        {
-            if (Player.main.inSeamoth == true || Player.main.inExosuit == true)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-
-
-
-
-
-
+        
     }
 }

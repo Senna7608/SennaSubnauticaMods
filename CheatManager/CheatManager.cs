@@ -19,9 +19,7 @@ namespace CheatManager
         private static Vector2 scrollPos = Vector2.zero;
         private static bool isActive;
         private static Rect windowRect = new Rect(Screen.width - 500, 0, 500, 762);
-        private static readonly float space = 3;
-
-        private static Vector3 currentWorldPos = Vector3.zero;
+        private static readonly float space = 3;       
 
         private static readonly string[][] WarpData = WarpTargets.Targets;
 
@@ -93,8 +91,7 @@ namespace CheatManager
             TechnologyMatrix = null;
             initToggleButtons = false;
             prevCwPos = null;
-            warpSound = null;
-            currentWorldPos = Vector3.zero;
+            warpSound = null;            
             isActive = false;
             seamothCanFly = false;            
             initStyles = false;            
@@ -109,12 +106,12 @@ namespace CheatManager
 
             warpSound = ScriptableObject.CreateInstance<FMODAsset>();
             warpSound.path = "event:/tools/gravcannon/fire";
+
             TechnologyMatrix = new List<TechMatrix.TechTypeData>[TechMatrix.techMatrix.Length];
-
             TechMatrix.InitTechMatrixList(ref TechnologyMatrix);
-
             if (Main.isExistsSMLHelperV2)
             {
+                TechMatrix.IsExistsModdersTechTypes(ref TechnologyMatrix, TechMatrix.Known_Senna7608_TechTypes);
                 TechMatrix.IsExistsModdersTechTypes(ref TechnologyMatrix, TechMatrix.Known_AHK1221_TechTypes);
                 TechMatrix.IsExistsModdersTechTypes(ref TechnologyMatrix, TechMatrix.Known_PrimeSonic_TechTypes);
             }
@@ -122,7 +119,6 @@ namespace CheatManager
             {
                 Logger.Log("[CheatManager] Warning:\n'SMLHelper.V2' not found! Some functions are not available!", LogType.Warning);
             }
-
             TechMatrix.SortTechLists(ref TechnologyMatrix);
 
             Buttons = new List<GUI_Tools.ButtonInfo>();
@@ -282,16 +278,16 @@ namespace CheatManager
         }
         
 
-        public static void ExecuteCommand(string message, string command, int code)
+        public static void ExecuteCommand(object message, object command)
         {
-            if (message != "")
+            if (message != null)
             {
-                ErrorMessage.AddMessage(message);
+                ErrorMessage.AddMessage(message.ToString());
             }
 
-            if (command != "")
+            if (command != null)
             {
-                DevConsole.SendConsoleCommand(command);                
+                DevConsole.SendConsoleCommand(command.ToString());                
             }           
             
         }        
@@ -417,9 +413,9 @@ namespace CheatManager
                             if (!Player.main.IsInBase() && !Player.main.IsInSubmarine() && !Player.main.escapePod.value)
                             {
                                 if (TechnologyMatrix[category][i].TechType == TechType.Cyclops)
-                                    ExecuteCommand($"{itemName}  has spawned", "sub cyclops", (int)TechnologyMatrix[category][i].TechType);
+                                    ExecuteCommand($"{itemName}  has spawned", "sub cyclops");
                                 else
-                                    ExecuteCommand($"{itemName}  has spawned", $"spawn {selectedTech}", (int)TechnologyMatrix[category][i].TechType);
+                                    ExecuteCommand($"{itemName}  has spawned", $"spawn {selectedTech}");
                                 break;
                             }
                             ErrorMessage.AddMessage("CheatManager Error!\nVehicles cannot spawn inside Lifepod, Base or Submarine!");
@@ -434,37 +430,23 @@ namespace CheatManager
                         case 12:
                         case 13:
                         case 14:
-                        case 16:                            
-                            ExecuteCommand($"{itemName}  added to inventory", $"item {selectedTech}", (int)TechnologyMatrix[category][i].TechType);
+                        case 15:                                                    
+                            ExecuteCommand($"{itemName}  added to inventory", $"item {selectedTech}");
                             break;
                         case 7:
                         case 8:
                         case 9:
                         case 10:
-                        case 11:                        
-                        case 15:
+                        case 11:
+                        case 16:
                         case 17:
-                            ExecuteCommand($"{itemName}  has spawned", $"spawn {selectedTech}", (int)TechnologyMatrix[category][i].TechType);                            
+                            ExecuteCommand($"{itemName}  has spawned", $"spawn {selectedTech}");                            
                             break;
                         case 18:
-                            ExecuteCommand($"Blueprint: {itemName} unlocked", $"unlock {selectedTech}", (int)TechnologyMatrix[category][i].TechType);                            
+                            ExecuteCommand($"Blueprint: {itemName} unlocked", $"unlock {selectedTech}");                            
                             break;
                         case 19:
-                            currentWorldPos = MainCamera.camera.transform.position;
-                            prevCwPos = string.Format("{0:D} {1:D} {2:D}", (int)currentWorldPos.x, (int)currentWorldPos.y, (int)currentWorldPos.z);
-                            if (ButtonControl.IsPlayerInVehicle())
-                            {                                                                
-                                Vehicle vehicle = Player.main.GetVehicle();                                
-                                vehicle.TeleportVehicle(WarpTargets.ConvertStringPosToVector3(selectedTech), vehicle.transform.rotation);
-                                Player.main.CompleteTeleportation();
-                                ErrorMessage.AddMessage($"Vehicle and Player Warped to: {itemName}\n({selectedTech})");
-                            }
-                            else
-                            {
-                                ExecuteCommand($"Player Warped to: {itemName}\n({selectedTech})", $"warp {selectedTech}", i);
-                            }
-
-                            Utils.PlayFMODAsset(warpSound, Player.main.transform, 20f);
+                            Teleport(itemName, selectedTech);
                             Buttons[7].Enabled = true;
                             break;
                         default:
@@ -495,7 +477,37 @@ namespace CheatManager
                 
             }    
             
-        }        
+        }
+        
+        private static void Teleport(string name, string Vector3string)
+        {
+            Vector3 currentWorldPos = MainCamera.camera.transform.position;
+            prevCwPos = string.Format("{0:D} {1:D} {2:D}", (int)currentWorldPos.x, (int)currentWorldPos.y, (int)currentWorldPos.z);
+            if (IsPlayerInVehicle())
+            {
+                Vehicle vehicle = Player.main.GetVehicle();
+                vehicle.TeleportVehicle(WarpTargets.ConvertStringPosToVector3(Vector3string), vehicle.transform.rotation);
+                Player.main.CompleteTeleportation();
+                ErrorMessage.AddMessage($"Vehicle and Player Warped to: {name}\n({Vector3string})");
+            }
+            else
+            {
+                ExecuteCommand($"Player Warped to: {name}\n({Vector3string})", $"warp {Vector3string}");
+            }
+
+            Utils.PlayFMODAsset(warpSound, Player.main.transform, 20f);
+        }
+
+        internal static bool IsPlayerInVehicle()
+        {
+            if (Player.main.inSeamoth == true || Player.main.inExosuit == true)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
     }
 }
 
