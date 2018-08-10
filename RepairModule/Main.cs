@@ -3,7 +3,7 @@ using System.Reflection;
 using Harmony;
 using UnityEngine;
 
-namespace ScannerModule
+namespace RepairModule
 {
     class Main
     {
@@ -11,8 +11,8 @@ namespace ScannerModule
         {
             try
             {
-                var scannermodule = new ScannerModule();
-                scannermodule.Patch();
+                var repairmodule = new RepairModule();
+                repairmodule.Patch();
 
                 HarmonyInstance.Create("Subnautica.ScannerModule.mod").PatchAll(Assembly.GetExecutingAssembly());                
             }
@@ -30,7 +30,7 @@ namespace ScannerModule
     {
         static void Prefix(SeaMoth __instance)
         {
-            __instance.gameObject.AddComponent<ScannerModuleSeamoth>();                       
+            __instance.gameObject.AddComponent<RepairModuleSeamoth>();                       
         }
     }
 
@@ -40,7 +40,7 @@ namespace ScannerModule
     {
         static void Prefix(Exosuit __instance)
         {
-            __instance.gameObject.AddComponent<ScannerModuleExosuit>();
+            __instance.gameObject.AddComponent<RepairModuleExosuit>();
         }
     }
 
@@ -50,14 +50,15 @@ namespace ScannerModule
     {
         static void Postfix(SeaMoth __instance, int slotID, bool active)
         {
-            var scannermodule = __instance.gameObject.GetComponent<ScannerModuleSeamoth>();
+            var repairmodule = __instance.GetComponent<RepairModuleSeamoth>();
 
-            if (scannermodule != null)
+            if (repairmodule != null)
             {
-                if (__instance.GetSlotBinding(slotID) == ScannerModule.TechTypeID)
-                {
-                    scannermodule.toggle = active;
-                }                             
+                if (__instance.GetSlotBinding(slotID) == RepairModule.TechTypeID)
+                {                
+                    repairmodule.slotID = slotID;                   
+                    repairmodule.toggle = active;                   
+                }               
             }
         }
     }
@@ -68,17 +69,18 @@ namespace ScannerModule
     {
         static void Postfix(Exosuit __instance, int slotID)
         {
-            var scannermodule = __instance.gameObject.GetComponent<ScannerModuleExosuit>();
+            var repairmodule = __instance.GetComponent<RepairModuleExosuit>();
 
-            if (scannermodule != null)
+            if (repairmodule != null)
             {
-                if (__instance.GetSlotBinding(slotID) == ScannerModule.TechTypeID)
+                if (__instance.GetSlotBinding(slotID) == RepairModule.TechTypeID)
                 {
-                    scannermodule.toggle = !scannermodule.toggle;
+                    repairmodule.slotID = slotID;
+                    repairmodule.toggle = !repairmodule.toggle;
                 }
                 else
                 {
-                    scannermodule.toggle = false;
+                    repairmodule.toggle = false;
                 }
             }
         }

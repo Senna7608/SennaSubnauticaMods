@@ -1,15 +1,16 @@
-﻿namespace Common
+﻿using SMLHelper.V2.Assets;
+using SMLHelper.V2.Crafting;
+using SMLHelper.V2.Handlers;
+using SMLHelper.V2.Utility;
+using UnityEngine;
+
+
+namespace ScannerModule
 {
     ///<summary>
     ///Craftable Class from PrimeSonic/Upgraded Vehicles mod
     ///Original code found on GitHub: https://github.com/PrimeSonic/PrimeSonicSubnauticaMods/blob/master/UpgradedVehicles/Craftables/Craftable.cs
     ///</summary>
-
-    using SMLHelper.V2.Assets;
-    using SMLHelper.V2.Crafting;
-    using SMLHelper.V2.Handlers;
-    using SMLHelper.V2.Utility;
-    using UnityEngine;
 
 
     internal abstract class Craftable : ModPrefab

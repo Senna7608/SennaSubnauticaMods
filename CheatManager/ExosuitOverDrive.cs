@@ -10,7 +10,7 @@ namespace CheatManager
 
         private Exosuit exosuit;
 
-        Equipment exosuitEquipment;
+        private Equipment exosuitEquipment;
 
         private TechType SpeedModule;
         private const float MaxSpeed = 50f;

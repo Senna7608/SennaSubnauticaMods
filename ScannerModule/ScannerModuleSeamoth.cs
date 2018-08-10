@@ -4,14 +4,14 @@ using UWE;
 
 namespace ScannerModule
 {
-    public class ScannerModuleComponent : MonoBehaviour
+    public class ScannerModuleSeamoth : MonoBehaviour
     {
         // Some code extracted with dnSpy from Assembly-CSharp.dll:ScannerTool 
         
         private EnergyMixin energyMixin;
         
-        public float powerConsumption = 0.2f;
-        public const float scanDistance = 18f;               
+        public float powerConsumption = 0.5f;
+        public const float scanDistance = 20f;               
         public FMOD_CustomLoopingEmitter scanSound;
         public FMODAsset completeSound;
         public Texture2D scanCircuitTex;
@@ -43,40 +43,20 @@ namespace ScannerModule
             Scan
         }
 
-        public static readonly string[] slotIDs = new string[]
-        {
-            "SeamothModule1",
-            "SeamothModule2",
-            "SeamothModule3",
-            "SeamothModule4"
-        };
-
-
-        public static GameObject TraceForTarget(float distance, float sphereRadius = 0.2f, bool preferSphereHits = false)
-        {
-            if (UWE.Utils.TraceForFPSTarget(Player.main.gameObject, distance, sphereRadius, out GameObject go, out float num, preferSphereHits))
-            {
-                return UWE.Utils.GetEntityRoot(go);
-            }
-            return null;
-        }
-
-
         private void Start()
         {
             energyMixin = GetComponent<EnergyMixin>();            
             var scanner = Resources.Load<GameObject>("WorldEntities/Tools/Scanner").GetComponent<ScannerTool>();
 
-            scanSound = scanner.scanSound;            
-            completeSound = scanner.completeSound;
+            scanSound = Instantiate(scanner.scanSound, gameObject.transform);            
+            completeSound = Instantiate(scanner.completeSound, gameObject.transform);
             
-            scanCircuitTex = scanner.scanCircuitTex;
-            scanOrganicTex = scanner.scanOrganicTex;
-            fxControl = scanner.fxControl;
-
+            scanCircuitTex = Instantiate(scanner.scanCircuitTex, gameObject.transform);
+            scanOrganicTex = Instantiate(scanner.scanOrganicTex, gameObject.transform);           
+            fxControl = Instantiate(scanner.fxControl, gameObject.transform);
             
-            scanBeam = Instantiate(scanner.scanBeam);
-            scanBeam.transform.SetParent(seamoth.gameObject.transform, false);
+            
+            scanBeam = Instantiate(scanner.scanBeam, gameObject.transform);            
             scanBeam.transform.localScale = new Vector3(1, 4, 1);
             scanBeam.transform.localPosition = new Vector3(-0.7f, -0.5f, 1.9f);
            
@@ -112,7 +92,7 @@ namespace ScannerModule
         
         private void Update()
         {
-            if (toggle)
+            if (toggle && Player.main.inSeamoth)
             {
                 if (GameInput.GetButtonDown(GameInput.Button.LeftHand) && !isScanning)
                 {
@@ -270,8 +250,8 @@ namespace ScannerModule
             }
 
             PDAScanner.Result result = PDAScanner.Result.None;
-            PDAScanner.ScanTarget scanTarget = PDAScanner.scanTarget;
-            
+            PDAScanner.ScanTarget scanTarget = PDAScanner.scanTarget;            
+
             if (scanTarget.isValid && energyMixin.charge > 0f)
             {
                 result = PDAScanner.Scan();
@@ -325,8 +305,9 @@ namespace ScannerModule
                 {                    
                     main.SetIcon(HandReticle.IconType.Progress, 4f);
                     main.progressText.text = Mathf.RoundToInt(PDAScanner.scanTarget.progress * 100f) + "%";
-                    //main.progressText.color = new Color32(159, byte.MaxValue, byte.MaxValue, byte.MaxValue);
-                    //main.progressImage.fillAmount = Mathf.Clamp01(PDAScanner.scanTarget.progress);
+                    main.progressText.color = new Color32(0, 226, 32, byte.MaxValue);
+                    main.progressImage.color = new Color32(0, 226, 32, byte.MaxValue);
+                    main.progressImage.fillAmount = Mathf.Clamp01(PDAScanner.scanTarget.progress);                    
                     main.SetProgress(PDAScanner.scanTarget.progress);
 
                 }
@@ -379,7 +360,7 @@ namespace ScannerModule
                         scanFX.ApplyOverlay(scanMaterialOrganicFX, "VFXOverlay: Scanning", false, null);
                     }
                     else
-                    {
+                    {                        
                         scanFX.ApplyOverlay(scanMaterialCircuitFX, "VFXOverlay: Scanning", false, null);
                     }
                 }
