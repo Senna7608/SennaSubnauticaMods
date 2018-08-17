@@ -118,7 +118,8 @@ namespace CheatManager
         public static readonly Dictionary<string, CATEGORY> Known_Senna7608_TechTypes = new Dictionary<string, CATEGORY>
         {
             { "ScannerModule", CATEGORY.Upgrades },
-            { "RepairModule", CATEGORY.Upgrades }
+            { "RepairModule", CATEGORY.Upgrades },
+            { "LaserCannon", CATEGORY.Upgrades }
         };
 
 

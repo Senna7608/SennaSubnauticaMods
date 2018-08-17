@@ -58,9 +58,7 @@ namespace CheatManager
         }
 
         public void Start()
-        {
-            seamoth = gameObject.GetComponent<SeaMoth>();
-
+        { 
             TechTypeExtensions.FromString("SpeedModule", out SpeedModule, true);
 
 #if DEBUG_SEAMOTH_OVERDRIVE

@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2035
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheatManager", "CheatManager\CheatManager.csproj", "{1306DEA8-6A8B-4E61-A63E-779B439B6590}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Common", "GUI_Tools\Common.shproj", "{B2710992-57F8-4B97-8FF3-F96E1085FEC2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScannerModule", "ScannerModule\ScannerModule.csproj", "{99ED7304-8603-4A34-9CBA-A38557A64D0C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepairModule", "RepairModule\RepairModule.csproj", "{1ED43566-559A-4962-804D-9B5A23163808}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LaserCannon", "LaserCannon\LaserCannon.csproj", "{CAD5C123-3DF0-4562-B3AC-5721D45072E8}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		GUI_Tools\GUI_Tools.projitems*{1306dea8-6a8b-4e61-a63e-779b439b6590}*SharedItemsImports = 4
+		GUI_Tools\GUI_Tools.projitems*{1ed43566-559a-4962-804d-9b5a23163808}*SharedItemsImports = 4
+		GUI_Tools\GUI_Tools.projitems*{99ed7304-8603-4a34-9cba-a38557a64d0c}*SharedItemsImports = 4
+		GUI_Tools\GUI_Tools.projitems*{b2710992-57f8-4b97-8ff3-f96e1085fec2}*SharedItemsImports = 13
+		GUI_Tools\GUI_Tools.projitems*{cad5c123-3df0-4562-b3ac-5721d45072e8}*SharedItemsImports = 4
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1306DEA8-6A8B-4E61-A63E-779B439B6590}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1306DEA8-6A8B-4E61-A63E-779B439B6590}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1306DEA8-6A8B-4E61-A63E-779B439B6590}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1306DEA8-6A8B-4E61-A63E-779B439B6590}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99ED7304-8603-4A34-9CBA-A38557A64D0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99ED7304-8603-4A34-9CBA-A38557A64D0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99ED7304-8603-4A34-9CBA-A38557A64D0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99ED7304-8603-4A34-9CBA-A38557A64D0C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1ED43566-559A-4962-804D-9B5A23163808}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1ED43566-559A-4962-804D-9B5A23163808}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1ED43566-559A-4962-804D-9B5A23163808}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1ED43566-559A-4962-804D-9B5A23163808}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CAD5C123-3DF0-4562-B3AC-5721D45072E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CAD5C123-3DF0-4562-B3AC-5721D45072E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CAD5C123-3DF0-4562-B3AC-5721D45072E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CAD5C123-3DF0-4562-B3AC-5721D45072E8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B92D2896-86C7-484F-ACD7-BB4BF91DC50B}
+	EndGlobalSection
+EndGlobal
