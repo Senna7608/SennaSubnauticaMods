@@ -7,7 +7,10 @@
 - This console window will attached the UnityEngine's "HandleLog" method, catch the debug messages and show it.
 
 # Scanner Module
-- Scanner Module is another Subnautica plugin, for simulate a scanner tool if the player in vehicles.
+- Scanner Module is another Vehicle plugin, for simulate a scanner tool if the player in vehicles.
 
 # Repair Module
-- Repair Module is another Subnautica plugin, for simulate a repair tool if the player in vehicles.
+- Repair Module is another Vehicle plugin, for simulate a repair tool if the player in vehicles.
+
+# Laser Cannon
+- Laser Cannon is another Seamoth module plugin, this is the first lethal vehicle weapon plugin
