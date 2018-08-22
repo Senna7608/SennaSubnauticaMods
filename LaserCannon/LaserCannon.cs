@@ -6,7 +6,9 @@ namespace LaserCannon
 {
     internal class LaserCannon : Craftable
     {
-        public static TechType TechTypeID { get; private set; }        
+        public static TechType TechTypeID { get; private set; }
+
+        public static Config Config { get; } = new Config();       
 
         internal LaserCannon()
             : base(nameID: "LaserCannon",
@@ -26,7 +28,10 @@ namespace LaserCannon
             base.Patch();
             CraftDataHandler.SetEquipmentType(TechType, EquipmentType.VehicleModule);
             CraftDataHandler.SetQuickSlotType(TechType, QuickSlotType.Selectable);
-            TechTypeID = TechType;            
+            
+            TechTypeID = TechType;
+            OptionsPanelHandler.RegisterModOptions(Config);
+            Config.Init();            
         }
         
         protected override TechData GetRecipe()
@@ -43,6 +48,6 @@ namespace LaserCannon
                     
                 })
             };
-        }
+        }        
     }
 }

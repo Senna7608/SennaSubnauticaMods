@@ -1,50 +1,104 @@
-﻿using UnityEngine;
+﻿using Common.Modules;
+using UnityEngine;
+using UWE;
 
 namespace RepairModule
 {
     public class RepairModuleSeamoth : MonoBehaviour
-    {      
-        public SeaMoth seamoth;
+    {
+        [AssertNotNull]
+        private SeaMoth seamoth;
+        [AssertNotNull]
         private EnergyMixin energyMixin;
-        public FMODASRPlayer weldSound;
+        [AssertNotNull]
+        private FMODASRPlayer weldSound;
         private HandReticle main = HandReticle.main;
         private const float powerConsumption = 5f;
         private float repairPerSec;
         private float maxHealth;
-        private float idleTimer = 5f;
-        public bool toggle;
-        public int slotID;        
+        private float idleTimer = 3f;
+        private bool toggle;
+        public bool isActive;
+        public int slotID;
+        private RepairMode currentMode = RepairMode.None;
+
+        private enum RepairMode
+        {
+            None,            
+            Repair,
+            Disabled
+        };
 
         public void Awake()
         {
-            seamoth = gameObject.GetComponent<SeaMoth>();
-            repairPerSec = seamoth.liveMixin.maxHealth * 0.1f;
-            maxHealth = seamoth.liveMixin.maxHealth;
+            seamoth = gameObject.GetComponent<SeaMoth>();                 
         }        
 
         private void Start()
         {
-            energyMixin = seamoth.GetComponent<EnergyMixin>();
-            var welder = Resources.Load<GameObject>("WorldEntities/Tools/Welder").GetComponent<Welder>();           
-            weldSound = Instantiate(welder.weldSound, gameObject.transform);            
-        }        
+            repairPerSec = seamoth.liveMixin.maxHealth * 0.1f;
+            maxHealth = seamoth.liveMixin.maxHealth;
+            energyMixin = seamoth.GetComponent<EnergyMixin>();           
+            Welder welder = Resources.Load<GameObject>("WorldEntities/Tools/Welder").GetComponent<Welder>();           
+            weldSound = Instantiate(welder.weldSound, gameObject.transform);
 
-        private void ResetProgressColor()
-        {
-            main.progressText.color = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
-            main.progressImage.color = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
+            seamoth.onToggle += OnToggle;
+            Utils.GetLocalPlayerComp().playerModeChanged.AddHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
         }
 
-
-        private void Update()
+        private void OnPlayerModeChanged(Player.Mode playerMode)
         {
-            if (toggle)
+            if (playerMode == Player.Mode.LockedPiloting)
             {
-                if (seamoth.liveMixin.health < seamoth.liveMixin.maxHealth && energyMixin.charge > energyMixin.capacity * 0.1f)
+                OnEnable();
+            }
+            else
+            {
+                OnDisable();
+            }
+        }
+
+        private void OnToggle(int slotID, bool state)
+        {
+            if (seamoth.GetSlotBinding(slotID) == RepairModule.TechTypeID)
+            {
+                toggle = state;                              
+
+                if (toggle)
                 {
+                    OnEnable();
+                }
+                else
+                {
+                    OnDisable();
+                }
+            }
+        }
+
+        public void OnEnable()
+        {
+            isActive = Player.main.inSeamoth && toggle;
+        }
+
+        public void OnDisable()
+        {
+            weldSound.Stop();
+            isActive = false;
+            currentMode = RepairMode.Disabled;
+            Modules.SetProgressColor(Modules.Colors.White);
+            Modules.SetInteractColor(Modules.Colors.White);
+        }
+
+        public void Update()
+        {
+            if (isActive)
+            {
+                if (seamoth.liveMixin.health < maxHealth && energyMixin.charge > energyMixin.capacity * 0.1f)
+                {                    
+                    currentMode = RepairMode.Repair;
                     weldSound.Play();
-                    float amount = powerConsumption * Time.deltaTime;
-                    energyMixin.ConsumeEnergy(amount);
+
+                    energyMixin.ConsumeEnergy(powerConsumption * Time.deltaTime);
                     
                     main.SetIcon(HandReticle.IconType.Progress, 1.5f);                    
                     seamoth.liveMixin.health += Time.deltaTime * repairPerSec;
@@ -52,60 +106,56 @@ namespace RepairModule
 
                     if (seamoth.liveMixin.health < maxHealth * 0.5f)
                     {
-                        main.progressText.color = new Color32(255, 0, 0, byte.MaxValue);
-                        main.progressImage.color = new Color32(255, 0, 0, byte.MaxValue);
+                        Modules.SetProgressColor(Modules.Colors.Red);
+                        Modules.SetInteractColor(Modules.Colors.Red);
                     }
                     else if (seamoth.liveMixin.health < maxHealth * 0.75f && seamoth.liveMixin.health > maxHealth * 0.5f)
                     {
-                        main.progressText.color = new Color32(255, 255, 0, byte.MaxValue);
-                        main.progressImage.color = new Color32(255, 255, 0, byte.MaxValue);
+                        Modules.SetProgressColor(Modules.Colors.Yellow);
+                        Modules.SetInteractColor(Modules.Colors.Yellow);
                     }
                     else if (seamoth.liveMixin.health > maxHealth * 0.75f)
                     {
-                        main.progressText.color = new Color32(0, 255, 0, byte.MaxValue);
-                        main.progressImage.color = new Color32(0, 255, 0, byte.MaxValue);
+                        Modules.SetProgressColor(Modules.Colors.Green);
+                        Modules.SetInteractColor(Modules.Colors.Green);
                     }
 
                     main.SetProgress(seamoth.liveMixin.health / maxHealth);
 
-                    if (seamoth.liveMixin.health > seamoth.liveMixin.maxHealth)
-                    {
-                        weldSound.Stop();
+                    if (seamoth.liveMixin.health >= seamoth.liveMixin.maxHealth)
+                    {                        
                         seamoth.liveMixin.health = seamoth.liveMixin.maxHealth;
+                        currentMode = RepairMode.None;
                         seamoth.SlotKeyDown(slotID);
-                        ResetProgressColor();
-                        return;
                     }                    
                 }
 
-                else if (energyMixin.charge <= energyMixin.capacity * 0.2f)
+                else if (energyMixin.charge <= energyMixin.capacity * 0.1f)
                 {                    
                     if (idleTimer > 0f)
                     {
                         weldSound.Stop();
                         idleTimer = Mathf.Max(0f, idleTimer - Time.deltaTime);
-                        main.SetInteractText("Warning! Low Power!", "Repair Module Disabled!", false, false, HandReticle.Hand.None);
+                        main.SetInteractText("Warning!\nLow Power!", "Repair Module Disabled!", false, false, HandReticle.Hand.None);
+                        Modules.SetInteractColor(Modules.Colors.Red);
                     }
                     else
-                    {                       
-                        toggle = false;
-                        seamoth.SlotKeyDown(slotID);
-                        idleTimer = 5;
-                        ResetProgressColor();
-                        return;
+                    {                        
+                        idleTimer = 3;                        
+                        seamoth.SlotKeyDown(slotID);                        
                     }
                 }
-                else
-                {
-                    toggle = false;
+
+                if (currentMode == RepairMode.None || currentMode == RepairMode.Disabled && seamoth.liveMixin.health == maxHealth)
+                {                                     
                     seamoth.SlotKeyDown(slotID);
-                    idleTimer = 5;
-                    ResetProgressColor();
                     return;
                 }
-
             }
-            
+            else if (currentMode == RepairMode.Repair)
+            {                
+                seamoth.SlotKeyDown(slotID);
+            }            
         }        
     }
 }

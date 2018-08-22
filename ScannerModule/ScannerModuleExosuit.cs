@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Common.Modules;
+using UnityEngine;
 
 namespace ScannerModule
 {
@@ -9,7 +10,7 @@ namespace ScannerModule
         private EnergyMixin energyMixin;
         
         public const float powerConsumption = 0.5f;
-        public const float scanDistance = 20f;               
+        public const float scanDistance = 40f;               
         public FMOD_CustomLoopingEmitter scanSound;
         public FMODAsset completeSound;
         private bool isScanning = false;
@@ -20,23 +21,26 @@ namespace ScannerModule
         private Exosuit exosuit;
         HandReticle main = HandReticle.main;
 
-        
-        public void Awake()
-        {
-            exosuit = gameObject.GetComponent<Exosuit>();            
-        }        
-        
         public enum ScanState
         {
             None,
             Scan
         }
 
+        public void Awake()
+        {
+            exosuit = gameObject.GetComponent<Exosuit>();
+
+            if (!exosuit)
+            {
+                Destroy(this);
+            }
+        }         
+
         public void Start()
         {            
             energyMixin = GetComponent<EnergyMixin>();            
-            var scanner = Resources.Load<GameObject>("WorldEntities/Tools/Scanner").GetComponent<ScannerTool>();
-
+            ScannerTool scanner = Resources.Load<GameObject>("WorldEntities/Tools/Scanner").GetComponent<ScannerTool>();
             scanSound = Instantiate(scanner.scanSound, gameObject.transform);            
             completeSound = Instantiate(scanner.completeSound, gameObject.transform);            
         }        
@@ -46,8 +50,7 @@ namespace ScannerModule
             if (toggle)
             {
                 PDAScanner.Result result = Scan();
-                Debug.Log($"Scanner: toggle: {toggle} isScanning: {isScanning}");
-
+                
                 if (!isScanning)
                 {
                     if (result != PDAScanner.Result.Known)
@@ -61,8 +64,7 @@ namespace ScannerModule
                     main.SetInteractText(PDAScanner.scanTarget.techType.AsString(false), true, HandReticle.Hand.None);
                     main.SetIcon(HandReticle.IconType.Progress, 10f);
                     main.progressText.text = Mathf.RoundToInt(PDAScanner.scanTarget.progress * 100f) + "%";
-                    main.progressText.color = new Color32(0, 226, 32, byte.MaxValue);
-                    main.progressImage.color = new Color32(0, 226, 32, byte.MaxValue);
+                    Modules.SetProgressColor(Modules.Colors.Orange);
                     main.progressImage.fillAmount = Mathf.Clamp01(PDAScanner.scanTarget.progress);
                     main.SetProgress(PDAScanner.scanTarget.progress);                    
                 }
@@ -70,9 +72,7 @@ namespace ScannerModule
                 if (idleTimer > 0f)
                 {
                     idleTimer = Mathf.Max(0f, idleTimer - Time.deltaTime);
-                }
-
-                
+                }                
             }            
         }       
 
@@ -94,6 +94,7 @@ namespace ScannerModule
                 else
                 {
                     scanSound.Stop();
+                    Modules.SetProgressColor(Modules.Colors.White);
                 }
                 stateLast = stateCurrent;
                 stateCurrent = ScanState.None;
@@ -112,7 +113,8 @@ namespace ScannerModule
             }
 
             PDAScanner.Result result = PDAScanner.Result.None;
-            PDAScanner.ScanTarget scanTarget = PDAScanner.scanTarget;            
+            PDAScanner.ScanTarget scanTarget = PDAScanner.scanTarget;
+            PDAScanner.UpdateTarget(scanDistance, false);
 
             if (scanTarget.isValid && energyMixin.charge > 0f)
             {
@@ -150,23 +152,7 @@ namespace ScannerModule
                 return;
             }
 
-            PDAScanner.Result result = PDAScanner.CanScan();
-            /*
-            if (result == PDAScanner.Result.Scan)
-            {                
-                main.SetInteractText(scanTarget.techType.AsString(false), true, HandReticle.Hand.None);
-
-                if (stateCurrent == ScanState.Scan)
-                {                       
-                    main.SetIcon(HandReticle.IconType.Progress, 10f);
-                    main.progressText.text = Mathf.RoundToInt(PDAScanner.scanTarget.progress * 100f) + "%";
-                    main.progressText.color = new Color32(0, 226, 32, byte.MaxValue);
-                    main.progressImage.color = new Color32(0, 226, 32, byte.MaxValue);
-                    main.progressImage.fillAmount = Mathf.Clamp01(PDAScanner.scanTarget.progress);                    
-                    main.SetProgress(PDAScanner.scanTarget.progress);                    
-                }
-            }
-            */           
+            PDAScanner.Result result = PDAScanner.CanScan();                    
         }       
     }
 }

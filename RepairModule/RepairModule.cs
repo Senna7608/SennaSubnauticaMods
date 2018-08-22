@@ -25,7 +25,7 @@ namespace RepairModule
         {
             base.Patch();
             CraftDataHandler.SetEquipmentType(TechType, EquipmentType.VehicleModule);
-            CraftDataHandler.SetQuickSlotType(TechType, QuickSlotType.Selectable);
+            CraftDataHandler.SetQuickSlotType(TechType, QuickSlotType.Toggleable);
             TechTypeID = TechType;
             
         }

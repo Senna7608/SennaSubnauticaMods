@@ -1,5 +1,8 @@
 ﻿//#define DEBUG_LOGGER
 #define DEBUG_GAMELOG
+#define AUTOSCROLL
+#define MAXMESSAGE_INFINITY
+
 using System.Collections.Generic;
 using UnityEngine;
 using Common.MyGUI;
@@ -27,8 +30,12 @@ namespace CheatManager
 
         public bool show = false;
         public static string inputField = "";
+
+#if MAXMESSAGE_INFINITY
+        private static readonly int MAXLOG = int.MaxValue;
+#else
         private static readonly int MAXLOG = 100; 
-        
+#endif
         private static List<string> history = new List<string>();
 
         private static int historyIndex = 0;
@@ -183,12 +190,13 @@ namespace CheatManager
                 }
             }
 
+#if AUTOSCROLL
             if (messageCount != logMessage.Count)
             {
                 scrollPos.y += Mathf.Infinity;
                 messageCount = logMessage.Count;
             }
-
+#endif
             GUI.EndScrollView();
 
             GUI.contentColor = Color.white;

@@ -4,13 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{CAD5C123-3DF0-4562-B3AC-5721D45072E8}</ProjectGuid>
+    <ProjectGuid>{38021293-9C9F-474A-A3F0-C782FC93A15A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LaserCannon</RootNamespace>
-    <AssemblyName>LaserCannon</AssemblyName>
+    <RootNamespace>SlotExtender</RootNamespace>
+    <AssemblyName>SlotExtender</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -24,9 +25,8 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>D:\Subnautica\QMods\LaserCannon\</OutputPath>
-    <DefineConstants>
-    </DefineConstants>
+    <OutputPath>D:\Subnautica\QMods\SlotExtender\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -41,10 +41,6 @@
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
       <HintPath>D:\Subnautica\Subnautica_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="SMLHelper">
-      <HintPath>D:\Subnautica\QMods\Modding Helper\SMLHelper.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -65,18 +61,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Craftable.cs" />
+    <Compile Include="SlotExtender.cs" />
     <Compile Include="Main.cs" />
-    <Compile Include="Config.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="LaserCannon.cs" />
-    <Compile Include="LaserCannon_Seamoth.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\LaserCannon.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <None Include="mod.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
-  <Import Project="..\GUI_Tools\GUI_Tools.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -69,6 +69,7 @@
   <ItemGroup>
     <Compile Include="Craftable.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="ScannerToolDebugger.cs" />
     <Compile Include="ScannerModuleExosuit.cs" />
     <Compile Include="ScannerModuleSeamoth.cs" />
     <Compile Include="ScannerModule.cs" />

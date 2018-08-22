@@ -61,7 +61,7 @@ namespace ScannerModule
             }
         }
     }
-
+    
     [HarmonyPatch(typeof(Exosuit))]
     [HarmonyPatch("SlotKeyDown")]
     public class Exosuit_SlotKeyDown_Patch
@@ -83,4 +83,18 @@ namespace ScannerModule
             }
         }
     }
+
+    /*
+    [HarmonyPatch(typeof(ScannerTool))]
+    [HarmonyPatch("Start")]
+    public class ScannerTool_Start_Patch
+    {
+        static void Postfix(ScannerTool __instance)
+        {
+            __instance.gameObject.AddComponent<ScannerToolDebugger>();
+        }
+    }
+    */
+
+
 }

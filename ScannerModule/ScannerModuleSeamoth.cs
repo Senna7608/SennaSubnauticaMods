@@ -1,6 +1,5 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-using UWE;
+﻿using Common.Modules;
+using UnityEngine;
 
 namespace ScannerModule
 {
@@ -8,10 +7,9 @@ namespace ScannerModule
     {
         // Some code extracted with dnSpy from Assembly-CSharp.dll:ScannerTool 
         
-        private EnergyMixin energyMixin;
-        
+        private EnergyMixin energyMixin;        
         public float powerConsumption = 0.5f;
-        public const float scanDistance = 20f;               
+        public const float scanDistance = 40f;               
         public FMOD_CustomLoopingEmitter scanSound;
         public FMODAsset completeSound;
         public Texture2D scanCircuitTex;
@@ -31,11 +29,7 @@ namespace ScannerModule
         private SeaMoth seamoth;
         public GameObject scanBeam;
         Quaternion beamRotation;
-        
-        public void Awake()
-        {
-            seamoth = gameObject.GetComponent<SeaMoth>();            
-        }        
+        private Transform leftTorpedoSlot;
 
         public enum ScanState
         {
@@ -43,22 +37,32 @@ namespace ScannerModule
             Scan
         }
 
+        public void Awake()
+        {
+            seamoth = gameObject.GetComponent<SeaMoth>();
+
+            if (!seamoth)
+            {
+                Destroy(this);
+            }
+        }        
+
         private void Start()
         {
-            energyMixin = GetComponent<EnergyMixin>();            
-            var scanner = Resources.Load<GameObject>("WorldEntities/Tools/Scanner").GetComponent<ScannerTool>();
+            energyMixin = GetComponent<EnergyMixin>();
+            ScannerTool scanner = Resources.Load<GameObject>("WorldEntities/Tools/Scanner").GetComponent<ScannerTool>();            
 
             scanSound = Instantiate(scanner.scanSound, gameObject.transform);            
-            completeSound = Instantiate(scanner.completeSound, gameObject.transform);
-            
+            completeSound = Instantiate(scanner.completeSound, gameObject.transform);            
+
             scanCircuitTex = Instantiate(scanner.scanCircuitTex, gameObject.transform);
             scanOrganicTex = Instantiate(scanner.scanOrganicTex, gameObject.transform);           
             fxControl = Instantiate(scanner.fxControl, gameObject.transform);
-            
-            
-            scanBeam = Instantiate(scanner.scanBeam, gameObject.transform);            
+            leftTorpedoSlot = seamoth.torpedoTubeLeft.transform;
+            scanBeam = Instantiate(scanner.scanBeam, leftTorpedoSlot);            
             scanBeam.transform.localScale = new Vector3(1, 4, 1);
-            scanBeam.transform.localPosition = new Vector3(-0.7f, -0.5f, 1.9f);
+            
+            //scanBeam.transform.localPosition = new Vector3(-0.7f, -0.5f, 1.9f);
            
             beamRotation = new Quaternion(-0.7683826f, 0.1253118f, 0.0448633f, 0.6259971f);
             scanBeam.transform.localRotation = beamRotation;
@@ -82,13 +86,6 @@ namespace ScannerModule
                 scanMaterialOrganicFX.SetColor(ShaderPropertyID._Color, scanOrganicColor);
             }
         }
-
-        
-        private void OnDisable()
-        {
-            scanSound.Stop();
-        }
-
         
         private void Update()
         {
@@ -113,105 +110,9 @@ namespace ScannerModule
                 {
                     idleTimer = Mathf.Max(0f, idleTimer - Time.deltaTime);
                 }                
-            }
-            /*
-            if (Input.GetKeyDown(KeyCode.G))
-            {
-                scanBeam.transform.localRotation = beamRotation;
-                quaternion = scanBeam.transform.localRotation;
-                Debug.Log($"RESET: x: {quaternion.x} y: {quaternion.y} z: {quaternion.z} w: {quaternion.w}");
-
-            }
-
-            if (Input.GetKeyDown(KeyCode.T))
-            {
-                scanBeam.gameObject.SetActive(true);
-                vector3 = scanBeam.transform.localPosition;
-                quaternion = scanBeam.transform.localRotation;                
-                Vector3 scale = scanBeam.transform.localScale;                
-                Debug.Log($"position: x: {vector3.x} y: {vector3.y} z: {vector3.z}");
-                Debug.Log($"rotation: x: {quaternion.x} y: {quaternion.y} z: {quaternion.z} w: {quaternion.w}");
-                
-            }
-
-
-            if (Input.GetKeyDown(KeyCode.Z))
-            {
-                scanBeam.transform.localRotation = new Quaternion(quaternion.x + 0.1f, quaternion.y, quaternion.z, quaternion.w);
-                vector3 = scanBeam.transform.localPosition;
-                quaternion = scanBeam.transform.localRotation;
-                Debug.Log($"position: x: {vector3.x} y: {vector3.y} z: {vector3.z}");
-                Debug.Log($"rotation: x: {quaternion.x} y: {quaternion.y} z: {quaternion.z} w: {quaternion.w}");
-            }
-
-            if (Input.GetKeyDown(KeyCode.H))
-            {
-                scanBeam.transform.localRotation = new Quaternion(quaternion.x - 0.1f, quaternion.y, quaternion.z, quaternion.w);
-                vector3 = scanBeam.transform.localPosition;
-                quaternion = scanBeam.transform.localRotation;
-                Debug.Log($"position: x: {vector3.x} y: {vector3.y} z: {vector3.z}");
-                Debug.Log($"rotation: x: {quaternion.x} y: {quaternion.y} z: {quaternion.z} w: {quaternion.w}");
-            }
-
-            if (Input.GetKeyDown(KeyCode.U))
-            {
-                scanBeam.transform.localRotation = new Quaternion(quaternion.x, quaternion.y + 0.1f, quaternion.z, quaternion.w);
-                vector3 = scanBeam.transform.localPosition;
-                quaternion = scanBeam.transform.localRotation;
-                Debug.Log($"position: x: {vector3.x} y: {vector3.y} z: {vector3.z}");
-                Debug.Log($"rotation: x: {quaternion.x} y: {quaternion.y} z: {quaternion.z} w: {quaternion.w}");
-            }
-
-            if (Input.GetKeyDown(KeyCode.J))
-            {
-                scanBeam.transform.localRotation = new Quaternion(quaternion.x, quaternion.y - 0.1f, quaternion.z, quaternion.w);
-                vector3 = scanBeam.transform.localPosition;
-                quaternion = scanBeam.transform.localRotation;
-                Debug.Log($"position: x: {vector3.x} y: {vector3.y} z: {vector3.z}");
-                Debug.Log($"rotation: x: {quaternion.x} y: {quaternion.y} z: {quaternion.z} w: {quaternion.w}");
-            }
-
-            if (Input.GetKeyDown(KeyCode.I))
-            {
-                scanBeam.transform.localRotation = new Quaternion(quaternion.x, quaternion.y, quaternion.z + 0.1f, quaternion.w);
-                vector3 = scanBeam.transform.localPosition;
-                quaternion = scanBeam.transform.localRotation;
-                Debug.Log($"position: x: {vector3.x} y: {vector3.y} z: {vector3.z}");
-                Debug.Log($"rotation: x: {quaternion.x} y: {quaternion.y} z: {quaternion.z} w: {quaternion.w}");
-            }
-
-            if (Input.GetKeyDown(KeyCode.K))
-            {
-                scanBeam.transform.localRotation = new Quaternion(quaternion.x, quaternion.y, quaternion.z - 0.1f, quaternion.w);
-                vector3 = scanBeam.transform.localPosition;
-                quaternion = scanBeam.transform.localRotation;
-                Debug.Log($"position: x: {vector3.x} y: {vector3.y} z: {vector3.z}");
-                Debug.Log($"rotation: x: {quaternion.x} y: {quaternion.y} z: {quaternion.z} w: {quaternion.w}");
-            }
-
-            if (Input.GetKeyDown(KeyCode.O))
-            {
-                scanBeam.transform.localRotation = new Quaternion(quaternion.x, quaternion.y, quaternion.z, quaternion.w + 0.1f);
-                vector3 = scanBeam.transform.localPosition;
-                quaternion = scanBeam.transform.localRotation;
-                Debug.Log($"position: x: {vector3.x} y: {vector3.y} z: {vector3.z}");
-                Debug.Log($"rotation: x: {quaternion.x} y: {quaternion.y} z: {quaternion.z} w: {quaternion.w}");
-            }
-
-            if (Input.GetKeyDown(KeyCode.L))
-            {
-                scanBeam.transform.localRotation = new Quaternion(quaternion.x, quaternion.y, quaternion.z, quaternion.w - 0.1f);
-                vector3 = scanBeam.transform.localPosition;
-                quaternion = scanBeam.transform.localRotation;
-                Debug.Log($"position: x: {vector3.x} y: {vector3.y} z: {vector3.z}");
-                Debug.Log($"rotation: x: {quaternion.x} y: {quaternion.y} z: {quaternion.z} w: {quaternion.w}");
-            }
-            */
+            }            
         }
-
-        //private Vector3 vector3;
-        //private Quaternion quaternion;
-
+       
         private void LateUpdate()
         {
             if (toggle)
@@ -232,6 +133,7 @@ namespace ScannerModule
                 else
                 {
                     scanSound.Stop();
+                    Modules.SetProgressColor(Modules.Colors.White);
                 }
                 stateLast = stateCurrent;
                 stateCurrent = ScanState.None;
@@ -273,9 +175,7 @@ namespace ScannerModule
                 }                
             }
             return result;
-        }
-
-        
+        }        
 
         private void OnHover()
         {
@@ -305,19 +205,17 @@ namespace ScannerModule
                 {                    
                     main.SetIcon(HandReticle.IconType.Progress, 4f);
                     main.progressText.text = Mathf.RoundToInt(PDAScanner.scanTarget.progress * 100f) + "%";
-                    main.progressText.color = new Color32(0, 226, 32, byte.MaxValue);
-                    main.progressImage.color = new Color32(0, 226, 32, byte.MaxValue);
+                    Modules.SetProgressColor(Modules.Colors.Orange);                    
                     main.progressImage.fillAmount = Mathf.Clamp01(PDAScanner.scanTarget.progress);                    
                     main.SetProgress(PDAScanner.scanTarget.progress);
-
-                }
-            }
-            
+                }                
+            }            
         }
         
         private void SetFXActive(bool state)
         {
             scanBeam.SetActive(state);
+
             if (state && PDAScanner.scanTarget.isValid)
             {                
                 PlayScanFX();

@@ -1,4 +1,5 @@
-﻿using Common.Modules;
+﻿using System.Collections.Generic;
+using Common.Modules;
 using UnityEngine;
 using UWE;
 
@@ -6,6 +7,8 @@ namespace LaserCannon
 {
     public class LaserCannon_Seamoth : MonoBehaviour
     {
+        public static LaserCannon_Seamoth Main { get; private set; }
+
         [AssertNotNull]
         private SeaMoth seamoth;
         [AssertNotNull]
@@ -18,7 +21,7 @@ namespace LaserCannon
         private GameObject laserBeam;
         [AssertNotNull]
         private LineRenderer lineRenderer;
-
+       
         private const float powerConsumption = 0.01f;
         private const float laserDamage = 15f;
         private const float maxLaserDistance = 70f;
@@ -30,11 +33,13 @@ namespace LaserCannon
         private bool repeat;
         private bool laserCannonEnabled;
         private float targetDist;
-        private Vector3[] beamPositions = new Vector3[3];        
-        private GameObject targetGameobject;        
+        private Vector3[] beamPositions = new Vector3[3];       
+        private GameObject targetGameobject;
+        private bool onlyHostile;        
 
         public void Awake()
         {
+            Main = this;
             seamoth = gameObject.GetComponent<SeaMoth>();
         }
 
@@ -51,17 +56,34 @@ namespace LaserCannon
             PowerFX powerFX = powerRelayPrefab.GetComponentInChildren<PowerFX>();
 
             laserBeam = Instantiate(powerFX.vfxPrefab, seamoth.transform);
-            laserBeam.SetActive(false);
+            laserBeam.SetActive(false);            
 
             Destroy(powerRelayPrefab);            
             
             lineRenderer = laserBeam.GetComponent<LineRenderer>();
             lineRenderer.startWidth = 0.4f;
             lineRenderer.endWidth = 0.4f;
+            lineRenderer.receiveShadows = false;            
+            lineRenderer.loop = false;
+
+            SetBeamColor();
+            ShootOnlyHostile();
 
             seamoth.onToggle += OnToggle;
             Utils.GetLocalPlayerComp().playerModeChanged.AddHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));            
         }
+
+        public void SetBeamColor()
+        {            
+            lineRenderer.material.color = Modules.Colors.ColorArray[LaserCannon.Config.LaserBeamColor];            
+        }
+
+        public void ShootOnlyHostile()
+        {
+            onlyHostile = LaserCannon.Config.OnlyHostile;
+        }
+
+
 
         private void OnPlayerModeChanged(Player.Mode playerMode)
         {
@@ -115,16 +137,26 @@ namespace LaserCannon
             {
                 LiveMixin liveMixin = gameObject.GetComponent<LiveMixin>();
                 if (!liveMixin)
-                {                    
+                {
                     liveMixin = Utils.FindEnabledAncestorWithComponent<LiveMixin>(gameObject);
                 }
                 if (liveMixin)
-                {                    
+                {                 
                     if (liveMixin.IsAlive())
-                    {
+                    {                        
                         liveMixin.TakeDamage(laserDamage, position, DamageType.Explosive, null);
-                    }
-                }                
+                        WorldForces.AddExplosion(beamPositions[1], DayNightCycle.main.timePassed, 5f, 4f);
+                    }                    
+                        
+                }
+                else
+                {
+                    if (gameObject.GetComponent<BreakableResource>() != null)
+                    {
+                        gameObject.SendMessage("BreakIntoResources", null, SendMessageOptions.DontRequireReceiver);
+                        WorldForces.AddExplosion(beamPositions[1], DayNightCycle.main.timePassed, 5f, 4f);
+                    }                    
+                }
             }
         }
 
@@ -136,15 +168,25 @@ namespace LaserCannon
             Vector3 forward = transform.forward;
 
             Targeting.GetTarget(seamoth.gameObject, maxLaserDistance, out targetGameobject, out targetDist);
-
+            
             if (targetDist == 0f)
             {
                 return position + maxLaserDistance * forward;
             }
             else
             {
+                if (onlyHostile)
+                {
+                    Targeting.GetRoot(targetGameobject, out TechType targetTechType, out GameObject examinedGameObject);
+
+                    if (!validTargets.Contains(targetTechType))
+                    {
+                        return position + targetDist * forward;
+                    }
+                }
+                
                 AddDamage(targetGameobject);
-                return position + targetDist * forward;
+                return position + targetDist * forward;                
             }
         }
        
@@ -194,16 +236,15 @@ namespace LaserCannon
             if (laserCannonEnabled)
             {
                 if (shoot && repeat)
-                {
-                    beamPositions[0] = seamoth.torpedoTubeLeft.transform.position;                    
+                {                    
+                    beamPositions[0] = seamoth.torpedoTubeLeft.transform.position;
                     beamPositions[1] = CalculateLaserBeam();
-                    beamPositions[2] = seamoth.torpedoTubeRight.transform.position;
-                    lineRenderer.positionCount = beamPositions.Length;
+                    beamPositions[2] = seamoth.torpedoTubeRight.transform.position;                    
+                    lineRenderer.positionCount = beamPositions.Length;                    
                     lineRenderer.SetPositions(beamPositions);
-                    loopingEmitter.Play();
-                    laserBeam.SetActive(true);                                        
-                    WorldForces.AddExplosion(beamPositions[1], DayNightCycle.main.timePassed, 5f, 5f);
-                    energyMixin.ConsumeEnergy(powerConsumption);
+                    laserBeam.SetActive(true);
+                    loopingEmitter.Play();                                       
+                    energyMixin.ConsumeEnergy(powerConsumption);                    
                 }
                 else
                 {
@@ -221,7 +262,50 @@ namespace LaserCannon
                 repeat = true;
             else
                 repeat = false;
-        }        
+        }
+
+
+        private static readonly List<TechType> validTargets = new List<TechType>
+        {
+            TechType.Crash,
+            TechType.Stalker,
+            TechType.Sandshark,
+            TechType.BoneShark,
+            TechType.Mesmer,
+            TechType.Crabsnake,
+            TechType.Warper,
+            TechType.Biter,
+            TechType.Shocker,
+            TechType.Blighter,
+            TechType.CrabSquid,
+            TechType.LavaLizard,
+            TechType.SpineEel,            
+            TechType.LavaLarva,           
+            TechType.Bleeder,
+            TechType.Rockgrub,
+            TechType.CaveCrawler,                     
+            TechType.PrecursorDroid,           
+            TechType.ReaperLeviathan,
+            TechType.SeaDragon,           
+            TechType.GhostLeviathanJuvenile,
+            TechType.GhostLeviathan,
+            TechType.LimestoneChunk,
+            TechType.SandstoneChunk,
+            TechType.BasaltChunk,
+            TechType.ShaleChunk,
+            TechType.SpikePlant
+        };
+
+
+
+
+
+
+
+
+
+
+
     }
 }
 

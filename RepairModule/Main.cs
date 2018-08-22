@@ -14,7 +14,7 @@ namespace RepairModule
                 var repairmodule = new RepairModule();
                 repairmodule.Patch();
 
-                HarmonyInstance.Create("Subnautica.ScannerModule.mod").PatchAll(Assembly.GetExecutingAssembly());                
+                HarmonyInstance.Create("Subnautica.RepairModule.mod").PatchAll(Assembly.GetExecutingAssembly());                
             }
             catch (Exception ex)
             {
@@ -23,66 +23,62 @@ namespace RepairModule
 
         }
     }
-
-    [HarmonyPatch(typeof(SeaMoth))]
-    [HarmonyPatch("Start")]
-    public class SeaMoth_Start_Patch
-    {
-        static void Prefix(SeaMoth __instance)
-        {
-            __instance.gameObject.AddComponent<RepairModuleSeamoth>();                       
-        }
-    }
-
+ 
     [HarmonyPatch(typeof(Exosuit))]
-    [HarmonyPatch("Start")]
-    public class Exosuit_Start_Patch
+    [HarmonyPatch("OnUpgradeModuleChange")]
+    public class Exosuit_OnUpgradeModuleChange_Patch
     {
-        static void Prefix(Exosuit __instance)
+        static void Postfix(Exosuit __instance, int slotID, TechType techType, bool added)
         {
-            __instance.gameObject.AddComponent<RepairModuleExosuit>();
-        }
-    }
-
-    [HarmonyPatch(typeof(SeaMoth))]
-    [HarmonyPatch("OnUpgradeModuleToggle")]
-    public class SeaMoth_OnUpgradeModuleToggle_Patch
-    {
-        static void Postfix(SeaMoth __instance, int slotID, bool active)
-        {
-            var repairmodule = __instance.GetComponent<RepairModuleSeamoth>();
-
-            if (repairmodule != null)
+            if (techType == RepairModule.TechTypeID)
             {
-                if (__instance.GetSlotBinding(slotID) == RepairModule.TechTypeID)
-                {                
-                    repairmodule.slotID = slotID;                   
-                    repairmodule.toggle = active;                   
-                }               
-            }
-        }
-    }
-
-    [HarmonyPatch(typeof(Exosuit))]
-    [HarmonyPatch("SlotKeyDown")]
-    public class Exosuit_SlotKeyDown_Patch
-    {
-        static void Postfix(Exosuit __instance, int slotID)
-        {
-            var repairmodule = __instance.GetComponent<RepairModuleExosuit>();
-
-            if (repairmodule != null)
-            {
-                if (__instance.GetSlotBinding(slotID) == RepairModule.TechTypeID)
+                if (added)
                 {
-                    repairmodule.slotID = slotID;
-                    repairmodule.toggle = !repairmodule.toggle;
+                    if (__instance.GetComponentInChildren<RepairModuleExosuit>() == null)
+                    {
+                        __instance.gameObject.AddComponent<RepairModuleExosuit>();
+                        var repairModule = __instance.GetComponentInChildren<RepairModuleExosuit>();
+                        repairModule.moduleSlotID = slotID;
+                    }
+                    else
+                    {
+                        __instance.GetComponentInChildren<RepairModuleExosuit>().enabled = true;
+                    }
                 }
                 else
                 {
-                    repairmodule.toggle = false;
+                    __instance.GetComponentInChildren<RepairModuleExosuit>().enabled = false;
                 }
             }
         }
     }
+
+    [HarmonyPatch(typeof(SeaMoth))]
+    [HarmonyPatch("OnUpgradeModuleChange")]
+    public class SeaMoth_OnUpgradeModuleChange_Patch
+    {
+        static void Postfix(SeaMoth __instance, int slotID, TechType techType, bool added)
+        {
+            if (techType == RepairModule.TechTypeID)
+            {
+                if (added)
+                {
+                    if (__instance.GetComponentInChildren<RepairModuleSeamoth>() == null)
+                    {
+                        __instance.gameObject.AddComponent<RepairModuleSeamoth>();
+                        var repairModule = __instance.GetComponentInChildren<RepairModuleSeamoth>();
+                        repairModule.slotID = slotID;
+                    }
+                    else
+                    {
+                        __instance.GetComponentInChildren<RepairModuleSeamoth>().enabled = true;
+                    }
+                }
+                else
+                {
+                    __instance.GetComponentInChildren<RepairModuleSeamoth>().enabled = false;
+                }
+            }
+        }
+    }         
 }

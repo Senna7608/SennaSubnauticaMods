@@ -43,6 +43,7 @@ namespace CheatManager
         private static void EnableConsole()
         {
             DevConsole.disableConsole = false;
+            Debug.developerConsoleVisible = true;            
         }
 
         public static bool IsNamespaceExists(string desiredNamespace)
