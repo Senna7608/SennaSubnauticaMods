@@ -14,3 +14,6 @@
 
 # Laser Cannon
 - Laser Cannon is another Seamoth module plugin, this is the first lethal vehicle weapon plugin
+
+# Slot Extender
+- This is a Seamoth module extender plugin
