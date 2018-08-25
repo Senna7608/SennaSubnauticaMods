@@ -114,6 +114,7 @@ namespace CheatManager
                 TechMatrix.IsExistsModdersTechTypes(ref TechnologyMatrix, TechMatrix.Known_Senna7608_TechTypes);
                 TechMatrix.IsExistsModdersTechTypes(ref TechnologyMatrix, TechMatrix.Known_AHK1221_TechTypes);
                 TechMatrix.IsExistsModdersTechTypes(ref TechnologyMatrix, TechMatrix.Known_PrimeSonic_TechTypes);
+                TechMatrix.IsExistsModdersTechTypes(ref TechnologyMatrix, TechMatrix.Known_Kylinator25_TechTypes);
             }
             else
             {

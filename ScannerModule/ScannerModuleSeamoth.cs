@@ -1,34 +1,40 @@
 ﻿using Common.Modules;
+using System.Collections.Generic;
 using UnityEngine;
+using UWE;
 
 namespace ScannerModule
 {
     public class ScannerModuleSeamoth : MonoBehaviour
     {
         // Some code extracted with dnSpy from Assembly-CSharp.dll:ScannerTool 
-        
+        [AssertNotNull]
         private EnergyMixin energyMixin;        
         public float powerConsumption = 0.5f;
-        public const float scanDistance = 40f;               
+        public const float scanDistance = 50f;
+        
         public FMOD_CustomLoopingEmitter scanSound;
+        [AssertNotNull]
         public FMODAsset completeSound;
-        public Texture2D scanCircuitTex;
+        public Texture scanCircuitTex;
         public Color scanCircuitColor = Color.white;
-        public Texture2D scanOrganicTex;
+        public Texture scanOrganicTex;
         public Color scanOrganicColor = Color.white;
+        [AssertNotNull]
         public VFXController fxControl;
         private ScanState stateLast;
         private ScanState stateCurrent;
         private float idleTimer;
         private Material scanMaterialCircuitFX;
         private Material scanMaterialOrganicFX;
+        [AssertNotNull]
         private VFXOverlayMaterial scanFX;
         public bool toggle;
         public bool isScanning;
+        public bool isActive;
 
         private SeaMoth seamoth;
-        public GameObject scanBeam;
-        Quaternion beamRotation;
+        public GameObject scanBeam;        
         private Transform leftTorpedoSlot;
 
         public enum ScanState
@@ -40,56 +46,98 @@ namespace ScannerModule
         public void Awake()
         {
             seamoth = gameObject.GetComponent<SeaMoth>();
+            leftTorpedoSlot = seamoth.torpedoTubeLeft.transform;
+            energyMixin = GetComponent<EnergyMixin>();
+            ScannerTool scannerPrefab = CraftData.InstantiateFromPrefab(TechType.Scanner, true).GetComponent<ScannerTool>();
+            scanSound = Instantiate(scannerPrefab.scanSound, gameObject.transform);
+            completeSound = Instantiate(scannerPrefab.completeSound, gameObject.transform);
+            fxControl = Instantiate(scannerPrefab.fxControl, gameObject.transform);
+            scanBeam = Instantiate(scannerPrefab.scanBeam, leftTorpedoSlot.transform);
 
-            if (!seamoth)
-            {
-                Destroy(this);
-            }
+            MeshRenderer[] renderers = scannerPrefab.GetComponentsInChildren<MeshRenderer>(true);                        
+            Renderer instantiated_renderer = Instantiate(renderers[0]);
+            scanCircuitTex = instantiated_renderer.materials[0].mainTexture;
+            scanOrganicTex =  instantiated_renderer.materials[2].mainTexture;            
+            
+            Destroy(instantiated_renderer);            
+            Destroy(scannerPrefab);
+            
+            //scanBeam.transform.localScale = new Vector3(1, 4, 1);
+            scanBeam.transform.localRotation = new Quaternion(-0.7683826f, 0.1253118f, 0.0448633f, 0.6259971f);
         }        
-
+        
         private void Start()
         {
-            energyMixin = GetComponent<EnergyMixin>();
-            ScannerTool scanner = Resources.Load<GameObject>("WorldEntities/Tools/Scanner").GetComponent<ScannerTool>();            
-
-            scanSound = Instantiate(scanner.scanSound, gameObject.transform);            
-            completeSound = Instantiate(scanner.completeSound, gameObject.transform);            
-
-            scanCircuitTex = Instantiate(scanner.scanCircuitTex, gameObject.transform);
-            scanOrganicTex = Instantiate(scanner.scanOrganicTex, gameObject.transform);           
-            fxControl = Instantiate(scanner.fxControl, gameObject.transform);
-            leftTorpedoSlot = seamoth.torpedoTubeLeft.transform;
-            scanBeam = Instantiate(scanner.scanBeam, leftTorpedoSlot);            
-            scanBeam.transform.localScale = new Vector3(1, 4, 1);
-            
-            //scanBeam.transform.localPosition = new Vector3(-0.7f, -0.5f, 1.9f);
-           
-            beamRotation = new Quaternion(-0.7683826f, 0.1253118f, 0.0448633f, 0.6259971f);
-            scanBeam.transform.localRotation = beamRotation;
             SetFXActive(false);
 
             Shader shader = Shader.Find("FX/Scanning");
 
             if (shader != null)
             {
-                scanMaterialCircuitFX = new Material(shader)
-                {
-                    hideFlags = HideFlags.HideAndDontSave
-                };
+                scanMaterialCircuitFX = new Material(shader);
+                scanMaterialCircuitFX.hideFlags = HideFlags.HideAndDontSave;                
                 scanMaterialCircuitFX.SetTexture(ShaderPropertyID._MainTex, scanCircuitTex);
                 scanMaterialCircuitFX.SetColor(ShaderPropertyID._Color, scanCircuitColor);
-                scanMaterialOrganicFX = new Material(shader)
-                {
-                    hideFlags = HideFlags.HideAndDontSave
-                };
+                scanMaterialOrganicFX = new Material(shader);
+                scanMaterialOrganicFX.hideFlags = HideFlags.HideAndDontSave;                
                 scanMaterialOrganicFX.SetTexture(ShaderPropertyID._MainTex, scanOrganicTex);
                 scanMaterialOrganicFX.SetColor(ShaderPropertyID._Color, scanOrganicColor);
             }
+
+            seamoth.onToggle += OnToggle;
+            Utils.GetLocalPlayerComp().playerModeChanged.AddHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
         }
-        
+
+        private void OnPlayerModeChanged(Player.Mode playerMode)
+        {
+            if (playerMode == Player.Mode.LockedPiloting)
+            {                
+                OnEnable();
+            }
+            else
+            {                
+                OnDisable();
+            }
+        }
+
+
+        private void OnToggle(int slotID, bool state)
+        {
+            if (seamoth.GetSlotBinding(slotID) == ScannerModule.TechTypeID)
+            {
+                toggle = state;
+
+                if (toggle)
+                {
+                    OnEnable();
+                }
+                else
+                {
+                    OnDisable();
+                }
+            }
+        }
+
+        public void OnEnable()
+        {
+            isActive = Player.main.inSeamoth && toggle;
+        }
+
+        public void OnDisable()
+        {
+            isActive = false;
+            isScanning = false;
+            scanSound.Stop();
+            SetFXActive(false);           
+            stateCurrent = ScanState.None;
+            Modules.SetProgressColor(Modules.Colors.White);
+            Modules.SetInteractColor(Modules.Colors.White);
+        }
+
+
         private void Update()
         {
-            if (toggle && Player.main.inSeamoth)
+            if (isActive)
             {
                 if (GameInput.GetButtonDown(GameInput.Button.LeftHand) && !isScanning)
                 {
@@ -115,7 +163,7 @@ namespace ScannerModule
        
         private void LateUpdate()
         {
-            if (toggle)
+            if (isActive)
             {
                 bool flag = stateCurrent == ScanState.Scan;
                 
@@ -216,7 +264,7 @@ namespace ScannerModule
         {
             scanBeam.SetActive(state);
 
-            if (state && PDAScanner.scanTarget.isValid)
+            if (isActive && state && PDAScanner.scanTarget.isValid)
             {                
                 PlayScanFX();
             }
@@ -279,11 +327,7 @@ namespace ScannerModule
             {
                 StopScanFX();
             }
-        }
-        
-
-        
-       
+        } 
     }
 }
 

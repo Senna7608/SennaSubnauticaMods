@@ -30,20 +30,12 @@ namespace ScannerModule
         public void Awake()
         {
             exosuit = gameObject.GetComponent<Exosuit>();
-
-            if (!exosuit)
-            {
-                Destroy(this);
-            }
-        }         
-
-        public void Start()
-        {            
-            energyMixin = GetComponent<EnergyMixin>();            
-            ScannerTool scanner = Resources.Load<GameObject>("WorldEntities/Tools/Scanner").GetComponent<ScannerTool>();
-            scanSound = Instantiate(scanner.scanSound, gameObject.transform);            
-            completeSound = Instantiate(scanner.completeSound, gameObject.transform);            
-        }        
+            energyMixin = GetComponent<EnergyMixin>();
+            ScannerTool scannerPrefab = CraftData.InstantiateFromPrefab(TechType.Scanner, false).GetComponent<ScannerTool>();
+            scanSound = Instantiate(scannerPrefab.scanSound, gameObject.transform);
+            completeSound = Instantiate(scannerPrefab.completeSound, gameObject.transform);
+            Destroy(scannerPrefab);
+        }                
 
         private void Update()
         {

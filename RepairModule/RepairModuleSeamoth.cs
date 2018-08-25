@@ -31,17 +31,18 @@ namespace RepairModule
 
         public void Awake()
         {
-            seamoth = gameObject.GetComponent<SeaMoth>();                 
+            seamoth = gameObject.GetComponent<SeaMoth>();
+            energyMixin = seamoth.GetComponent<EnergyMixin>();
+            Welder welderPrefab = CraftData.InstantiateFromPrefab(TechType.Welder, false).GetComponent<Welder>();
+            weldSound = Instantiate(welderPrefab.weldSound, gameObject.transform);
+            Destroy(welderPrefab);
+
+            repairPerSec = seamoth.liveMixin.maxHealth * 0.1f;
+            maxHealth = seamoth.liveMixin.maxHealth;
         }        
 
         private void Start()
         {
-            repairPerSec = seamoth.liveMixin.maxHealth * 0.1f;
-            maxHealth = seamoth.liveMixin.maxHealth;
-            energyMixin = seamoth.GetComponent<EnergyMixin>();           
-            Welder welder = Resources.Load<GameObject>("WorldEntities/Tools/Welder").GetComponent<Welder>();           
-            weldSound = Instantiate(welder.weldSound, gameObject.transform);
-
             seamoth.onToggle += OnToggle;
             Utils.GetLocalPlayerComp().playerModeChanged.AddHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
         }

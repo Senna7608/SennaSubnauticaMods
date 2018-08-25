@@ -13,10 +13,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepairModule", "RepairModul
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LaserCannon", "LaserCannon\LaserCannon.csproj", "{CAD5C123-3DF0-4562-B3AC-5721D45072E8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlotExtender", "SlotExtender\SlotExtender.csproj", "{38021293-9C9F-474A-A3F0-C782FC93A15A}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		GUI_Tools\GUI_Tools.projitems*{1306dea8-6a8b-4e61-a63e-779b439b6590}*SharedItemsImports = 4
 		GUI_Tools\GUI_Tools.projitems*{1ed43566-559a-4962-804d-9b5a23163808}*SharedItemsImports = 4
+		GUI_Tools\GUI_Tools.projitems*{38021293-9c9f-474a-a3f0-c782fc93a15a}*SharedItemsImports = 4
 		GUI_Tools\GUI_Tools.projitems*{99ed7304-8603-4a34-9cba-a38557a64d0c}*SharedItemsImports = 4
 		GUI_Tools\GUI_Tools.projitems*{b2710992-57f8-4b97-8ff3-f96e1085fec2}*SharedItemsImports = 13
 		GUI_Tools\GUI_Tools.projitems*{cad5c123-3df0-4562-b3ac-5721d45072e8}*SharedItemsImports = 4
@@ -42,6 +45,10 @@ Global
 		{CAD5C123-3DF0-4562-B3AC-5721D45072E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CAD5C123-3DF0-4562-B3AC-5721D45072E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CAD5C123-3DF0-4562-B3AC-5721D45072E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38021293-9C9F-474A-A3F0-C782FC93A15A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38021293-9C9F-474A-A3F0-C782FC93A15A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38021293-9C9F-474A-A3F0-C782FC93A15A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38021293-9C9F-474A-A3F0-C782FC93A15A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

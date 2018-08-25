@@ -1,0 +1,10 @@
+﻿{
+  "Id": "CheatManager",
+  "DisplayName": "CheatManager",
+  "Author": "Senna7608",
+  "Version": "1.5",
+  "Enable": true,
+  "AssemblyName": "CheatManager.dll",
+  "EntryMethod": "CheatManager.Main.Load",
+  "Config": { }
+}

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace ScannerModule
 {
-    class Main
+    public static class Main
     {
         public static void Load()
         {
@@ -19,11 +19,11 @@ namespace ScannerModule
             catch (Exception ex)
             {
                 Debug.LogException(ex);
-            }            
-
+            }
         }
     }
 
+    /*
     [HarmonyPatch(typeof(SeaMoth))]
     [HarmonyPatch("Start")]
     public class SeaMoth_Start_Patch
@@ -33,6 +33,7 @@ namespace ScannerModule
             __instance.gameObject.AddComponent<ScannerModuleSeamoth>();                       
         }
     }
+    */
 
     [HarmonyPatch(typeof(Exosuit))]
     [HarmonyPatch("Start")]
@@ -44,6 +45,35 @@ namespace ScannerModule
         }
     }
 
+    [HarmonyPatch(typeof(SeaMoth))]
+    [HarmonyPatch("OnUpgradeModuleChange")]
+    public class SeaMoth_OnUpgradeModuleChange_Patch
+    {
+        static void Postfix(SeaMoth __instance, int slotID, TechType techType, bool added)
+        {
+            if (techType == ScannerModule.TechTypeID)
+            {
+                if (added)
+                {
+                    if (__instance.GetComponentInChildren<ScannerModuleSeamoth>() == null)
+                    {
+                        __instance.gameObject.AddComponent<ScannerModuleSeamoth>();
+                        var scannerModule = __instance.GetComponentInChildren<ScannerModuleSeamoth>();                        
+                        Debug.Log($"[ScannerModule] Added component to instance: {__instance.name} ID: {__instance.GetInstanceID()}");
+                    }
+                    else
+                    {
+                        __instance.GetComponentInChildren<ScannerModuleSeamoth>().enabled = true;
+                    }
+                }
+                else
+                {
+                    __instance.GetComponentInChildren<ScannerModuleSeamoth>().enabled = false;
+                }
+            }
+        }
+    }
+    /*
     [HarmonyPatch(typeof(SeaMoth))]
     [HarmonyPatch("OnUpgradeModuleToggle")]
     public class SeaMoth_OnUpgradeModuleToggle_Patch
@@ -61,7 +91,7 @@ namespace ScannerModule
             }
         }
     }
-    
+    */
     [HarmonyPatch(typeof(Exosuit))]
     [HarmonyPatch("SlotKeyDown")]
     public class Exosuit_SlotKeyDown_Patch
@@ -83,18 +113,5 @@ namespace ScannerModule
             }
         }
     }
-
-    /*
-    [HarmonyPatch(typeof(ScannerTool))]
-    [HarmonyPatch("Start")]
-    public class ScannerTool_Start_Patch
-    {
-        static void Postfix(ScannerTool __instance)
-        {
-            __instance.gameObject.AddComponent<ScannerToolDebugger>();
-        }
-    }
-    */
-
 
 }

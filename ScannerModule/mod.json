@@ -1,0 +1,10 @@
+﻿{
+  "Id": "ScannerModule",
+  "DisplayName": "ScannerModule",
+  "Author": "Senna7608",
+  "Version": "1.2",
+  "Enable": true,
+  "AssemblyName": "ScannerModule.dll",
+  "EntryMethod": "ScannerModule.Main.Load",
+  "Config": { }
+}

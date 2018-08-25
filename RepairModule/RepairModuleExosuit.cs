@@ -33,18 +33,18 @@ namespace RepairModule
 
         public void Awake()
         {            
-            exosuit = gameObject.GetComponent<Exosuit>();                             
+            exosuit = gameObject.GetComponent<Exosuit>();
+            energyMixin = exosuit.GetComponent<EnergyMixin>();
+            Welder welderPrefab = CraftData.InstantiateFromPrefab(TechType.Welder, false).GetComponent<Welder>();
+            weldSound = Instantiate(welderPrefab.weldSound, gameObject.transform);
+            Destroy(welderPrefab);
+            repairPerSec = exosuit.liveMixin.maxHealth * 0.1f;
+            maxHealth = exosuit.liveMixin.maxHealth;
         }        
 
         public void Start()
         {
-            repairPerSec = exosuit.liveMixin.maxHealth * 0.1f;
-            maxHealth = exosuit.liveMixin.maxHealth;
             exosuit.onToggle += OnToggle;           
-            
-            energyMixin = exosuit.GetComponent<EnergyMixin>();            
-            Welder welder = Resources.Load<GameObject>("WorldEntities/Tools/Welder").GetComponent<Welder>();
-            weldSound = Instantiate(welder.weldSound, gameObject.transform);
         }       
 
         private void OnPlayerModeChanged(Player.Mode playerMode)

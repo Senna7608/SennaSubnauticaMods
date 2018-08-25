@@ -6,9 +6,24 @@
     <SharedGUID>b2710992-57f8-4b97-8ff3-f96e1085fec2</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>GUI_Tools</Import_RootNamespace>
+    <Import_RootNamespace>Common</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)DebugHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DeQueue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmProperty.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmPropertyCollection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmPropertyCollectionList.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmPropertyListT.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmPropertyT.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmYesNo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\ISerialConfirmation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Modules.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MyGUI\GUI_Tools.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StringBuffer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)EasyMarkup\TestDoc.txt" />
   </ItemGroup>
 </Project>

@@ -34,56 +34,53 @@ namespace LaserCannon
         private bool laserCannonEnabled;
         private float targetDist;
         private Vector3[] beamPositions = new Vector3[3];       
-        private GameObject targetGameobject;
-        private bool onlyHostile;        
+        private GameObject targetGameobject;        
+        private Color beamcolor = Modules.Colors.Default;
+        private bool onlyHostile = false; 
 
         public void Awake()
         {
             Main = this;
+
             seamoth = gameObject.GetComponent<SeaMoth>();
-        }
-
-        private void Start()
-        {            
             energyMixin = seamoth.GetComponent<EnergyMixin>();
-            var repulsioncannon = Resources.Load<GameObject>("WorldEntities/Tools/RepulsionCannon").GetComponent<RepulsionCannon>();
-            shootSound = Instantiate(repulsioncannon.shootSound, seamoth.transform);
-            
+
+            RepulsionCannon repulsionCannonPrefab = CraftData.InstantiateFromPrefab(TechType.RepulsionCannon, false).GetComponent<RepulsionCannon>();
+            shootSound = Instantiate(repulsionCannonPrefab.shootSound, seamoth.transform);
+            Destroy(repulsionCannonPrefab);
+
             loopingEmitter = gameObject.AddComponent<FMOD_CustomLoopingEmitter>();
-            loopingEmitter.asset = shootSound;           
+            loopingEmitter.asset = shootSound;
 
-            GameObject powerRelayPrefab = CraftData.InstantiateFromPrefab(TechType.PowerTransmitter, false);
-            PowerFX powerFX = powerRelayPrefab.GetComponentInChildren<PowerFX>();
+            PowerFX powerRelayPrefab = CraftData.InstantiateFromPrefab(TechType.PowerTransmitter, false).GetComponent<PowerFX>();
+            laserBeam = Instantiate(powerRelayPrefab.vfxPrefab, seamoth.transform);
+            laserBeam.SetActive(false);
+            Destroy(powerRelayPrefab);
 
-            laserBeam = Instantiate(powerFX.vfxPrefab, seamoth.transform);
-            laserBeam.SetActive(false);            
-
-            Destroy(powerRelayPrefab);            
-            
             lineRenderer = laserBeam.GetComponent<LineRenderer>();
             lineRenderer.startWidth = 0.4f;
             lineRenderer.endWidth = 0.4f;
-            lineRenderer.receiveShadows = false;            
+            lineRenderer.receiveShadows = false;
             lineRenderer.loop = false;
-
+            
             SetBeamColor();
-            ShootOnlyHostile();
+        }
 
+        private void Start()
+        { 
             seamoth.onToggle += OnToggle;
             Utils.GetLocalPlayerComp().playerModeChanged.AddHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));            
         }
-
+        
         public void SetBeamColor()
-        {            
-            lineRenderer.material.color = Modules.Colors.ColorArray[LaserCannon.Config.LaserBeamColor];            
-        }
-
-        public void ShootOnlyHostile()
         {
             onlyHostile = LaserCannon.Config.OnlyHostile;
         }
 
-
+        public void ShootOnlyHostile()
+        {
+            beamcolor = Modules.Colors.ColorArray[LaserCannon.Config.LaserBeamColor];
+        }
 
         private void OnPlayerModeChanged(Player.Mode playerMode)
         {
@@ -241,8 +238,9 @@ namespace LaserCannon
                     beamPositions[1] = CalculateLaserBeam();
                     beamPositions[2] = seamoth.torpedoTubeRight.transform.position;                    
                     lineRenderer.positionCount = beamPositions.Length;                    
-                    lineRenderer.SetPositions(beamPositions);
+                    lineRenderer.SetPositions(beamPositions);                    
                     laserBeam.SetActive(true);
+                    lineRenderer.material.color = Color.Lerp(beamcolor, Color.clear, 0.1f);
                     loopingEmitter.Play();                                       
                     energyMixin.ConsumeEnergy(powerConsumption);                    
                 }

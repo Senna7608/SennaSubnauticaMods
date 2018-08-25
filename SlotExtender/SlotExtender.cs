@@ -87,7 +87,9 @@ namespace SlotExtender
             if (SlotExtender_equipment == null)
             {
                 InitializeEquipment();
-            }           
+            }
+
+            InitializePhysicalSlots();
 
             gameObject.AddComponent<Access>();
         }
@@ -138,7 +140,7 @@ namespace SlotExtender
             SlotExtender_equipment.isAllowedToRemove = new IsAllowedToRemove(IsAllowedToRemove);
             SlotExtender_equipment.isAllowedToAdd = new IsAllowedToAdd(IsAllowedToAdd);
 
-            InitializePhysicalSlots();
+            
         }
 
         internal void RefreshModules()
@@ -329,7 +331,7 @@ namespace SlotExtender
                 }
                 if (added)
                 {
-                    ErrorMessage.AddMessage("Thermalr Charger now active");
+                    ErrorMessage.AddMessage("Thermal Charger now active");
                 }
                 else
                 {

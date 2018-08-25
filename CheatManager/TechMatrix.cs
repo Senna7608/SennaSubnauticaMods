@@ -20,7 +20,7 @@ namespace CheatManager
 
             public int CompareTo(TechTypeData other)
             {
-                return String.Compare(Name, other.Name);
+                return string.Compare(Name, other.Name);
             }
 
             public string GetTechName()
@@ -90,7 +90,6 @@ namespace CheatManager
             }
         } 
         
-
         public enum CATEGORY
         {
             Vehicles,
@@ -114,6 +113,12 @@ namespace CheatManager
             Blueprints,
             BaseModule,
         };
+
+        public static readonly Dictionary<string, CATEGORY> Known_Kylinator25_TechTypes = new Dictionary<string, CATEGORY>
+        {
+            { "AlienRifle", CATEGORY.Tools }            
+        };
+
 
         public static readonly Dictionary<string, CATEGORY> Known_Senna7608_TechTypes = new Dictionary<string, CATEGORY>
         {

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace RepairModule
 {
-    class Main
+    public static class Main
     {
         public static void Load()
         {
@@ -39,10 +39,13 @@ namespace RepairModule
                         __instance.gameObject.AddComponent<RepairModuleExosuit>();
                         var repairModule = __instance.GetComponentInChildren<RepairModuleExosuit>();
                         repairModule.moduleSlotID = slotID;
+                        Debug.Log($"[RepairModule] Added component to instance: {__instance.name} ID: {__instance.GetInstanceID()}");
                     }
                     else
                     {
-                        __instance.GetComponentInChildren<RepairModuleExosuit>().enabled = true;
+                        var repairModule = __instance.GetComponentInChildren<RepairModuleExosuit>();
+                        repairModule.enabled = true;
+                        repairModule.moduleSlotID = slotID;
                     }
                 }
                 else
@@ -68,10 +71,13 @@ namespace RepairModule
                         __instance.gameObject.AddComponent<RepairModuleSeamoth>();
                         var repairModule = __instance.GetComponentInChildren<RepairModuleSeamoth>();
                         repairModule.slotID = slotID;
+                        Debug.Log($"[RepairModule] Added component to instance: {__instance.name} ID: {__instance.GetInstanceID()}");
                     }
                     else
                     {
-                        __instance.GetComponentInChildren<RepairModuleSeamoth>().enabled = true;
+                        var repairModule = __instance.GetComponentInChildren<RepairModuleSeamoth>();
+                        repairModule.enabled = true;
+                        repairModule.slotID = slotID;
                     }
                 }
                 else

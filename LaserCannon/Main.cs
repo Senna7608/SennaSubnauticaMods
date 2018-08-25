@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace LaserCannon
 {
-    class Main
+    public static class Main
     {
         public static void Load()
         {
@@ -27,28 +27,29 @@ namespace LaserCannon
     [HarmonyPatch("OnUpgradeModuleChange")]
     public class SeaMoth_OnUpgradeModuleChange_Patch
     {
-            static void Postfix(SeaMoth __instance, int slotID, TechType techType, bool added)
-            {            
-                if (techType == LaserCannon.TechTypeID)
+        static void Postfix(SeaMoth __instance, int slotID, TechType techType, bool added)
+        {            
+            if (techType == LaserCannon.TechTypeID)
+            {
+                if (added)
                 {
-                    if (added)
+                    if (__instance.GetComponentInChildren<LaserCannon_Seamoth>() == null)
                     {
-                        if (__instance.GetComponentInChildren<LaserCannon_Seamoth>() == null)
-                        {
-                            __instance.gameObject.AddComponent<LaserCannon_Seamoth>();                        
-                            var laserCannon = __instance.GetComponentInChildren<LaserCannon_Seamoth>();
-                            laserCannon.slotID = slotID;
-                        }
-                        else
-                        {
-                            __instance.GetComponentInChildren<LaserCannon_Seamoth>().enabled = true;
-                        }
+                        __instance.gameObject.AddComponent<LaserCannon_Seamoth>();                        
+                        var laserCannon = __instance.GetComponentInChildren<LaserCannon_Seamoth>();
+                        laserCannon.slotID = slotID;
+                        Debug.Log($"[LaserCannon] Added component to instance: {__instance.name} ID: {__instance.GetInstanceID()}");
                     }
                     else
                     {
-                        __instance.GetComponentInChildren<LaserCannon_Seamoth>().enabled = false;
+                        __instance.GetComponentInChildren<LaserCannon_Seamoth>().enabled = true;
                     }
-                }                                  
-            }
+                }
+                else
+                {
+                    __instance.GetComponentInChildren<LaserCannon_Seamoth>().enabled = false;
+                }
+            }                                  
+        }
     }
 }

@@ -15,12 +15,9 @@ namespace LaserCannon
         private const string toggleID = "onlyHostile";
         private const string choiceID = "laserBeamColor";
         private static readonly string[] beamColors = Modules.Colors.ColorNames;
-        
-        private int laserBeamColor;
-        private bool onlyHostile;
 
-        public int LaserBeamColor { get => laserBeamColor; }
-        public bool OnlyHostile { get => onlyHostile; }
+        public int LaserBeamColor { get; private set; }
+        public bool OnlyHostile { get; private set; }
 
         internal void Init()
         {
@@ -44,8 +41,8 @@ namespace LaserCannon
        
         public override void BuildModOptions()
         {
-            AddToggleOption(toggleID, "Damage hostile target only", onlyHostile);
-            AddChoiceOption(choiceID, "Laser Beam Color", beamColors, laserBeamColor);
+            AddToggleOption(toggleID, "Damage hostile target only", OnlyHostile);
+            AddChoiceOption(choiceID, "Laser Beam Color", beamColors, LaserBeamColor);
         }
 
         private void HostileOnly(object sender, ToggleChangedEventArgs args)
@@ -53,7 +50,7 @@ namespace LaserCannon
             if (args.Id != toggleID)
                 return;
 
-           onlyHostile = args.Value;
+           OnlyHostile = args.Value;
            WriteConfigFile();
 
             if (LaserCannon_Seamoth.Main != null)
@@ -67,7 +64,7 @@ namespace LaserCannon
             if (args.Id != choiceID)
                 return;
 
-            laserBeamColor = args.Index;           
+            LaserBeamColor = args.Index;           
             WriteConfigFile();
 
             if (LaserCannon_Seamoth.Main != null)
@@ -82,9 +79,9 @@ namespace LaserCannon
             {
                 configKey,
                 toggleID,
-                onlyHostile.ToString(),
+                OnlyHostile.ToString(),
                 choiceID,
-                laserBeamColor.ToString()
+                LaserBeamColor.ToString()
                 
             }, Encoding.UTF8);
         }
@@ -113,10 +110,10 @@ namespace LaserCannon
             {
                 switch (configText[i])
                 {
-                    case toggleID: onlyHostile = bool.Parse(configText[i + 1]);                        
+                    case toggleID: OnlyHostile = bool.Parse(configText[i + 1]);                        
                         break;
                     case choiceID:
-                        laserBeamColor = int.Parse(configText[i + 1]);
+                        LaserBeamColor = int.Parse(configText[i + 1]);
                         break;
                 }
             }

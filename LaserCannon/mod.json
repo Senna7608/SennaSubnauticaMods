@@ -1,0 +1,10 @@
+﻿{
+  "Id": "LaserCannon",
+  "DisplayName": "LaserCannon",
+  "Author": "Senna7608",
+  "Version": "1.2",
+  "Enable": true,
+  "AssemblyName": "LaserCannon.dll",
+  "EntryMethod": "LaserCannon.Main.Load",
+  "Config": { }
+}
