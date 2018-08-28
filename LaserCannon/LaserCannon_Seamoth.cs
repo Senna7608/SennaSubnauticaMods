@@ -41,18 +41,19 @@ namespace LaserCannon
         public void Awake()
         {
             Main = this;
-
+            
             seamoth = gameObject.GetComponent<SeaMoth>();
             energyMixin = seamoth.GetComponent<EnergyMixin>();
-
-            RepulsionCannon repulsionCannonPrefab = CraftData.InstantiateFromPrefab(TechType.RepulsionCannon, false).GetComponent<RepulsionCannon>();
+            var repulsionCannonPrefab = Resources.Load<GameObject>("WorldEntities/Tools/RepulsionCannon").GetComponent<RepulsionCannon>();
+            //RepulsionCannon repulsionCannonPrefab = CraftData.InstantiateFromPrefab(TechType.RepulsionCannon, false).GetComponent<RepulsionCannon>();
             shootSound = Instantiate(repulsionCannonPrefab.shootSound, seamoth.transform);
             Destroy(repulsionCannonPrefab);
 
             loopingEmitter = gameObject.AddComponent<FMOD_CustomLoopingEmitter>();
             loopingEmitter.asset = shootSound;
 
-            PowerFX powerRelayPrefab = CraftData.InstantiateFromPrefab(TechType.PowerTransmitter, false).GetComponent<PowerFX>();
+            var powerRelayPrefab = Resources.Load<GameObject>("Submarine/Build/PowerTransmitter").GetComponent<PowerFX>();
+            //PowerFX powerRelayPrefab = CraftData.InstantiateFromPrefab(TechType.PowerTransmitter, false).GetComponent<PowerFX>();
             laserBeam = Instantiate(powerRelayPrefab.vfxPrefab, seamoth.transform);
             laserBeam.SetActive(false);
             Destroy(powerRelayPrefab);
@@ -74,12 +75,12 @@ namespace LaserCannon
         
         public void SetBeamColor()
         {
-            onlyHostile = LaserCannon.Config.OnlyHostile;
+            beamcolor = Modules.Colors.ColorArray[LaserCannon.Config.LaserBeamColor];            
         }
 
         public void ShootOnlyHostile()
         {
-            beamcolor = Modules.Colors.ColorArray[LaserCannon.Config.LaserBeamColor];
+            onlyHostile = LaserCannon.Config.OnlyHostile;
         }
 
         private void OnPlayerModeChanged(Player.Mode playerMode)
@@ -142,7 +143,7 @@ namespace LaserCannon
                     if (liveMixin.IsAlive())
                     {                        
                         liveMixin.TakeDamage(laserDamage, position, DamageType.Explosive, null);
-                        WorldForces.AddExplosion(beamPositions[1], DayNightCycle.main.timePassed, 5f, 4f);
+                        WorldForces.AddExplosion(position, DayNightCycle.main.timePassed, 5f, 4f);
                     }                    
                         
                 }
@@ -151,7 +152,7 @@ namespace LaserCannon
                     if (gameObject.GetComponent<BreakableResource>() != null)
                     {
                         gameObject.SendMessage("BreakIntoResources", null, SendMessageOptions.DontRequireReceiver);
-                        WorldForces.AddExplosion(beamPositions[1], DayNightCycle.main.timePassed, 5f, 4f);
+                        WorldForces.AddExplosion(position, DayNightCycle.main.timePassed, 5f, 4f);
                     }                    
                 }
             }
@@ -238,9 +239,9 @@ namespace LaserCannon
                     beamPositions[1] = CalculateLaserBeam();
                     beamPositions[2] = seamoth.torpedoTubeRight.transform.position;                    
                     lineRenderer.positionCount = beamPositions.Length;                    
-                    lineRenderer.SetPositions(beamPositions);                    
-                    laserBeam.SetActive(true);
+                    lineRenderer.SetPositions(beamPositions);
                     lineRenderer.material.color = Color.Lerp(beamcolor, Color.clear, 0.1f);
+                    laserBeam.SetActive(true);                    
                     loopingEmitter.Play();                                       
                     energyMixin.ConsumeEnergy(powerConsumption);                    
                 }

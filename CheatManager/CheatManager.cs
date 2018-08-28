@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Diagnostics;
 using UnityEngine;
-using Common.MyGUI;
+using GUIHelper;
 using UWE;
 
 namespace CheatManager
@@ -53,11 +53,11 @@ namespace CheatManager
 
         private static List<TechMatrix.TechTypeData>[] TechnologyMatrix;
 
-        private static List<GUI_Tools.ButtonInfo> Buttons;
-        private static List<GUI_Tools.ButtonInfo> toggleButtons;
-        private static List<GUI_Tools.ButtonInfo> daynightTab;
-        private static List<GUI_Tools.ButtonInfo> categoriesTab;
-        private static List<GUI_Tools.ButtonInfo> vehicleSettings;
+        private static List<Tools.ButtonInfo> Buttons;
+        private static List<Tools.ButtonInfo> toggleButtons;
+        private static List<Tools.ButtonInfo> daynightTab;
+        private static List<Tools.ButtonInfo> categoriesTab;
+        private static List<Tools.ButtonInfo> vehicleSettings;
 
         private bool initToggleButtons = false;
                 
@@ -77,28 +77,8 @@ namespace CheatManager
 
         public void Awake()
         {            
-           instance = this;
-           useGUILayout = false;            
-        }        
-
-        public void OnDestroy()
-        {
-            Buttons = null;
-            toggleButtons = null;
-            daynightTab = null;
-            categoriesTab = null;
-            vehicleSettings = null;
-            TechnologyMatrix = null;
-            initToggleButtons = false;
-            prevCwPos = null;
-            warpSound = null;            
-            isActive = false;
-            seamothCanFly = false;            
-            initStyles = false;            
-        }
-
-        public void Start()
-        {                                       
+            instance = this;
+            useGUILayout = false;
             Assembly assembly = Assembly.GetExecutingAssembly();
             FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
             string Version = fvi.FileVersion;
@@ -122,16 +102,16 @@ namespace CheatManager
             }
             TechMatrix.SortTechLists(ref TechnologyMatrix);
 
-            Buttons = new List<GUI_Tools.ButtonInfo>();
-            toggleButtons = new List<GUI_Tools.ButtonInfo>();
-            daynightTab = new List<GUI_Tools.ButtonInfo>();
-            categoriesTab = new List<GUI_Tools.ButtonInfo>();
-            vehicleSettings = new List<GUI_Tools.ButtonInfo>();
+            Buttons = new List<Tools.ButtonInfo>();
+            toggleButtons = new List<Tools.ButtonInfo>();
+            daynightTab = new List<Tools.ButtonInfo>();
+            categoriesTab = new List<Tools.ButtonInfo>();
+            vehicleSettings = new List<Tools.ButtonInfo>();
 
-            GUI_Tools.CreateButtonsList(ButtonText.Buttons, GUI_Tools.BUTTONTYPE.NORMAL_CENTER, ref Buttons);
-            GUI_Tools.CreateButtonsList(ButtonText.ToggleButtons, GUI_Tools.BUTTONTYPE.TOGGLE_CENTER, ref toggleButtons);
-            GUI_Tools.CreateButtonsList(ButtonText.DayNightTab, GUI_Tools.BUTTONTYPE.TAB_CENTER, ref daynightTab);
-            GUI_Tools.CreateButtonsList(ButtonText.CategoriesTab, GUI_Tools.BUTTONTYPE.TAB_CENTER, ref categoriesTab);
+            Tools.CreateButtonsList(ButtonText.Buttons, Tools.BUTTONTYPE.NORMAL_CENTER, ref Buttons);
+            Tools.CreateButtonsList(ButtonText.ToggleButtons, Tools.BUTTONTYPE.TOGGLE_CENTER, ref toggleButtons);
+            Tools.CreateButtonsList(ButtonText.DayNightTab, Tools.BUTTONTYPE.TAB_CENTER, ref daynightTab);
+            Tools.CreateButtonsList(ButtonText.CategoriesTab, Tools.BUTTONTYPE.TAB_CENTER, ref categoriesTab);
 
             var searchSeaGlide = new TechMatrix.TechTypeSearch(TechType.Seaglide);
             string seaglideName = TechnologyMatrix[1][TechnologyMatrix[1].FindIndex(searchSeaGlide.EqualsWith)].Name;
@@ -143,21 +123,40 @@ namespace CheatManager
             exosuitName = TechnologyMatrix[0][TechnologyMatrix[0].FindIndex(searchExosuit.EqualsWith)].Name;
 
             var searchCyclops = new TechMatrix.TechTypeSearch(TechType.Cyclops);
-            cyclopsName = TechnologyMatrix[0][TechnologyMatrix[0].FindIndex(searchCyclops.EqualsWith)].Name;            
+            cyclopsName = TechnologyMatrix[0][TechnologyMatrix[0].FindIndex(searchCyclops.EqualsWith)].Name;
 
             string[] vehicleSetButtons = { $"{seamothName} Can Fly", $"{seaglideName} Speed Fast" };
-            
-            GUI_Tools.CreateButtonsList(vehicleSetButtons, GUI_Tools.BUTTONTYPE.TOGGLE_CENTER, ref vehicleSettings);           
-            
+
+            Tools.CreateButtonsList(vehicleSetButtons, Tools.BUTTONTYPE.TOGGLE_CENTER, ref vehicleSettings);
+
             daynightTab[4].Pressed = true;
             categoriesTab[0].Pressed = true;
             toggleButtons[17].Pressed = false;
             Buttons[7].Enabled = false;
             Buttons[7].Pressed = true;
-           
+
             exosuitSpeedMultiplier = 1;
             cyclopsSpeedMultiplier = 1;
+        }        
 
+        public void OnDestroy()
+        {
+            Buttons = null;
+            toggleButtons = null;
+            daynightTab = null;
+            categoriesTab = null;
+            vehicleSettings = null;
+            TechnologyMatrix = null;
+            initToggleButtons = false;
+            prevCwPos = null;
+            warpSound = null;            
+            isActive = false;
+            seamothCanFly = false;            
+            initStyles = false;            
+        }
+
+        public void Start()
+        {
             isSeaglideFast.changedEvent.AddHandler(this, new Event<Utils.MonitoredValue<bool>>.HandleFunction(IsSeaglideFast));            
         }             
 
@@ -301,9 +300,9 @@ namespace CheatManager
             }
 
             if (!initStyles)
-                initStyles = GUI_Tools.SetCustomStyles();
+                initStyles = Tools.SetCustomStyles();
 
-            Rect drawingRect = GUI_Tools.CreatePopupWindow(windowRect, windowTitle);
+            Rect drawingRect = Tools.CreatePopupWindow(windowRect, windowTitle);
 
             float lastYcoord = drawingRect.y;
             float baseHeight = drawingRect.height;
@@ -318,7 +317,7 @@ namespace CheatManager
             drawingRect.y += 22;
             drawingRect.height = baseHeight - drawingRect.y + 22;
 
-            normalButtonID = GUI_Tools.CreateButtonsGrid(drawingRect, space, 4, Buttons, out lastYcoord);            
+            normalButtonID = Tools.CreateButtonsGrid(drawingRect, space, 4, Buttons, out lastYcoord);            
 
             drawingRect.y = lastYcoord + space;
             drawingRect.height = 22;
@@ -328,7 +327,7 @@ namespace CheatManager
             drawingRect.y += 22;
             drawingRect.height = baseHeight - (lastYcoord + 22 + space);
 
-            toggleButtonID = GUI_Tools.CreateButtonsGrid(drawingRect, space, 4, toggleButtons, out lastYcoord);            
+            toggleButtonID = Tools.CreateButtonsGrid(drawingRect, space, 4, toggleButtons, out lastYcoord);            
 
             drawingRect.y = lastYcoord + space;
             drawingRect.height = 22;
@@ -338,7 +337,7 @@ namespace CheatManager
             drawingRect.y += 22;
             drawingRect.height = baseHeight;
 
-            daynightTabID = GUI_Tools.CreateButtonsGrid(drawingRect, space, 6, daynightTab , out lastYcoord);
+            daynightTabID = Tools.CreateButtonsGrid(drawingRect, space, 6, daynightTab , out lastYcoord);
 
             drawingRect.y = lastYcoord + space;
             drawingRect.height = 22;
@@ -348,7 +347,7 @@ namespace CheatManager
             drawingRect.y += 22;
             drawingRect.height = baseHeight;
 
-            categoriesTabID = GUI_Tools.CreateButtonsGrid(drawingRect, space, 4, categoriesTab, out lastYcoord);                        
+            categoriesTabID = Tools.CreateButtonsGrid(drawingRect, space, 4, categoriesTab, out lastYcoord);                        
 
             drawingRect.y = lastYcoord + space;
             drawingRect.height = 22;
@@ -357,7 +356,7 @@ namespace CheatManager
 
             drawingRect.x += 150;
 
-            GUI.Label(drawingRect, categoriesTab[currentTab].Name, GUI_Tools.Label);
+            GUI.Label(drawingRect, categoriesTab[currentTab].Name, Tools.Label);
             
             drawingRect.x = windowRect.x + 10;
             drawingRect.y = lastYcoord + 22 + (space * 2);
@@ -401,12 +400,12 @@ namespace CheatManager
                     selectedTech = WarpData[i][0];                    
                 }
                 else
-                {
-                    itemName = TechnologyMatrix[category][i].Name;
+                {                    
+                    itemName = TechnologyMatrix[category][i].Name; 
                     selectedTech = TechnologyMatrix[category][i].TechType.ToString();                    
                 }               
 
-                if (GUI.Button(new Rect(scrollRect.x, scrollRect.y + (i * 26), width, 22), itemName, GUI_Tools.GetCustomStyle(false, GUI_Tools.BUTTONTYPE.NORMAL_LEFTALIGN)))                
+                if (GUI.Button(new Rect(scrollRect.x, scrollRect.y + (i * 26), width, 22), itemName, Tools.GetCustomStyle(false, Tools.BUTTONTYPE.NORMAL_LEFTALIGN)))                
                 {
                     switch (category)
                     {
@@ -420,28 +419,28 @@ namespace CheatManager
                                 break;
                             }
                             ErrorMessage.AddMessage("CheatManager Error!\nVehicles cannot spawn inside Lifepod, Base or Submarine!");
-                            break;
-
+                            break;                       
                         case 1:
                         case 2:
                         case 3:
                         case 4:
                         case 5:
-                        case 6:
+                        case 6:                       
+                        case 11:
                         case 12:
                         case 13:
                         case 14:
                         case 15:                                                    
                             ExecuteCommand($"{itemName}  added to inventory", $"item {selectedTech}");
-                            break;
+                            break;                        
                         case 7:
                         case 8:
                         case 9:
                         case 10:
-                        case 11:
+                        
                         case 16:
                         case 17:
-                            ExecuteCommand($"{itemName}  has spawned", $"spawn {selectedTech}");                            
+                            ExecuteCommand($"{itemName}  has spawned", $"spawn {selectedTech}");                             
                             break;
                         case 18:
                             ExecuteCommand($"Blueprint: {itemName} unlocked", $"unlock {selectedTech}");                            
@@ -462,9 +461,9 @@ namespace CheatManager
             {
                 scrollRect.y += (4 * 26) + 2;
 
-                GUI.Box(new Rect(scrollRect.x, scrollRect.y, scrollRect.width, 23), "Vehicle Settings:", GUI_Tools.Box);
+                GUI.Box(new Rect(scrollRect.x, scrollRect.y, scrollRect.width, 23), "Vehicle Settings:", Tools.Box);
                 
-                vehicleSettingsID = GUI_Tools.CreateButtonsGrid(new Rect(scrollRect.x - 5, scrollRect.y + 27, scrollRect.width + 10, 22), 2, 2, vehicleSettings, out float lastYcoord);
+                vehicleSettingsID = Tools.CreateButtonsGrid(new Rect(scrollRect.x - 5, scrollRect.y + 27, scrollRect.width + 10, 22), 2, 2, vehicleSettings, out float lastYcoord);
                 
                 GUI.Label(new Rect(scrollRect.x, scrollRect.y + 53, 250, 22), seamothName + " speed multiplier: " + string.Format("{0:#.##}", seamothSpeedMultiplier));
                 
@@ -487,7 +486,7 @@ namespace CheatManager
             if (IsPlayerInVehicle())
             {
                 Vehicle vehicle = Player.main.GetVehicle();
-                vehicle.TeleportVehicle(WarpTargets.ConvertStringPosToVector3(Vector3string), vehicle.transform.rotation);
+                vehicle.TeleportVehicle(WarpTargets.ConvertStringPosToVector3(Vector3string), Quaternion.identity);
                 Player.main.CompleteTeleportation();
                 ErrorMessage.AddMessage($"Vehicle and Player Warped to: {name}\n({Vector3string})");
             }

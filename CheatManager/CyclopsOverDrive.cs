@@ -72,7 +72,7 @@ namespace CheatManager
 #if DEBUG_CYCLOPS_OVERDRIVE
                     Logger.Log($"[CheatManager]\nCyclopsOverDrive().Update()\nMotorMode: {subcontrol.cyclopsMotorMode.cyclopsMotorMode}:\nBaseForwardAccel: {subcontrol.BaseForwardAccel}\nBaseVerticalAccel: {subcontrol.BaseVerticalAccel}\nBaseTurningTorque: {subcontrol.BaseTurningTorque}");
 #endif
-                }
+            }
            
         }
     }

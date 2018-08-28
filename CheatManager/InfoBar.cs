@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using UnityEngine;
-using Common.MyGUI;
+using GUIHelper;
 
 namespace CheatManager
 {
@@ -66,9 +66,9 @@ namespace CheatManager
             if (!isShow)
             {
                 return;
-            } 
+            }
 
-            GUI_Tools.CreatePopupWindow(windowRect, null);
+            Tools.CreatePopupWindow(windowRect, null);
             GUI.contentColor = Color.green;            
             GUI.Label(windowRect, stringBuilder.ToString());
         }

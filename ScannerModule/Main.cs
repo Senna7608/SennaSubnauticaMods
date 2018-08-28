@@ -23,28 +23,6 @@ namespace ScannerModule
         }
     }
 
-    /*
-    [HarmonyPatch(typeof(SeaMoth))]
-    [HarmonyPatch("Start")]
-    public class SeaMoth_Start_Patch
-    {
-        static void Prefix(SeaMoth __instance)
-        {
-            __instance.gameObject.AddComponent<ScannerModuleSeamoth>();                       
-        }
-    }
-    */
-
-    [HarmonyPatch(typeof(Exosuit))]
-    [HarmonyPatch("Start")]
-    public class Exosuit_Start_Patch
-    {
-        static void Prefix(Exosuit __instance)
-        {
-            __instance.gameObject.AddComponent<ScannerModuleExosuit>();
-        }
-    }
-
     [HarmonyPatch(typeof(SeaMoth))]
     [HarmonyPatch("OnUpgradeModuleChange")]
     public class SeaMoth_OnUpgradeModuleChange_Patch
@@ -73,25 +51,37 @@ namespace ScannerModule
             }
         }
     }
-    /*
-    [HarmonyPatch(typeof(SeaMoth))]
-    [HarmonyPatch("OnUpgradeModuleToggle")]
-    public class SeaMoth_OnUpgradeModuleToggle_Patch
-    {
-        static void Postfix(SeaMoth __instance, int slotID, bool active)
-        {
-            var scannermodule = __instance.gameObject.GetComponent<ScannerModuleSeamoth>();
 
-            if (scannermodule != null)
+    [HarmonyPatch(typeof(Exosuit))]
+    [HarmonyPatch("OnUpgradeModuleChange")]
+    public class Exosuit_OnUpgradeModuleChange_Patch
+    {
+        static void Postfix(Exosuit __instance, int slotID, TechType techType, bool added)
+        {
+            if (techType == ScannerModule.TechTypeID)
             {
-                if (__instance.GetSlotBinding(slotID) == ScannerModule.TechTypeID)
+                if (added)
                 {
-                    scannermodule.toggle = active;
-                }                             
+                    if (__instance.GetComponentInChildren<ScannerModuleExosuit>() == null)
+                    {
+                        __instance.gameObject.AddComponent<ScannerModuleExosuit>();
+                        var scannerModule = __instance.GetComponentInChildren<ScannerModuleExosuit>();
+                        Debug.Log($"[ScannerModule] Added component to instance: {__instance.name} ID: {__instance.GetInstanceID()}");
+                    }
+                    else
+                    {
+                        __instance.GetComponentInChildren<ScannerModuleExosuit>().enabled = true;
+                    }
+                }
+                else
+                {
+                    __instance.GetComponentInChildren<ScannerModuleExosuit>().enabled = false;
+                }
             }
         }
     }
-    */
+
+
     [HarmonyPatch(typeof(Exosuit))]
     [HarmonyPatch("SlotKeyDown")]
     public class Exosuit_SlotKeyDown_Patch

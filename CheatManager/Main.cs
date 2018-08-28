@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 namespace CheatManager
 {
-    public class Main
+    public static class Main
     {
         public static bool isExistsSMLHelperV2;
 
@@ -43,7 +43,7 @@ namespace CheatManager
         private static void EnableConsole()
         {
             DevConsole.disableConsole = false;
-            Debug.developerConsoleVisible = true;            
+            //Debug.developerConsoleVisible = true;            
         }
 
         public static bool IsNamespaceExists(string desiredNamespace)
@@ -101,6 +101,6 @@ namespace CheatManager
                 __instance.gameObject.AddComponent<SeaglideOverDrive>();
                 
             }
-        }
+        }        
     }  
 }

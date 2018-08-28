@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Common.MyGUI
+namespace GUIHelper
 {
-    internal class GUI_Tools
+    internal class Tools
     {
         internal enum BUTTONTYPE
         {

@@ -128,8 +128,8 @@ namespace CheatManager
                     }
                     else
                     {   float overDrive = MaxSpeed * (((float)SpeedModuleCount + 10) / 10);                     
-                        seamoth.forwardForce = Seamoth_forwardForce + boost + CheatManager.seamothSpeedMultiplier * ((overDrive - (Seamoth_forwardForce + boost)) / 5);
-                        seamoth.backwardForce = Seamoth_backwardForce + boost + CheatManager.seamothSpeedMultiplier * ((overDrive - (Seamoth_backwardForce + boost)) / 5);
+                        seamoth.forwardForce = (Seamoth_forwardForce + boost) + (CheatManager.seamothSpeedMultiplier * ((overDrive - (Seamoth_forwardForce + boost)) / 5));
+                        seamoth.backwardForce = (Seamoth_backwardForce + boost) + (CheatManager.seamothSpeedMultiplier * ((overDrive - (Seamoth_backwardForce + boost)) / 5));
                         seamoth.sidewardForce = (Seamoth_sidewardForce + boost) + (CheatManager.seamothSpeedMultiplier * ((overDrive - (Seamoth_sidewardForce + boost)) / 5));
                         seamoth.verticalForce = (Seamoth_verticalForce + boost) + (CheatManager.seamothSpeedMultiplier * ((overDrive - (Seamoth_verticalForce + boost)) / 5));
                         prev_multiplier = CheatManager.seamothSpeedMultiplier;

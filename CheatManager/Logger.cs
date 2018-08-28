@@ -1,11 +1,11 @@
 ﻿//#define DEBUG_LOGGER
 #define DEBUG_GAMELOG
 #define AUTOSCROLL
-#define MAXMESSAGE_INFINITY
+//#define MAXMESSAGE_INFINITY
 
 using System.Collections.Generic;
 using UnityEngine;
-using Common.MyGUI;
+using GUIHelper;
 
 namespace CheatManager
 {
@@ -128,7 +128,7 @@ namespace CheatManager
 
             if (count == 1 && s.Length >= 70)
             {
-                int x = GUI_Tools.DivideRoundUP(s.Length, 70);
+                int x = Tools.DivideRoundUP(s.Length, 70);
                 return (x * 18f);
             }
 
@@ -148,9 +148,9 @@ namespace CheatManager
             if (!show)
             {
                 return;
-            }            
+            }
 
-            GUI_Tools.CreatePopupWindow(windowRect, "CheatManager Console (Press DEL to toggle)");
+            Tools.CreatePopupWindow(windowRect, "CheatManager Console (Press DEL to toggle)");
 
             scrollPos = GUI.BeginScrollView(scrollRect, scrollPos, new Rect(scrollRect.x, scrollRect.y, scrollRect.width - 40, drawingPos - scrollRect.y));
             

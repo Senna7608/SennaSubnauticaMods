@@ -34,9 +34,9 @@ namespace CheatManager
         {
             readonly TechType _techType;
 
-            public TechTypeSearch(TechType s)
+            public TechTypeSearch(TechType techType)
             {
-                _techType = s;
+                _techType = techType;
             }
 
             public bool EqualsWith(TechTypeData techTypeData)
@@ -56,7 +56,21 @@ namespace CheatManager
 
                 for (int j = 0; j < techMatrix[i].Length; j++)
                 {
-                    TechnologyMatrix[i].Add(new TechTypeData(techMatrix[i][j], Language.main.Get(TechTypeExtensions.AsString(techMatrix[i][j], false))));
+                    string name;
+                    TechType techType = techMatrix[i][j];
+                    if (techType == TechType.SeaEmperorBaby)
+                    {
+                        name = Language.main.Get(TechTypeExtensions.AsString(TechType.SeaEmperorJuvenile, false));
+                    }
+                    else if (techType == TechType.SeaEmperorJuvenile)
+                    {
+                        name = Language.main.Get(TechTypeExtensions.AsString(TechType.SeaEmperorBaby, false));
+                    }
+                    else
+                    {
+                        name = Language.main.Get(TechTypeExtensions.AsString(techMatrix[i][j], false));
+                    }
+                    TechnologyMatrix[i].Add(new TechTypeData(techType, name));                    
                 }                
             }            
         }
@@ -531,7 +545,9 @@ namespace CheatManager
                 TechType.SpottedLeavesPlantSeed,
                 TechType.RedRollPlantSeed,
                 TechType.PurpleBranchesSeed,
-                TechType.SnakeMushroomSpore
+                TechType.SnakeMushroomSpore,
+                TechType.CreepvineSeedCluster
+                
             },
             #endregion
             

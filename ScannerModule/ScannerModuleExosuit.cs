@@ -31,7 +31,8 @@ namespace ScannerModule
         {
             exosuit = gameObject.GetComponent<Exosuit>();
             energyMixin = GetComponent<EnergyMixin>();
-            ScannerTool scannerPrefab = CraftData.InstantiateFromPrefab(TechType.Scanner, false).GetComponent<ScannerTool>();
+            var scannerPrefab = Resources.Load<GameObject>("WorldEntities/Tools/Scanner").GetComponent<ScannerTool>();
+            //ScannerTool scannerPrefab = CraftData.InstantiateFromPrefab(TechType.Scanner, false).GetComponent<ScannerTool>();
             scanSound = Instantiate(scannerPrefab.scanSound, gameObject.transform);
             completeSound = Instantiate(scannerPrefab.completeSound, gameObject.transform);
             Destroy(scannerPrefab);
@@ -85,8 +86,7 @@ namespace ScannerModule
                 }
                 else
                 {
-                    scanSound.Stop();
-                    Modules.SetProgressColor(Modules.Colors.White);
+                    scanSound.Stop();                    
                 }
                 stateLast = stateCurrent;
                 stateCurrent = ScanState.None;

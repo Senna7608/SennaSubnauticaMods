@@ -48,7 +48,8 @@ namespace ScannerModule
             seamoth = gameObject.GetComponent<SeaMoth>();
             leftTorpedoSlot = seamoth.torpedoTubeLeft.transform;
             energyMixin = GetComponent<EnergyMixin>();
-            ScannerTool scannerPrefab = CraftData.InstantiateFromPrefab(TechType.Scanner, true).GetComponent<ScannerTool>();
+            var scannerPrefab = Resources.Load<GameObject>("WorldEntities/Tools/Scanner").GetComponent<ScannerTool>();
+            //ScannerTool scannerPrefab = CraftData.InstantiateFromPrefab(TechType.Scanner, false).GetComponent<ScannerTool>();
             scanSound = Instantiate(scannerPrefab.scanSound, gameObject.transform);
             completeSound = Instantiate(scannerPrefab.completeSound, gameObject.transform);
             fxControl = Instantiate(scannerPrefab.fxControl, gameObject.transform);
@@ -62,7 +63,7 @@ namespace ScannerModule
             Destroy(instantiated_renderer);            
             Destroy(scannerPrefab);
             
-            //scanBeam.transform.localScale = new Vector3(1, 4, 1);
+            scanBeam.transform.localScale = new Vector3(1, 4, 1);
             scanBeam.transform.localRotation = new Quaternion(-0.7683826f, 0.1253118f, 0.0448633f, 0.6259971f);
         }        
         
@@ -180,8 +181,7 @@ namespace ScannerModule
                 }
                 else
                 {
-                    scanSound.Stop();
-                    Modules.SetProgressColor(Modules.Colors.White);
+                    scanSound.Stop();                    
                 }
                 stateLast = stateCurrent;
                 stateCurrent = ScanState.None;

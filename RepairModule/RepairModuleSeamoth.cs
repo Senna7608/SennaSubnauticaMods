@@ -33,7 +33,8 @@ namespace RepairModule
         {
             seamoth = gameObject.GetComponent<SeaMoth>();
             energyMixin = seamoth.GetComponent<EnergyMixin>();
-            Welder welderPrefab = CraftData.InstantiateFromPrefab(TechType.Welder, false).GetComponent<Welder>();
+            var welderPrefab = Resources.Load<GameObject>("WorldEntities/Tools/Welder").GetComponent<Welder>();
+            //var welderPrefab = CraftData.InstantiateFromPrefab(TechType.Welder, false).GetComponent<Welder>();
             weldSound = Instantiate(welderPrefab.weldSound, gameObject.transform);
             Destroy(welderPrefab);
 

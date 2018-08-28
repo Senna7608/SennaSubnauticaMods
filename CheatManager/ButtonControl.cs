@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
-using Common.MyGUI;
+using GUIHelper;
 using System.Reflection;
 
 namespace CheatManager
 {
     internal static class ButtonControl
     {
-        internal static void NormalButtonControl(int normalButtonID, ref List<GUI_Tools.ButtonInfo> Buttons, ref List<GUI_Tools.ButtonInfo> toggleButtons)
+        internal static void NormalButtonControl(int normalButtonID, ref List<Tools.ButtonInfo> Buttons, ref List<Tools.ButtonInfo> toggleButtons)
         {
             switch (normalButtonID)
             {
@@ -38,7 +38,7 @@ namespace CheatManager
         }
 
 
-        internal static void ToggleButtonControl (int toggleButtonID, ref List<GUI_Tools.ButtonInfo> toggleButtons)
+        internal static void ToggleButtonControl (int toggleButtonID, ref List<Tools.ButtonInfo> toggleButtons)
         {
             switch (toggleButtonID)
             {
@@ -119,7 +119,7 @@ namespace CheatManager
        
         internal static readonly float[] DayNightSpeed = { 0.1f, 0.25f, 0.5f, 0.75f, 1f, 2f };
 
-        internal static void DayNightButtonControl(int daynightTabID, ref int currentdaynightTab, ref List<GUI_Tools.ButtonInfo> daynightTab)
+        internal static void DayNightButtonControl(int daynightTabID, ref int currentdaynightTab, ref List<Tools.ButtonInfo> daynightTab)
         {
             if (daynightTabID != currentdaynightTab)
             {
