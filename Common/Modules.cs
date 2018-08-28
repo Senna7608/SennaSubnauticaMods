@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Common.Modules
+namespace Common
 {
     public static class Modules
     {
