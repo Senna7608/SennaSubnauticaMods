@@ -6,7 +6,7 @@ namespace SlotExtender
     {
         private static bool SlotMappingExpanded = false;
 
-        internal static readonly string[] ExpandedSeamothSlotIDs = new string[8]
+        internal static readonly string[] ExpandedSeamothSlotIDs = new string[9]
         {
             "SeamothModule1",
             "SeamothModule2",
@@ -15,7 +15,8 @@ namespace SlotExtender
             "SeamothModule5",
             "SeamothModule6",
             "SeamothModule7",
-            "SeamothModule8"
+            "SeamothModule8",
+            "SeamothModule9"
         };
 
         internal static readonly string[] ExpandedExosuitSlotIDs = new string[10]
@@ -40,6 +41,7 @@ namespace SlotExtender
                 Equipment.slotMapping.Add("SeamothModule6", EquipmentType.SeamothModule);
                 Equipment.slotMapping.Add("SeamothModule7", EquipmentType.SeamothModule);
                 Equipment.slotMapping.Add("SeamothModule8", EquipmentType.SeamothModule);
+                Equipment.slotMapping.Add("SeamothModule9", EquipmentType.SeamothModule);
 
                 Equipment.slotMapping.Add("ExosuitModule5", EquipmentType.ExosuitModule);
                 Equipment.slotMapping.Add("ExosuitModule6", EquipmentType.ExosuitModule);

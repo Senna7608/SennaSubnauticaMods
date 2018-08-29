@@ -4,9 +4,7 @@ namespace SlotExtender
 {
     internal class SlotExtender : MonoBehaviour 
     {
-        internal static SlotExtender Instance { get; private set; }
-
-        internal Vehicle ThisVehicle { get; private set; }
+        internal static SlotExtender Instance { get; private set; }        
 
         private bool isOpen = false;
 
@@ -15,7 +13,8 @@ namespace SlotExtender
            "SeamothModule5",
            "SeamothModule6",
            "SeamothModule7",
-           "SeamothModule8"
+           "SeamothModule8",
+           "SeamothModule9"
         };
 
         private static readonly string[] newExosuitSlotIDs = new string[]
@@ -35,14 +34,12 @@ namespace SlotExtender
 
             if (seamoth != null)
             {
-                seamoth.modules.AddSlots(newSeamothSlotIDs);
-                ThisVehicle = seamoth;               
+                seamoth.modules.AddSlots(newSeamothSlotIDs);                              
             }            
 
             if (exosuit != null)
             {
-                exosuit.modules.AddSlots(newExosuitSlotIDs);
-                ThisVehicle = exosuit;
+                exosuit.modules.AddSlots(newExosuitSlotIDs);                
             }            
         }
 
@@ -52,13 +49,30 @@ namespace SlotExtender
             {
                 if (Input.GetKeyDown(KeyCode.R) && !isOpen)
                 {
-                    Player.main.GetVehicle().gameObject.GetComponent<SlotExtender>().ThisVehicle.upgradesInput.OpenFromExternal();
+                    Player.main.GetVehicle().upgradesInput.OpenFromExternal();
                     isOpen = true;                    
                 }
                 else if (isOpen && Input.GetKeyDown(KeyCode.R))
                 {
                     Player.main.GetPDA().Close();
                     isOpen = false;
+                }
+
+                if (Input.GetKeyDown(KeyCode.Alpha6))
+                {
+                    Player.main.GetVehicle().SendMessage("SlotKeyDown", 5);
+                }
+                if (Input.GetKeyDown(KeyCode.Alpha7))
+                {
+                    Player.main.GetVehicle().SendMessage("SlotKeyDown", 6);
+                }
+                if (Input.GetKeyDown(KeyCode.Alpha8))
+                {
+                    Player.main.GetVehicle().SendMessage("SlotKeyDown", 7);
+                }
+                if (Input.GetKeyDown(KeyCode.Alpha9))
+                {
+                    Player.main.GetVehicle().SendMessage("SlotKeyDown", 8);
                 }
             }            
         }

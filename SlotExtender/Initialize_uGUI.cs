@@ -22,7 +22,7 @@ namespace SlotExtender
             {
                 foreach (uGUI_EquipmentSlot slot in instance.GetComponentsInChildren<uGUI_EquipmentSlot>(true))
                 {
-                    //always slot1 includes the background image, therefore instantiate the slot2 to eliminate duplicate image
+                    //always slot1 includes the background image, therefore instantiate the slot2 to eliminate duplicates
                     if (slot.name == "SeamothModule2")
                     {
                         temp_slot = Instantiate(slot, slot.gameObject.transform.parent);
@@ -48,6 +48,12 @@ namespace SlotExtender
                         temp_slot.slot = "SeamothModule8";
                         temp_slot.rectTransform.anchoredPosition = new Vector2(143, -5);
                         allSlots.Add("SeamothModule8", temp_slot);
+
+                        temp_slot = Instantiate(slot, slot.gameObject.transform.parent);
+                        temp_slot.name = "SeamothModule9";
+                        temp_slot.slot = "SeamothModule9";
+                        temp_slot.rectTransform.anchoredPosition = new Vector2(0, 0);
+                        allSlots.Add("SeamothModule9", temp_slot);
                     }
                     
                     if (slot.name == "ExosuitModule2")
