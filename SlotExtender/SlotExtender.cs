@@ -36,7 +36,7 @@ namespace SlotExtender
             if (seamoth != null)
             {
                 seamoth.modules.AddSlots(newSeamothSlotIDs);
-                ThisVehicle = seamoth;                
+                ThisVehicle = seamoth;               
             }            
 
             if (exosuit != null)
@@ -53,14 +53,26 @@ namespace SlotExtender
                 if (Input.GetKeyDown(KeyCode.R) && !isOpen)
                 {
                     Player.main.GetVehicle().gameObject.GetComponent<SlotExtender>().ThisVehicle.upgradesInput.OpenFromExternal();
-                    isOpen = true;
+                    isOpen = true;                    
                 }
                 else if (isOpen && Input.GetKeyDown(KeyCode.R))
                 {
                     Player.main.GetPDA().Close();
                     isOpen = false;
                 }
-            }
+            }            
         }
+
+        internal static bool IsExtendedSeamothSlot(string slotName)
+        {
+            foreach (string slot in newSeamothSlotIDs)
+            {
+                if (slotName == slot)
+                    return true;
+            }
+
+            return false;
+        }
+
     }
 }

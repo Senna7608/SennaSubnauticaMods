@@ -9,15 +9,7 @@ namespace SlotExtender
 
         private bool isPatched = false;
 
-        internal uGUI_EquipmentSlot seamoth_slot_5;
-        internal uGUI_EquipmentSlot seamoth_slot_6;
-        internal uGUI_EquipmentSlot seamoth_slot_7;
-        internal uGUI_EquipmentSlot seamoth_slot_8;
-
-        internal uGUI_EquipmentSlot exosuit_slot_5;
-        internal uGUI_EquipmentSlot exosuit_slot_6;
-        internal uGUI_EquipmentSlot exosuit_slot_7;
-        internal uGUI_EquipmentSlot exosuit_slot_8;
+        internal uGUI_EquipmentSlot temp_slot;        
 
         internal void Awake()
         {
@@ -30,78 +22,60 @@ namespace SlotExtender
             {
                 foreach (uGUI_EquipmentSlot slot in instance.GetComponentsInChildren<uGUI_EquipmentSlot>(true))
                 {
-
-                    if (slot.name == "SeamothModule1")
-                    {
-                        seamoth_slot_5 = Instantiate(slot, slot.gameObject.transform.parent);
-                        seamoth_slot_5.name = "SeamothModule5";
-                        seamoth_slot_5.slot = "SeamothModule5";                        
-                        seamoth_slot_5.rectTransform.anchoredPosition = new Vector2(0, -149);                       
-                        allSlots.Add("SeamothModule5", seamoth_slot_5);                        
-                    }
-
+                    //always slot1 includes the background image, therefore instantiate the slot2 to eliminate duplicate image
                     if (slot.name == "SeamothModule2")
                     {
-                        seamoth_slot_6 = Instantiate(slot, slot.gameObject.transform.parent);
-                        seamoth_slot_6.name = "SeamothModule6";
-                        seamoth_slot_6.slot = "SeamothModule6";
-                        seamoth_slot_6.rectTransform.anchoredPosition = new Vector2(-143, -5);                        
-                        allSlots.Add("SeamothModule6", seamoth_slot_6);                        
-                    }
+                        temp_slot = Instantiate(slot, slot.gameObject.transform.parent);
+                        temp_slot.name = "SeamothModule5";
+                        temp_slot.slot = "SeamothModule5";
+                        temp_slot.rectTransform.anchoredPosition = new Vector2(0, -149);
+                        allSlots.Add("SeamothModule5", temp_slot);
 
-                    if (slot.name == "SeamothModule3")
-                    {
-                        seamoth_slot_7 = Instantiate(slot, slot.gameObject.transform.parent);
-                        seamoth_slot_7.name = "SeamothModule7";
-                        seamoth_slot_7.slot = "SeamothModule7";
-                        seamoth_slot_7.rectTransform.anchoredPosition = new Vector2(0, 136);                        
-                        allSlots.Add("SeamothModule7", seamoth_slot_7);                        
-                    }
+                        temp_slot = Instantiate(slot, slot.gameObject.transform.parent);
+                        temp_slot.name = "SeamothModule6";
+                        temp_slot.slot = "SeamothModule6";
+                        temp_slot.rectTransform.anchoredPosition = new Vector2(-143, -5);
+                        allSlots.Add("SeamothModule6", temp_slot);
 
-                    if (slot.name == "SeamothModule4")
-                    {
-                        seamoth_slot_8 = Instantiate(slot, slot.gameObject.transform.parent);
-                        seamoth_slot_8.name = "SeamothModule8";
-                        seamoth_slot_8.slot = "SeamothModule8";
-                        seamoth_slot_8.rectTransform.anchoredPosition = new Vector2(143, -5);                        
-                        allSlots.Add("SeamothModule8", seamoth_slot_8);                        
-                    }
+                        temp_slot = Instantiate(slot, slot.gameObject.transform.parent);
+                        temp_slot.name = "SeamothModule7";
+                        temp_slot.slot = "SeamothModule7";
+                        temp_slot.rectTransform.anchoredPosition = new Vector2(0, 136);
+                        allSlots.Add("SeamothModule7", temp_slot);
 
-                    if (slot.name == "ExosuitModule1")
-                    {
-                        exosuit_slot_5 = Instantiate(slot, slot.gameObject.transform.parent);
-                        exosuit_slot_5.name = "ExosuitModule5";
-                        exosuit_slot_5.slot = "ExosuitModule5";
-                        exosuit_slot_5.rectTransform.anchoredPosition = new Vector2(0, 136);                        
-                        allSlots.Add("ExosuitModule5", exosuit_slot_5);                        
+                        temp_slot = Instantiate(slot, slot.gameObject.transform.parent);
+                        temp_slot.name = "SeamothModule8";
+                        temp_slot.slot = "SeamothModule8";
+                        temp_slot.rectTransform.anchoredPosition = new Vector2(143, -5);
+                        allSlots.Add("SeamothModule8", temp_slot);
                     }
-
+                    
                     if (slot.name == "ExosuitModule2")
                     {
-                        exosuit_slot_6 = Instantiate(slot, slot.gameObject.transform.parent);
-                        exosuit_slot_6.name = "ExosuitModule6";
-                        exosuit_slot_6.slot = "ExosuitModule6";
-                        exosuit_slot_6.rectTransform.anchoredPosition = new Vector2(80, 0);                       
-                        allSlots.Add("ExosuitModule6", exosuit_slot_6);                       
-                    }
+                        temp_slot = Instantiate(slot, slot.gameObject.transform.parent);
+                        temp_slot.name = "ExosuitModule5";
+                        temp_slot.slot = "ExosuitModule5";
+                        temp_slot.rectTransform.anchoredPosition = new Vector2(0, 136);
+                        allSlots.Add("ExosuitModule5", temp_slot);
 
-                    if (slot.name == "ExosuitModule3")
-                    {
-                        exosuit_slot_7 = Instantiate(slot, slot.gameObject.transform.parent);
-                        exosuit_slot_7.name = "ExosuitModule7";
-                        exosuit_slot_7.slot = "ExosuitModule7";
-                        exosuit_slot_7.rectTransform.anchoredPosition = new Vector2(-80, 0);                        
-                        allSlots.Add("ExosuitModule7", exosuit_slot_7);                       
-                    }
+                        temp_slot = Instantiate(slot, slot.gameObject.transform.parent);
+                        temp_slot.name = "ExosuitModule6";
+                        temp_slot.slot = "ExosuitModule6";
+                        temp_slot.rectTransform.anchoredPosition = new Vector2(80, 0);                       
+                        allSlots.Add("ExosuitModule6", temp_slot);
 
-                    if (slot.name == "ExosuitModule4")
-                    {
-                        exosuit_slot_8 = Instantiate(slot, slot.gameObject.transform.parent);
-                        exosuit_slot_8.name = "ExosuitModule8";
-                        exosuit_slot_8.slot = "ExosuitModule8";
-                        exosuit_slot_8.rectTransform.anchoredPosition = new Vector2(0, -149);                        
-                        allSlots.Add("ExosuitModule8", exosuit_slot_8);                        
-                    }
+                        temp_slot = Instantiate(slot, slot.gameObject.transform.parent);
+                        temp_slot.name = "ExosuitModule7";
+                        temp_slot.slot = "ExosuitModule7";
+                        temp_slot.rectTransform.anchoredPosition = new Vector2(-80, 0);
+                        allSlots.Add("ExosuitModule7", temp_slot);
+
+                        temp_slot = Instantiate(slot, slot.gameObject.transform.parent);
+                        temp_slot.name = "ExosuitModule8";
+                        temp_slot.slot = "ExosuitModule8";
+                        temp_slot.rectTransform.anchoredPosition = new Vector2(0, -149);
+                        allSlots.Add("ExosuitModule8", temp_slot);
+                    }                    
                 }
 
                 Debug.Log("[SlotExtender] uGUI_EquipmentSlots Patched!");
