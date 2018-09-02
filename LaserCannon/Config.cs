@@ -11,9 +11,21 @@ namespace LaserCannon
     public class Config : ModOptions
     {
         private const string configFile = "./QMods/LaserCannon/LaserCannonConfig.txt";
-        internal const string configKey = "LaserCannonConfig";        
+        private const string configKey_main = "***LaserCannonConfig***";
+        private const string config_splitter = " = ";        
+        private const string configKey_language = "Language";
+        public string mainLang = "English";
         private const string toggleID = "onlyHostile";
         private const string choiceID = "laserBeamColor";
+
+        private const string settings_title_eng = "Laser Cannon Module Options";
+        private const string settings_toggle_eng = "Damage hostile target only";
+        private const string settings_color_eng = "Laser Beam Color";
+        
+        private const string settings_title_hun = "Lézerágyú beállítások";
+        private const string settings_toggle_hun = "Csak ellenséges lényeket sebez";
+        private const string settings_color_hun = "Lézersugár színe";
+
         private static readonly string[] beamColors = Modules.Colors.ColorNames;
 
         public int LaserBeamColor { get; private set; }
@@ -27,13 +39,13 @@ namespace LaserCannon
             }
             catch (Exception ex)
             {
-                Debug.Log($"[LaserCannon] Error loading {configKey}: " + ex.ToString());
+                Debug.Log($"[LaserCannon] Error loading {configKey_main}: " + ex.ToString());
                 WriteConfigFile();
-            }
+            }            
         }              
 
-        public Config() : base("Laser Cannon Module Options")
-        {
+        public Config() :base(settings_title_hun)
+        {            
             ToggleChanged += HostileOnly;
             ChoiceChanged += BeamColorChanged;
         }
@@ -41,8 +53,8 @@ namespace LaserCannon
        
         public override void BuildModOptions()
         {
-            AddToggleOption(toggleID, "Damage hostile target only", OnlyHostile);
-            AddChoiceOption(choiceID, "Laser Beam Color", beamColors, LaserBeamColor);
+            AddToggleOption(toggleID, settings_toggle_hun, OnlyHostile);
+            AddChoiceOption(choiceID, settings_color_hun, beamColors, LaserBeamColor);
         }
 
         private void HostileOnly(object sender, ToggleChangedEventArgs args)
@@ -77,12 +89,11 @@ namespace LaserCannon
         {
             File.WriteAllLines(configFile, new[]
             {
-                configKey,
-                toggleID,
-                OnlyHostile.ToString(),
-                choiceID,
-                LaserBeamColor.ToString()
-                
+                configKey_main,
+                toggleID + config_splitter + OnlyHostile.ToString(),
+                choiceID + config_splitter + Modules.Colors.ColorNames[LaserBeamColor],
+                configKey_language + config_splitter + mainLang
+
             }, Encoding.UTF8);
         }
 
@@ -96,28 +107,39 @@ namespace LaserCannon
             }
 
             string[] configText = File.ReadAllLines(configFile, Encoding.UTF8);
-            SetValues(configText);
+
+            if (!SetValues(configText))
+            {
+                Debug.Log($"[LaserCannon] Laser Cannon module config file damaged. Writing default file.");
+                WriteConfigFile();
+                return;
+            }
         }
 
         private bool SetValues(string[] configText)
-        {
-            if (configText[0] != configKey)
+        {           
+            if (configText[0] != configKey_main)
             {
                 return false;
             }
-
+                     
             for (int i = 1; i < configText.Length; i++)
             {
-                switch (configText[i])
+                string[] splittedText = configText[i].Split(new[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
+                
+                switch (splittedText[0])
                 {
-                    case toggleID: OnlyHostile = bool.Parse(configText[i + 1]);                        
+                    case toggleID: OnlyHostile = bool.Parse(splittedText[1]);                        
                         break;
                     case choiceID:
-                        LaserBeamColor = int.Parse(configText[i + 1]);
+                        LaserBeamColor = Array.IndexOf(Modules.Colors.ColorNames, splittedText[1]);
+                        break;
+                    case configKey_language:
+                        mainLang = splittedText[1];
                         break;
                 }
             }
-
+            
             return true;
         }
     }

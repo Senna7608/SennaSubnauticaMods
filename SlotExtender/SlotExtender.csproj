@@ -63,6 +63,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Initialize_uGUI.cs" />
+    <Compile Include="Patchers\uGUI_Equipment_Patcher.cs" />
+    <Compile Include="Patchers\Equipment_Patcher.cs" />
+    <Compile Include="Patchers\Exosuit_Patcher.cs" />
+    <Compile Include="Patchers\Seamoth_Patcher.cs" />
     <Compile Include="SlotExtender.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

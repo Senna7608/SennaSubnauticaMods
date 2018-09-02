@@ -41,13 +41,13 @@ namespace LaserCannon
         public void Awake()
         {
             Main = this;
-            
-            seamoth = gameObject.GetComponent<SeaMoth>();
+
+            seamoth = (SeaMoth)Player.main.GetVehicle();
             energyMixin = seamoth.GetComponent<EnergyMixin>();
             var repulsionCannonPrefab = Resources.Load<GameObject>("WorldEntities/Tools/RepulsionCannon").GetComponent<RepulsionCannon>();
             //RepulsionCannon repulsionCannonPrefab = CraftData.InstantiateFromPrefab(TechType.RepulsionCannon, false).GetComponent<RepulsionCannon>();
             shootSound = Instantiate(repulsionCannonPrefab.shootSound, seamoth.transform);
-            Destroy(repulsionCannonPrefab);
+            //Destroy(repulsionCannonPrefab);
 
             loopingEmitter = gameObject.AddComponent<FMOD_CustomLoopingEmitter>();
             loopingEmitter.asset = shootSound;
@@ -56,7 +56,7 @@ namespace LaserCannon
             //PowerFX powerRelayPrefab = CraftData.InstantiateFromPrefab(TechType.PowerTransmitter, false).GetComponent<PowerFX>();
             laserBeam = Instantiate(powerRelayPrefab.vfxPrefab, seamoth.transform);
             laserBeam.SetActive(false);
-            Destroy(powerRelayPrefab);
+            //Destroy(powerRelayPrefab);
 
             lineRenderer = laserBeam.GetComponent<LineRenderer>();
             lineRenderer.startWidth = 0.4f;

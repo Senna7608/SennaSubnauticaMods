@@ -1,8 +1,8 @@
 ﻿{
   "Id": "RepairModule",
   "DisplayName": "RepairModule",
-  "Author": "Senna7608",
-  "Version": "1.1",
+  "Author": "Senna",
+  "Version": "2.0",
   "Enable": true,
   "AssemblyName": "RepairModule.dll",
   "EntryMethod": "RepairModule.Main.Load",

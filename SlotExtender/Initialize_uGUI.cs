@@ -52,7 +52,7 @@ namespace SlotExtender
                         temp_slot = Instantiate(slot, slot.gameObject.transform.parent);
                         temp_slot.name = "SeamothModule9";
                         temp_slot.slot = "SeamothModule9";
-                        temp_slot.rectTransform.anchoredPosition = new Vector2(0, 0);
+                        temp_slot.rectTransform.anchoredPosition = new Vector2(0, -5);
                         allSlots.Add("SeamothModule9", temp_slot);
                     }
                     
@@ -83,7 +83,7 @@ namespace SlotExtender
                         allSlots.Add("ExosuitModule8", temp_slot);
                     }                    
                 }
-
+                                
                 Debug.Log("[SlotExtender] uGUI_EquipmentSlots Patched!");
                 isPatched = true;
             }

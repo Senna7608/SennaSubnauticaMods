@@ -63,8 +63,7 @@
     <Compile Include="Craftable.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RepairModuleExosuit.cs" />
-    <Compile Include="RepairModuleSeamoth.cs" />
+    <Compile Include="RepairModuleControl.cs" />
     <Compile Include="RepairModule.cs" />
   </ItemGroup>
   <ItemGroup>

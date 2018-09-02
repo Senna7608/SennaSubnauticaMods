@@ -7,6 +7,8 @@ namespace LaserCannon
 {
     public static class Main
     {
+        public static string langMain = "English";
+
         public static void Load()
         {
             try
@@ -20,6 +22,8 @@ namespace LaserCannon
             {
                 Debug.LogException(ex);
             }
+
+            langMain = Language.main.GetCurrentLanguage();
         }
     }        
     
@@ -43,6 +47,8 @@ namespace LaserCannon
                     else
                     {
                         __instance.GetComponentInChildren<LaserCannon_Seamoth>().enabled = true;
+                        var laserCannon = __instance.GetComponentInChildren<LaserCannon_Seamoth>();
+                        laserCannon.slotID = slotID;
                     }
                 }
                 else

@@ -1,8 +1,8 @@
 ﻿{
   "Id": "SlotExtender",
   "DisplayName": "SlotExtender",
-  "Author": "Senna7608",
-  "Version": "1.0",
+  "Author": "Senna, PrimeSonic",
+  "Version": "2.0",
   "Enable": true,
   "AssemblyName": "SlotExtender.dll",
   "EntryMethod": "SlotExtender.Main.Load",

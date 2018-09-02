@@ -23,68 +23,55 @@ namespace RepairModule
 
         }
     }
- 
-    [HarmonyPatch(typeof(Exosuit))]
-    [HarmonyPatch("OnUpgradeModuleChange")]
-    public class Exosuit_OnUpgradeModuleChange_Patch
-    {
-        static void Postfix(Exosuit __instance, int slotID, TechType techType, bool added)
-        {
-            if (techType == RepairModule.TechTypeID)
-            {
-                if (added)
-                {
-                    if (__instance.GetComponentInChildren<RepairModuleExosuit>() == null)
-                    {
-                        __instance.gameObject.AddComponent<RepairModuleExosuit>();
-                        var repairModule = __instance.GetComponentInChildren<RepairModuleExosuit>();
-                        repairModule.moduleSlotID = slotID;
-                        Debug.Log($"[RepairModule] Added component to instance: {__instance.name} ID: {__instance.GetInstanceID()}");
-                    }
-                    else
-                    {
-                        var repairModule = __instance.GetComponentInChildren<RepairModuleExosuit>();
-                        repairModule.enabled = true;
-                        repairModule.moduleSlotID = slotID;
-                    }
-                }
-                else
-                {
-                    __instance.GetComponentInChildren<RepairModuleExosuit>().enabled = false;
-                }
-            }
-        }
-    }
 
-    [HarmonyPatch(typeof(SeaMoth))]
+    [HarmonyPatch(typeof(Vehicle))]
     [HarmonyPatch("OnUpgradeModuleChange")]
-    public class SeaMoth_OnUpgradeModuleChange_Patch
+    public class Vehicle_OnUpgradeModuleChange_Patch
     {
-        static void Postfix(SeaMoth __instance, int slotID, TechType techType, bool added)
+        static void Postfix(Vehicle __instance, int slotID, TechType techType, bool added)
         {
             if (techType == RepairModule.TechTypeID)
             {
                 if (added)
                 {
-                    if (__instance.GetComponentInChildren<RepairModuleSeamoth>() == null)
+                    if (__instance.GetComponent<RepairModuleControl>() == null)
                     {
-                        __instance.gameObject.AddComponent<RepairModuleSeamoth>();
-                        var repairModule = __instance.GetComponentInChildren<RepairModuleSeamoth>();
-                        repairModule.slotID = slotID;
+                        var control = __instance.gameObject.AddComponent<RepairModuleControl>();                        
+
+                        if (__instance.GetType() == typeof(Exosuit))
+                        {                            
+                            control.thisVehicle = __instance.GetComponent<Exosuit>();
+                            control.moduleSlotID = slotID - 2;
+                        }
+                        else
+                        {                            
+                            control.thisVehicle = __instance.GetComponent<SeaMoth>();
+                            control.moduleSlotID = slotID;
+                        }
                         Debug.Log($"[RepairModule] Added component to instance: {__instance.name} ID: {__instance.GetInstanceID()}");
                     }
                     else
-                    {
-                        var repairModule = __instance.GetComponentInChildren<RepairModuleSeamoth>();
-                        repairModule.enabled = true;
-                        repairModule.slotID = slotID;
+                    {                        
+                        var control = __instance.gameObject.GetComponent<RepairModuleControl>();                        
+
+                        if (__instance.GetType() == typeof(Exosuit))
+                        {                            
+                            control.thisVehicle = __instance.gameObject.GetComponent<Exosuit>();
+                            control.moduleSlotID = slotID - 2;
+                        }
+                        else
+                        {                            
+                            control.thisVehicle = __instance.gameObject.GetComponent<SeaMoth>();
+                            control.moduleSlotID = slotID;
+                        }
+                        control.enabled = true;
                     }
                 }
                 else
-                {
-                    __instance.GetComponentInChildren<RepairModuleSeamoth>().enabled = false;
+                {                    
+                    __instance.gameObject.GetComponent<RepairModuleControl>().enabled = false;
                 }
             }
         }
-    }         
+    }        
 }

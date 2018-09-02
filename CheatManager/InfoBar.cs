@@ -6,7 +6,7 @@ namespace CheatManager
 {
     internal class InfoBar : MonoBehaviour
     {
-        private Rect windowRect = new Rect(400, Screen.height-23, Screen.width - 905, 23);
+        private Rect windowRect = new Rect(400, 0, Screen.width - 905, 23);
         public static InfoBar _Instance = null;
         public static bool isShow;
 
@@ -70,7 +70,7 @@ namespace CheatManager
 
             Tools.CreatePopupWindow(windowRect, null);
             GUI.contentColor = Color.green;            
-            GUI.Label(windowRect, stringBuilder.ToString());
+            GUI.Label(new Rect(windowRect.x + 5, windowRect.y, windowRect.width, windowRect.height), stringBuilder.ToString());
         }
 
 

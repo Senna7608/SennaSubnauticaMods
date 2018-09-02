@@ -4,7 +4,6 @@ using SMLHelper.V2.Handlers;
 using SMLHelper.V2.Utility;
 using UnityEngine;
 
-
 namespace RepairModule
 {
     ///<summary>
@@ -16,8 +15,7 @@ namespace RepairModule
     {
         public readonly string NameID;
         public readonly string FriendlyName;
-        public readonly string Description;
-
+        public readonly string Description;        
         protected readonly TechType PrefabTemplate;
 
         protected readonly CraftTree.Type FabricatorType;
@@ -30,7 +28,7 @@ namespace RepairModule
         protected Craftable(
             string nameID,
             string friendlyName,
-            string description,
+            string description,            
             TechType template,
             CraftTree.Type fabricatorType,
             string fabricatorTab,
@@ -41,12 +39,10 @@ namespace RepairModule
         {
             NameID = nameID;
             FriendlyName = friendlyName;
-            Description = description;
-
+            Description = description;            
             PrefabTemplate = template;
             FabricatorType = fabricatorType;
             FabricatorTab = fabricatorTab;
-
             RequiredForUnlock = requiredAnalysis;
             GroupForPDA = groupForPDA;
             CategoryForPDA = categoryForPDA;
@@ -69,8 +65,9 @@ namespace RepairModule
 
         public override GameObject GetGameObject()
         {
-            GameObject prefab = CraftData.GetPrefabForTechType(PrefabTemplate);
-            return GameObject.Instantiate(prefab);
-        }
+            GameObject prefab = CraftData.GetPrefabForTechType(PrefabTemplate);           
+            
+            return Object.Instantiate(prefab);
+        }        
     }
 }

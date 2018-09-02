@@ -27,10 +27,9 @@ namespace LaserCannon
         {
             base.Patch();
             CraftDataHandler.SetEquipmentType(TechType, EquipmentType.VehicleModule);
-            CraftDataHandler.SetQuickSlotType(TechType, QuickSlotType.Selectable);
-            
+            CraftDataHandler.SetQuickSlotType(TechType, QuickSlotType.Selectable);            
             TechTypeID = TechType;
-            OptionsPanelHandler.RegisterModOptions(Config);
+            OptionsPanelHandler.RegisterModOptions(Config);            
             Config.Init();            
         }
         

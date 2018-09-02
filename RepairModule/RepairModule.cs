@@ -6,12 +6,12 @@ namespace RepairModule
 {
     internal class RepairModule : Craftable
     {
-        public static TechType TechTypeID { get; private set; }        
+        public static TechType TechTypeID { get; private set; }
 
         internal RepairModule()
             : base(nameID: "RepairModule",
                   friendlyName: "Repair Module",
-                  description: "Allows to repair damaged Vehicles from inside.",
+                  description: "Allows to repair damaged Vehicles from inside.",                  
                   template: TechType.SeamothSonarModule,
                   fabricatorType: CraftTree.Type.SeamothUpgrades,
                   fabricatorTab: "CommonModules",

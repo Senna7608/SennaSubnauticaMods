@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace GUIHelper
@@ -28,14 +29,22 @@ namespace GUIHelper
             public BUTTONTYPE Type { get; set; }            
         }
 
-        internal static Rect CreatePopupWindow(Rect windowRect, object title)
+        internal static Rect CreatePopupWindow(Rect windowRect, object title, bool isTimeLeft = false, bool darkerBg = false)
         {
-
             GUI.Box(windowRect, "");
+
+            if (darkerBg)
+                GUI.Box(windowRect, "");
 
             if (title != null)
             {
                 GUI.Box(new Rect(windowRect.x, windowRect.y, windowRect.width, 23), title.ToString());
+
+                if (isTimeLeft)
+                {
+                    GUI.Label(new Rect(windowRect.x + windowRect.width - 60, windowRect.y, windowRect.width, 23), DateTime.Now.ToString("HH:mm:ss"));
+                }
+
                 return new Rect(windowRect.x, windowRect.y + 23, windowRect.width, windowRect.height - 23);
             }
 

@@ -1,5 +1,4 @@
-﻿//#define DEBUG_LOGGER
-#define DEBUG_GAMELOG
+﻿#define DEBUG_GAMELOG
 #define AUTOSCROLL
 //#define MAXMESSAGE_INFINITY
 
@@ -107,50 +106,15 @@ namespace CheatManager
         {
             Application.logMessageReceived -= HandleLog;            
         }             
-#endif
-        private static float CalcTextHeight(string s)
-        {
-            int count = 1;            
-            
-            for (int i = 0; i < s.Length; i++)
-            {
-                if (s[i] == '\n')
-                {
-                    count++;
-                }
-            }
-
-            
-            if (count == 1 && s.Length < 70)
-            {
-                return 21f;
-            }
-
-            if (count == 1 && s.Length >= 70)
-            {
-                int x = Tools.DivideRoundUP(s.Length, 70);
-                return (x * 18f);
-            }
-
-            if ((count * 70) < s.Length)
-            {
-                return (count * 15f);
-            }
-            else
-            {
-                return (count + 1) * 18f;
-            }
-        }
-
+#endif 
         void OnGUI()
-        { 
-            
+        {             
             if (!show)
             {
                 return;
             }
 
-            Tools.CreatePopupWindow(windowRect, "CheatManager Console (Press DEL to toggle)");
+            Tools.CreatePopupWindow(windowRect, "CheatManager Console (Press DEL to toggle)", true, true);
 
             scrollPos = GUI.BeginScrollView(scrollRect, scrollPos, new Rect(scrollRect.x, scrollRect.y, scrollRect.width - 40, drawingPos - scrollRect.y));
             
@@ -159,34 +123,29 @@ namespace CheatManager
                 if (i == 0)
                 {
                     drawingPos = scrollRect.y;
-                }
+                }                
+               
+                GUIStyle style = GUI.skin.GetStyle("Label");
 
-                contentHeight = CalcTextHeight(logMessage[i].message);
-                                
-                GUI.skin.textArea.wordWrap = true;
+                style.alignment = TextAnchor.MiddleLeft;
+                style.wordWrap = true;                                  
+                
+                contentHeight = style.CalcHeight(new GUIContent(logMessage[i].message), scrollRect.width - 40);                
                 
                 GUI.contentColor = logTypeColors[logMessage[i].type];                
                 
                 GUI.Label(new Rect(scrollRect.x + 5, drawingPos, 15, 21), "> ");
-
+                
                 GUI.Label(new Rect(scrollRect.x + 20, drawingPos, scrollRect.width - 40, contentHeight), logMessage[i].message);
 
                 drawingPos += contentHeight + 1;
-#if DEBUG_LOGGER
-                GUI.TextArea(new Rect(scrollRect.x + 20, drawingPos, scrollRect.width - 40, 21), $"Length: {logMessage[i].message.Length.ToString()}");
-                drawingPos += 22;
-#endif
+
                 if (logMessage[i].stackTrace != "")
-                {
-                    contentHeight = CalcTextHeight(logMessage[i].stackTrace);                   
+                {                    
+                    contentHeight = style.CalcHeight(new GUIContent(logMessage[i].stackTrace), scrollRect.width - 40);
                     
                     GUI.Label(new Rect(scrollRect.x + 20, drawingPos, scrollRect.width - 40, contentHeight), logMessage[i].stackTrace);
-
                     drawingPos += contentHeight + 1;
-#if DEBUG_LOGGER
-                    GUI.TextArea(new Rect(scrollRect.x + 20, drawingPos, scrollRect.width - 40, 21), $"Length: {logMessage[i].stackTrace.Length.ToString()}");
-                    drawingPos += 22;
-#endif
                 }
             }
 
@@ -245,8 +204,6 @@ namespace CheatManager
                 show = !show;
                 InfoBar.isShow = show;
             }
-
-                      
         }        
 
         private void Write(string message)

@@ -1,25 +1,27 @@
 ﻿using Common;
 using UnityEngine;
-using System.Collections.Generic;
+using UWE;
 
 namespace RepairModule
 {
-    public class RepairModuleExosuit : MonoBehaviour
+    public class RepairModuleControl : MonoBehaviour
     {   
         [AssertNotNull]
-        private Exosuit exosuit;
+        public Vehicle thisVehicle;
         [AssertNotNull]
-        private EnergyMixin energyMixin;
+        private EnergyMixin energyMixin;        
         [AssertNotNull]
-        private FMODASRPlayer weldSound;
+        private FMODAsset weldSoundAsset;
+        [AssertNotNull]
+        private FMOD_CustomLoopingEmitter weldSound;
+
         HandReticle main = HandReticle.main;
 
         private const float powerConsumption = 5f;
         private float repairPerSec;
         private bool toggle;
         private bool isActive;
-        public int moduleSlotID;
-        private float maxHealth;
+        public int moduleSlotID;        
         private float idleTimer = 3f;
 
         private RepairMode currentMode = RepairMode.None;
@@ -32,20 +34,20 @@ namespace RepairModule
         };
 
         public void Awake()
-        {            
-            exosuit = gameObject.GetComponent<Exosuit>();
-            energyMixin = exosuit.GetComponent<EnergyMixin>();
-            var welderPrefab = Resources.Load<GameObject>("WorldEntities/Tools/Welder").GetComponent<Welder>();
-            //var welderPrefab = CraftData.InstantiateFromPrefab(TechType.Welder, false).GetComponent<Welder>();
-            weldSound = Instantiate(welderPrefab.weldSound, gameObject.transform);
-            Destroy(welderPrefab);
-            repairPerSec = exosuit.liveMixin.maxHealth * 0.1f;
-            maxHealth = exosuit.liveMixin.maxHealth;
+        {
+            thisVehicle = Player.main.GetVehicle();            
+            energyMixin = thisVehicle.GetComponent<EnergyMixin>();
+            weldSoundAsset = ScriptableObject.CreateInstance<FMODAsset>();
+            weldSoundAsset.path = "event:/tools/welder/weld_loop";
+            weldSound = gameObject.AddComponent<FMOD_CustomLoopingEmitter>();
+            weldSound.asset = weldSoundAsset;
+            repairPerSec = thisVehicle.liveMixin.maxHealth * 0.1f;                      
         }        
 
         public void Start()
-        {
-            exosuit.onToggle += OnToggle;           
+        {            
+            thisVehicle.onToggle += OnToggle;
+            Utils.GetLocalPlayerComp().playerModeChanged.AddHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
         }       
 
         private void OnPlayerModeChanged(Player.Mode playerMode)
@@ -62,10 +64,10 @@ namespace RepairModule
 
         private void OnToggle(int slotID, bool state)
         {
-            if (exosuit.GetSlotBinding(slotID) == RepairModule.TechTypeID)
+            if (thisVehicle.GetSlotBinding(slotID) == RepairModule.TechTypeID)
             {
-                toggle = state;                
-
+                toggle = state;
+                
                 if (state)
                 {
                     OnEnable();
@@ -79,12 +81,11 @@ namespace RepairModule
 
         public void OnEnable()
         {
-            isActive = Player.main.inExosuit && toggle;
+            isActive = Player.main.GetMode() == Player.Mode.LockedPiloting && toggle;            
         }
 
         public void OnDisable()
-        {
-           
+        {           
             weldSound.Stop();
             isActive = false;
             toggle = false;
@@ -98,7 +99,7 @@ namespace RepairModule
         {
             if (isActive)
             {
-                if (exosuit.liveMixin.health < maxHealth && energyMixin.charge > energyMixin.capacity * 0.1f)                
+                if (thisVehicle.liveMixin.health < thisVehicle.liveMixin.maxHealth && energyMixin.charge > energyMixin.capacity * 0.1f)                
                 {
                     currentMode = RepairMode.Repair;
                     weldSound.Play();
@@ -106,33 +107,32 @@ namespace RepairModule
                     energyMixin.ConsumeEnergy(powerConsumption * Time.deltaTime);                    
                     
                     main.SetIcon(HandReticle.IconType.Progress, 1.5f);
-                    exosuit.liveMixin.health += Time.deltaTime * repairPerSec;                    
+                    thisVehicle.liveMixin.health += Time.deltaTime * repairPerSec;                    
                     main.SetInteractText("Repairing...", false, HandReticle.Hand.None);
 
-                    if (exosuit.liveMixin.health < maxHealth * 0.5f)                    
+                    if (thisVehicle.liveMixin.health < thisVehicle.liveMixin.maxHealth * 0.5f)                    
                     {
                         Modules.SetProgressColor(Modules.Colors.Red);
                         Modules.SetInteractColor(Modules.Colors.Red);
-
                     }
-                    else if (exosuit.liveMixin.health < maxHealth * 0.75f && exosuit.liveMixin.health > maxHealth * 0.5f)                    
+                    else if (thisVehicle.liveMixin.health < thisVehicle.liveMixin.maxHealth * 0.75f && thisVehicle.liveMixin.health > thisVehicle.liveMixin.maxHealth * 0.5f)                    
                     {
                         Modules.SetProgressColor(Modules.Colors.Yellow);
                         Modules.SetInteractColor(Modules.Colors.Yellow);
                     }
-                    else if (exosuit.liveMixin.health > maxHealth * 0.75f)                    
+                    else if (thisVehicle.liveMixin.health > thisVehicle.liveMixin.maxHealth * 0.75f)                    
                     {
                         Modules.SetProgressColor(Modules.Colors.Green);
                         Modules.SetInteractColor(Modules.Colors.Green);
                     }
 
-                    main.SetProgress(exosuit.liveMixin.health / maxHealth);                    
+                    main.SetProgress(thisVehicle.liveMixin.health / thisVehicle.liveMixin.maxHealth);                    
 
-                    if (exosuit.liveMixin.health >= maxHealth)                    
-                    {                        
-                        exosuit.liveMixin.health = maxHealth;                        
+                    if (thisVehicle.liveMixin.health >= thisVehicle.liveMixin.maxHealth)                    
+                    {
+                        thisVehicle.liveMixin.health = thisVehicle.liveMixin.maxHealth;                        
                         currentMode = RepairMode.None;
-                        OnToggle(moduleSlotID, false);
+                        thisVehicle.SlotKeyDown(moduleSlotID);
                         return;
                     }                    
                 }
@@ -143,29 +143,29 @@ namespace RepairModule
                     {
                         weldSound.Stop();
                         idleTimer = Mathf.Max(0f, idleTimer - Time.deltaTime);
+                        Modules.SetInteractColor(Modules.Colors.Red);
                         main.SetInteractText("Warning!\nLow Power!", "Repair Module Disabled!", false, false, HandReticle.Hand.None);
                     }
                     else
                     {                        
                         idleTimer = 3f;
-                        OnToggle(moduleSlotID, false);
+                        thisVehicle.SlotKeyDown(moduleSlotID);
                         return;
                     }
                 }
 
-                if (currentMode == RepairMode.None || currentMode == RepairMode.Disabled && exosuit.liveMixin.health == exosuit.liveMixin.maxHealth)                
+                if (currentMode == RepairMode.None || currentMode == RepairMode.Disabled && thisVehicle.liveMixin.health == thisVehicle.liveMixin.maxHealth)                
                 {
-                    //OnToggle(moduleSlotID, false);
-                    
+                    thisVehicle.SlotKeyDown(moduleSlotID);
                     return;
                 }
             }
             else if (currentMode == RepairMode.Repair)
             {
-                OnToggle(moduleSlotID, false);
+                thisVehicle.SlotKeyDown(moduleSlotID);
             }
 
-        }        
+        } 
     }
 }
 

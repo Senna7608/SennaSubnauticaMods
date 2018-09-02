@@ -1,5 +1,4 @@
 ﻿using Common;
-using System.Collections.Generic;
 using UnityEngine;
 using UWE;
 
@@ -45,9 +44,10 @@ namespace ScannerModule
 
         public void Awake()
         {
-            seamoth = gameObject.GetComponent<SeaMoth>();
+            seamoth = (SeaMoth)Player.main.GetVehicle();
             leftTorpedoSlot = seamoth.torpedoTubeLeft.transform;
-            energyMixin = GetComponent<EnergyMixin>();
+            energyMixin = seamoth.GetComponent<EnergyMixin>();
+
             var scannerPrefab = Resources.Load<GameObject>("WorldEntities/Tools/Scanner").GetComponent<ScannerTool>();
             //ScannerTool scannerPrefab = CraftData.InstantiateFromPrefab(TechType.Scanner, false).GetComponent<ScannerTool>();
             scanSound = Instantiate(scannerPrefab.scanSound, gameObject.transform);
@@ -58,10 +58,10 @@ namespace ScannerModule
             MeshRenderer[] renderers = scannerPrefab.GetComponentsInChildren<MeshRenderer>(true);                        
             Renderer instantiated_renderer = Instantiate(renderers[0]);
             scanCircuitTex = instantiated_renderer.materials[0].mainTexture;
-            scanOrganicTex =  instantiated_renderer.materials[2].mainTexture;            
+            scanOrganicTex = instantiated_renderer.materials[2].mainTexture;            
             
-            Destroy(instantiated_renderer);            
-            Destroy(scannerPrefab);
+            //Destroy(instantiated_renderer);            
+            //Resources.UnloadAsset(scannerPrefab);
             
             scanBeam.transform.localScale = new Vector3(1, 4, 1);
             scanBeam.transform.localRotation = new Quaternion(-0.7683826f, 0.1253118f, 0.0448633f, 0.6259971f);
@@ -75,12 +75,16 @@ namespace ScannerModule
 
             if (shader != null)
             {
-                scanMaterialCircuitFX = new Material(shader);
-                scanMaterialCircuitFX.hideFlags = HideFlags.HideAndDontSave;                
+                scanMaterialCircuitFX = new Material(shader)
+                {
+                    hideFlags = HideFlags.HideAndDontSave
+                };
                 scanMaterialCircuitFX.SetTexture(ShaderPropertyID._MainTex, scanCircuitTex);
                 scanMaterialCircuitFX.SetColor(ShaderPropertyID._Color, scanCircuitColor);
-                scanMaterialOrganicFX = new Material(shader);
-                scanMaterialOrganicFX.hideFlags = HideFlags.HideAndDontSave;                
+                scanMaterialOrganicFX = new Material(shader)
+                {
+                    hideFlags = HideFlags.HideAndDontSave
+                };
                 scanMaterialOrganicFX.SetTexture(ShaderPropertyID._MainTex, scanOrganicTex);
                 scanMaterialOrganicFX.SetColor(ShaderPropertyID._Color, scanOrganicColor);
             }

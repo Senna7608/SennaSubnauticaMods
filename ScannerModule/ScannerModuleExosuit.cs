@@ -1,24 +1,31 @@
 ﻿using Common;
 using UnityEngine;
+using UWE;
 
 namespace ScannerModule
 {
     public class ScannerModuleExosuit : MonoBehaviour
-    {
-        // Some code extracted with dnSpy from Assembly-CSharp.dll:ScannerTool 
-        
+    {        
+        [AssertNotNull]
         private EnergyMixin energyMixin;
-        
-        public const float powerConsumption = 0.5f;
-        public const float scanDistance = 40f;               
+        [AssertNotNull]
         public FMOD_CustomLoopingEmitter scanSound;
-        public FMODAsset completeSound;
+        [AssertNotNull]
+        public FMODAsset completeSoundAsset;
+        [AssertNotNull]
+        public FMODAsset scanSoundAsset;
+        [AssertNotNull]
+        private Exosuit exosuit;
+
+        public const float powerConsumption = 0.5f;
+        public const float scanDistance = 50f;        
         private bool isScanning = false;
-        public bool toggle;
+        public bool toggle; 
         private ScanState stateLast;
         private ScanState stateCurrent;
         private float idleTimer;
-        private Exosuit exosuit;
+        private bool isActive;
+        
         HandReticle main = HandReticle.main;
 
         public enum ScanState
@@ -29,18 +36,71 @@ namespace ScannerModule
 
         public void Awake()
         {
-            exosuit = gameObject.GetComponent<Exosuit>();
-            energyMixin = GetComponent<EnergyMixin>();
-            var scannerPrefab = Resources.Load<GameObject>("WorldEntities/Tools/Scanner").GetComponent<ScannerTool>();
-            //ScannerTool scannerPrefab = CraftData.InstantiateFromPrefab(TechType.Scanner, false).GetComponent<ScannerTool>();
-            scanSound = Instantiate(scannerPrefab.scanSound, gameObject.transform);
-            completeSound = Instantiate(scannerPrefab.completeSound, gameObject.transform);
-            Destroy(scannerPrefab);
-        }                
+            exosuit = (Exosuit)Player.main.GetVehicle();
+            energyMixin = exosuit.GetComponent<EnergyMixin>();
+            scanSoundAsset = ScriptableObject.CreateInstance<FMODAsset>();
+            scanSoundAsset.path = "event:/tools/scanner/scan_loop";
+            scanSound = gameObject.AddComponent<FMOD_CustomLoopingEmitter>();
+            scanSound.asset = scanSoundAsset;
+            completeSoundAsset = ScriptableObject.CreateInstance<FMODAsset>();
+            completeSoundAsset.path = "event:/tools/scanner/scan_complete";            
+        }
+
+        public void Start()
+        {
+            exosuit.onToggle += OnToggle;
+            Utils.GetLocalPlayerComp().playerModeChanged.AddHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
+        }
+
+        private void OnPlayerModeChanged(Player.Mode playerMode)
+        {
+            if (playerMode == Player.Mode.LockedPiloting)
+            {
+                OnEnable();
+            }
+            else
+            {
+                OnDisable();
+            }
+        }
+
+        private void OnToggle(int slotID, bool state)
+        {
+            if (exosuit.GetSlotBinding(slotID) == ScannerModule.TechTypeID)
+            {
+                toggle = state;
+
+                if (state)
+                {
+                    OnEnable();
+                }
+                else
+                {
+                    OnDisable();
+                }
+            }
+        }
+
+        public void OnEnable()
+        {
+            isActive = Player.main.inExosuit && toggle;
+
+        }
+
+        public void OnDisable()
+        {
+
+            scanSound.Stop();
+            isActive = false;
+            toggle = false;
+            stateCurrent = ScanState.None;
+            Modules.SetInteractColor(Modules.Colors.White);
+            Modules.SetProgressColor(Modules.Colors.White);
+        }
 
         private void Update()
         {
-            if (toggle)
+            if (isActive)
             {
                 PDAScanner.Result result = Scan();
                 
@@ -71,7 +131,7 @@ namespace ScannerModule
 
         private void LateUpdate()
         {
-            if (toggle)
+            if (isActive)
             {
                 isScanning = stateCurrent == ScanState.Scan;                
 
@@ -122,7 +182,7 @@ namespace ScannerModule
                 else if (result == PDAScanner.Result.Done || result == PDAScanner.Result.Researched)
                 {                    
                     idleTimer = 0.5f;
-                    PDASounds.queue.PlayIfFree(completeSound);                    
+                    PDASounds.queue.PlayIfFree(completeSoundAsset);                    
                 }                
             }
             return result;

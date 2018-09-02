@@ -33,20 +33,19 @@ namespace ScannerModule
             {
                 if (added)
                 {
-                    if (__instance.GetComponentInChildren<ScannerModuleSeamoth>() == null)
+                    if (__instance.GetComponent<ScannerModuleSeamoth>() == null)
                     {
-                        __instance.gameObject.AddComponent<ScannerModuleSeamoth>();
-                        var scannerModule = __instance.GetComponentInChildren<ScannerModuleSeamoth>();                        
+                        __instance.gameObject.AddComponent<ScannerModuleSeamoth>();                                               
                         Debug.Log($"[ScannerModule] Added component to instance: {__instance.name} ID: {__instance.GetInstanceID()}");
                     }
                     else
                     {
-                        __instance.GetComponentInChildren<ScannerModuleSeamoth>().enabled = true;
+                        __instance.GetComponent<ScannerModuleSeamoth>().enabled = true;
                     }
                 }
                 else
                 {
-                    __instance.GetComponentInChildren<ScannerModuleSeamoth>().enabled = false;
+                    __instance.GetComponent<ScannerModuleSeamoth>().enabled = false;
                 }
             }
         }
@@ -62,46 +61,21 @@ namespace ScannerModule
             {
                 if (added)
                 {
-                    if (__instance.GetComponentInChildren<ScannerModuleExosuit>() == null)
+                    if (__instance.GetComponent<ScannerModuleExosuit>() == null)
                     {
-                        __instance.gameObject.AddComponent<ScannerModuleExosuit>();
-                        var scannerModule = __instance.GetComponentInChildren<ScannerModuleExosuit>();
+                        __instance.gameObject.AddComponent<ScannerModuleExosuit>();                        
                         Debug.Log($"[ScannerModule] Added component to instance: {__instance.name} ID: {__instance.GetInstanceID()}");
                     }
                     else
                     {
-                        __instance.GetComponentInChildren<ScannerModuleExosuit>().enabled = true;
+                        __instance.GetComponent<ScannerModuleExosuit>().enabled = true;
                     }
                 }
                 else
                 {
-                    __instance.GetComponentInChildren<ScannerModuleExosuit>().enabled = false;
+                    __instance.GetComponent<ScannerModuleExosuit>().enabled = false;
                 }
             }
         }
-    }
-
-
-    [HarmonyPatch(typeof(Exosuit))]
-    [HarmonyPatch("SlotKeyDown")]
-    public class Exosuit_SlotKeyDown_Patch
-    {
-        static void Postfix(Exosuit __instance, int slotID)
-        {
-            var scannermodule = __instance.gameObject.GetComponent<ScannerModuleExosuit>();
-
-            if (scannermodule != null)
-            {
-                if (__instance.GetSlotBinding(slotID) == ScannerModule.TechTypeID)
-                {
-                    scannermodule.toggle = !scannermodule.toggle;
-                }
-                else
-                {
-                    scannermodule.toggle = false;
-                }
-            }
-        }
-    }
-
+    }   
 }
