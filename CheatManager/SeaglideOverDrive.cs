@@ -36,7 +36,7 @@ namespace CheatManager
 #if DEBUG_SEAGLIDE_OVERDRIVE
             Logger.Log($"SetSeaGlideSpeed():\nMotorMode: {Player.main.motorMode}\nisUnderWater: {Player.main.IsUnderwater()}\nisSeaglideFast: {CheatManager.instance.isSeaglideFast.value}");
 #endif          
-            if (CheatManager.instance.isSeaglideFast.value && Player.main.motorMode == Player.MotorMode.Seaglide && Player.main.IsUnderwater())
+            if (CheatManager.Instance.isSeaglideFast.value && Player.main.motorMode == Player.MotorMode.Seaglide && Player.main.IsUnderwater())
             {
                 Player.main.playerController.underWaterController.acceleration = 60f;
                 Player.main.playerController.underWaterController.verticalMaxSpeed = 75f;

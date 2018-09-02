@@ -55,3 +55,8 @@ CheatManager/obj/Release/CheatManager.csproj.FileListAbsolute.txt
 *.ide-wal
 CheatManager/obj/Release/CheatManager.csproj.CoreCompileInputs.cache
 *.cache
+*.cache
+CheatManager/obj/Release/DesignTimeResolveAssemblyReferencesInput.cache
+CheatManager/obj/Release/CheatManager.dll
+CheatManager/obj/Release/CheatManager.csproj.FileListAbsolute.txt
+CheatManager/obj/Release/CheatManager.csproj.CoreCompileInputs.cache

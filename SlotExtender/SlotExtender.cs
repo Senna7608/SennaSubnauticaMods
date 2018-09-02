@@ -45,7 +45,11 @@ namespace SlotExtender
         }
         
         internal void Start()
-        {
+        {  
+            //forced Awake for uGUI_Equipment_Patcher
+            Player.main.GetPDA().Open();
+            Player.main.GetPDA().Close();
+
             Utils.GetLocalPlayerComp().playerModeChanged.AddHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
         }
 

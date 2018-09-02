@@ -9,7 +9,7 @@ namespace CheatManager
 {
     public class CheatManager : MonoBehaviour
     {
-        public static CheatManager instance { get; private set; }
+        public static CheatManager Instance { get; private set; }
 
         private static readonly KeyCode MainHotkey = KeyCode.F5;
         private static readonly KeyCode ToggleHotkey = KeyCode.F4;
@@ -63,21 +63,21 @@ namespace CheatManager
                 
         public static CheatManager Load()
         {
-            instance = FindObjectOfType(typeof(CheatManager)) as CheatManager;            
+            Instance = FindObjectOfType(typeof(CheatManager)) as CheatManager;            
 
-            if (instance == null)
+            if (Instance == null)
             {
                 GameObject cheatmanager = new GameObject().AddComponent<CheatManager>().gameObject;
                 cheatmanager.name = "CheatManager";
-                instance = cheatmanager.GetComponent<CheatManager>();
+                Instance = cheatmanager.GetComponent<CheatManager>();
             }
             
-            return instance;
+            return Instance;
         }
 
         public void Awake()
         {            
-            instance = this;
+            Instance = this;
             useGUILayout = false;
             Assembly assembly = Assembly.GetExecutingAssembly();
             FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
@@ -95,6 +95,7 @@ namespace CheatManager
                 TechMatrix.IsExistsModdersTechTypes(ref TechnologyMatrix, TechMatrix.Known_AHK1221_TechTypes);
                 TechMatrix.IsExistsModdersTechTypes(ref TechnologyMatrix, TechMatrix.Known_PrimeSonic_TechTypes);
                 TechMatrix.IsExistsModdersTechTypes(ref TechnologyMatrix, TechMatrix.Known_Kylinator25_TechTypes);
+                TechMatrix.IsExistsModdersTechTypes(ref TechnologyMatrix, TechMatrix.Known_Coticvo_TechTypes);
             }
             else
             {

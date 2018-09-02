@@ -133,6 +133,10 @@ namespace CheatManager
             { "AlienRifle", CATEGORY.Tools }            
         };
 
+        public static readonly Dictionary<string, CATEGORY> Known_Coticvo_TechTypes = new Dictionary<string, CATEGORY>
+        {
+            { "techpistol", CATEGORY.Tools }
+        };
 
         public static readonly Dictionary<string, CATEGORY> Known_Senna7608_TechTypes = new Dictionary<string, CATEGORY>
         {
