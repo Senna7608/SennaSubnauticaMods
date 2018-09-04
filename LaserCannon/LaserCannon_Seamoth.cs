@@ -75,12 +75,12 @@ namespace LaserCannon
         
         public void SetBeamColor()
         {
-            beamcolor = Modules.Colors.ColorArray[LaserCannon.Config.LaserBeamColor];            
+            beamcolor = Modules.Colors.ColorArray[SettingsHelper.LaserBeamColor];            
         }
 
         public void ShootOnlyHostile()
         {
-            onlyHostile = LaserCannon.Config.OnlyHostile;
+            onlyHostile = SettingsHelper.OnlyHostile;
         }
 
         private void OnPlayerModeChanged(Player.Mode playerMode)

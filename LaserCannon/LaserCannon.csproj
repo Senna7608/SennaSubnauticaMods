@@ -65,9 +65,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="LaserCannon.cs" />
     <Compile Include="LaserCannon_Seamoth.cs" />
+    <Compile Include="SettingsHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\LaserCannon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LaserCannonConfig.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

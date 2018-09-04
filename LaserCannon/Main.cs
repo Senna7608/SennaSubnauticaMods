@@ -2,31 +2,41 @@
 using System.Reflection;
 using Harmony;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 namespace LaserCannon
 {
     public static class Main
     {
-        public static string langMain = "English";
-
         public static void Load()
         {
             try
             {
+                SettingsHelper.Init();
                 var laserCannon = new LaserCannon();
                 laserCannon.Patch();
 
-                HarmonyInstance.Create("Subnautica.LaserCannon.mod").PatchAll(Assembly.GetExecutingAssembly());                
+                HarmonyInstance.Create("Subnautica.LaserCannon.mod").PatchAll(Assembly.GetExecutingAssembly());
+                SceneManager.sceneLoaded += new UnityAction<Scene, LoadSceneMode>(OnSceneLoaded);
             }
             catch (Exception ex)
             {
                 Debug.LogException(ex);
             }
+        }
 
-            langMain = Language.main.GetCurrentLanguage();
+        private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            if (scene.name == "StartScreen")
+            {
+                Language.main.OnLanguageChanged += SettingsHelper.OnLanguageChanged;
+            }
         }
     }        
     
+
+
     [HarmonyPatch(typeof(SeaMoth))]
     [HarmonyPatch("OnUpgradeModuleChange")]
     public class SeaMoth_OnUpgradeModuleChange_Patch
