@@ -66,11 +66,11 @@ namespace LaserCannon
             "Ukrainian",
             "Vietnamese"
         };
+
         private static readonly string[] LanguageItems = { "   title_", "   toggle_", "   color_", "   description_", "   friendlyName_" };
         internal static readonly string[] beamColors = Modules.Colors.ColorNames;
 
-        private static Dictionary<string, string> LangText = new Dictionary<string, string>();
-        
+        private static Dictionary<string, string> LangText = new Dictionary<string, string>();        
 
         internal static int LaserBeamColor { get; set; }
         internal static bool OnlyHostile { get; set; }

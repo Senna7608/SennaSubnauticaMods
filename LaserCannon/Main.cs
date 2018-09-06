@@ -47,23 +47,23 @@ namespace LaserCannon
             {
                 if (added)
                 {
-                    if (__instance.GetComponentInChildren<LaserCannon_Seamoth>() == null)
+                    if (__instance.GetComponent<LaserCannon_Seamoth>() == null)
                     {
-                        __instance.gameObject.AddComponent<LaserCannon_Seamoth>();                        
-                        var laserCannon = __instance.GetComponentInChildren<LaserCannon_Seamoth>();
+                        var laserCannon =__instance.gameObject.AddComponent<LaserCannon_Seamoth>();                        
                         laserCannon.slotID = slotID;
                         Debug.Log($"[LaserCannon] Added component to instance: {__instance.name} ID: {__instance.GetInstanceID()}");
                     }
                     else
                     {
-                        __instance.GetComponentInChildren<LaserCannon_Seamoth>().enabled = true;
-                        var laserCannon = __instance.GetComponentInChildren<LaserCannon_Seamoth>();
+                        var laserCannon = __instance.GetComponent<LaserCannon_Seamoth>();
+                        laserCannon.seamoth = __instance.GetComponent<SeaMoth>();
                         laserCannon.slotID = slotID;
+                        laserCannon.enabled = true;
                     }
                 }
                 else
                 {
-                    __instance.GetComponentInChildren<LaserCannon_Seamoth>().enabled = false;
+                    __instance.GetComponent<LaserCannon_Seamoth>().enabled = false;
                 }
             }                                  
         }

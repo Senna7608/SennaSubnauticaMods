@@ -44,7 +44,7 @@ namespace ScannerModule
 
         public void Awake()
         {
-            seamoth = (SeaMoth)Player.main.GetVehicle();
+            seamoth = gameObject.GetComponent<SeaMoth>();
             leftTorpedoSlot = seamoth.torpedoTubeLeft.transform;
             energyMixin = seamoth.GetComponent<EnergyMixin>();
 

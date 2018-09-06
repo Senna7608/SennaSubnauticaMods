@@ -35,7 +35,7 @@ namespace RepairModule
 
         public void Awake()
         {
-            thisVehicle = Player.main.GetVehicle();            
+            thisVehicle = gameObject.GetComponent<Vehicle>();            
             energyMixin = thisVehicle.GetComponent<EnergyMixin>();
             weldSoundAsset = ScriptableObject.CreateInstance<FMODAsset>();
             weldSoundAsset.path = "event:/tools/welder/weld_loop";
@@ -54,6 +54,7 @@ namespace RepairModule
         {
             if (playerMode == Player.Mode.LockedPiloting)
             {
+                thisVehicle = Player.main.GetVehicle();
                 OnEnable();
             }
             else

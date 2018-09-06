@@ -46,7 +46,7 @@ namespace SlotExtender
         
         internal void Start()
         {  
-            //forced Awake for uGUI_Equipment_Patcher
+            //forced triggering the Awake method in uGUI_Equipment for patching
             Player.main.GetPDA().Open();
             Player.main.GetPDA().Close();
 

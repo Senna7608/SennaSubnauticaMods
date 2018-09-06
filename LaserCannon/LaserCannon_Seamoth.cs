@@ -10,7 +10,7 @@ namespace LaserCannon
         public static LaserCannon_Seamoth Main { get; private set; }
 
         [AssertNotNull]
-        private SeaMoth seamoth;
+        public SeaMoth seamoth;
         [AssertNotNull]
         private EnergyMixin energyMixin; 
         [AssertNotNull]
@@ -42,7 +42,7 @@ namespace LaserCannon
         {
             Main = this;
 
-            seamoth = (SeaMoth)Player.main.GetVehicle();
+            seamoth = gameObject.GetComponent<SeaMoth>();
             energyMixin = seamoth.GetComponent<EnergyMixin>();
             var repulsionCannonPrefab = Resources.Load<GameObject>("WorldEntities/Tools/RepulsionCannon").GetComponent<RepulsionCannon>();
             //RepulsionCannon repulsionCannonPrefab = CraftData.InstantiateFromPrefab(TechType.RepulsionCannon, false).GetComponent<RepulsionCannon>();
@@ -86,7 +86,7 @@ namespace LaserCannon
         private void OnPlayerModeChanged(Player.Mode playerMode)
         {
             if (playerMode == Player.Mode.LockedPiloting)
-            {
+            {                
                 OnEnable();
             }
             else

@@ -36,7 +36,7 @@ namespace ScannerModule
 
         public void Awake()
         {
-            exosuit = (Exosuit)Player.main.GetVehicle();
+            exosuit = gameObject.GetComponent<Exosuit>();
             energyMixin = exosuit.GetComponent<EnergyMixin>();
             scanSoundAsset = ScriptableObject.CreateInstance<FMODAsset>();
             scanSoundAsset.path = "event:/tools/scanner/scan_loop";
@@ -55,7 +55,7 @@ namespace ScannerModule
         private void OnPlayerModeChanged(Player.Mode playerMode)
         {
             if (playerMode == Player.Mode.LockedPiloting)
-            {
+            {                
                 OnEnable();
             }
             else
