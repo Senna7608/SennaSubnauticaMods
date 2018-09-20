@@ -1,0 +1,10 @@
+﻿{
+  "Id": "AncientSword",
+  "DisplayName": "AncientSword",
+  "Author": "Senna7608",
+  "Version": "1.0",
+  "Enable": true,
+  "AssemblyName": "AncientSword.dll",
+  "EntryMethod": "AncientSword.Main.Load",
+  "Config": { }
+}

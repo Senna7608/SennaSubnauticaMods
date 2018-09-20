@@ -47,23 +47,23 @@ namespace CheatManager
             {
                 switch (subcontrol.cyclopsMotorMode.cyclopsMotorMode)
                 {
-                case CyclopsMotorMode.CyclopsMotorModes.Slow:
-                subcontrol.BaseForwardAccel = def_Slow_BaseForwardAccel * CheatManager.cyclopsSpeedMultiplier; ;
-                subcontrol.BaseVerticalAccel = def_Slow_BaseVerticalAccel * CheatManager.cyclopsSpeedMultiplier; ;
-                subcontrol.BaseTurningTorque = def_Slow_BaseTurningTorque * CheatManager.cyclopsSpeedMultiplier; ;
-                break;
+                    case CyclopsMotorMode.CyclopsMotorModes.Slow:
+                    subcontrol.BaseForwardAccel = def_Slow_BaseForwardAccel * CheatManager.cyclopsSpeedMultiplier; ;
+                    subcontrol.BaseVerticalAccel = def_Slow_BaseVerticalAccel * CheatManager.cyclopsSpeedMultiplier; ;
+                    subcontrol.BaseTurningTorque = def_Slow_BaseTurningTorque * CheatManager.cyclopsSpeedMultiplier; ;
+                    break;
                 
-                case CyclopsMotorMode.CyclopsMotorModes.Standard:
-                subcontrol.BaseForwardAccel = def_Standard_BaseForwardAccel * CheatManager.cyclopsSpeedMultiplier; ;
-                subcontrol.BaseVerticalAccel = def_Standard_BaseVerticalAccel * CheatManager.cyclopsSpeedMultiplier; ;
-                subcontrol.BaseTurningTorque = def_Standard_BaseTurningTorque * CheatManager.cyclopsSpeedMultiplier; ;
-                break;
+                    case CyclopsMotorMode.CyclopsMotorModes.Standard:
+                    subcontrol.BaseForwardAccel = def_Standard_BaseForwardAccel * CheatManager.cyclopsSpeedMultiplier; ;
+                    subcontrol.BaseVerticalAccel = def_Standard_BaseVerticalAccel * CheatManager.cyclopsSpeedMultiplier; ;
+                    subcontrol.BaseTurningTorque = def_Standard_BaseTurningTorque * CheatManager.cyclopsSpeedMultiplier; ;
+                    break;
                 
-                case CyclopsMotorMode.CyclopsMotorModes.Flank:
-                subcontrol.BaseForwardAccel = def_Flank_BaseForwardAccel * CheatManager.cyclopsSpeedMultiplier; ;
-                subcontrol.BaseVerticalAccel = def_Flank_BaseVerticalAccel * CheatManager.cyclopsSpeedMultiplier; ;
-                subcontrol.BaseTurningTorque = def_Flank_BaseTurningTorque * CheatManager.cyclopsSpeedMultiplier; ;
-                break;
+                    case CyclopsMotorMode.CyclopsMotorModes.Flank:
+                    subcontrol.BaseForwardAccel = def_Flank_BaseForwardAccel * CheatManager.cyclopsSpeedMultiplier; ;
+                    subcontrol.BaseVerticalAccel = def_Flank_BaseVerticalAccel * CheatManager.cyclopsSpeedMultiplier; ;
+                    subcontrol.BaseTurningTorque = def_Flank_BaseTurningTorque * CheatManager.cyclopsSpeedMultiplier; ;
+                    break;
                 }
 
                 currentCyclopsMotorMode = subcontrol.cyclopsMotorMode.cyclopsMotorMode;

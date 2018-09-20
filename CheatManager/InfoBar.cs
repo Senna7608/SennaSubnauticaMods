@@ -6,10 +6,9 @@ namespace CheatManager
 {
     internal class InfoBar : MonoBehaviour
     {
-        private Rect windowRect = new Rect(400, 0, Screen.width - 905, 23);
-        public static InfoBar _Instance = null;
+        public static InfoBar Instance { get; private set; }
+        private Rect windowRect = new Rect(400, 0, Screen.width - 905, 23);        
         public static bool isShow;
-
         private Int3 currentBatch = new Int3();
         private static string currentBiome = "";
         private static int day = 0;
@@ -22,7 +21,7 @@ namespace CheatManager
         public void Awake()
         {
             useGUILayout = false;
-            _Instance = this;
+            Instance = this;
             DontDestroyOnLoad(this);            
         }
 
@@ -71,37 +70,31 @@ namespace CheatManager
             Tools.CreatePopupWindow(windowRect, null);
             GUI.contentColor = Color.green;            
             GUI.Label(new Rect(windowRect.x + 5, windowRect.y, windowRect.width, windowRect.height), stringBuilder.ToString());
-        }
-
-
-        internal static InfoBar Instance
-        {
-            get
-            {
-                if (_Instance == null)
-                {
-                    _Instance = FindObjectOfType(typeof(InfoBar)) as InfoBar;
-                    if (_Instance == null)
-                    {
-                        GameObject infobar = new GameObject();
-                        infobar.AddComponent<InfoBar>();
-                        infobar.name = "CheatManager.InfoBar";
-                        _Instance = infobar.GetComponent(typeof(InfoBar)) as InfoBar;
-                        Instance.Awake();
-                    }
-
-                }
-
-                return _Instance;
-            }
-        }
+        }        
 
         internal static void InitInfoBar(bool show)
         {
-            Instance.Awake();
+            Instance = Load();
             isShow = show;
         }
-        
+
+
+        public static InfoBar Load()
+        {
+            if (Instance == null)
+            {
+                Instance = FindObjectOfType(typeof(InfoBar)) as InfoBar;
+
+                if (Instance == null)
+                {
+                    GameObject infobar = new GameObject().AddComponent<InfoBar>().gameObject;
+                    infobar.name = "CheatManager.InfoBar";
+                    Instance = infobar.GetComponent<InfoBar>();                    
+                }
+            }
+
+            return Instance;
+        }
 
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.Mathf;
 
 namespace GUIHelper
 {
@@ -67,23 +68,12 @@ namespace GUIHelper
             return true;
         }
 
-        internal static int DivideRoundUP(float a, float b)
-        {
-            int x = (int)(a / b);
-
-            if (x * b < a)
-                return x + 1;
-
-            return x;
-        }
-
-
         internal static int CreateButtonsGrid(Rect targetRect, float space, int columns, List<ButtonInfo> Buttons, out float lastYcoord)
         {
             float x = targetRect.x;
             float y = targetRect.y + space;
-            float buttonWidth = (targetRect.width - ((columns + 1) * 5)) / columns;
-            int totalRows = DivideRoundUP(Buttons.Count, columns);
+            float buttonWidth = (targetRect.width - ((columns + 1) * 5)) / columns;            
+            int totalRows = CeilToInt(Buttons.Count / (float)columns);
 
             int row = 1;
             int column = 1;

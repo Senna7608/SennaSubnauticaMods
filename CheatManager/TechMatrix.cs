@@ -127,35 +127,8 @@ namespace CheatManager
             Blueprints,
             BaseModule,
         };
-
-        public static readonly Dictionary<string, CATEGORY> Known_Kylinator25_TechTypes = new Dictionary<string, CATEGORY>
-        {
-            { "AlienRifle", CATEGORY.Tools }            
-        };
-
-        public static readonly Dictionary<string, CATEGORY> Known_Coticvo_TechTypes = new Dictionary<string, CATEGORY>
-        {
-            { "techpistol", CATEGORY.Tools }
-        };
-
-        public static readonly Dictionary<string, CATEGORY> Known_Senna7608_TechTypes = new Dictionary<string, CATEGORY>
-        {
-            { "ScannerModule", CATEGORY.Upgrades },
-            { "RepairModule", CATEGORY.Upgrades },
-            { "LaserCannon", CATEGORY.Upgrades }
-        };
-
-
-        public static readonly Dictionary<string, CATEGORY> Known_AHK1221_TechTypes = new Dictionary<string, CATEGORY>
-        {
-            { "SeamothHullModule4", CATEGORY.Upgrades },
-            { "SeamothHullModule5", CATEGORY.Upgrades },
-            { "SeamothDrillModule", CATEGORY.Upgrades },
-            { "SeamothThermalModule", CATEGORY.Upgrades },
-        };
-
-
-        public static readonly Dictionary<string, CATEGORY> Known_PrimeSonic_TechTypes = new Dictionary<string, CATEGORY>
+        
+        public static readonly Dictionary<string, CATEGORY> Known_Modded_TechTypes = new Dictionary<string, CATEGORY>
         {
             { "SeaMothMk2", CATEGORY.Vehicles },
             { "SeaMothMk3", CATEGORY.Vehicles },
@@ -173,7 +146,17 @@ namespace CheatManager
             { "CyclopsNuclearModuleRefil", CATEGORY.Upgrades },
             { "NuclearFabricator", CATEGORY.BaseModule },
             { "AuxCyUpgradeConsole", CATEGORY.BaseModule },
-            { "VModFabricator", CATEGORY.BaseModule }
+            { "VModFabricator", CATEGORY.BaseModule },
+            { "SeamothHullModule4", CATEGORY.Upgrades },
+            { "SeamothHullModule5", CATEGORY.Upgrades },
+            { "SeamothDrillModule", CATEGORY.Upgrades },
+            { "SeamothThermalModule", CATEGORY.Upgrades },
+            { "ScannerModule", CATEGORY.Upgrades },
+            { "RepairModule", CATEGORY.Upgrades },
+            { "LaserCannon", CATEGORY.Upgrades },
+            { "techpistol", CATEGORY.Tools },
+            { "AlienRifle", CATEGORY.Tools },
+            { "AncientSword", CATEGORY.Tools }
         };
 
         public static readonly TechType[][] techMatrix = new TechType[][]

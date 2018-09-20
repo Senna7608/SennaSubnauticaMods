@@ -63,15 +63,18 @@ namespace CheatManager
                 
         public static CheatManager Load()
         {
-            Instance = FindObjectOfType(typeof(CheatManager)) as CheatManager;            
-
             if (Instance == null)
             {
-                GameObject cheatmanager = new GameObject().AddComponent<CheatManager>().gameObject;
-                cheatmanager.name = "CheatManager";
-                Instance = cheatmanager.GetComponent<CheatManager>();
+                Instance = FindObjectOfType(typeof(CheatManager)) as CheatManager;
+
+                if (Instance == null)
+                {
+                    GameObject cheatmanager = new GameObject().AddComponent<CheatManager>().gameObject;
+                    cheatmanager.name = "CheatManager";
+                    Instance = cheatmanager.GetComponent<CheatManager>();
+                }
             }
-            
+
             return Instance;
         }
 
@@ -89,13 +92,10 @@ namespace CheatManager
 
             TechnologyMatrix = new List<TechMatrix.TechTypeData>[TechMatrix.techMatrix.Length];
             TechMatrix.InitTechMatrixList(ref TechnologyMatrix);
+
             if (Main.isExistsSMLHelperV2)
-            {
-                TechMatrix.IsExistsModdersTechTypes(ref TechnologyMatrix, TechMatrix.Known_Senna7608_TechTypes);
-                TechMatrix.IsExistsModdersTechTypes(ref TechnologyMatrix, TechMatrix.Known_AHK1221_TechTypes);
-                TechMatrix.IsExistsModdersTechTypes(ref TechnologyMatrix, TechMatrix.Known_PrimeSonic_TechTypes);
-                TechMatrix.IsExistsModdersTechTypes(ref TechnologyMatrix, TechMatrix.Known_Kylinator25_TechTypes);
-                TechMatrix.IsExistsModdersTechTypes(ref TechnologyMatrix, TechMatrix.Known_Coticvo_TechTypes);
+            {               
+                TechMatrix.IsExistsModdersTechTypes(ref TechnologyMatrix, TechMatrix.Known_Modded_TechTypes);
             }
             else
             {
@@ -153,7 +153,8 @@ namespace CheatManager
             warpSound = null;            
             isActive = false;
             seamothCanFly = false;            
-            initStyles = false;            
+            initStyles = false;
+            isSeaglideFast.changedEvent.RemoveHandler(this, new Event<Utils.MonitoredValue<bool>>.HandleFunction(IsSeaglideFast));
         }
 
         public void Start()
@@ -376,7 +377,7 @@ namespace CheatManager
             if (category == 19)
                 scrollItems = WarpData.Length;            
             else           
-                scrollItems = TechnologyMatrix[category].Count;
+                scrollItems = TechnologyMatrix[category].Count;            
 
             float width = scrollRect.width;
 
@@ -399,7 +400,7 @@ namespace CheatManager
                 {
                     itemName = WarpData[i][1];
                     selectedTech = WarpData[i][0];                    
-                }
+                }                
                 else
                 {                    
                     itemName = TechnologyMatrix[category][i].Name; 
@@ -437,8 +438,7 @@ namespace CheatManager
                         case 7:
                         case 8:
                         case 9:
-                        case 10:
-                        
+                        case 10:                        
                         case 16:
                         case 17:
                             ExecuteCommand($"{itemName}  has spawned", $"spawn {selectedTech}");                             
@@ -449,7 +449,7 @@ namespace CheatManager
                         case 19:
                             Teleport(itemName, selectedTech);
                             Buttons[7].Enabled = true;
-                            break;
+                            break;                        
                         default:
                             break;
                     }
@@ -485,9 +485,8 @@ namespace CheatManager
             Vector3 currentWorldPos = MainCamera.camera.transform.position;
             prevCwPos = string.Format("{0:D} {1:D} {2:D}", (int)currentWorldPos.x, (int)currentWorldPos.y, (int)currentWorldPos.z);
             if (IsPlayerInVehicle())
-            {
-                Vehicle vehicle = Player.main.GetVehicle();
-                vehicle.TeleportVehicle(WarpTargets.ConvertStringPosToVector3(Vector3string), Quaternion.identity);
+            {                
+                Player.main.GetVehicle().TeleportVehicle(WarpTargets.ConvertStringPosToVector3(Vector3string), Quaternion.identity);
                 Player.main.CompleteTeleportation();
                 ErrorMessage.AddMessage($"Vehicle and Player Warped to: {name}\n({Vector3string})");
             }

@@ -10,25 +10,17 @@ namespace CheatManager
 {
     public class Logger : MonoBehaviour
     {
-        private static Logger _Instance = null;
-
-        private static Rect windowRect = new Rect(Screen.width - 500, 764, 500, Screen.height-764);
-        
-        private static Rect scrollRect = new Rect(windowRect.x, windowRect.y + 26, windowRect.width - 5, windowRect.height - 58);        
-
+        public static Logger Instance { get; private set; }
+        private static Rect windowRect = new Rect(Screen.width - 500, 764, 500, Screen.height-764);        
+        private static Rect scrollRect = new Rect(windowRect.x, windowRect.y + 26, windowRect.width - 5, windowRect.height - 58);
         private static Vector2 scrollPos = Vector2.zero;
-
         private static float contentHeight = 0;
-        private static float drawingPos;        
-
+        private static float drawingPos;
         private static List<LOG> logMessage = new List<LOG>();
-
-        private static int messageCount = 0;
-       
-        private readonly KeyCode toggleKey = KeyCode.Delete;       
-
+        private static int messageCount = 0;       
+        private readonly KeyCode toggleKey = KeyCode.Delete;
         public bool show = false;
-        public static string inputField = "";
+        public static string inputField = string.Empty;
 
 #if MAXMESSAGE_INFINITY
         private static readonly int MAXLOG = int.MaxValue;
@@ -47,7 +39,8 @@ namespace CheatManager
         }
         
         private static readonly Dictionary<LogType, Color> logTypeColors = new Dictionary<LogType, Color>()
-        {   { LogType.Error, Color.magenta },
+        {
+            { LogType.Error, Color.magenta },
             { LogType.Assert, Color.blue },
             { LogType.Warning, Color.yellow },            
             { LogType.Log, Color.green },
@@ -55,37 +48,30 @@ namespace CheatManager
 
         };        
          
-        private static Logger GetInstance()
+        public static Logger Load()
         {
-            if (_Instance == null)
+            if (Instance == null)
             {
-                _Instance = FindObjectOfType(typeof(Logger)) as Logger;
-                if (_Instance == null)
+                Instance = FindObjectOfType(typeof(Logger)) as Logger;
+
+                if (Instance == null)
                 {
-                    GameObject logger = new GameObject();
-                    logger.AddComponent<Logger>();
+                    GameObject logger = new GameObject().AddComponent<Logger>().gameObject;
                     logger.name = "CheatManager.Logger";
-                    _Instance = logger.GetComponent<Logger>();
-                    _Instance.Awake();
+                    Instance = logger.GetComponent<Logger>();                    
                 }
             }
 
-            return _Instance;
+            return Instance;
         }
-
-        public static void Load()
-        {
-            GetInstance();            
-        }
+        
 
         public void Awake()
         {
-            _Instance = this;
+            Instance = this;
             DontDestroyOnLoad(this);            
             useGUILayout = false;
             InfoBar.InitInfoBar(show);
-           
-
 #if DEBUG
             show = true;
 #endif
@@ -278,12 +264,12 @@ namespace CheatManager
 
         }
 
-        public static void Log(string message) => GetInstance().Write(message);
+        public static void Log(string message) => Instance.Write(message);
 
-        public static void Log(string message, LogType type) => GetInstance().Write(message, type);
+        public static void Log(string message, LogType type) => Instance.Write(message, type);
 
-        public static void Log(string message, LogType type, params object[] arg) => GetInstance().Write(message, type, arg);
+        public static void Log(string message, LogType type, params object[] arg) => Instance.Write(message, type, arg);
 
-        public static void HandleLog(string message, string stacktrace, LogType type) => GetInstance().Write(message, stacktrace, type);
+        public static void HandleLog(string message, string stacktrace, LogType type) => Instance.Write(message, stacktrace, type);
     }
 }

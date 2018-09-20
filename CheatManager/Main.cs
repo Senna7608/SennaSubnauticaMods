@@ -98,8 +98,7 @@ namespace CheatManager
         {
             internal static void Postfix(Seaglide __instance)
             {
-                __instance.gameObject.AddComponent<SeaglideOverDrive>();
-                
+                __instance.gameObject.AddComponent<SeaglideOverDrive>();                
             }
         }        
     }  

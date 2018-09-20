@@ -11,7 +11,7 @@ namespace SlotExtender
         internal bool isOpen = false;
         internal bool isActive = false;                
 
-        internal static readonly string[] newSeamothSlotIDs = new string[]
+        internal static readonly string[] newSeamothSlotIDs = new string[5]
         {
            "SeamothModule5",
            "SeamothModule6",
@@ -20,7 +20,7 @@ namespace SlotExtender
            "SeamothModule9"
         };
 
-        internal static readonly string[] newExosuitSlotIDs = new string[]
+        internal static readonly string[] newExosuitSlotIDs = new string[4]
         {
            "ExosuitModule5",
            "ExosuitModule6",
