@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Common.DebugHelper;
 
 namespace SlotExtender
 {
@@ -28,17 +29,17 @@ namespace SlotExtender
 
         internal static readonly Vector2[] seamoth_slotPos = new Vector2[9]
         {
-            new Vector2(OutsideRightEvenColumn, BottomRow), //slot 1
-            new Vector2(InsideRightEvenColumn, BottomRow),  //slot 2
-            new Vector2(InsideLeftEvenColumn, BottomRow),   //slot 3
-            new Vector2(OutsideLeftEvenColumn, BottomRow),  //slot 4
+            new Vector2(OutsideLeftEvenColumn, TopRow), //slot 1
+            new Vector2(InsideLeftEvenColumn, TopRow),  //slot 2
+            new Vector2(InsideRightEvenColumn, TopRow),   //slot 3
+            new Vector2(OutsideRightEvenColumn, TopRow),  //slot 4
 
-            new Vector2(OutsideRightOddColumn, MiddleRow), //slot 5
+            new Vector2(OutsideLeftOddColumn, MiddleRow), //slot 5
             new Vector2(CenterOddColumn, MiddleRow),       //slot 6
-            new Vector2(OutsideLeftOddColumn, MiddleRow),  //slot 7
+            new Vector2(OutsideRightOddColumn, MiddleRow),  //slot 7
 
-            new Vector2(InsideLeftEvenColumn, TopRow),  //slot 8
-            new Vector2(InsideRightEvenColumn, TopRow),   //slot 9
+            new Vector2(InsideLeftEvenColumn, BottomRow),  //slot 8
+            new Vector2(InsideRightEvenColumn, BottomRow),   //slot 9
         };
 
         internal static readonly Vector2[] exosuit_slotPos = new Vector2[8]
@@ -59,7 +60,7 @@ namespace SlotExtender
         {
             Instance = this;
         }
-
+        
         internal void Add_uGUIslots(uGUI_Equipment instance, Dictionary<string, uGUI_EquipmentSlot> allSlots)
         {
             if (!isPatched)
@@ -67,6 +68,12 @@ namespace SlotExtender
                 foreach (uGUI_EquipmentSlot slot in instance.GetComponentsInChildren<uGUI_EquipmentSlot>(true))
                 {
                     // slot1 always includes the background image, therefore instantiate the slot2 to avoid duplicate background images
+
+                    if (slot.name == "SeamothModule1")
+                    {
+                        slot.transform.GetChild(0).transform.localPosition = new Vector3(OutsideRightEvenColumn, BottomRow);                        
+                    }                    
+
                     if (slot.name == "SeamothModule2")
                     {
                         foreach (string slotID in SlotHelper.NewSeamothSlotIDs)
@@ -103,7 +110,7 @@ namespace SlotExtender
                         int.TryParse(item.Key.Substring(13), out int slotNum);
                         item.Value.rectTransform.anchoredPosition = exosuit_slotPos[slotNum - 1];
                         AddSlotNumbers(item.Value.gameObject.transform, slotNum.ToString());
-                    }
+                    }                    
                 }
 
                 Debug.Log("[SlotExtender] uGUI_EquipmentSlots Patched!");
