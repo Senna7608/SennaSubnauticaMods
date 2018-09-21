@@ -66,14 +66,14 @@ namespace SlotExtender
             if (!isPatched)
             {
                 foreach (uGUI_EquipmentSlot slot in instance.GetComponentsInChildren<uGUI_EquipmentSlot>(true))
-                {
-                    // slot1 always includes the background image, therefore instantiate the slot2 to avoid duplicate background images
-
+                {                    
+                    // reposition the background image
                     if (slot.name == "SeamothModule1")
-                    {
-                        slot.transform.GetChild(0).transform.localPosition = new Vector3(OutsideRightEvenColumn, BottomRow);                        
-                    }                    
+                    {                        
+                        slot.transform.Find("Seamoth").transform.localPosition = new Vector3(OutsideRightEvenColumn, BottomRow);
+                    }
 
+                    // slot1 always includes the background image, therefore instantiate the slot2 to avoid duplicate background images
                     if (slot.name == "SeamothModule2")
                     {
                         foreach (string slotID in SlotHelper.NewSeamothSlotIDs)
