@@ -3,61 +3,48 @@ using UWE;
 
 namespace SlotExtender
 {
-    internal class SlotExtender : MonoBehaviour 
+    internal class SlotExtender : MonoBehaviour
     {
         public SlotExtender Instance { get; private set; }
         public Vehicle ThisVehicle { get; private set; }
 
         internal bool isOpen = false;
-        internal bool isActive = false;                
-
-        internal static readonly string[] newSeamothSlotIDs = new string[5]
-        {
-           "SeamothModule5",
-           "SeamothModule6",
-           "SeamothModule7",
-           "SeamothModule8",
-           "SeamothModule9"
-        };
-
-        internal static readonly string[] newExosuitSlotIDs = new string[4]
-        {
-           "ExosuitModule5",
-           "ExosuitModule6",
-           "ExosuitModule7",
-           "ExosuitModule8"
-        };        
+        internal bool isActive = false;
 
         internal void Awake()
         {
-            Instance = this;
-            
-            if (Instance.GetComponent<SeaMoth>())
+            this.Instance = this;
+
+            if (this.Instance.GetComponent<SeaMoth>())
             {
-                ThisVehicle = Instance.GetComponent<SeaMoth>();
-                ThisVehicle.modules.AddSlots(newSeamothSlotIDs);                
+                this.ThisVehicle = this.Instance.GetComponent<SeaMoth>();
+
+                foreach (string slotID in SlotHelper.NewSeamothSlotIDs)
+                    this.ThisVehicle.modules.AddSlot(slotID);
             }
             else
             {
-                ThisVehicle = Instance.GetComponent<Exosuit>();
-                ThisVehicle.modules.AddSlots(newExosuitSlotIDs);                
-            }            
+                this.ThisVehicle = this.Instance.GetComponent<Exosuit>();
+
+                foreach (string slotID in SlotHelper.NewExosuitSlotIDs)
+                    this.ThisVehicle.modules.AddSlot(slotID);
+            }
         }
-        
+
         internal void Start()
-        {  
+        {
             //forced triggering the Awake method in uGUI_Equipment for patching
             Player.main.GetPDA().Open();
             Player.main.GetPDA().Close();
 
-            Utils.GetLocalPlayerComp().playerModeChanged.AddHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
+            Utils.GetLocalPlayerComp().playerModeChanged.AddHandler(this.gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
         }
 
         internal void OnPlayerModeChanged(Player.Mode playerMode)
         {
             if (playerMode == Player.Mode.LockedPiloting)
             {
-                if (Player.main.GetVehicle() == ThisVehicle)
+                if (Player.main.GetVehicle() == this.ThisVehicle)
                 {
                     isActive = true;
                 }
@@ -74,53 +61,52 @@ namespace SlotExtender
 
         internal void Update()
         {
-            if (isActive)
+            if (!isActive)
+                return; // Slot Extender not active. Exit method.
+
+            if (!Player.main.inSeamoth && !Player.main.inExosuit)
+                return; // Player not in vehicle. Exit method.
+
+            if (Input.GetKeyDown(KeyCode.R))
             {
-                if (Player.main.inSeamoth || Player.main.inExosuit)
+                if (isOpen)
                 {
-                    if (Input.GetKeyDown(KeyCode.R) && !isOpen)
-                    {                       
-                        ThisVehicle.upgradesInput.OpenFromExternal();
-                        isOpen = true;
-                    }
-                    else if (isOpen && Input.GetKeyDown(KeyCode.R))
-                    {
-                        Player.main.GetPDA().Close();
-                        isOpen = false;
-                    }
-
-                    if (Input.GetKeyDown(KeyCode.Alpha6))
-                    {
-                        ThisVehicle.SendMessage("SlotKeyDown", 5);
-                    }
-
-                    if (Input.GetKeyDown(KeyCode.Alpha7))
-                    {
-                        ThisVehicle.SendMessage("SlotKeyDown", 6);
-                    }
-
-                    if (Input.GetKeyDown(KeyCode.Alpha8))
-                    {
-                        ThisVehicle.SendMessage("SlotKeyDown", 7);
-                    }
-
-                    if (Input.GetKeyDown(KeyCode.Alpha9))
-                    {
-                        ThisVehicle.SendMessage("SlotKeyDown", 8);
-                    }
+                    Player.main.GetPDA().Close();
+                    isOpen = false;
                 }
+                else // Is Closed
+                {
+                    this.ThisVehicle.upgradesInput.OpenFromExternal();
+                    isOpen = true;
+                }
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha6))
+            {
+                this.ThisVehicle.SendMessage("SlotKeyDown", 5);
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha7))
+            {
+                this.ThisVehicle.SendMessage("SlotKeyDown", 6);
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha8))
+            {
+                this.ThisVehicle.SendMessage("SlotKeyDown", 7);
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha9))
+            {
+                this.ThisVehicle.SendMessage("SlotKeyDown", 8);
             }
         }
 
         internal static bool IsExtendedSeamothSlot(string slotName)
         {
-            foreach (string slot in newSeamothSlotIDs)
+            foreach (string slot in SlotHelper.NewSeamothSlotIDs)
             {
                 if (slotName == slot)
                     return true;
             }
 
             return false;
-        }        
+        }
     }
 }

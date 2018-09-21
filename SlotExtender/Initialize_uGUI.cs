@@ -12,38 +12,52 @@ namespace SlotExtender
 
         internal uGUI_EquipmentSlot temp_slot;
 
+        private const float Unit = 145f;
+
+        private const float TopRow = Unit;
+        private const float MiddleRow = 0f;
+        private const float BottomRow = -Unit;
+
+        private const float CenterOddColumn = 0f;
+        private const float OutsideRightOddColumn = Unit;
+        private const float OutsideRightEvenColumn = OutsideRightOddColumn * 1.5f;
+        private const float InsideRightEvenColumn = OutsideRightEvenColumn / 3f;
+        private const float InsideLeftEvenColumn = -InsideRightEvenColumn;
+        private const float OutsideLeftEvenColumn = -OutsideRightEvenColumn;
+        private const float OutsideLeftOddColumn = -OutsideRightOddColumn;
+
         internal static readonly Vector2[] seamoth_slotPos = new Vector2[9]
         {
-            new Vector2(143f, -149f),   //slot 1
-            new Vector2(0f, -149f),     //slot 2
-            new Vector2(-143f, -149f),  //slot 3
+            new Vector2(OutsideRightEvenColumn, BottomRow), //slot 1
+            new Vector2(InsideRightEvenColumn, BottomRow),  //slot 2
+            new Vector2(InsideLeftEvenColumn, BottomRow),   //slot 3
+            new Vector2(OutsideLeftEvenColumn, BottomRow),  //slot 4
 
-            new Vector2(143f, -6.5f),   //slot 4
-            new Vector2(0f, -6.5f),     //slot 5
-            new Vector2(-143f, -6.5f),  //slot 6
+            new Vector2(OutsideRightOddColumn, MiddleRow), //slot 5
+            new Vector2(CenterOddColumn, MiddleRow),       //slot 6
+            new Vector2(OutsideLeftOddColumn, MiddleRow),  //slot 7
 
-            new Vector2(143f, 136f),    //slot 7
-            new Vector2(0f, 136f),      //slot 8
-            new Vector2(-143f, 136f)    //slot 9
+            new Vector2(InsideLeftEvenColumn, TopRow),  //slot 8
+            new Vector2(InsideRightEvenColumn, TopRow),   //slot 9
         };
 
         internal static readonly Vector2[] exosuit_slotPos = new Vector2[8]
         {
-            new Vector2(-143f, 136f),   //slot 1
-            new Vector2(0f, 136f),      //slot 2
-            new Vector2(143f, 136f),    //slot 3
+            new Vector2(OutsideLeftOddColumn, TopRow),  //slot 1
+            new Vector2(CenterOddColumn, TopRow),       //slot 2
+            new Vector2(OutsideRightOddColumn, TopRow), //slot 3
 
-            new Vector2(-80, -5.5f),    //slot 4
-            new Vector2(80, -5.5f),     //slot 5
+            new Vector2(InsideLeftEvenColumn, MiddleRow),  //slot 4
+            new Vector2(InsideRightEvenColumn, MiddleRow), //slot 5
 
-            new Vector2(-143f, -149f),  //slot 6
-            new Vector2(0f, -149f),     //slot 7
-            new Vector2(143f, -149f)    //slot 8            
+            new Vector2(OutsideLeftOddColumn, BottomRow), //slot 6
+            new Vector2(CenterOddColumn, BottomRow),      //slot 7
+            new Vector2(OutsideRightOddColumn, BottomRow) //slot 8
         };
 
         internal void Awake()
         {
-            Instance = this;            
+            Instance = this;
         }
 
         internal void Add_uGUIslots(uGUI_Equipment instance, Dictionary<string, uGUI_EquipmentSlot> allSlots)
@@ -52,42 +66,46 @@ namespace SlotExtender
             {
                 foreach (uGUI_EquipmentSlot slot in instance.GetComponentsInChildren<uGUI_EquipmentSlot>(true))
                 {
-                    //always slot1 includes the background image, therefore instantiate the slot2 for avoid duplicates
+                    // slot1 always includes the background image, therefore instantiate the slot2 to avoid duplicate background images
                     if (slot.name == "SeamothModule2")
                     {
                         for (int i = 4; i < SlotHelper.ExpandedSeamothSlotIDs.Length; i++)
                         {
                             temp_slot = Instantiate(slot, slot.gameObject.transform.parent);
                             temp_slot.name = SlotHelper.ExpandedSeamothSlotIDs[i];
-                            temp_slot.slot = SlotHelper.ExpandedSeamothSlotIDs[i];                                                        
+                            temp_slot.slot = SlotHelper.ExpandedSeamothSlotIDs[i];
                             allSlots.Add(SlotHelper.ExpandedSeamothSlotIDs[i], temp_slot);
-                        }                        
+                        }
+
+                        break;
                     }
-                    
-                    if (slot.name == "ExosuitModule2")
+                    else if (slot.name == "ExosuitModule2")
                     {
                         for (int i = 6; i < SlotHelper.ExpandedExosuitSlotIDs.Length; i++)
                         {
                             temp_slot = Instantiate(slot, slot.gameObject.transform.parent);
                             temp_slot.name = SlotHelper.ExpandedExosuitSlotIDs[i];
-                            temp_slot.slot = SlotHelper.ExpandedExosuitSlotIDs[i];                            
+                            temp_slot.slot = SlotHelper.ExpandedExosuitSlotIDs[i];
                             allSlots.Add(SlotHelper.ExpandedExosuitSlotIDs[i], temp_slot);
-                        }                        
-                    }                    
+                        }
+
+                        break;
+                    }
                 }
-                
+
                 foreach (KeyValuePair<string, uGUI_EquipmentSlot> item in allSlots)
                 {
-                    if (item.Value.name.Contains("SeamothModule"))
-                    {                        
-                        int.TryParse(item.Key.Substring(13, 1), out int slotNum);
+                    if (item.Value.name.StartsWith("SeamothModule"))
+                    {
+                        int.TryParse(item.Key.Substring(13), out int slotNum);
                         item.Value.rectTransform.anchoredPosition = seamoth_slotPos[slotNum - 1];
                         AddSlotNumbers(item.Value.gameObject.transform, slotNum.ToString());
+
                     }
 
-                    if (item.Value.name.Contains("ExosuitModule"))
+                    if (item.Value.name.StartsWith("ExosuitModule"))
                     {
-                        int.TryParse(item.Key.Substring(13, 1), out int slotNum);
+                        int.TryParse(item.Key.Substring(13), out int slotNum);
                         item.Value.rectTransform.anchoredPosition = exosuit_slotPos[slotNum - 1];
                         AddSlotNumbers(item.Value.gameObject.transform, slotNum.ToString());
                     }
@@ -118,7 +136,7 @@ namespace SlotExtender
             text.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 100);
             text.rectTransform.anchoredPosition = new Vector3(0, 70);
             text.alignment = TextAnchor.MiddleCenter;
-            text.raycastTarget = false;            
+            text.raycastTarget = false;
         }
     }
 }

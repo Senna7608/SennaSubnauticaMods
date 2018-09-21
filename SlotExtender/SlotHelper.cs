@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace SlotExtender
 {
@@ -12,11 +13,12 @@ namespace SlotExtender
             "SeamothModule2",
             "SeamothModule3",
             "SeamothModule4",
+            // New slots start here
             "SeamothModule5",
             "SeamothModule6",
             "SeamothModule7",
             "SeamothModule8",
-            "SeamothModule9"
+            "SeamothModule9",
         };
 
         internal static readonly string[] ExpandedExosuitSlotIDs = new string[10]
@@ -27,27 +29,45 @@ namespace SlotExtender
             "ExosuitModule2",
             "ExosuitModule3",
             "ExosuitModule4",
+            // New slots start here
             "ExosuitModule5",
             "ExosuitModule6",
             "ExosuitModule7",
             "ExosuitModule8"
         };
-        
+
+        internal static IEnumerable<string> NewSeamothSlotIDs
+        {
+            get
+            {
+                for (int i = 4; i < ExpandedSeamothSlotIDs.Length; i++)
+                {
+                    yield return ExpandedSeamothSlotIDs[i];
+                }
+            }
+        }
+
+        internal static IEnumerable<string> NewExosuitSlotIDs
+        {
+            get
+            {
+                for (int i = 6; i < ExpandedExosuitSlotIDs.Length; i++)
+                {
+                    yield return ExpandedExosuitSlotIDs[i];
+                }
+            }
+        }
+
         internal static void ExpandSlotMapping()
         {
             if (!SlotMappingExpanded)
             {
-                Equipment.slotMapping.Add("SeamothModule5", EquipmentType.SeamothModule);
-                Equipment.slotMapping.Add("SeamothModule6", EquipmentType.SeamothModule);
-                Equipment.slotMapping.Add("SeamothModule7", EquipmentType.SeamothModule);
-                Equipment.slotMapping.Add("SeamothModule8", EquipmentType.SeamothModule);
-                Equipment.slotMapping.Add("SeamothModule9", EquipmentType.SeamothModule);
+                foreach (string slotID in ExpandedSeamothSlotIDs)
+                    Equipment.slotMapping.Add(slotID, EquipmentType.SeamothModule);
 
-                Equipment.slotMapping.Add("ExosuitModule5", EquipmentType.ExosuitModule);
-                Equipment.slotMapping.Add("ExosuitModule6", EquipmentType.ExosuitModule);
-                Equipment.slotMapping.Add("ExosuitModule7", EquipmentType.ExosuitModule);
-                Equipment.slotMapping.Add("ExosuitModule8", EquipmentType.ExosuitModule);               
-                
+                foreach (string slotID in SlotHelper.ExpandedExosuitSlotIDs)
+                    Equipment.slotMapping.Add(slotID, EquipmentType.ExosuitModule);
+
                 Debug.Log("[SlotExtender] Equipment.slotMapping Patched!");
                 SlotMappingExpanded = true;
             }
