@@ -62,10 +62,10 @@ namespace SlotExtender
         {
             if (!SlotMappingExpanded)
             {
-                foreach (string slotID in ExpandedSeamothSlotIDs)
+                foreach (string slotID in NewSeamothSlotIDs)
                     Equipment.slotMapping.Add(slotID, EquipmentType.SeamothModule);
 
-                foreach (string slotID in SlotHelper.ExpandedExosuitSlotIDs)
+                foreach (string slotID in NewExosuitSlotIDs)
                     Equipment.slotMapping.Add(slotID, EquipmentType.ExosuitModule);
 
                 Debug.Log("[SlotExtender] Equipment.slotMapping Patched!");
