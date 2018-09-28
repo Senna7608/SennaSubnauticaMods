@@ -171,17 +171,101 @@ namespace Common.DebugHelper
                 $" hasChanged: {rectTransform.hasChanged}\n" +
                 $" hideFlags: {rectTransform.hideFlags}\n" +
                 $" hierarchyCapacity: {rectTransform.hierarchyCapacity}\n" +
-                $" hierarchyCount: {rectTransform.hierarchyCount}\n"               
-
+                $" hierarchyCount: {rectTransform.hierarchyCount}\n"
                 );
+        }
 
+        public static void DebugTransform(string name, Transform transform)
+        {
+            if (transform == null)
+            {
+                Debug.LogError($"[DebugHelper] transform: [{name}] is NULL!");
+                return;
+            }
 
+            bool noParent = false;
+
+            if (transform.parent == null)
+                noParent = true;
+
+            Debug.Log($"[DebugHelper] DebugTransform: [{name}]\n" +
+
+                $"\nObject:\n" +
+                $" type: {transform.GetType().ToString()}\n" +
+
+                $"\nTransform:\n" +
+                $" transform: {transform.transform}\n" +
+                $" parent: {(noParent ? "NULL" : transform.parent.ToString())}\n" +
+                $" root: {transform.root}\n" +          
+
+                $"\nVector3:\n" +
+                $" position: {transform.position}\n" +
+                $" localPosition: {transform.localPosition}\n" +                
+                $" right: {transform.right}\n" +
+                $" up: {transform.up}\n" +                
+                $" eulerAngles: {transform.eulerAngles}\n" +
+                $" localEulerAngles: {transform.localEulerAngles}\n" +
+                $" forward: {transform.forward}\n" +
+                $" localScale: {transform.localScale}\n" +
+                $" lossyScale: {transform.lossyScale}\n" +
+
+                $"\nQuaternion:\n" +
+                $" rotation: {transform.rotation}\n" +
+                $" localRotation: {transform.localRotation}\n" +
+
+                $"\nOther:\n" +
+                $" childCount: {transform.childCount}\n" +
+                $" hasChanged: {transform.hasChanged}\n" +
+                $" hideFlags: {transform.hideFlags}\n" +
+                $" hierarchyCapacity: {transform.hierarchyCapacity}\n" +
+                $" hierarchyCount: {transform.hierarchyCount}\n"
+                );
         }
 
 
+        public static void DebugRigidbody(string name, Rigidbody rb)
+        {
+            if (rb == null)
+            {
+                Debug.LogError($"[DebugHelper] Rigidbody: [{name}] is NULL!");
+                return;
+            }
 
+            bool noParent = false;
 
+            if (rb.transform.parent == null)
+                noParent = true;
 
+            Debug.Log($"[DebugHelper] DebugRigidbody: [{name}]\n" +
+
+                $"\nObject:\n" +
+                $" type: {rb.GetType().ToString()}\n" +
+
+                $"\nTransform:\n" +
+                $" transform: {rb.transform}\n" +
+                $" parent: {(noParent ? "NULL" : rb.transform.parent.ToString())}\n" +
+                $" root: {rb.transform.root}\n" +
+
+                $" angularDrag: {rb.angularDrag}\n" +
+                $" angularVelocity: {rb.angularVelocity}\n" +
+                $" centerOfMass: {rb.centerOfMass}\n" +
+                $" collisionDetectionMode: {rb.collisionDetectionMode}\n" +
+                $" constraints: {rb.constraints}\n" +
+                $" detectCollisions: {rb.detectCollisions}\n" +
+                $" drag: {rb.drag}\n" +
+                $" freezeRotation: {rb.freezeRotation}\n" +                               
+                $" inertiaTensor: {rb.inertiaTensor}\n" +
+                $" inertiaTensorRotation: {rb.inertiaTensorRotation}\n" +                
+                $" interpolation: {rb.interpolation}\n" +
+                $" isKinematic: {rb.isKinematic}\n" +
+                $" mass: {rb.mass}\n" +
+                $" maxAngularVelocity: {rb.maxAngularVelocity}\n" +
+                $" maxDepenetrationVelocity: {rb.maxDepenetrationVelocity}\n" +
+                $" useGravity: {rb.useGravity}\n" +
+                $" velocity: {rb.velocity}\n" +
+                $" worldCenterOfMass: {rb.worldCenterOfMass}\n"
+                );
+        }
 
     }
 }

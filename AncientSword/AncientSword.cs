@@ -2,8 +2,16 @@
 
 namespace AncientSword
 {
-    public class AncientSword : PlayerTool
+    public class AncientSword : PlayerTool, IProtoEventListener
     {
+        public override string animToolName
+        {
+            get
+            {
+                return "knife";
+            }
+        }
+        
         [AssertNotNull]
         public FMODAsset attackSound;
 
@@ -12,40 +20,34 @@ namespace AncientSword
 
         [AssertNotNull]
         public FMODAsset surfaceMissSound;
-
-        public DamageType damageType;
+        
+        public DamageType damageType = DamageType.Normal;
 
         public float damage = 50f;
 
-        public float attackDist = 2f;
+        public float attackDist = 5f;
 
-        public VFXEventTypes vfxEventType;
-
-        public void Start()
-        {
-
-
-        }
+        public VFXEventTypes vfxEventType = VFXEventTypes.knife;              
 
         public override void OnToolUseAnim(GUIHand hand)
         {
             Vector3 position = default(Vector3);
-            GameObject gameObject = null;
+            GameObject closestObject = null;
 
-            UWE.Utils.TraceFPSTargetPosition(Player.main.gameObject, attackDist, ref gameObject, ref position, true);
+            UWE.Utils.TraceFPSTargetPosition(Player.main.gameObject, attackDist, ref closestObject, ref position, true);
 
-            if (gameObject == null)
+            if (closestObject == null)
             {
                 InteractionVolumeUser component = Player.main.gameObject.GetComponent<InteractionVolumeUser>();
                 if (component != null && component.GetMostRecent() != null)
                 {
-                    gameObject = component.GetMostRecent().gameObject;
+                    closestObject = component.GetMostRecent().gameObject;
                 }
             }
 
-            if (gameObject)
+            if (closestObject)
             {
-                LiveMixin liveMixin = gameObject.FindAncestor<LiveMixin>();
+                LiveMixin liveMixin = closestObject.FindAncestor<LiveMixin>();
 
                 if (IsValidTarget(liveMixin))
                 {
@@ -53,20 +55,20 @@ namespace AncientSword
                     {
                         bool wasAlive = liveMixin.IsAlive();
                         liveMixin.TakeDamage(damage, position, damageType, null);
-                        GiveResourceOnDamage(gameObject, liveMixin.IsAlive(), wasAlive);
+                        GiveResourceOnDamage(closestObject, liveMixin.IsAlive(), wasAlive);
                     }
                     Utils.PlayFMODAsset(attackSound, transform, 20f);
-                    VFXSurface component2 = gameObject.GetComponent<VFXSurface>();
+                    VFXSurface component2 = closestObject.GetComponent<VFXSurface>();
                     Vector3 euler = MainCameraControl.main.transform.eulerAngles + new Vector3(300f, 90f, 0f);
                     VFXSurfaceTypeManager.main.Play(component2, vfxEventType, position, Quaternion.Euler(euler), Player.main.transform);
                 }
                 else
                 {
-                    gameObject = null;
+                    closestObject = null;
                 }
             }
-
-            if (gameObject == null && hand.GetActiveTarget() == null)
+            
+            if (closestObject == null && hand.GetActiveTarget() == null)
             {
                 if (Player.main.IsUnderwater())
                 {
@@ -77,6 +79,7 @@ namespace AncientSword
                     Utils.PlayFMODAsset(surfaceMissSound, transform, 20f);
                 }
             }
+            
         }
         
         private static bool IsValidTarget(LiveMixin liveMixin)
@@ -131,7 +134,16 @@ namespace AncientSword
                     CraftData.AddToInventory(harvestOutputData, num, false, false);
                 }
             }
-        }       
-        
+        }
+
+        public void OnProtoSerialize(ProtobufSerializer serializer)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void OnProtoDeserialize(ProtobufSerializer serializer)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
