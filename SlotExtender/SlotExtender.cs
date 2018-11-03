@@ -7,13 +7,14 @@ namespace SlotExtender
     {
         public SlotExtender Instance { get; private set; }
         public Vehicle ThisVehicle { get; private set; }
-
-        internal bool isOpen = false;
+        
         internal bool isActive = false;
 
         internal void Awake()
         {
             this.Instance = this;
+
+            gameObject.AddComponent<Config.SlotExtenderConsoleCommand>();
 
             if (this.Instance.GetComponent<SeaMoth>())
             {
@@ -67,34 +68,44 @@ namespace SlotExtender
             if (!Player.main.inSeamoth && !Player.main.inExosuit)
                 return; // Player not in vehicle. Exit method.
 
-            if (Input.GetKeyDown(KeyCode.R))
+            if (Input.GetKeyDown(Config.Config.KEYBINDINGS[0]))
             {
-                if (isOpen)
+                if (Player.main.GetPDA().isOpen)
                 {
-                    Player.main.GetPDA().Close();
-                    isOpen = false;
+                    Player.main.GetPDA().Close();                    
                 }
                 else // Is Closed
                 {
-                    this.ThisVehicle.upgradesInput.OpenFromExternal();
-                    isOpen = true;
+                    this.ThisVehicle.upgradesInput.OpenFromExternal();                    
                 }
             }
-            else if (Input.GetKeyDown(KeyCode.Alpha6))
+            else if (Input.GetKeyDown(Config.Config.KEYBINDINGS[1]))
             {
                 this.ThisVehicle.SendMessage("SlotKeyDown", 5);
             }
-            else if (Input.GetKeyDown(KeyCode.Alpha7))
+            else if (Input.GetKeyDown(Config.Config.KEYBINDINGS[2]))
             {
                 this.ThisVehicle.SendMessage("SlotKeyDown", 6);
             }
-            else if (Input.GetKeyDown(KeyCode.Alpha8))
+            else if (Input.GetKeyDown(Config.Config.KEYBINDINGS[3]))
             {
                 this.ThisVehicle.SendMessage("SlotKeyDown", 7);
             }
-            else if (Input.GetKeyDown(KeyCode.Alpha9))
+            else if (Input.GetKeyDown(Config.Config.KEYBINDINGS[4]))
             {
                 this.ThisVehicle.SendMessage("SlotKeyDown", 8);
+            }
+            else if (Input.GetKeyDown(Config.Config.KEYBINDINGS[5]))
+            {
+                this.ThisVehicle.SendMessage("SlotKeyDown", 9);
+            }
+            else if (Input.GetKeyDown(Config.Config.KEYBINDINGS[6]))
+            {
+                this.ThisVehicle.SendMessage("SlotKeyDown", 10);
+            }
+            else if (Input.GetKeyDown(Config.Config.KEYBINDINGS[7]))
+            {
+                this.ThisVehicle.SendMessage("SlotKeyDown", 11);
             }
         }
 

@@ -62,6 +62,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config\Command.cs" />
+    <Compile Include="Config\Config.cs" />
+    <Compile Include="Config\HotKeys.cs" />
     <Compile Include="Initialize_uGUI.cs" />
     <Compile Include="Patchers\uGUI_Equipment_Patcher.cs" />
     <Compile Include="Patchers\Equipment_Patcher.cs" />
@@ -76,6 +79,11 @@
     <None Include="mod.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="config.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="..\Common\Common.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

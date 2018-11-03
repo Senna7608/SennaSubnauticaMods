@@ -22,34 +22,35 @@ namespace AncientSword
                 renderer.material.shader = Shader.Find("MarmosetUBER");
                 renderer.material.SetColor("_Emission", new Color(1f, 1f, 1f));
             }
-
-            gameObject.AddOrGetComponent<PrefabIdentifier>().ClassId = ClassID;
-            gameObject.AddOrGetComponent<TechTag>().type = TechType;
-            gameObject.AddOrGetComponent<LargeWorldEntity>().cellLevel = LargeWorldEntity.CellLevel.Near;
-            gameObject.AddOrGetComponent<Pickupable>().isPickupable = true;            
             
-            Fixer fixer = gameObject.AddOrGetComponent<Fixer>();
+            gameObject.AddComponent<PrefabIdentifier>().ClassId = ClassID;
+            gameObject.AddComponent<TechTag>().type = TechType;            
+            gameObject.AddComponent<BoxCollider>().size = new Vector3(0.1f, 0.1f, 0.1f);
+            gameObject.AddComponent<LargeWorldEntity>().cellLevel = LargeWorldEntity.CellLevel.Near;
+            gameObject.AddComponent<Pickupable>().isPickupable = true;            
+            
+            Fixer fixer = gameObject.AddComponent<Fixer>();
             fixer.ClassId = ClassID;
             fixer.techType = TechType;
 
-            SkyApplier skyApplier = gameObject.AddOrGetComponent<SkyApplier>();
+            SkyApplier skyApplier = gameObject.AddComponent<SkyApplier>();
             skyApplier.renderers = gameObject.GetComponentsInChildren<MeshRenderer>();
             skyApplier.anchorSky = Skies.Auto;
 
-            WorldForces worldForces = gameObject.AddOrGetComponent<WorldForces>();
-            Rigidbody rigidbody = gameObject.AddOrGetComponent<Rigidbody>();
+            WorldForces worldForces = gameObject.AddComponent<WorldForces>();
+            Rigidbody rigidbody = gameObject.AddComponent<Rigidbody>();
             
             worldForces.underwaterGravity = 0;
             worldForces.useRigidbody = rigidbody;
 
-            VFXFabricating vfxFabricating = gameObject.AddOrGetComponent<VFXFabricating>();
+            VFXFabricating vfxFabricating = gameObject.AddComponent<VFXFabricating>();
             vfxFabricating.localMinY = -3f;
             vfxFabricating.localMaxY = 3f;
             vfxFabricating.posOffset = new Vector3(0f, 0, 0f);
             vfxFabricating.eulerOffset = new Vector3(0f, 90f, -90f);
             vfxFabricating.scaleFactor = 1f;
 
-            AncientSword component = gameObject.AddOrGetComponent<AncientSword>();
+            AncientSword component = gameObject.AddComponent<AncientSword>();
 
             var knifePrefab = Resources.Load<GameObject>("WorldEntities/Tools/Knife").GetComponent<Knife>();
 

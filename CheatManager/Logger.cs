@@ -4,7 +4,8 @@
 
 using System.Collections.Generic;
 using UnityEngine;
-using GUIHelper;
+using Common;
+using CheatManager.Config;
 
 namespace CheatManager
 {
@@ -18,7 +19,7 @@ namespace CheatManager
         private static float drawingPos;
         private static List<LOG> logMessage = new List<LOG>();
         private static int messageCount = 0;       
-        private readonly KeyCode toggleKey = KeyCode.Delete;
+        
         public bool show = false;
         public static string inputField = string.Empty;
 
@@ -69,6 +70,7 @@ namespace CheatManager
         public void Awake()
         {
             Instance = this;
+            gameObject.AddComponent<CMhotkeysConsoleCommand>();
             DontDestroyOnLoad(this);            
             useGUILayout = false;
             InfoBar.InitInfoBar(show);
@@ -100,7 +102,7 @@ namespace CheatManager
                 return;
             }
 
-            Tools.CreatePopupWindow(windowRect, "CheatManager Console (Press DEL to toggle)", true, true);
+            GUIHelper.CreatePopupWindow(windowRect, $"CheatManager Console (Press {Config.Config.KEYBINDINGS[2]} to toggle)", true, true);
 
             scrollPos = GUI.BeginScrollView(scrollRect, scrollPos, new Rect(scrollRect.x, scrollRect.y, scrollRect.width - 40, drawingPos - scrollRect.y));
             
@@ -151,7 +153,7 @@ namespace CheatManager
             {
                 history.Add(inputField);
                 historyIndex = history.Count;
-                Log(inputField);
+                Log(inputField);                
                 DevConsole.SendConsoleCommand(inputField);
                 inputField = "";
             }
@@ -185,7 +187,7 @@ namespace CheatManager
             
         public void Update()
         {
-            if (Input.GetKeyDown(toggleKey))
+            if (Input.GetKeyDown(Config.Config.KEYBINDINGS[2]))
             {
                 show = !show;
                 InfoBar.isShow = show;

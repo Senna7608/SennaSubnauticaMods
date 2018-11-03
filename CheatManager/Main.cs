@@ -1,27 +1,27 @@
 ﻿using System;
-using System.Reflection;
 using Harmony;
-using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using System.Reflection;
 
 namespace CheatManager
 {
     public static class Main
-    {
-        public static bool isExistsSMLHelperV2;
+    {        
+        internal static bool isExistsSMLHelperV2;       
 
         public static void Load()
         {
             try
             {
+                Config.Config.InitConfig();
                 HarmonyInstance.Create("Subnautica.CheatManager.mod").PatchAll(Assembly.GetExecutingAssembly());
                 EnableConsole();
                 SceneManager.sceneLoaded += new UnityAction<Scene, LoadSceneMode>(OnSceneLoaded); 
             }
             catch (Exception ex)
             {
-                Debug.LogException(ex);
+                UnityEngine.Debug.LogException(ex);
             }
 
             isExistsSMLHelperV2 = IsNamespaceExists("SMLHelper.V2");            
@@ -36,14 +36,13 @@ namespace CheatManager
 
             if (scene.name == "StartScreen")
             {
-                Logger.Load();                
+                Logger.Load();                               
             }
-        }
-        
+        }        
+
         private static void EnableConsole()
         {
-            DevConsole.disableConsole = false;
-            //Debug.developerConsoleVisible = true;            
+            DevConsole.disableConsole = false;         
         }
 
         public static bool IsNamespaceExists(string desiredNamespace)

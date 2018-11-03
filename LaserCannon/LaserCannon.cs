@@ -7,12 +7,12 @@ namespace LaserCannon
     internal class LaserCannon : Craftable
     {
         public static TechType TechTypeID { get; private set; }        
-        public static Config Config { get; } = new Config();       
+        public static Options Config { get; } = new Options();       
 
         internal LaserCannon()
             : base(nameID: "LaserCannon",
-                  friendlyName: SettingsHelper.friendlyName,
-                  description: SettingsHelper.description,
+                  friendlyName: global::LaserCannon.Config.language_settings["Item_Name"].ToString(),
+                  description: global::LaserCannon.Config.language_settings["Item_Description"].ToString(),
                   template: TechType.SeamothSonarModule,
                   fabricatorType: CraftTree.Type.SeamothUpgrades,
                   fabricatorTab: "SeamothModules",

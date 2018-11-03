@@ -13,7 +13,7 @@ namespace LaserCannon
         {
             try
             {
-                SettingsHelper.Init();
+                Config.InitConfig();
                 var laserCannon = new LaserCannon();
                 laserCannon.Patch();
 
@@ -30,7 +30,7 @@ namespace LaserCannon
         {
             if (scene.name == "StartScreen")
             {
-                Language.main.OnLanguageChanged += SettingsHelper.OnLanguageChanged;
+                Language.main.OnLanguageChanged += Config.OnLanguageChanged;
             }
         }
     }        

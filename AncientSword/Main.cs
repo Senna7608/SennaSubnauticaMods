@@ -54,7 +54,7 @@ namespace AncientSword
 
                 CraftDataHandler.SetEquipmentType(SwordTechType, EquipmentType.Hand);
 
-                HarmonyInstance.Create("Subnautica.AncientSword.mod").PatchAll(Assembly.GetExecutingAssembly());
+                //HarmonyInstance.Create("Subnautica.AncientSword.mod").PatchAll(Assembly.GetExecutingAssembly());
             }
             catch (Exception ex)
             {

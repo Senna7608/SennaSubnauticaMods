@@ -9,6 +9,11 @@
     <Import_RootNamespace>Common</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ConfigurationParser\FileReader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConfigurationParser\Helper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConfigurationParser\Parser.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConfigurationParser\Section.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConfigurationParser\SectionParser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DebugHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DeQueue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmProperty.cs" />
@@ -19,6 +24,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmYesNo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\ISerialConfirmation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GUIHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modules.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RefHelp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StringBuffer.cs" />

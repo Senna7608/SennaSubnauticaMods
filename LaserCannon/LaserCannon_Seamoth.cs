@@ -22,8 +22,8 @@ namespace LaserCannon
         [AssertNotNull]
         private LineRenderer lineRenderer;
        
-        private const float powerConsumption = 0.01f;
-        private const float laserDamage = 15f;
+        private float powerConsumption = 1f;
+        private float laserDamage = 1f;
         private const float maxLaserDistance = 70f;
 
         private float idleTimer = 3f;
@@ -75,12 +75,18 @@ namespace LaserCannon
         
         public void SetBeamColor()
         {
-            beamcolor = Modules.Colors.ColorArray[SettingsHelper.LaserBeamColor];            
+            beamcolor = Modules.Colors.ColorArray[Config.beamColor];            
         }
 
         public void ShootOnlyHostile()
         {
-            onlyHostile = SettingsHelper.OnlyHostile;
+            onlyHostile = bool.Parse(Config.program_settings["OnlyHostile"].ToString());
+        }
+
+        public void SetLaserStrength()
+        {
+            laserDamage = float.Parse(Config.program_settings["Damage"].ToString()) * 0.1f;
+            powerConsumption = 1 + laserDamage * 1f;            
         }
 
         private void OnPlayerModeChanged(Player.Mode playerMode)
@@ -160,16 +166,11 @@ namespace LaserCannon
 
         private Vector3 CalculateLaserBeam()
         {
-            Camera camera = MainCamera.camera;
-            Transform transform = camera.transform;
-            Vector3 position = transform.position;
-            Vector3 forward = transform.forward;
-
             Targeting.GetTarget(seamoth.gameObject, maxLaserDistance, out targetGameobject, out targetDist);
             
             if (targetDist == 0f)
             {
-                return position + maxLaserDistance * forward;
+                return MainCamera.camera.transform.position + maxLaserDistance * MainCamera.camera.transform.forward;
             }
             else
             {
@@ -179,12 +180,12 @@ namespace LaserCannon
 
                     if (!validTargets.Contains(targetTechType))
                     {
-                        return position + targetDist * forward;
+                        return MainCamera.camera.transform.position + targetDist * MainCamera.camera.transform.forward;
                     }
                 }
                 
                 AddDamage(targetGameobject);
-                return position + targetDist * forward;                
+                return MainCamera.camera.transform.position + targetDist * MainCamera.camera.transform.forward;                
             }
         }
        
@@ -243,7 +244,7 @@ namespace LaserCannon
                     lineRenderer.material.color = Color.Lerp(beamcolor, Color.clear, 0.1f);
                     laserBeam.SetActive(true);                    
                     loopingEmitter.Play();                                       
-                    energyMixin.ConsumeEnergy(powerConsumption);                    
+                    energyMixin.ConsumeEnergy(powerConsumption * Time.deltaTime);                    
                 }
                 else
                 {

@@ -54,8 +54,6 @@ namespace LaserCannon
 
         public virtual void Patch()
         {
-            
-
             TechType = TechTypeHandler.AddTechType(NameID, FriendlyName, Description, ImageUtils.LoadSpriteFromFile($"./QMods/LaserCannon/Assets/{NameID}.png"), false);
 
             CraftTreeHandler.AddCraftingNode(FabricatorType, TechType, FabricatorTab);
@@ -73,7 +71,7 @@ namespace LaserCannon
         {
             GameObject prefab = CraftData.GetPrefabForTechType(PrefabTemplate);
             
-            return GameObject.Instantiate(prefab);
+            return Object.Instantiate(prefab);
         }
     }
 }

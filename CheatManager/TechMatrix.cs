@@ -130,11 +130,11 @@ namespace CheatManager
         
         public static readonly Dictionary<string, CATEGORY> Known_Modded_TechTypes = new Dictionary<string, CATEGORY>
         {
-            { "SeaMothMk2", CATEGORY.Vehicles },
-            { "SeaMothMk3", CATEGORY.Vehicles },
-            { "ExosuitMk2", CATEGORY.Vehicles },
+            //{ "SeaMothMk2", CATEGORY.Vehicles },
+            //{ "SeaMothMk3", CATEGORY.Vehicles },
+            //{ "ExosuitMk2", CATEGORY.Vehicles },
             { "SpeedModule", CATEGORY.Upgrades },
-            { "VehiclePowerCore", CATEGORY.Electronics },
+            //{ "VehiclePowerCore", CATEGORY.Electronics },
             { "CyclopsThermalChargerMk2", CATEGORY.Upgrades },
             { "CyclopsSolarCharger", CATEGORY.Upgrades },
             { "CyclopsSolarChargerMk2", CATEGORY.Upgrades },
@@ -151,6 +151,7 @@ namespace CheatManager
             { "SeamothHullModule5", CATEGORY.Upgrades },
             { "SeamothDrillModule", CATEGORY.Upgrades },
             { "SeamothThermalModule", CATEGORY.Upgrades },
+            { "SeamothClawModule", CATEGORY.Upgrades },
             { "ScannerModule", CATEGORY.Upgrades },
             { "RepairModule", CATEGORY.Upgrades },
             { "LaserCannon", CATEGORY.Upgrades },

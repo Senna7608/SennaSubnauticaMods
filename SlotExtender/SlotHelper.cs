@@ -7,7 +7,7 @@ namespace SlotExtender
     {
         private static bool SlotMappingExpanded = false;
 
-        internal static readonly string[] ExpandedSeamothSlotIDs = new string[9]
+        internal static readonly string[] ExpandedSeamothSlotIDs = new string[12]
         {
             "SeamothModule1",
             "SeamothModule2",
@@ -19,9 +19,12 @@ namespace SlotExtender
             "SeamothModule7",
             "SeamothModule8",
             "SeamothModule9",
+            "SeamothModule10",
+            "SeamothModule11",
+            "SeamothModule12"
         };
 
-        internal static readonly string[] ExpandedExosuitSlotIDs = new string[10]
+        internal static readonly string[] ExpandedExosuitSlotIDs = new string[14]
         {
             "ExosuitArmLeft",
             "ExosuitArmRight",
@@ -33,7 +36,11 @@ namespace SlotExtender
             "ExosuitModule5",
             "ExosuitModule6",
             "ExosuitModule7",
-            "ExosuitModule8"
+            "ExosuitModule8",
+            "ExosuitModule9",
+            "ExosuitModule10",
+            "ExosuitModule11",
+            "ExosuitModule12"
         };
 
         internal static IEnumerable<string> NewSeamothSlotIDs

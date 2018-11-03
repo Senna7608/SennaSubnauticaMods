@@ -1,24 +1,19 @@
 ﻿using System.Collections.Generic;
-using System.Reflection;
-using System.Diagnostics;
 using UnityEngine;
-using GUIHelper;
 using UWE;
+using Common;
 
 namespace CheatManager
 {
     public class CheatManager : MonoBehaviour
     {
-        public static CheatManager Instance { get; private set; }
+        public static CheatManager Instance { get; private set; }        
 
-        private static readonly KeyCode MainHotkey = KeyCode.F5;
-        private static readonly KeyCode ToggleHotkey = KeyCode.F4;
-        
         private static bool initStyles = false;
 
         private static Vector2 scrollPos = Vector2.zero;
         private static bool isActive;
-        private static Rect windowRect = new Rect(Screen.width - 500, 0, 500, 762);
+        private static Rect windowRect = new Rect();
         private static readonly float space = 3;       
 
         private static readonly string[][] WarpData = WarpTargets.Targets;
@@ -53,11 +48,11 @@ namespace CheatManager
 
         private static List<TechMatrix.TechTypeData>[] TechnologyMatrix;
 
-        private static List<Tools.ButtonInfo> Buttons;
-        private static List<Tools.ButtonInfo> toggleButtons;
-        private static List<Tools.ButtonInfo> daynightTab;
-        private static List<Tools.ButtonInfo> categoriesTab;
-        private static List<Tools.ButtonInfo> vehicleSettings;
+        private static List<GUIHelper.ButtonInfo> Buttons;
+        private static List<GUIHelper.ButtonInfo> toggleButtons;
+        private static List<GUIHelper.ButtonInfo> daynightTab;
+        private static List<GUIHelper.ButtonInfo> categoriesTab;
+        private static List<GUIHelper.ButtonInfo> vehicleSettings;
 
         private bool initToggleButtons = false;
                 
@@ -82,11 +77,7 @@ namespace CheatManager
         {            
             Instance = this;
             useGUILayout = false;
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
-            string Version = fvi.FileVersion;
-            windowTitle = $"CheatManager v.{Version}  {ToggleHotkey} Toggle Cursor, {MainHotkey} Toggle Window";
-
+            
             warpSound = ScriptableObject.CreateInstance<FMODAsset>();
             warpSound.path = "event:/tools/gravcannon/fire";
 
@@ -103,16 +94,16 @@ namespace CheatManager
             }
             TechMatrix.SortTechLists(ref TechnologyMatrix);
 
-            Buttons = new List<Tools.ButtonInfo>();
-            toggleButtons = new List<Tools.ButtonInfo>();
-            daynightTab = new List<Tools.ButtonInfo>();
-            categoriesTab = new List<Tools.ButtonInfo>();
-            vehicleSettings = new List<Tools.ButtonInfo>();
+            Buttons = new List<GUIHelper.ButtonInfo>();
+            toggleButtons = new List<GUIHelper.ButtonInfo>();
+            daynightTab = new List<GUIHelper.ButtonInfo>();
+            categoriesTab = new List<GUIHelper.ButtonInfo>();
+            vehicleSettings = new List<GUIHelper.ButtonInfo>();
 
-            Tools.CreateButtonsList(ButtonText.Buttons, Tools.BUTTONTYPE.NORMAL_CENTER, ref Buttons);
-            Tools.CreateButtonsList(ButtonText.ToggleButtons, Tools.BUTTONTYPE.TOGGLE_CENTER, ref toggleButtons);
-            Tools.CreateButtonsList(ButtonText.DayNightTab, Tools.BUTTONTYPE.TAB_CENTER, ref daynightTab);
-            Tools.CreateButtonsList(ButtonText.CategoriesTab, Tools.BUTTONTYPE.TAB_CENTER, ref categoriesTab);
+            GUIHelper.CreateButtonsList(ButtonText.Buttons, GUIHelper.BUTTONTYPE.NORMAL_CENTER, ref Buttons);
+            GUIHelper.CreateButtonsList(ButtonText.ToggleButtons, GUIHelper.BUTTONTYPE.TOGGLE_CENTER, ref toggleButtons);
+            GUIHelper.CreateButtonsList(ButtonText.DayNightTab, GUIHelper.BUTTONTYPE.TAB_CENTER, ref daynightTab);
+            GUIHelper.CreateButtonsList(ButtonText.CategoriesTab, GUIHelper.BUTTONTYPE.TAB_CENTER, ref categoriesTab);
 
             var searchSeaGlide = new TechMatrix.TechTypeSearch(TechType.Seaglide);
             string seaglideName = TechnologyMatrix[1][TechnologyMatrix[1].FindIndex(searchSeaGlide.EqualsWith)].Name;
@@ -128,7 +119,7 @@ namespace CheatManager
 
             string[] vehicleSetButtons = { $"{seamothName} Can Fly", $"{seaglideName} Speed Fast" };
 
-            Tools.CreateButtonsList(vehicleSetButtons, Tools.BUTTONTYPE.TOGGLE_CENTER, ref vehicleSettings);
+            GUIHelper.CreateButtonsList(vehicleSetButtons, GUIHelper.BUTTONTYPE.TOGGLE_CENTER, ref vehicleSettings);
 
             daynightTab[4].Pressed = true;
             categoriesTab[0].Pressed = true;
@@ -171,14 +162,16 @@ namespace CheatManager
         {
             if (Player.main != null)
             {
-                if (Input.GetKeyDown(MainHotkey))
+                if (Input.GetKeyDown(Config.Config.KEYBINDINGS[0]))
                 {
                     isActive = !isActive;
                 }
 
                 if (isActive)
                 {
-                    if (Input.GetKeyDown(ToggleHotkey))
+                    windowTitle = $"CheatManager v.{Config.Config.VERSION}, {Config.Config.KEYBINDINGS[0]} Toggle Window, {Config.Config.KEYBINDINGS[1]} Toggle Mouse";
+
+                    if (Input.GetKeyDown(Config.Config.KEYBINDINGS[1]))
                     {
                         UWE.Utils.lockCursor = !UWE.Utils.lockCursor;
                     }
@@ -302,75 +295,49 @@ namespace CheatManager
             }
 
             if (!initStyles)
-                initStyles = Tools.SetCustomStyles();
+                initStyles = GUIHelper.SetCustomStyles();
 
-            Rect drawingRect = Tools.CreatePopupWindow(windowRect, windowTitle);
+            windowRect = GUIHelper.CreatePopupWindow(new Rect(Screen.width - 500, 0, 500, 762), windowTitle);
 
-            float lastYcoord = drawingRect.y;
-            float baseHeight = drawingRect.height;
+            float lastYcoord = windowRect.y;
+            float baseHeight = windowRect.height;
 
-            drawingRect.x += 5;
-            drawingRect.y += space;
-            drawingRect.width -= 10;
-            drawingRect.height = 22;
+            windowRect.x += 5;
+            windowRect.y += space;
+            windowRect.width -= 10;
+            windowRect.height = 22;
 
-            GUI.Label(drawingRect, "Commands:");
+            GUI.Label(windowRect, "Commands:");
 
-            drawingRect.y += 22;
-            drawingRect.height = baseHeight - drawingRect.y + 22;
+            normalButtonID = GUIHelper.CreateButtonsGrid(new Rect(windowRect.x, windowRect.y + 22, windowRect.width, baseHeight), space, 4, Buttons, out lastYcoord);
 
-            normalButtonID = Tools.CreateButtonsGrid(drawingRect, space, 4, Buttons, out lastYcoord);            
+            GUI.Label(new Rect(windowRect.x, lastYcoord + space, 150, 22), "Toggle Commands:");            
 
-            drawingRect.y = lastYcoord + space;
-            drawingRect.height = 22;
+            toggleButtonID = GUIHelper.CreateButtonsGrid(new Rect(windowRect.x, lastYcoord + space + 22, windowRect.width, baseHeight - (lastYcoord + 22 + space)), space, 4, toggleButtons, out lastYcoord);            
 
-            GUI.Label(drawingRect, "Toggle Commands:");
+            GUI.Label(new Rect(windowRect.x, lastYcoord + space, 150, 22), "Day/Night Speed:");            
 
-            drawingRect.y += 22;
-            drawingRect.height = baseHeight - (lastYcoord + 22 + space);
+            daynightTabID = GUIHelper.CreateButtonsGrid(new Rect(windowRect.x, lastYcoord + space + 22, windowRect.width, baseHeight), space, 6, daynightTab , out lastYcoord);            
 
-            toggleButtonID = Tools.CreateButtonsGrid(drawingRect, space, 4, toggleButtons, out lastYcoord);            
+            GUI.Label(new Rect(windowRect.x, lastYcoord + space, 100, 22), "Categories:");            
 
-            drawingRect.y = lastYcoord + space;
-            drawingRect.height = 22;
+            categoriesTabID = GUIHelper.CreateButtonsGrid(new Rect(windowRect.x, lastYcoord + space + 22, windowRect.width, baseHeight), space, 4, categoriesTab, out lastYcoord);
 
-            GUI.Label(drawingRect, "Day/Night Speed:");
+            GUI.Label(new Rect(windowRect.x, lastYcoord + space, 150, 22), "Select Item in Category:");            
 
-            drawingRect.y += 22;
-            drawingRect.height = baseHeight;
-
-            daynightTabID = Tools.CreateButtonsGrid(drawingRect, space, 6, daynightTab , out lastYcoord);
-
-            drawingRect.y = lastYcoord + space;
-            drawingRect.height = 22;
-
-            GUI.Label(drawingRect, "Categories:");
-
-            drawingRect.y += 22;
-            drawingRect.height = baseHeight;
-
-            categoriesTabID = Tools.CreateButtonsGrid(drawingRect, space, 4, categoriesTab, out lastYcoord);                        
-
-            drawingRect.y = lastYcoord + space;
-            drawingRect.height = 22;
-
-            GUI.Label(drawingRect, "Select Item in Category:");
-
-            drawingRect.x += 150;
-
-            GUI.Label(drawingRect, categoriesTab[currentTab].Name, Tools.Label);
+            GUI.Label(new Rect(windowRect.x + 150, lastYcoord + space, 100, 22), categoriesTab[currentTab].Name, GUIHelper.Label);
             
-            drawingRect.x = windowRect.x + 10;
-            drawingRect.y = lastYcoord + 22 + (space * 2);
-            drawingRect.width = drawingRect.width - 10;
-            drawingRect.height = (baseHeight - drawingRect.y) + 20;            
+            windowRect.x = windowRect.x + 5;
+            windowRect.y = lastYcoord + 22 + (space * 2);
+            windowRect.width = windowRect.width - 10;
+            windowRect.height = (baseHeight - windowRect.y) + 20;            
             
-            TabControl(currentTab, drawingRect);
+            TabControl(currentTab);
             
         }       
 
 
-        private static void TabControl(int category, Rect scrollRect)
+        private static void TabControl(int category)
         {
             int scrollItems;
 
@@ -379,18 +346,18 @@ namespace CheatManager
             else           
                 scrollItems = TechnologyMatrix[category].Count;            
 
-            float width = scrollRect.width;
+            float width = windowRect.width;
 
             if (scrollItems > 10 && category != 0)
                 width -= 20;
 
             if (scrollItems > 4 && category == 0)
             {
-                scrollRect.height = 104;
+                windowRect.height = 104;
                 width -= 20;
             }
 
-            scrollPos = GUI.BeginScrollView(scrollRect, scrollPos, new Rect(scrollRect.x, scrollRect.y, width, scrollItems * 26));
+            scrollPos = GUI.BeginScrollView(windowRect, scrollPos, new Rect(windowRect.x, windowRect.y, width, scrollItems * 26));
 
             string itemName, selectedTech;
 
@@ -407,7 +374,7 @@ namespace CheatManager
                     selectedTech = TechnologyMatrix[category][i].TechType.ToString();                    
                 }               
 
-                if (GUI.Button(new Rect(scrollRect.x, scrollRect.y + (i * 26), width, 22), itemName, Tools.GetCustomStyle(false, Tools.BUTTONTYPE.NORMAL_LEFTALIGN)))                
+                if (GUI.Button(new Rect(windowRect.x, windowRect.y + (i * 26), width, 22), itemName, GUIHelper.GetCustomStyle(false, GUIHelper.BUTTONTYPE.NORMAL_LEFTALIGN)))                
                 {
                     switch (category)
                     {
@@ -460,21 +427,21 @@ namespace CheatManager
 
             if (category == 0)
             {
-                scrollRect.y += (4 * 26) + 2;
+                windowRect.y += (4 * 26) + 2;
 
-                GUI.Box(new Rect(scrollRect.x, scrollRect.y, scrollRect.width, 23), "Vehicle Settings:", Tools.Box);
+                GUI.Box(new Rect(windowRect.x, windowRect.y, windowRect.width, 23), "Vehicle Settings:", GUIHelper.Box);
                 
-                vehicleSettingsID = Tools.CreateButtonsGrid(new Rect(scrollRect.x - 5, scrollRect.y + 27, scrollRect.width + 10, 22), 2, 2, vehicleSettings, out float lastYcoord);
+                vehicleSettingsID = GUIHelper.CreateButtonsGrid(new Rect(windowRect.x - 5, windowRect.y + 27, windowRect.width + 10, 22), 2, 2, vehicleSettings, out float lastYcoord);
                 
-                GUI.Label(new Rect(scrollRect.x, scrollRect.y + 53, 250, 22), seamothName + " speed multiplier: " + string.Format("{0:#.##}", seamothSpeedMultiplier));
+                GUI.Label(new Rect(windowRect.x, windowRect.y + 53, 250, 22), seamothName + " speed multiplier: " + string.Format("{0:#.##}", seamothSpeedMultiplier));
                 
-                seamothSpeedMultiplier = (GUI.HorizontalSlider(new Rect(scrollRect.x, scrollRect.y + 79, scrollRect.width, 10), seamothSpeedMultiplier, 1f, 5f));
+                seamothSpeedMultiplier = (GUI.HorizontalSlider(new Rect(windowRect.x, windowRect.y + 79, windowRect.width, 10), seamothSpeedMultiplier, 1f, 5f));
 
-                GUI.Label(new Rect(scrollRect.x, scrollRect.y + 93 , 250, 22), exosuitName + " speed multiplier: " + string.Format("{0:#.##}",exosuitSpeedMultiplier));
-                exosuitSpeedMultiplier = GUI.HorizontalSlider(new Rect(scrollRect.x, scrollRect.y + 119, scrollRect.width, 10), exosuitSpeedMultiplier, 1f, 5f);
+                GUI.Label(new Rect(windowRect.x, windowRect.y + 93 , 250, 22), exosuitName + " speed multiplier: " + string.Format("{0:#.##}",exosuitSpeedMultiplier));
+                exosuitSpeedMultiplier = GUI.HorizontalSlider(new Rect(windowRect.x, windowRect.y + 119, windowRect.width, 10), exosuitSpeedMultiplier, 1f, 5f);
 
-                GUI.Label(new Rect(scrollRect.x, scrollRect.y + 133, 250, 22), cyclopsName + " speed multiplier: " + string.Format("{0:#.##}", cyclopsSpeedMultiplier));
-                cyclopsSpeedMultiplier = GUI.HorizontalSlider(new Rect(scrollRect.x, scrollRect.y + 159, scrollRect.width, 10), cyclopsSpeedMultiplier, 1.0F, 5.0F);
+                GUI.Label(new Rect(windowRect.x, windowRect.y + 133, 250, 22), cyclopsName + " speed multiplier: " + string.Format("{0:#.##}", cyclopsSpeedMultiplier));
+                cyclopsSpeedMultiplier = GUI.HorizontalSlider(new Rect(windowRect.x, windowRect.y + 159, windowRect.width, 10), cyclopsSpeedMultiplier, 1.0F, 5.0F);
                 
             }    
             

@@ -1,0 +1,13 @@
+[SlotExtender]
+Version: 2.1.0.0
+
+[Hotkeys]
+Show: R
+Slot_6: Alpha6
+Slot_7: Alpha7
+Slot_8: Alpha8
+Slot_9: Alpha9
+Slot_10: I
+Slot_11: O
+Slot_12: P
+

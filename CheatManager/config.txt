@@ -1,0 +1,8 @@
+[CheatManager]
+Version: 1.5.3
+
+[Hotkeys]
+ToggleWindow: F5
+ToggleMouse: F4
+ToggleConsole: Delete
+

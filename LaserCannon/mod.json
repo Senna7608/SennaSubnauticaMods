@@ -2,7 +2,7 @@
   "Id": "LaserCannon",
   "DisplayName": "LaserCannon",
   "Author": "Senna",
-  "Version": "1.2.1",
+  "Version": "1.2.2",
   "Enable": true,
   "AssemblyName": "LaserCannon.dll",
   "EntryMethod": "LaserCannon.Main.Load",
