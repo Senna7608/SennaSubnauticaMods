@@ -70,7 +70,7 @@ namespace CheatManager
         public void Awake()
         {
             Instance = this;
-            gameObject.AddComponent<CMhotkeysConsoleCommand>();
+            gameObject.AddComponent<ConsoleCommand>();
             DontDestroyOnLoad(this);            
             useGUILayout = false;
             InfoBar.InitInfoBar(show);
@@ -102,7 +102,7 @@ namespace CheatManager
                 return;
             }
 
-            GUIHelper.CreatePopupWindow(windowRect, $"CheatManager Console (Press {Config.Config.KEYBINDINGS[2]} to toggle)", true, true);
+            GUIHelper.CreatePopupWindow(windowRect, $"CheatManager Console (Press {Config.Config.KEYBINDINGS["ToggleConsole"]} to toggle)", true, true);
 
             scrollPos = GUI.BeginScrollView(scrollRect, scrollPos, new Rect(scrollRect.x, scrollRect.y, scrollRect.width - 40, drawingPos - scrollRect.y));
             
@@ -187,7 +187,7 @@ namespace CheatManager
             
         public void Update()
         {
-            if (Input.GetKeyDown(Config.Config.KEYBINDINGS[2]))
+            if (Input.GetKeyDown(Config.Config.KEYBINDINGS["ToggleConsole"]))
             {
                 show = !show;
                 InfoBar.isShow = show;

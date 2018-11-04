@@ -68,7 +68,7 @@ namespace SlotExtender
             if (!Player.main.inSeamoth && !Player.main.inExosuit)
                 return; // Player not in vehicle. Exit method.
 
-            if (Input.GetKeyDown(Config.Config.KEYBINDINGS[0]))
+            if (Input.GetKeyDown(Config.Config.KEYBINDINGS["Show"]))
             {
                 if (Player.main.GetPDA().isOpen)
                 {
@@ -79,31 +79,31 @@ namespace SlotExtender
                     this.ThisVehicle.upgradesInput.OpenFromExternal();                    
                 }
             }
-            else if (Input.GetKeyDown(Config.Config.KEYBINDINGS[1]))
+            else if (Input.GetKeyDown(Config.Config.KEYBINDINGS["Slot_6"]))
             {
                 this.ThisVehicle.SendMessage("SlotKeyDown", 5);
             }
-            else if (Input.GetKeyDown(Config.Config.KEYBINDINGS[2]))
+            else if (Input.GetKeyDown(Config.Config.KEYBINDINGS["Slot_7"]))
             {
                 this.ThisVehicle.SendMessage("SlotKeyDown", 6);
             }
-            else if (Input.GetKeyDown(Config.Config.KEYBINDINGS[3]))
+            else if (Input.GetKeyDown(Config.Config.KEYBINDINGS["Slot_8"]))
             {
                 this.ThisVehicle.SendMessage("SlotKeyDown", 7);
             }
-            else if (Input.GetKeyDown(Config.Config.KEYBINDINGS[4]))
+            else if (Input.GetKeyDown(Config.Config.KEYBINDINGS["Slot_9"]))
             {
                 this.ThisVehicle.SendMessage("SlotKeyDown", 8);
             }
-            else if (Input.GetKeyDown(Config.Config.KEYBINDINGS[5]))
+            else if (Input.GetKeyDown(Config.Config.KEYBINDINGS["Slot_10"]))
             {
                 this.ThisVehicle.SendMessage("SlotKeyDown", 9);
             }
-            else if (Input.GetKeyDown(Config.Config.KEYBINDINGS[6]))
+            else if (Input.GetKeyDown(Config.Config.KEYBINDINGS["Slot_11"]))
             {
                 this.ThisVehicle.SendMessage("SlotKeyDown", 10);
             }
-            else if (Input.GetKeyDown(Config.Config.KEYBINDINGS[7]))
+            else if (Input.GetKeyDown(Config.Config.KEYBINDINGS["Slot_12"]))
             {
                 this.ThisVehicle.SendMessage("SlotKeyDown", 11);
             }

@@ -162,16 +162,16 @@ namespace CheatManager
         {
             if (Player.main != null)
             {
-                if (Input.GetKeyDown(Config.Config.KEYBINDINGS[0]))
+                if (Input.GetKeyDown(Config.Config.KEYBINDINGS["ToggleWindow"]))
                 {
                     isActive = !isActive;
                 }
 
                 if (isActive)
                 {
-                    windowTitle = $"CheatManager v.{Config.Config.VERSION}, {Config.Config.KEYBINDINGS[0]} Toggle Window, {Config.Config.KEYBINDINGS[1]} Toggle Mouse";
+                    windowTitle = $"CheatManager v.{Config.Config.VERSION}, {Config.Config.KEYBINDINGS["ToggleWindow"]} Toggle Window, {Config.Config.KEYBINDINGS["ToggleMouse"]} Toggle Mouse";
 
-                    if (Input.GetKeyDown(Config.Config.KEYBINDINGS[1]))
+                    if (Input.GetKeyDown(Config.Config.KEYBINDINGS["ToggleMouse"]))
                     {
                         UWE.Utils.lockCursor = !UWE.Utils.lockCursor;
                     }

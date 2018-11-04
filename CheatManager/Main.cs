@@ -36,7 +36,7 @@ namespace CheatManager
 
             if (scene.name == "StartScreen")
             {
-                Logger.Load();                               
+                Logger.Load();                
             }
         }        
 

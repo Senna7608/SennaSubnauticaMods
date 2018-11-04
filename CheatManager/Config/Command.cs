@@ -2,16 +2,16 @@
 
 namespace CheatManager.Config
 {
-    public class CMhotkeysConsoleCommand : MonoBehaviour
+    public class ConsoleCommand : MonoBehaviour
     {        
         private void Awake()
         {
-            DevConsole.RegisterConsoleCommand(this, "cmhotkeys", false, false);            
+            DevConsole.RegisterConsoleCommand(this, "cmconfig", false, false);            
         }
         
-        private void OnConsoleCommand_cmhotkeys(NotificationCenter.Notification n)
+        private void OnConsoleCommand_cmconfig(NotificationCenter.Notification n)
         {
-            HotKeys.InitWindow();
+            Bindings.InitWindow();
         }        
     }
 }

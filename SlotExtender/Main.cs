@@ -17,7 +17,8 @@ namespace SlotExtender
             {
                 Debug.LogException(ex);
             }
-            
+
+            DevConsole.disableConsole = false;
             Config.Config.InitConfig();
         }        
     }    

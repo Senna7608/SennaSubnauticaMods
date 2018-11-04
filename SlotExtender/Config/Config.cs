@@ -11,7 +11,8 @@ namespace SlotExtender.Config
     public static class Config
     {
         internal static string VERSION = string.Empty;
-        public static List<KeyCode> KEYBINDINGS;
+
+        public static Dictionary<string,KeyCode> KEYBINDINGS;
 
         private const string PROGRAM_NAME = "SlotExtender";
         private static readonly string[] SECTIONS = { "Hotkeys" };
@@ -42,7 +43,7 @@ namespace SlotExtender.Config
             new ConfigData(SECTIONS[0], SECTION_HOTKEYS[7], KeyCode.P.ToString())
         };
 
-        internal static Dictionary<string, string> HotKeys { get; set; } = new Dictionary<string, string>();
+        internal static Dictionary<string, string> Section_hotkeys { get; set; } = new Dictionary<string, string>();
 
         internal static void InitConfig()
         {
@@ -55,24 +56,21 @@ namespace SlotExtender.Config
                 Helper.CreateDefaultConfigFile(FILENAME, PROGRAM_NAME, VERSION, DEFAULT_CONFIG);
             }            
 
-            HotKeys = Helper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[0], SECTION_HOTKEYS);
+            Section_hotkeys = Helper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[0], SECTION_HOTKEYS);
 
             SetKeyBindings();
         }
         
         internal static void WriteConfig()
         {
-            Helper.SetAllKeyValuesInSection(FILENAME, SECTIONS[0], HotKeys);
+            Helper.SetAllKeyValuesInSection(FILENAME, SECTIONS[0], Section_hotkeys);
         }
 
         internal static void SyncConfig()
         {
-            int i = 0;
-
             foreach (string key in SECTION_HOTKEYS)
             {
-                HotKeys[key] = KEYBINDINGS[i].ToString();
-                i++;
+                Section_hotkeys[key] = KEYBINDINGS[key].ToString();                
             }
 
             WriteConfig();
@@ -80,16 +78,16 @@ namespace SlotExtender.Config
 
         internal static void SetKeyBindings()
         {
-            KEYBINDINGS = new List<KeyCode>();
+            KEYBINDINGS = new Dictionary<string, KeyCode>();
 
             bool sync = false;
 
-            foreach (KeyValuePair<string, string> kvp in HotKeys)
+            foreach (KeyValuePair<string, string> kvp in Section_hotkeys)
             {
                 try
                 {
                     KeyCode keyCode = (KeyCode)Enum.Parse(typeof(KeyCode), kvp.Value);
-                    KEYBINDINGS.Add(keyCode);
+                    KEYBINDINGS.Add(kvp.Key, keyCode);
                 }
                 catch (ArgumentException)
                 {
@@ -99,7 +97,7 @@ namespace SlotExtender.Config
                     {
                         if (DEFAULT_CONFIG[i].Key.Equals(kvp.Key))
                         {
-                            KEYBINDINGS.Add((KeyCode)Enum.Parse(typeof(KeyCode), DEFAULT_CONFIG[i].Value, true));
+                            KEYBINDINGS.Add(kvp.Key, (KeyCode)Enum.Parse(typeof(KeyCode), DEFAULT_CONFIG[i].Value, true));
                             sync = true;
                         }
                     }

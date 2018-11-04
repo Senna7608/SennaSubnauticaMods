@@ -11,7 +11,7 @@ namespace SlotExtender.Config
         
         private void OnConsoleCommand_slotextender(NotificationCenter.Notification n)
         {
-            HotKeys.InitWindow();
+            Bindings.InitWindow();
         }        
     }
 }

@@ -5,9 +5,9 @@ using Common;
 
 namespace SlotExtender.Config
 {
-    internal class HotKeys : MonoBehaviour
+    internal class Bindings : MonoBehaviour
     {
-        public static HotKeys Instance { get; private set; }
+        public static Bindings Instance { get; private set; }
         private Rect windowRect;
         private static bool initStyles = false;
         private static int selected = -1;
@@ -16,7 +16,8 @@ namespace SlotExtender.Config
         private static bool waitingForKey = false;
         private List<string> hotkeyLabels = new List<string>();
         private List<string> hotkeyButtons = new List<string>();
-        private List<GUIHelper.ButtonInfo> buttonInfos = new List<GUIHelper.ButtonInfo>();       
+        private List<GUIHelper.ButtonInfo> buttonInfos = new List<GUIHelper.ButtonInfo>();
+        private static readonly float space = 10f;
 
         public void Awake()
         {
@@ -27,7 +28,7 @@ namespace SlotExtender.Config
        
         private void InitItems()
         {
-            foreach (KeyValuePair<string, string> key in Config.HotKeys)
+            foreach (KeyValuePair<string, string> key in Config.Section_hotkeys)
             {
                 hotkeyLabels.Add(key.Key);
                 hotkeyButtons.Add(key.Value);
@@ -41,30 +42,30 @@ namespace SlotExtender.Config
             if (!initStyles)
                 initStyles = GUIHelper.SetCustomStyles();
 
-            windowRect = GUIHelper.CreatePopupWindow(new Rect(320, 300, 300, 350), "SlotExtender: Hotkey Settings", false, true);
+            windowRect = GUIHelper.CreatePopupWindow(new Rect(320, 300, 300, 350), "SlotExtender: Key Bindings", false, true);
 
-            GUI.FocusControl("SlotExtender.HotKeys");
+            GUI.FocusControl("SlotExtender.Bindings");
 
-            GUIHelper.CreateItemsGrid(new Rect(windowRect.x, windowRect.y, 150, windowRect.height), 10, 1, hotkeyLabels, GUIHelper.GUI_ITEM.TEXTFIELD);
+            GUIHelper.CreateItemsGrid(new Rect(windowRect.x, windowRect.y, windowRect.width / 2, windowRect.height), space, 1, hotkeyLabels, GUIHelper.GUI_ITEM.TEXTFIELD);
 
-            int sBtn = GUIHelper.CreateButtonsGrid(new Rect(windowRect.x + 150, windowRect.y, 150, windowRect.height), 10, 1, buttonInfos, out float lastY);
-                       
+            int sBtn = GUIHelper.CreateButtonsGrid(new Rect(windowRect.x + windowRect.width / 2, windowRect.y, windowRect.width / 2, windowRect.height), space, 1, buttonInfos, out float lastY);
+
             if (sBtn != -1)
             {
                 StartAssignment(hotkeyButtons[sBtn]);
                 selected = sBtn;
                 buttonInfos[sBtn].Name = "Press any key!";
-            }           
-            
-            if (GUI.Button(new Rect(windowRect.x + 5, lastY + 20, 142.5f, 40), "Save & Close"))
-            {                
+            }
+
+            if (GUI.Button(new Rect(windowRect.x + space, lastY + space * 2, windowRect.width / 2 - space * 2, 40), "Save & Close"))
+            {
                 SaveAndExit();
             }
-            else if (GUI.Button(new Rect(windowRect.x + 152.5f, lastY + 20, 142.5f, 40), "Cancel"))
+            else if (GUI.Button(new Rect(windowRect.x + space + windowRect.width / 2, lastY + space * 2, windowRect.width / 2 - space * 2, 40), "Cancel"))
             {
                 Destroy(Instance);
-            }            
-            
+            }
+
             keyEvent = Event.current;
 
             if (keyEvent.isKey && waitingForKey)
@@ -103,7 +104,7 @@ namespace SlotExtender.Config
         {            
             for (int i = 0; i < hotkeyLabels.Count; i++)
             {
-                Config.HotKeys[hotkeyLabels[i]] = hotkeyButtons[i];
+                Config.Section_hotkeys[hotkeyLabels[i]] = hotkeyButtons[i];
             }
 
             Config.WriteConfig();
@@ -116,17 +117,17 @@ namespace SlotExtender.Config
             Instance = Load();                    
         }
 
-        public static HotKeys Load()
+        public static Bindings Load()
         {
             if (Instance == null)
             {
-                Instance = FindObjectOfType(typeof(HotKeys)) as HotKeys;
+                Instance = FindObjectOfType(typeof(Bindings)) as Bindings;
 
                 if (Instance == null)
                 {
-                    GameObject hotkeys = new GameObject().AddComponent<HotKeys>().gameObject;
-                    hotkeys.name = "SlotExtender.HotKeys";
-                    Instance = hotkeys.GetComponent<HotKeys>();
+                    GameObject go = new GameObject().AddComponent<Bindings>().gameObject;
+                    go.name = "SlotExtender.Bindings";
+                    Instance = go.GetComponent<Bindings>();
                 }
             }
 
