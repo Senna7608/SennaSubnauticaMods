@@ -10,9 +10,10 @@ namespace CheatManager.Config
 {
     public static class Config
     {
-        internal static string VERSION = string.Empty;
-        private static readonly string FILENAME = Environment.CurrentDirectory + "\\QMods\\CheatManager\\config.txt";
+        internal static string VERSION = string.Empty;        
         private const string PROGRAM_NAME = "CheatManager";
+        private static readonly string FILENAME = $"{Environment.CurrentDirectory}\\QMods\\{PROGRAM_NAME}\\config.txt";
+
         private static readonly string[] SECTIONS = { "Hotkeys" };
         internal static Dictionary<string, KeyCode> KEYBINDINGS;
         internal static Dictionary<string, string> Section_hotkeys;

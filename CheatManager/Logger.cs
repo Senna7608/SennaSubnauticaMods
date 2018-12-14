@@ -12,7 +12,7 @@ namespace CheatManager
     public class Logger : MonoBehaviour
     {
         public static Logger Instance { get; private set; }
-        private static Rect windowRect = new Rect(Screen.width - 500, 764, 500, Screen.height-764);        
+        private static Rect windowRect = new Rect(Screen.width - 450, 764, 450, Screen.height-764);        
         private static Rect scrollRect = new Rect(windowRect.x, windowRect.y + 26, windowRect.width - 5, windowRect.height - 58);
         private static Vector2 scrollPos = Vector2.zero;
         private static float contentHeight = 0;
@@ -82,6 +82,7 @@ namespace CheatManager
         public void OnDestroy()
         {
             logMessage.Clear();
+            Destroy(this);
         }
 
 #if DEBUG_GAMELOG

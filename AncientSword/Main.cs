@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
-using Harmony;
 using UnityEngine;
 using SMLHelper.V2.Handlers;
 using SMLHelper.V2.Crafting;
@@ -53,8 +51,7 @@ namespace AncientSword
                 CraftDataHandler.SetItemSize(SwordTechType, new Vector2int(2, 2));
 
                 CraftDataHandler.SetEquipmentType(SwordTechType, EquipmentType.Hand);
-
-                //HarmonyInstance.Create("Subnautica.AncientSword.mod").PatchAll(Assembly.GetExecutingAssembly());
+                
             }
             catch (Exception ex)
             {

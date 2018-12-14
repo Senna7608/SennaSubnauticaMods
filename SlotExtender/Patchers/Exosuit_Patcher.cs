@@ -5,7 +5,7 @@ namespace SlotExtender.Patchers
 {
     [HarmonyPatch(typeof(Exosuit))]
     [HarmonyPatch("slotIDs", PropertyMethod.Getter)]
-    internal class Exosuit_slotIDs_Patcher
+    internal class Exosuit_slotIDs_Patch
     {
         internal static bool Prefix(ref string[] __result)
         {

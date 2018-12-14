@@ -22,7 +22,7 @@ namespace SlotExtender.Config
         public void Awake()
         {
             useGUILayout = false;
-            Instance = this;           
+            Instance = this;            
             InitItems();         
         }
        
@@ -42,7 +42,7 @@ namespace SlotExtender.Config
             if (!initStyles)
                 initStyles = GUIHelper.SetCustomStyles();
 
-            windowRect = GUIHelper.CreatePopupWindow(new Rect(320, 300, 300, 350), "SlotExtender: Key Bindings", false, true);
+            windowRect = GUIHelper.CreatePopupWindow(new Rect(0, 0, 300, 350), "SlotExtender: Key Bindings", false, true);
 
             GUI.FocusControl("SlotExtender.Bindings");
 
@@ -57,11 +57,11 @@ namespace SlotExtender.Config
                 buttonInfos[sBtn].Name = "Press any key!";
             }
 
-            if (GUI.Button(new Rect(windowRect.x + space, lastY + space * 2, windowRect.width / 2 - space * 2, 40), "Save & Close"))
+            if (GUI.Button(new Rect(windowRect.x + space, lastY + space * 2, windowRect.width / 2 - space * 2, 40), "Save & Close", GUIHelper.GetCustomStyle(false, GUIHelper.BUTTONTYPE.NORMAL_CENTER)))
             {
                 SaveAndExit();
             }
-            else if (GUI.Button(new Rect(windowRect.x + space + windowRect.width / 2, lastY + space * 2, windowRect.width / 2 - space * 2, 40), "Cancel"))
+            else if (GUI.Button(new Rect(windowRect.x + space + windowRect.width / 2, lastY + space * 2, windowRect.width / 2 - space * 2, 40), "Cancel", GUIHelper.GetCustomStyle(false, GUIHelper.BUTTONTYPE.NORMAL_CENTER)))
             {
                 Destroy(Instance);
             }
@@ -87,10 +87,37 @@ namespace SlotExtender.Config
 
             yield return WaitForKey();
 
+            int isFirst = 0;
+            int isLast = 0;
+            int keyCount = 0;
+
+            for (int i = 0; i < hotkeyButtons.Count; i++)
+            {
+                if (hotkeyButtons[i].Equals(newKey.ToString()))
+                {
+                    if (keyCount == 0)
+                        isFirst = i;
+
+                    keyCount++;
+                    isLast = i;
+                }
+            }
+
+            if (keyCount > 0)
+            {
+                Debug.Log("[SlotExtender] Warning! Duplicate keybind! Swapping keys...");
+                hotkeyButtons[isFirst] = hotkeyButtons[selected];
+                buttonInfos[isFirst].Name = hotkeyButtons[selected];
+            }
+
             hotkeyButtons[selected] = newKey.ToString();
             buttonInfos[selected].Name = hotkeyButtons[selected];
             selected = -1;
-            
+
+            //hotkeyButtons[selected] = newKey.ToString();
+            //buttonInfos[selected].Name = hotkeyButtons[selected];
+            //selected = -1;
+
             yield return null;
         }
 
@@ -109,6 +136,7 @@ namespace SlotExtender.Config
 
             Config.WriteConfig();
             Config.SetKeyBindings();
+            Main.GameInput_OnBindingsChanged();
             Destroy(Instance);
         }
 

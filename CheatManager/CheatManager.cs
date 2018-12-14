@@ -19,17 +19,17 @@ namespace CheatManager
         private static readonly string[][] WarpData = WarpTargets.Targets;
 
         private string windowTitle;
-        public static string prevCwPos = null;
+        internal static string prevCwPos = null;
 
-        public static bool seamothCanFly = false;
+        internal static bool seamothCanFly = false;
 
-        public Utils.MonitoredValue<bool> isSeaglideFast = new Utils.MonitoredValue<bool>();       
+        internal Utils.MonitoredValue<bool> isSeaglideFast = new Utils.MonitoredValue<bool>();
 
-        public static float seamothSpeedMultiplier;
-        public static float exosuitSpeedMultiplier;
-        public static float cyclopsSpeedMultiplier;
+        internal static float seamothSpeedMultiplier;
+        internal static float exosuitSpeedMultiplier;
+        internal static float cyclopsSpeedMultiplier;
 
-        public static float playerPrevInfectionLevel = 0f;
+        internal static float playerPrevInfectionLevel = 0f;
 
         private int normalButtonID = -1;
         private int toggleButtonID = -1;
@@ -40,11 +40,11 @@ namespace CheatManager
         private int currentdaynightTab = 4;
         private int currentTab = 0;
 
-        public static FMODAsset warpSound;
+        internal static FMODAsset warpSound;
 
-        public static string seamothName;
-        public static string exosuitName;
-        public static string cyclopsName;
+        internal static string seamothName;
+        internal static string exosuitName;
+        internal static string cyclopsName;
 
         private static List<TechMatrix.TechTypeData>[] TechnologyMatrix;
 
@@ -54,7 +54,7 @@ namespace CheatManager
         private static List<GUIHelper.ButtonInfo> categoriesTab;
         private static List<GUIHelper.ButtonInfo> vehicleSettings;
 
-        private bool initToggleButtons = false;
+        internal static bool initToggleButtons = false;
                 
         public static CheatManager Load()
         {
@@ -77,7 +77,8 @@ namespace CheatManager
         {            
             Instance = this;
             useGUILayout = false;
-            
+
+            UpdateTitle();
             warpSound = ScriptableObject.CreateInstance<FMODAsset>();
             warpSound.path = "event:/tools/gravcannon/fire";
 
@@ -155,7 +156,12 @@ namespace CheatManager
 
         private void IsSeaglideFast(Utils.MonitoredValue<bool> parms)
         {
-            SeaglideOverDrive.Main.SetSeaglideSpeed();            
+            SeaglideOverDrive.Instance.SetSeaglideSpeed();            
+        }
+
+        internal void UpdateTitle()
+        {
+            windowTitle = $"CheatManager v.{Config.Config.VERSION}, {Config.Config.KEYBINDINGS["ToggleWindow"]} Toggle Window, {Config.Config.KEYBINDINGS["ToggleMouse"]} Toggle Mouse";
         }
 
         public void Update()
@@ -169,8 +175,6 @@ namespace CheatManager
 
                 if (isActive)
                 {
-                    windowTitle = $"CheatManager v.{Config.Config.VERSION}, {Config.Config.KEYBINDINGS["ToggleWindow"]} Toggle Window, {Config.Config.KEYBINDINGS["ToggleMouse"]} Toggle Mouse";
-
                     if (Input.GetKeyDown(Config.Config.KEYBINDINGS["ToggleMouse"]))
                     {
                         UWE.Utils.lockCursor = !UWE.Utils.lockCursor;
@@ -212,20 +216,13 @@ namespace CheatManager
                     {
                         if (vehicleSettingsID == 0)
                         {
-                            if (SeamothOverDrive.Main != null)
-                            {
-                                seamothCanFly = !seamothCanFly;
-                                vehicleSettings[0].Pressed = seamothCanFly;
-                            }
-                            else
-                            {
-                                ErrorMessage.AddMessage("CheatManager Error!\nYou do not have a Seamoth!");
-                            }
+                            seamothCanFly = !seamothCanFly;
+                            vehicleSettings[0].Pressed = seamothCanFly;                            
                         }
 
                         if (vehicleSettingsID == 1)
                         {
-                            if (SeaglideOverDrive.Main != null)
+                            if (SeaglideOverDrive.Instance != null)
                             {
                                 isSeaglideFast.Update(!isSeaglideFast.value);
                                 vehicleSettings[1].Pressed = isSeaglideFast.value;
@@ -283,21 +280,18 @@ namespace CheatManager
             if (command != null)
             {
                 DevConsole.SendConsoleCommand(command.ToString());                
-            }           
-            
+            }            
         }        
         
         public void OnGUI()
         {
             if (!isActive)
-            {
                 return;
-            }
 
             if (!initStyles)
                 initStyles = GUIHelper.SetCustomStyles();
 
-            windowRect = GUIHelper.CreatePopupWindow(new Rect(Screen.width - 500, 0, 500, 762), windowTitle);
+            windowRect = GUIHelper.CreatePopupWindow(new Rect(Screen.width - 450, 0, 450, 762), windowTitle);
 
             float lastYcoord = windowRect.y;
             float baseHeight = windowRect.height;
@@ -332,8 +326,7 @@ namespace CheatManager
             windowRect.width = windowRect.width - 10;
             windowRect.height = (baseHeight - windowRect.y) + 20;            
             
-            TabControl(currentTab);
-            
+            TabControl(currentTab);            
         }       
 
 
@@ -431,7 +424,7 @@ namespace CheatManager
 
                 GUI.Box(new Rect(windowRect.x, windowRect.y, windowRect.width, 23), "Vehicle Settings:", GUIHelper.Box);
                 
-                vehicleSettingsID = GUIHelper.CreateButtonsGrid(new Rect(windowRect.x - 5, windowRect.y + 27, windowRect.width + 10, 22), 2, 2, vehicleSettings, out float lastYcoord);
+                vehicleSettingsID = GUIHelper.CreateButtonsGrid(new Rect(windowRect.x - 5 , windowRect.y + 27, windowRect.width + 10, 22), space, 2, vehicleSettings, out float lastYcoord);
                 
                 GUI.Label(new Rect(windowRect.x, windowRect.y + 53, 250, 22), seamothName + " speed multiplier: " + string.Format("{0:#.##}", seamothSpeedMultiplier));
                 

@@ -5,7 +5,7 @@ namespace SlotExtender.Patchers
 {
     [HarmonyPatch(typeof(Equipment))]
     [HarmonyPatch("GetSlotType")]
-    internal class Equipment_GetSlotType_Patcher
+    internal class Equipment_GetSlotType_Patch
     {
         internal static void Prefix(string slot, ref EquipmentType __result)
         {
@@ -20,7 +20,7 @@ namespace SlotExtender.Patchers
     {
         internal static bool Prefix(Equipment __instance, string slot, Pickupable pickupable, bool verbose, ref bool __result)
         {
-            if (pickupable.GetTechType() == TechType.VehicleStorageModule && SlotExtender.IsExtendedSeamothSlot(slot))
+            if (pickupable.GetTechType() == TechType.VehicleStorageModule && __instance.owner.GetComponent<SlotExtender>().Instance.IsExtendedSeamothSlot(slot))
             {
                 // Do not allow storage modules in extended slots
                 __result = false;

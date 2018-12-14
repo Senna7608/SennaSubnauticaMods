@@ -10,6 +10,15 @@ namespace Common.DebugHelper
 {
     public static class DebugHelper
     {
+        public static void DebugVehicle(string instance, string methodName, Vehicle vehicle)
+        {
+            Debug.Log("[DebugHelper]\n" +
+                $"Instance: {instance}\n" +                
+                $"Call from: {methodName}()\n" +
+                $"Object class: {vehicle.GetType()}\n" +
+                $"Object name: {vehicle.name}");            
+        }
+
 
         public static void DebugGameObject(string name, GameObject gameObject)
         {

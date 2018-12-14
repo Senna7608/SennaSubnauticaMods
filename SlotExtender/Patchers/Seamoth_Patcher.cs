@@ -5,7 +5,7 @@ namespace SlotExtender.Patchers
 {
     [HarmonyPatch(typeof(SeaMoth))]
     [HarmonyPatch("slotIDs", PropertyMethod.Getter)]
-    internal class SeaMoth_slotIDs_Patcher
+    internal class SeaMoth_slotIDs_Patch
     {
         internal static bool Prefix(ref string[] __result)
         {

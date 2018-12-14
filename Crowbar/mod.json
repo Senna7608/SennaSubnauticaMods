@@ -1,0 +1,10 @@
+﻿{
+  "Id": "Crowbar",
+  "DisplayName": "Crowbar",
+  "Author": "Senna",
+  "Version": "1.0",
+  "Enable": true,
+  "AssemblyName": "Crowbar.dll",
+  "EntryMethod": "Crowbar.Main.Load",
+  "Config": { }
+}

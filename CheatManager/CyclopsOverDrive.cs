@@ -6,7 +6,7 @@ namespace CheatManager
 {
     public class CyclopsOverDrive : MonoBehaviour
     {
-        public static CyclopsOverDrive Main { get; private set; }
+        public CyclopsOverDrive Instance { get; private set; }
 
         private SubRoot subroot;
         private SubControl subcontrol;
@@ -29,7 +29,10 @@ namespace CheatManager
 
         public void Awake()
         {
-            Main = this;
+            Instance = gameObject.GetComponent<CyclopsOverDrive>();
+
+            if (Instance == null)
+                 Destroy(this);
         }
 
         public void Start()

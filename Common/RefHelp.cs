@@ -1,5 +1,6 @@
 ﻿namespace Common
 {
+    using System;
     using System.Reflection;
 
     public static class RefHelp
@@ -35,6 +36,19 @@
                     fieldInfo.SetValue(copy, value);
                 }                
             }
+        }
+
+        public static bool IsNamespaceExists(string desiredNamespace)
+        {
+            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                foreach (Type type in assembly.GetTypes())
+                {
+                    if (type.Namespace == desiredNamespace)
+                        return true;
+                }
+            }
+            return false;
         }
     }
 }

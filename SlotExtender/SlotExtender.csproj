@@ -47,6 +47,10 @@
       <HintPath>D:\Subnautica\Subnautica_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="MoreQuickSlots">
+      <HintPath>.\MoreQuickSlots.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="SMLHelper">
       <HintPath>D:\Subnautica\QMods\Modding Helper\SMLHelper.dll</HintPath>
       <Private>False</Private>
@@ -66,6 +70,7 @@
     <Compile Include="Config\Config.cs" />
     <Compile Include="Config\Bindings.cs" />
     <Compile Include="Initialize_uGUI.cs" />
+    <Compile Include="Patchers\MQS_Patcher.cs" />
     <Compile Include="Patchers\uGUI_Equipment_Patcher.cs" />
     <Compile Include="Patchers\Equipment_Patcher.cs" />
     <Compile Include="Patchers\Exosuit_Patcher.cs" />

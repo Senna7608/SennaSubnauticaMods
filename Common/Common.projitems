@@ -25,6 +25,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmYesNo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\ISerialConfirmation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GUIHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)InputHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modules.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RefHelp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StringBuffer.cs" />

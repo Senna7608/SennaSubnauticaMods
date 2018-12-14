@@ -26,13 +26,7 @@ namespace Common
         {
             LABEL,
             TEXTFIELD           
-        }
-
-        public enum GUI_ALIGN
-        {
-            RIGHTDOWN,
-            DOWNRIGHT
-        }
+        }        
 
         public class ButtonInfo
         {
@@ -66,6 +60,8 @@ namespace Common
 
         public static bool CreateButtonsList(string[] names, BUTTONTYPE type, ref List<ButtonInfo> buttonInfos)
         {
+            buttonInfos.Clear();
+
             for (int i = 0; i < names.Length; i++)
             {
                 buttonInfos.Add(new ButtonInfo()
@@ -112,7 +108,7 @@ namespace Common
         }
 
 
-        public static int CreateButtonsGrid(Rect rect, float space, int columns, List<ButtonInfo> Buttons, out float lastYcoord, GUI_ALIGN align = GUI_ALIGN.RIGHTDOWN)
+        public static int CreateButtonsGrid(Rect rect, float space, int columns, List<ButtonInfo> Buttons, out float lastYcoord, bool alignRightDown = true)
         {            
             float calcWidth = (rect.width - ((columns + 1) * space)) / columns;
             int rows = CeilToInt(Buttons.Count / (float)columns);
@@ -127,7 +123,7 @@ namespace Common
                     continue;
                 }                
                 
-                if (align == GUI_ALIGN.RIGHTDOWN)
+                if (alignRightDown)
                 {
                     if (column == columns)
                     {
@@ -150,7 +146,7 @@ namespace Common
                     return i;
                 }
                 
-                if (align == GUI_ALIGN.RIGHTDOWN)
+                if (alignRightDown)
                     column++;
                 else
                     row++;

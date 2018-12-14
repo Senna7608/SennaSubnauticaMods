@@ -9,17 +9,12 @@ namespace LaserCannon
     {
         public static LaserCannon_Seamoth Main { get; private set; }
 
-        [AssertNotNull]
+        
         public SeaMoth seamoth;
-        [AssertNotNull]
         private EnergyMixin energyMixin; 
-        [AssertNotNull]
         private FMODAsset shootSound;
-        [AssertNotNull]
         private FMOD_CustomLoopingEmitter loopingEmitter;
-        [AssertNotNull]
         private GameObject laserBeam;
-        [AssertNotNull]
         private LineRenderer lineRenderer;
        
         private float powerConsumption = 1f;
@@ -70,9 +65,16 @@ namespace LaserCannon
         private void Start()
         { 
             seamoth.onToggle += OnToggle;
-            Utils.GetLocalPlayerComp().playerModeChanged.AddHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));            
+            Player.main.playerModeChanged.AddHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));            
         }
-        
+
+        public void OnDestroy()
+        {
+            seamoth.onToggle -= OnToggle;
+            Player.main.playerModeChanged.RemoveHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
+            Destroy(this);
+        }
+
         public void SetBeamColor()
         {
             beamcolor = Modules.Colors.ColorArray[Config.beamColor];            

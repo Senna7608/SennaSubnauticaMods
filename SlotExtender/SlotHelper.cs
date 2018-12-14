@@ -75,7 +75,7 @@ namespace SlotExtender
                 foreach (string slotID in NewExosuitSlotIDs)
                     Equipment.slotMapping.Add(slotID, EquipmentType.ExosuitModule);
 
-                Debug.Log("[SlotExtender] Equipment.slotMapping Patched!");
+                Debug.Log("[SlotExtender] Equipment slot mapping Patched!");
                 SlotMappingExpanded = true;
             }
         }

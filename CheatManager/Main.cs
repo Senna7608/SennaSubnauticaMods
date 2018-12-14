@@ -3,6 +3,7 @@ using Harmony;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using System.Reflection;
+using Common;
 
 namespace CheatManager
 {
@@ -24,7 +25,7 @@ namespace CheatManager
                 UnityEngine.Debug.LogException(ex);
             }
 
-            isExistsSMLHelperV2 = IsNamespaceExists("SMLHelper.V2");            
+            isExistsSMLHelperV2 = RefHelp.IsNamespaceExists("SMLHelper.V2");            
         }
         
         private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -43,43 +44,31 @@ namespace CheatManager
         private static void EnableConsole()
         {
             DevConsole.disableConsole = false;         
-        }
-
-        public static bool IsNamespaceExists(string desiredNamespace)
-        {
-            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
-            {
-                foreach (Type type in assembly.GetTypes())
-                {
-                    if (type.Namespace == desiredNamespace)
-                        return true;
-                }
-            }
-            return false;
-        }
-
+        }       
+        
         [HarmonyPatch(typeof(SeaMoth))]
-        [HarmonyPatch("Start")]
+        [HarmonyPatch("Awake")]
         internal class SeaMoth_Start_Patch
         {
             [HarmonyPostfix]
             internal static void Postfix(SeaMoth __instance)
             {
-                __instance.gameObject.AddComponent<SeamothOverDrive>();
+                __instance.gameObject.AddComponent<VehicleOverDrive>();
             }
         }
 
         [HarmonyPatch(typeof(Exosuit))]
-        [HarmonyPatch("Start")]
+        [HarmonyPatch("Awake")]
         internal class Exosuit_Start_Patch
         {
             [HarmonyPostfix]
             internal static void Postfix(Exosuit __instance)
             {
-                __instance.gameObject.AddComponent<ExosuitOverDrive>();
+                __instance.gameObject.AddComponent<VehicleOverDrive>();
             }
         }
         
+
         [HarmonyPatch(typeof(CyclopsMotorMode))]
         [HarmonyPatch("Start")]
         internal class CyclopsMotorMode_Start_Patch

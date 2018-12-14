@@ -17,6 +17,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Common", "Common\Common.shp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AncientSword", "AncientSword\AncientSword.csproj", "{7723914C-1E34-4C61-9965-7F00FB55A12D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crowbar", "Crowbar\Crowbar.csproj", "{CB8E67FB-764C-42A2-8BB2-C90BDCED7D5C}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Common\Common.projitems*{1306dea8-6a8b-4e61-a63e-779b439b6590}*SharedItemsImports = 4
@@ -56,6 +58,10 @@ Global
 		{7723914C-1E34-4C61-9965-7F00FB55A12D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7723914C-1E34-4C61-9965-7F00FB55A12D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7723914C-1E34-4C61-9965-7F00FB55A12D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB8E67FB-764C-42A2-8BB2-C90BDCED7D5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB8E67FB-764C-42A2-8BB2-C90BDCED7D5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB8E67FB-764C-42A2-8BB2-C90BDCED7D5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB8E67FB-764C-42A2-8BB2-C90BDCED7D5C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -5,14 +5,10 @@ using UWE;
 namespace RepairModule
 {
     public class RepairModuleControl : MonoBehaviour
-    {   
-        [AssertNotNull]
+    {        
         public Vehicle thisVehicle;
-        [AssertNotNull]
-        private EnergyMixin energyMixin;        
-        [AssertNotNull]
+        private EnergyMixin energyMixin;
         private FMODAsset weldSoundAsset;
-        [AssertNotNull]
         private FMOD_CustomLoopingEmitter weldSound;
 
         HandReticle main = HandReticle.main;
@@ -47,9 +43,16 @@ namespace RepairModule
         public void Start()
         {            
             thisVehicle.onToggle += OnToggle;
-            Utils.GetLocalPlayerComp().playerModeChanged.AddHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
+            Player.main.playerModeChanged.AddHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
         }       
 
+        public void OnDestroy()
+        {
+            thisVehicle.onToggle -= OnToggle;
+            Player.main.playerModeChanged.RemoveHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
+            Destroy(this);
+        }
+                     
         private void OnPlayerModeChanged(Player.Mode playerMode)
         {
             if (playerMode == Player.Mode.LockedPiloting)

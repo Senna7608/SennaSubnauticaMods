@@ -6,7 +6,9 @@ namespace SlotExtender
 {
     internal class Initialize_uGUI : MonoBehaviour
     {
-        internal static Initialize_uGUI Instance { get; private set; }
+        internal static Initialize_uGUI Instance { get; private set; }        
+
+        internal static Dictionary<string, Text> SlotText = new Dictionary<string, Text>();
 
         private bool isPatched = false;
 
@@ -86,19 +88,22 @@ namespace SlotExtender
                 }
 
                 foreach (KeyValuePair<string, uGUI_EquipmentSlot> item in allSlots)
-                {
+                {                    
                     if (item.Value.name.StartsWith("SeamothModule"))
                     {
                         int.TryParse(item.Key.Substring(13), out int slotNum);
-                        item.Value.rectTransform.anchoredPosition = slotPos[slotNum - 1];
-                        AddSlotNumbers(item.Value.transform, slotNum.ToString());
+                        item.Value.rectTransform.anchoredPosition = slotPos[slotNum - 1];                        
+                        Text text = AddSlotNumber(item.Value.transform, Config.Config.SLOTKEYS[$"Slot{slotNum}"], slotNum);
+                        SlotText.Add(text.gameObject.name, text);
+                        //AddSlotNumbers(item.Value.transform, slotNum.ToString());
                     }
                     
                     if (item.Value.name.StartsWith("ExosuitModule"))
                     {
                         int.TryParse(item.Key.Substring(13), out int slotNum);
                         item.Value.rectTransform.anchoredPosition = slotPos[slotNum - 1];
-                        AddSlotNumbers(item.Value.transform, slotNum.ToString());
+                        AddSlotNumber(item.Value.transform, Config.Config.SLOTKEYS[$"Slot{slotNum}"], slotNum);
+                        //AddSlotNumbers(item.Value.transform, slotNum.ToString());
                     }
 
                     if (item.Value.name == "ExosuitArmLeft")
@@ -109,7 +114,7 @@ namespace SlotExtender
                     if (item.Value.name == "ExosuitArmRight")
                     {
                         item.Value.rectTransform.anchoredPosition = new Vector3(RightColumn, FifthRow);
-                    }
+                    }                    
                 }
 
                 Debug.Log("[SlotExtender] uGUI_EquipmentSlots Patched!");
@@ -117,19 +122,27 @@ namespace SlotExtender
             }
         }
 
+        internal void RefreshText()
+        {
+            foreach (KeyValuePair<string, string> kvp in Config.Config.SLOTKEYS)
+            {
+                SlotText[kvp.Key].text = kvp.Value;
+            }
+        }        
+
         //based on RandyKnapp's MoreQuickSlots Subnautica mod: "CreateNewText()" method
         //found on GitHub:https://github.com/RandyKnapp/SubnauticaModSystem
 
-        internal void AddSlotNumbers(Transform parent, string slotNumbers)
+        internal Text AddSlotNumber(Transform parent, string slotKey, int slotNum)
         {
             Text text = Instantiate(HandReticle.main.interactPrimaryText);
             text.gameObject.layer = parent.gameObject.layer;
-            text.gameObject.name = "SlotText" + slotNumbers;
+            text.gameObject.name = $"Slot{slotNum}";
             text.transform.SetParent(parent, false);
             text.transform.localScale = new Vector3(1, 1, 1);
             text.gameObject.SetActive(true);
             text.enabled = true;
-            text.text = slotNumbers;
+            text.text = slotKey;
             text.fontSize = 17;
             text.color = Color.green;
             RectTransformExtensions.SetParams(text.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), parent);
@@ -138,6 +151,8 @@ namespace SlotExtender
             text.rectTransform.anchoredPosition = new Vector2(0, 70);
             text.alignment = TextAnchor.MiddleCenter;
             text.raycastTarget = false;
+
+            return text;
         }
     }
 }

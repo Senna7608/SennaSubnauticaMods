@@ -49,7 +49,7 @@ namespace LaserCannon
                 {
                     if (__instance.GetComponent<LaserCannon_Seamoth>() == null)
                     {
-                        var laserCannon =__instance.gameObject.AddComponent<LaserCannon_Seamoth>();                        
+                        var laserCannon = __instance.gameObject.AddComponent<LaserCannon_Seamoth>();                        
                         laserCannon.slotID = slotID;
                         Debug.Log($"[LaserCannon] Added component to instance: {__instance.name} ID: {__instance.GetInstanceID()}");
                     }

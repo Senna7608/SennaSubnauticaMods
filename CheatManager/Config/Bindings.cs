@@ -57,11 +57,11 @@ namespace CheatManager.Config
                 buttonInfos[sBtn].Name = "Press any key!";
             }           
             
-            if (GUI.Button(new Rect(windowRect.x + space, lastY + space * 2, windowRect.width / 2 - space * 2, 40), "Save & Close"))
+            if (GUI.Button(new Rect(windowRect.x + space, lastY + space * 2, windowRect.width / 2 - space * 2, 40), "Save & Close", GUIHelper.GetCustomStyle(false, GUIHelper.BUTTONTYPE.NORMAL_CENTER)))
             {                
                 SaveAndExit();
             }
-            else if (GUI.Button(new Rect(windowRect.x + space + windowRect.width / 2, lastY + space * 2, windowRect.width / 2 - space * 2, 40), "Cancel"))
+            else if (GUI.Button(new Rect(windowRect.x + space + windowRect.width / 2, lastY + space * 2, windowRect.width / 2 - space * 2, 40), "Cancel", GUIHelper.GetCustomStyle(false, GUIHelper.BUTTONTYPE.NORMAL_CENTER)))
             {
                 Destroy(Instance);
             }            
@@ -87,10 +87,32 @@ namespace CheatManager.Config
 
             yield return WaitForKey();
 
+            int isFirst = 0;
+            int isLast = 0;
+            int keyCount = 0;
+
+            for(int i = 0; i < hotkeyButtons.Count; i++)
+            {
+                if (hotkeyButtons[i].Equals(newKey.ToString()))
+                {
+                    if (keyCount == 0)
+                        isFirst = i;
+
+                    keyCount++;
+                    isLast = i;                    
+                }                
+            }
+
+            if (keyCount > 0)
+            {
+                Debug.Log("[CheatManager] Warning! Duplicate keybind! Swapping keys...");
+                hotkeyButtons[isFirst] = hotkeyButtons[selected];
+                buttonInfos[isFirst].Name = hotkeyButtons[selected];
+            }
+
             hotkeyButtons[selected] = newKey.ToString();
             buttonInfos[selected].Name = hotkeyButtons[selected];
-            selected = -1;
-
+            selected = -1;            
             yield return null;
         }
 
@@ -109,6 +131,7 @@ namespace CheatManager.Config
 
             Config.WriteConfig();
             Config.SetKeyBindings();
+            CheatManager.Instance.UpdateTitle();
             Destroy(Instance);
         }
 
@@ -125,9 +148,9 @@ namespace CheatManager.Config
 
                 if (Instance == null)
                 {
-                    GameObject hotkeys = new GameObject().AddComponent<Bindings>().gameObject;
-                    hotkeys.name = "CheatManager.Bindings";
-                    Instance = hotkeys.GetComponent<Bindings>();
+                    GameObject go = new GameObject().AddComponent<Bindings>().gameObject;
+                    go.name = "CheatManager.Bindings";
+                    Instance = go.GetComponent<Bindings>();
                 }
             }
 

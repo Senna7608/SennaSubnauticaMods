@@ -2,11 +2,11 @@
 using SMLHelper.V2.MonoBehaviours;
 using UnityEngine;
 
-namespace AncientSword
+namespace Crowbar
 {
-    internal class SwordPrefab : ModPrefab
+    internal class CrowbarPrefab : ModPrefab
     {
-        public SwordPrefab(string classId, string prefabFileName, TechType techType = TechType.None) : base(classId, prefabFileName, techType)
+        public CrowbarPrefab(string classId, string prefabFileName, TechType techType = TechType.None) : base(classId, prefabFileName, techType)
         {
             ClassID = classId;
             PrefabFileName = prefabFileName;
@@ -15,7 +15,7 @@ namespace AncientSword
         
         public override GameObject GetGameObject()
         {
-            GameObject gameObject = Main.assetBundle.LoadAsset<GameObject>("AncientSword");                      
+            GameObject gameObject = Main.assetBundle.LoadAsset<GameObject>("Crowbar");                      
 
             foreach (Renderer renderer in gameObject.GetComponentsInChildren<Renderer>())
             {
@@ -25,8 +25,8 @@ namespace AncientSword
             
             gameObject.AddComponent<PrefabIdentifier>().ClassId = ClassID;
             gameObject.AddComponent<TechTag>().type = TechType;            
-            gameObject.AddComponent<BoxCollider>().size = new Vector3(0.1f, 0.1f, 0.1f);
-            gameObject.AddComponent<LargeWorldEntity>().cellLevel = LargeWorldEntity.CellLevel.Near;
+            gameObject.AddComponent<BoxCollider>().size = new Vector3(0.01f, 0.01f, 0.01f);
+            //gameObject.AddComponent<LargeWorldEntity>().cellLevel = LargeWorldEntity.CellLevel.Near;
             gameObject.AddComponent<Pickupable>().isPickupable = true;            
             
             Fixer fixer = gameObject.AddComponent<Fixer>();
@@ -37,8 +37,8 @@ namespace AncientSword
             skyApplier.renderers = gameObject.GetComponentsInChildren<MeshRenderer>();
             skyApplier.anchorSky = Skies.Auto;
 
-            WorldForces worldForces = gameObject.AddComponent<WorldForces>();
-            Rigidbody rigidbody = gameObject.AddComponent<Rigidbody>();
+            WorldForces worldForces = gameObject.AddOrGetComponent<WorldForces>();
+            Rigidbody rigidbody = gameObject.AddOrGetComponent<Rigidbody>();
             
             worldForces.underwaterGravity = 0;
             worldForces.useRigidbody = rigidbody;
@@ -48,9 +48,9 @@ namespace AncientSword
             vfxFabricating.localMaxY = 3f;
             vfxFabricating.posOffset = new Vector3(0f, 0, 0f);
             vfxFabricating.eulerOffset = new Vector3(0f, 90f, -90f);
-            vfxFabricating.scaleFactor = 0.5f;
+            vfxFabricating.scaleFactor = 1f;
 
-            AncientSword component = gameObject.AddComponent<AncientSword>();
+            Crowbar component = gameObject.AddComponent<Crowbar>();
 
             var knifePrefab = Resources.Load<GameObject>("WorldEntities/Tools/Knife").GetComponent<Knife>();
 
