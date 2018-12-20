@@ -7,7 +7,7 @@
             "day",
             "night",
             "unlockall",
-            "Clear Inventory",
+            "clearinventory",
             "unlockdoors",
             "ency all",
             "warpme",

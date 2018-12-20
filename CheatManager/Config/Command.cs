@@ -2,16 +2,37 @@
 
 namespace CheatManager.Config
 {
-    public class ConsoleCommand : MonoBehaviour
-    {        
-        private void Awake()
+    public class CmConfig : MonoBehaviour
+    {
+        public static CmConfig Instance { get; private set; }
+
+        public void Awake()
         {
-            DevConsole.RegisterConsoleCommand(this, "cmconfig", false, false);            
+            Instance = this;
+            DevConsole.RegisterConsoleCommand(this, "cmconfig", false, false);
+            Debug.Log("[CheatManager] Information: Enter 'cmconfig' command for configuration window.");
         }
-        
+
         private void OnConsoleCommand_cmconfig(NotificationCenter.Notification n)
         {
             Bindings.InitWindow();
-        }        
+        }
+
+        public static CmConfig Load()
+        {
+            if (Instance == null)
+            {
+                Instance = FindObjectOfType(typeof(CmConfig)) as CmConfig;
+
+                if (Instance == null)
+                {
+                    GameObject cmconfig_command = new GameObject().AddComponent<CmConfig>().gameObject;
+                    cmconfig_command.name = "CmConfig";
+                    Instance = cmconfig_command.GetComponent<CmConfig>();
+                }
+            }
+
+            return Instance;
+        }
     }
 }

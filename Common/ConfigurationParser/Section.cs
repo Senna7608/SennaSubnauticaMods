@@ -25,9 +25,9 @@ namespace ConfigurationParser
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.AppendFormat("[{0}]\r\n", Name);
+            sb.AppendFormat($"[{Name}]\r\n");
             foreach (var kvp in this)
-                sb.AppendFormat("{0}: {1}\r\n", kvp.Key, kvp.Value);
+                sb.AppendFormat($"{kvp.Key}: {kvp.Value}\r\n");
 
             return sb.ToString();
         }

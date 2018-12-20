@@ -24,9 +24,20 @@ namespace SlotExtender.Patchers
             {
                 // Do not allow storage modules in extended slots
                 __result = false;
+                ErrorMessage.AddMessage("Slot Extender:\nStorage module not allowed for this slot!");
                 return false;
             }
 
+            if (pickupable.GetTechType() == TechType.VehicleStorageModule && __instance.owner.name.Equals("Exosuit(Clone)"))
+            {                
+                // Do not allow more than four storage modules in Exosuit slots
+                if (__instance.GetCount(TechType.VehicleStorageModule) >= 4)
+                {
+                    __result = false;
+                    ErrorMessage.AddMessage("Slot Extender:\nStorage module limit reached!");
+                    return false;
+                }
+            }
             return true;
         }
     }

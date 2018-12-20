@@ -2,14 +2,15 @@
 
 namespace SlotExtender.Config
 {
-    public class ConsoleCommand : MonoBehaviour
+    public class SxConfig : MonoBehaviour
     {
-        public static ConsoleCommand Instance { get; private set; }
+        public static SxConfig Instance { get; private set; }
 
         public void Awake()
         {
             Instance = this;           
-            DevConsole.RegisterConsoleCommand(this, "sxconfig", false, false);            
+            DevConsole.RegisterConsoleCommand(this, "sxconfig", false, false);
+            Debug.Log("[SlotExtender] Information: Enter 'sxconfig' command for configuration window.");
         }
         
         private void OnConsoleCommand_sxconfig(NotificationCenter.Notification n)
@@ -17,17 +18,17 @@ namespace SlotExtender.Config
             Bindings.InitWindow();
         }
 
-        public static ConsoleCommand Load()
+        public static SxConfig Load()
         {
             if (Instance == null)
             {
-                Instance = FindObjectOfType(typeof(ConsoleCommand)) as ConsoleCommand;
+                Instance = FindObjectOfType(typeof(SxConfig)) as SxConfig;
 
                 if (Instance == null)
                 {
-                    GameObject sx_command = new GameObject().AddComponent<ConsoleCommand>().gameObject;
-                    sx_command.name = "ConsoleCommand";
-                    Instance = sx_command.GetComponent<ConsoleCommand>();
+                    GameObject sxconfig_command = new GameObject().AddComponent<SxConfig>().gameObject;
+                    sxconfig_command.name = "SxConfig";
+                    Instance = sxconfig_command.GetComponent<SxConfig>();
                 }
             }
 

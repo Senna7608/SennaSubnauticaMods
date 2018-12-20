@@ -6,15 +6,11 @@ namespace ScannerModule
 {
     public class ScannerModuleExosuit : MonoBehaviour
     {        
-        [AssertNotNull]
-        private EnergyMixin energyMixin;
-        [AssertNotNull]
-        public FMOD_CustomLoopingEmitter scanSound;
-        [AssertNotNull]
-        public FMODAsset completeSoundAsset;
-        [AssertNotNull]
-        public FMODAsset scanSoundAsset;
-        [AssertNotNull]
+       
+        private EnergyMixin energyMixin;        
+        public FMOD_CustomLoopingEmitter scanSound;        
+        public FMODAsset completeSoundAsset;        
+        public FMODAsset scanSoundAsset;       
         private Exosuit exosuit;
 
         public const float powerConsumption = 0.5f;
@@ -49,7 +45,7 @@ namespace ScannerModule
         public void Start()
         {
             exosuit.onToggle += OnToggle;
-            Utils.GetLocalPlayerComp().playerModeChanged.AddHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
+            Player.main.playerModeChanged.AddHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
         }
 
         private void OnPlayerModeChanged(Player.Mode playerMode)
@@ -205,7 +201,13 @@ namespace ScannerModule
             }
 
             PDAScanner.Result result = PDAScanner.CanScan();                    
-        }       
+        }
+
+        private void OnDestroy()
+        {
+            Player.main.playerModeChanged.RemoveHandler(gameObject, OnPlayerModeChanged);
+            exosuit.onToggle -= OnToggle;
+        }
     }
 }
 

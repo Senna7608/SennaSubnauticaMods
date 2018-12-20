@@ -16,7 +16,7 @@ namespace SlotExtender.Config
         private static bool waitingForKey = false;
         private List<string> hotkeyLabels = new List<string>();
         private List<string> hotkeyButtons = new List<string>();
-        private List<GUIHelper.ButtonInfo> buttonInfos = new List<GUIHelper.ButtonInfo>();
+        private List<GUIHelper.ButtonInfo> buttonInfo = new List<GUIHelper.ButtonInfo>();
         private static readonly float space = 10f;
 
         public void Awake()
@@ -34,34 +34,34 @@ namespace SlotExtender.Config
                 hotkeyButtons.Add(key.Value);
             }
 
-            GUIHelper.CreateButtonsList(hotkeyButtons.ToArray(), GUIHelper.BUTTONTYPE.NORMAL_CENTER, ref buttonInfos);
+            GUIHelper.CreateButtonsGroup(hotkeyButtons.ToArray(), GUIHelper.BUTTONTYPE.NORMAL_CENTER, ref buttonInfo);
         }
 
         public void OnGUI()
         {
             if (!initStyles)
-                initStyles = GUIHelper.SetCustomStyles();
+                initStyles = GUIHelper.InitGUIStyles();
 
-            windowRect = GUIHelper.CreatePopupWindow(new Rect(0, 0, 300, 350), "SlotExtender: Key Bindings", false, true);
+            windowRect = GUIHelper.CreatePopupWindow(new Rect(0, 0, Screen.width / 6, Screen.height / 2.9f), "SlotExtender: Key Bindings", false, false);
 
             GUI.FocusControl("SlotExtender.Bindings");
 
             GUIHelper.CreateItemsGrid(new Rect(windowRect.x, windowRect.y, windowRect.width / 2, windowRect.height), space, 1, hotkeyLabels, GUIHelper.GUI_ITEM.TEXTFIELD);
 
-            int sBtn = GUIHelper.CreateButtonsGrid(new Rect(windowRect.x + windowRect.width / 2, windowRect.y, windowRect.width / 2, windowRect.height), space, 1, buttonInfos, out float lastY);
+            int sBtn = GUIHelper.CreateButtonsGrid(new Rect(windowRect.x + windowRect.width / 2, windowRect.y, windowRect.width / 2, windowRect.height), space, 1, buttonInfo, out float lastY);
 
             if (sBtn != -1)
             {
                 StartAssignment(hotkeyButtons[sBtn]);
                 selected = sBtn;
-                buttonInfos[sBtn].Name = "Press any key!";
+                buttonInfo[sBtn].Name = "Press any key!";
             }
 
-            if (GUI.Button(new Rect(windowRect.x + space, lastY + space * 2, windowRect.width / 2 - space * 2, 40), "Save & Close", GUIHelper.GetCustomStyle(false, GUIHelper.BUTTONTYPE.NORMAL_CENTER)))
+            if (GUI.Button(new Rect(windowRect.x + space, lastY + space * 2, windowRect.width / 2 - space * 2, Screen.height / 22.5f), "Save"))
             {
                 SaveAndExit();
             }
-            else if (GUI.Button(new Rect(windowRect.x + space + windowRect.width / 2, lastY + space * 2, windowRect.width / 2 - space * 2, 40), "Cancel", GUIHelper.GetCustomStyle(false, GUIHelper.BUTTONTYPE.NORMAL_CENTER)))
+            else if (GUI.Button(new Rect(windowRect.x + space + windowRect.width / 2, lastY + space * 2, windowRect.width / 2 - space * 2, Screen.height / 22.5f), "Cancel"))
             {
                 Destroy(Instance);
             }
@@ -88,7 +88,6 @@ namespace SlotExtender.Config
             yield return WaitForKey();
 
             int isFirst = 0;
-            int isLast = 0;
             int keyCount = 0;
 
             for (int i = 0; i < hotkeyButtons.Count; i++)
@@ -99,24 +98,19 @@ namespace SlotExtender.Config
                         isFirst = i;
 
                     keyCount++;
-                    isLast = i;
                 }
             }
 
-            if (keyCount > 0)
+            if (keyCount > 0 && isFirst != selected)
             {
-                Debug.Log("[SlotExtender] Warning! Duplicate keybind! Swapping keys...");
+                Debug.Log("[SlotExtender] Error! Duplicate keybind found, swapping keys...");
                 hotkeyButtons[isFirst] = hotkeyButtons[selected];
-                buttonInfos[isFirst].Name = hotkeyButtons[selected];
+                buttonInfo[isFirst].Name = hotkeyButtons[selected];
             }
 
             hotkeyButtons[selected] = newKey.ToString();
-            buttonInfos[selected].Name = hotkeyButtons[selected];
-            selected = -1;
-
-            //hotkeyButtons[selected] = newKey.ToString();
-            //buttonInfos[selected].Name = hotkeyButtons[selected];
-            //selected = -1;
+            buttonInfo[selected].Name = hotkeyButtons[selected];
+            selected = -1;            
 
             yield return null;
         }

@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Reflection;
 using Harmony;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
-using System.Reflection;
 using Common;
 
 namespace CheatManager
@@ -10,6 +10,8 @@ namespace CheatManager
     public static class Main
     {        
         internal static bool isExistsSMLHelperV2;       
+        internal static float ButtonHeight = 22;
+        internal static float FontSize = 80;
 
         public static void Load()
         {
@@ -31,63 +33,26 @@ namespace CheatManager
         private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
             if (scene.name == "Main")
-            {
-                CheatManager.Load();
+            {                
+                CheatManager.Load();                
             }
 
             if (scene.name == "StartScreen")
             {
-                Logger.Load();                
+                //DisplayManager.OnDisplayChanged += Screen_OnDisplayChanged;
+                Logger.Load();
+                Config.CmConfig.Load();
             }
-        }        
+        }
+
+        private static void Screen_OnDisplayChanged()
+        {
+            UnityEngine.Debug.Log($"Resolution changed!");
+        }
 
         private static void EnableConsole()
         {
             DevConsole.disableConsole = false;         
-        }       
-        
-        [HarmonyPatch(typeof(SeaMoth))]
-        [HarmonyPatch("Awake")]
-        internal class SeaMoth_Start_Patch
-        {
-            [HarmonyPostfix]
-            internal static void Postfix(SeaMoth __instance)
-            {
-                __instance.gameObject.AddComponent<VehicleOverDrive>();
-            }
-        }
-
-        [HarmonyPatch(typeof(Exosuit))]
-        [HarmonyPatch("Awake")]
-        internal class Exosuit_Start_Patch
-        {
-            [HarmonyPostfix]
-            internal static void Postfix(Exosuit __instance)
-            {
-                __instance.gameObject.AddComponent<VehicleOverDrive>();
-            }
-        }
-        
-
-        [HarmonyPatch(typeof(CyclopsMotorMode))]
-        [HarmonyPatch("Start")]
-        internal class CyclopsMotorMode_Start_Patch
-        {
-            [HarmonyPostfix]
-            internal static void Postfix(CyclopsMotorMode __instance)
-            {
-                __instance.gameObject.AddComponent<CyclopsOverDrive>();                
-            }
-        }
-        
-        [HarmonyPatch(typeof(Seaglide))]
-        [HarmonyPatch("Awake")]
-        internal class Seaglide_Awake_Patch
-        {
-            internal static void Postfix(Seaglide __instance)
-            {
-                __instance.gameObject.AddComponent<SeaglideOverDrive>();                
-            }
         }        
     }  
 }

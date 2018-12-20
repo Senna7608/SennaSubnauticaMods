@@ -142,7 +142,7 @@ namespace CheatManager
                 
                 if (o2.isPlayer)
                 {
-                    o2.oxygenCapacity = 180f;
+                    o2.oxygenCapacity = 90f;
                 }
 
                 Player.main.liveMixin.data.maxHealth = 200f;

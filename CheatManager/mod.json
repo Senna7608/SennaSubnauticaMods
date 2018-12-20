@@ -2,7 +2,7 @@
   "Id": "CheatManager",
   "DisplayName": "CheatManager",
   "Author": "Senna",
-  "Version": "1.5.3",
+  "Version": "1.6.0",
   "Enable": true,
   "AssemblyName": "CheatManager.dll",
   "EntryMethod": "CheatManager.Main.Load",

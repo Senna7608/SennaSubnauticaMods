@@ -26,7 +26,7 @@ namespace ConfigurationParser
             catch
             {
                 Console.WriteLine($"Parser Error! Section [{section}] or Key [{key}] is missing!");
-                return "Error!";
+                return "Parser Error";
             }
         }
 

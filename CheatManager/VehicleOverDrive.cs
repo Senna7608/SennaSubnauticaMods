@@ -128,7 +128,7 @@ namespace CheatManager
         {
             ThisEquipment.onAddItem -= ModuleAddListener;
             ThisEquipment.onRemoveItem -= ModuleRemoveListener;
-            Player.main.playerModeChanged.RemoveHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
+            Player.main.playerModeChanged.RemoveHandler(gameObject, OnPlayerModeChanged);
             CheatManager.seamothCanFly = false;
             CheatManager.initToggleButtons = false;
             Destroy(Instance);

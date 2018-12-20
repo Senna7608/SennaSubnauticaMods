@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
-using ConfigurationParser;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Diagnostics;
+using UnityEngine;
+using ConfigurationParser;
 using Common;
 
 namespace SlotExtender.Config

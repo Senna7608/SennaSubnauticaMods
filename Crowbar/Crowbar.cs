@@ -129,7 +129,7 @@ namespace Crowbar
                         qt.z += 0.1f;
                         break;
                 }
-                gameObject.transform.localRotation. = new Quaternion(qt.x, qt.y, qt.z, qt.w);
+                gameObject.transform.localRotation = new Quaternion(qt.x, qt.y, qt.z, qt.w);
                 Debug.Log($"Rotation: {qt}");
             }
 

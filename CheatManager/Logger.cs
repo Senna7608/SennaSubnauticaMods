@@ -12,8 +12,8 @@ namespace CheatManager
     public class Logger : MonoBehaviour
     {
         public static Logger Instance { get; private set; }
-        private static Rect windowRect = new Rect(Screen.width - 450, 764, 450, Screen.height-764);        
-        private static Rect scrollRect = new Rect(windowRect.x, windowRect.y + 26, windowRect.width - 5, windowRect.height - 58);
+        private Rect windowRect;       
+        
         private static Vector2 scrollPos = Vector2.zero;
         private static float contentHeight = 0;
         private static float drawingPos;
@@ -28,9 +28,9 @@ namespace CheatManager
 #else
         private static readonly int MAXLOG = 100; 
 #endif
-        private static List<string> history = new List<string>();
+        //private static List<string> history = new List<string>();
 
-        private static int historyIndex = 0;
+        //private static int historyIndex = 0;
         
         private struct LOG
         {
@@ -69,8 +69,7 @@ namespace CheatManager
 
         public void Awake()
         {
-            Instance = this;
-            gameObject.AddComponent<ConsoleCommand>();
+            Instance = this;            
             DontDestroyOnLoad(this);            
             useGUILayout = false;
             InfoBar.InitInfoBar(show);
@@ -103,7 +102,9 @@ namespace CheatManager
                 return;
             }
 
-            GUIHelper.CreatePopupWindow(windowRect, $"CheatManager Console (Press {Config.Config.KEYBINDINGS["ToggleConsole"]} to toggle)", true, true);
+            windowRect = GUIHelper.CreatePopupWindow(new Rect(Screen.width - (Screen.width / 4.8f), Screen.height - (Screen.height / 4), Screen.width / 4.8f, Screen.height / 4), $"CheatManager Console (Press {Config.Config.KEYBINDINGS["ToggleConsole"]} to toggle)", true, true);
+
+            Rect scrollRect = new Rect(windowRect.x, windowRect.y + 5, windowRect.width - 5, windowRect.height - 37);
 
             scrollPos = GUI.BeginScrollView(scrollRect, scrollPos, new Rect(scrollRect.x, scrollRect.y, scrollRect.width - 40, drawingPos - scrollRect.y));
             
@@ -117,8 +118,8 @@ namespace CheatManager
                 GUIStyle style = GUI.skin.GetStyle("Label");
 
                 style.alignment = TextAnchor.MiddleLeft;
-                style.wordWrap = true;                                  
-                
+                style.wordWrap = true;                
+
                 contentHeight = style.CalcHeight(new GUIContent(logMessage[i].message), scrollRect.width - 40);                
                 
                 GUI.contentColor = logTypeColors[logMessage[i].type];                
@@ -126,7 +127,7 @@ namespace CheatManager
                 GUI.Label(new Rect(scrollRect.x + 5, drawingPos, 15, 21), "> ");
                 
                 GUI.Label(new Rect(scrollRect.x + 20, drawingPos, scrollRect.width - 40, contentHeight), logMessage[i].message);
-
+                
                 drawingPos += contentHeight + 1;
 
                 if (logMessage[i].stackTrace != "")
@@ -149,7 +150,7 @@ namespace CheatManager
 
             GUI.contentColor = Color.white;
 
-            
+            /*
             if (Event.current.Equals(Event.KeyboardEvent("return")) && inputField != "")
             {
                 history.Add(inputField);
@@ -178,8 +179,9 @@ namespace CheatManager
             }
             
             inputField = GUI.TextField(new Rect(scrollRect.x + 5, scrollRect.y + scrollRect.height + 5, 300, 22), inputField);
+            */
 
-            if (GUI.Button(new Rect(scrollRect.x + 310, scrollRect.y + scrollRect.height + 5, scrollRect.width - 310, 22),"Clear Window"))
+            if (GUI.Button(new Rect(windowRect.x + 5, windowRect.y + windowRect.height - 27, windowRect.width - 10, 22),"Clear Window"))
             {
                 logMessage.Clear();
                 drawingPos = scrollRect.y;

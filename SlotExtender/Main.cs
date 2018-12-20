@@ -29,9 +29,8 @@ namespace SlotExtender
         {
             if (scene.name == "StartScreen")
             {
-                Config.ConsoleCommand.Load();
-                GameInput.OnBindingsChanged += GameInput_OnBindingsChanged;
-                Debug.Log("[SlotExtender] Information: enter 'sxconfig' command for configuration window.");
+                Config.SxConfig.Load();
+                GameInput.OnBindingsChanged += GameInput_OnBindingsChanged;                
             }
         }
 

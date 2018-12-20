@@ -73,6 +73,7 @@
     <Compile Include="InfoBar.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="Patches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VehicleOverDrive.cs" />
     <Compile Include="SeaglideOverDrive.cs" />

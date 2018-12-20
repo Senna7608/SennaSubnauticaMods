@@ -1,10 +1,12 @@
-﻿using Harmony;
-using MoreQuickSlots;
+﻿#define MQS_PATCHER
+
+#if MQS_PATCHER
+using Harmony;
 using System.Collections.Generic;
 
 namespace SlotExtender.Patchers
 {
-    [HarmonyPatch(typeof(GameController))]
+    [HarmonyPatch(typeof(MoreQuickSlots.GameController))]
     [HarmonyPatch("CreateNewText")]
     internal class MQS_GameController_CreateNewText_Patch
     {
@@ -37,3 +39,4 @@ namespace SlotExtender.Patchers
         }
     }    
 }
+#endif

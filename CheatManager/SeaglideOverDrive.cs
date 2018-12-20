@@ -26,7 +26,7 @@ namespace CheatManager
 
         public void OnDestroy()
         {
-            Player.main.playerMotorModeChanged.RemoveHandler(this, new Event<Player.MotorMode>.HandleFunction(OnPlayerMotorModeChanged));
+            Player.main.playerMotorModeChanged.RemoveHandler(this, OnPlayerMotorModeChanged);
             Destroy(this);
         }
 

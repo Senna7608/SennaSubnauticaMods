@@ -19,18 +19,18 @@ namespace ConfigurationParser
 
     public class Helper
     {
-        public static void CreateDefaultConfigFile(string filename, string programName, string version,List<ConfigData> configDatas)
+        public static void CreateDefaultConfigFile(string filename, string programName, string version,List<ConfigData> configData)
         {            
             File.WriteAllText(filename,$"[{programName}]\r\nVersion: {version}\r\n");
 
-            Parser configParser = new Parser(filename);
+            Parser parser = new Parser(filename);
             
-            foreach (ConfigData data in configDatas)
+            foreach (ConfigData data in configData)
             {
-                if (!configParser.SectionIsExists(data.Section))
-                    configParser.AddNewSection(data.Section);
+                if (!parser.SectionIsExists(data.Section))
+                    parser.AddNewSection(data.Section);
 
-                configParser.SetKeyValueInSection(data.Section, data.Key, data.Value);
+                parser.SetKeyValueInSection(data.Section, data.Key, data.Value);
             }            
         }
         
@@ -58,7 +58,7 @@ namespace ConfigurationParser
             }
 
             return result;
-        }
+        }        
 
         public static bool SetAllKeyValuesInSection(string filename, string section, Dictionary<string, string> keyValuePairs)
         {

@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿//#define DEBUG_PROGRAM
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UWE;
 using Common;
+using System.Collections;
 
 namespace CheatManager
 {
@@ -55,7 +58,10 @@ namespace CheatManager
         private static List<GUIHelper.ButtonInfo> vehicleSettings;
 
         internal static bool initToggleButtons = false;
-                
+
+#if DEBUG_PROGRAM
+            internal static float crTimer = 10;
+#endif                
         public static CheatManager Load()
         {
             if (Instance == null)
@@ -77,7 +83,7 @@ namespace CheatManager
         {            
             Instance = this;
             useGUILayout = false;
-
+            
             UpdateTitle();
             warpSound = ScriptableObject.CreateInstance<FMODAsset>();
             warpSound.path = "event:/tools/gravcannon/fire";
@@ -93,6 +99,7 @@ namespace CheatManager
             {
                 Logger.Log("[CheatManager] Warning:\n'SMLHelper.V2' not found! Some functions are not available!", LogType.Warning);
             }
+
             TechMatrix.SortTechLists(ref TechnologyMatrix);
 
             Buttons = new List<GUIHelper.ButtonInfo>();
@@ -101,10 +108,10 @@ namespace CheatManager
             categoriesTab = new List<GUIHelper.ButtonInfo>();
             vehicleSettings = new List<GUIHelper.ButtonInfo>();
 
-            GUIHelper.CreateButtonsList(ButtonText.Buttons, GUIHelper.BUTTONTYPE.NORMAL_CENTER, ref Buttons);
-            GUIHelper.CreateButtonsList(ButtonText.ToggleButtons, GUIHelper.BUTTONTYPE.TOGGLE_CENTER, ref toggleButtons);
-            GUIHelper.CreateButtonsList(ButtonText.DayNightTab, GUIHelper.BUTTONTYPE.TAB_CENTER, ref daynightTab);
-            GUIHelper.CreateButtonsList(ButtonText.CategoriesTab, GUIHelper.BUTTONTYPE.TAB_CENTER, ref categoriesTab);
+            GUIHelper.CreateButtonsGroup(ButtonText.Buttons, GUIHelper.BUTTONTYPE.NORMAL_CENTER, ref Buttons);
+            GUIHelper.CreateButtonsGroup(ButtonText.ToggleButtons, GUIHelper.BUTTONTYPE.TOGGLE_CENTER, ref toggleButtons);
+            GUIHelper.CreateButtonsGroup(ButtonText.DayNightTab, GUIHelper.BUTTONTYPE.TAB_CENTER, ref daynightTab);
+            GUIHelper.CreateButtonsGroup(ButtonText.CategoriesTab, GUIHelper.BUTTONTYPE.TAB_CENTER, ref categoriesTab);
 
             var searchSeaGlide = new TechMatrix.TechTypeSearch(TechType.Seaglide);
             string seaglideName = TechnologyMatrix[1][TechnologyMatrix[1].FindIndex(searchSeaGlide.EqualsWith)].Name;
@@ -120,7 +127,7 @@ namespace CheatManager
 
             string[] vehicleSetButtons = { $"{seamothName} Can Fly", $"{seaglideName} Speed Fast" };
 
-            GUIHelper.CreateButtonsList(vehicleSetButtons, GUIHelper.BUTTONTYPE.TOGGLE_CENTER, ref vehicleSettings);
+            GUIHelper.CreateButtonsGroup(vehicleSetButtons, GUIHelper.BUTTONTYPE.TOGGLE_CENTER, ref vehicleSettings);
 
             daynightTab[4].Pressed = true;
             categoriesTab[0].Pressed = true;
@@ -146,13 +153,29 @@ namespace CheatManager
             isActive = false;
             seamothCanFly = false;            
             initStyles = false;
-            isSeaglideFast.changedEvent.RemoveHandler(this, new Event<Utils.MonitoredValue<bool>>.HandleFunction(IsSeaglideFast));
+            isSeaglideFast.changedEvent.RemoveHandler(this, IsSeaglideFast);
         }
 
         public void Start()
         {
-            isSeaglideFast.changedEvent.AddHandler(this, new Event<Utils.MonitoredValue<bool>>.HandleFunction(IsSeaglideFast));            
-        }             
+            isSeaglideFast.changedEvent.AddHandler(this, new Event<Utils.MonitoredValue<bool>>.HandleFunction(IsSeaglideFast));
+            
+
+#if DEBUG_PROGRAM
+            StartCoroutine(DebugProgram());
+#endif
+        }        
+
+#if DEBUG_PROGRAM
+        private IEnumerator DebugProgram()
+        {
+            yield return new WaitForSeconds(crTimer);
+            print($"[CheatManager] Coroutine Debugger, recall every {crTimer} seconds\n");
+            if (isActive)
+                StartCoroutine(DebugProgram());
+        }
+#endif
+
 
         private void IsSeaglideFast(Utils.MonitoredValue<bool> parms)
         {
@@ -241,8 +264,7 @@ namespace CheatManager
                     Player.main.infectedMixin.SetInfectedAmount(0f);
                 }                                        
             }
-        }       
-
+        }
 
         internal static void ReadGameValues()
         {            
@@ -289,9 +311,9 @@ namespace CheatManager
                 return;
 
             if (!initStyles)
-                initStyles = GUIHelper.SetCustomStyles();
+                initStyles = GUIHelper.InitGUIStyles();
 
-            windowRect = GUIHelper.CreatePopupWindow(new Rect(Screen.width - 450, 0, 450, 762), windowTitle);
+            windowRect = GUIHelper.CreatePopupWindow(new Rect(Screen.width - (Screen.width / 4.8f), 0, Screen.width / 4.8f, Screen.height / 4 * 3), windowTitle);
 
             float lastYcoord = windowRect.y;
             float baseHeight = windowRect.height;
@@ -367,7 +389,7 @@ namespace CheatManager
                     selectedTech = TechnologyMatrix[category][i].TechType.ToString();                    
                 }               
 
-                if (GUI.Button(new Rect(windowRect.x, windowRect.y + (i * 26), width, 22), itemName, GUIHelper.GetCustomStyle(false, GUIHelper.BUTTONTYPE.NORMAL_LEFTALIGN)))                
+                if (GUI.Button(new Rect(windowRect.x, windowRect.y + (i * 26), width, 22), itemName, GUIHelper.GetGUIStyle(null, GUIHelper.BUTTONTYPE.NORMAL_LEFTALIGN)))                
                 {
                     switch (category)
                     {

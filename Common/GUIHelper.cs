@@ -33,11 +33,14 @@ namespace Common
             public string Name { get; set; }
             public bool Enabled { get; set; }
             public bool Pressed { get; set; }
-            public BUTTONTYPE Type { get; set; }            
-        }
+            public BUTTONTYPE Type { get; set; }
+            public bool Bold { get; set; }
+        }        
 
         public static Rect CreatePopupWindow(Rect windowRect, object title, bool isTimeLeft = false, bool darkerBg = false)
         {
+            int titleHeight = Screen.height / 45;
+
             GUI.Box(windowRect, "");
             
             if (darkerBg)
@@ -45,20 +48,23 @@ namespace Common
 
             if (title != null)
             {
-                GUI.Box(new Rect(windowRect.x, windowRect.y, windowRect.width, 23), title.ToString());
+                GUI.Box(new Rect(windowRect.x, windowRect.y, windowRect.width, titleHeight), "");                
 
                 if (isTimeLeft)
                 {
-                    GUI.Label(new Rect(windowRect.x + windowRect.width - 60, windowRect.y, windowRect.width, 23), DateTime.Now.ToString("HH:mm:ss"));
+                    GUI.Label(new Rect(windowRect.x + 5, windowRect.y, windowRect.width * 0.85f, titleHeight), title.ToString());
+                    GUI.Label(new Rect(windowRect.x + windowRect.width * 0.85f, windowRect.y, windowRect.width, titleHeight), DateTime.Now.ToString("HH:mm:ss"));
                 }
+                else
+                    GUI.Label(new Rect(windowRect.x + 5, windowRect.y, windowRect.width, titleHeight), title.ToString());
 
-                return new Rect(windowRect.x, windowRect.y + 23, windowRect.width, windowRect.height - 23);
+                return new Rect(windowRect.x, windowRect.y + titleHeight, windowRect.width, windowRect.height - titleHeight);
             }
 
             return windowRect;
         }
 
-        public static bool CreateButtonsList(string[] names, BUTTONTYPE type, ref List<ButtonInfo> buttonInfos)
+        public static bool CreateButtonsGroup(string[] names, BUTTONTYPE type, ref List<ButtonInfo> buttonInfos, bool enabled = true, bool pressed = false, bool bold = false)
         {
             buttonInfos.Clear();
 
@@ -67,20 +73,22 @@ namespace Common
                 buttonInfos.Add(new ButtonInfo()
                 {
                     Name = names[i],
-                    Enabled = true,
+                    Enabled = enabled,
                     Type = type,
-                    Pressed = false
+                    Pressed = pressed,
+                    Bold = bold
                 });
             }
 
             return true;
         }
 
-        public static void CreateItemsGrid(Rect rect, float space, int columns, List<string>items, GUI_ITEM itemsType = GUI_ITEM.LABEL)
+        public static void CreateItemsGrid(Rect rect, float space, int columns, List<string>items, GUI_ITEM itemType = GUI_ITEM.LABEL)
         {            
             float labelWidth = (rect.width - ((columns + 1) * space)) / columns;
-            int rows = CeilToInt(items.Count / (float)columns);                     
-            
+            int rows = CeilToInt(items.Count / (float)columns);
+            int itemHeight = Screen.height / 45;
+
             int row = 0;
             int column = 0;
 
@@ -92,14 +100,14 @@ namespace Common
                     column++;
                 }
                 
-                switch (itemsType)
+                switch (itemType)
                 {
                     case GUI_ITEM.LABEL:
-                        GUI.Label(new Rect(rect.x + space + (column * (labelWidth + space)), rect.y + space + (row * (22 + space)), labelWidth, 22), items[i]);
+                        GUI.Label(new Rect(rect.x + space + (column * (labelWidth + space)), rect.y + space + (row * (itemHeight + space)), labelWidth, itemHeight), items[i]);
                         break;
 
                     case GUI_ITEM.TEXTFIELD:
-                        GUI.TextField(new Rect(rect.x + space + (column * (labelWidth + space)), rect.y + space + (row * (22 + space)), labelWidth, 22), items[i]);
+                        GUI.TextField(new Rect(rect.x + space + (column * (labelWidth + space)), rect.y + space + (row * (itemHeight + space)), labelWidth, itemHeight), items[i]);
                         break;                    
                 }
                 
@@ -112,6 +120,7 @@ namespace Common
         {            
             float calcWidth = (rect.width - ((columns + 1) * space)) / columns;
             int rows = CeilToInt(Buttons.Count / (float)columns);
+            int buttonHeight = Screen.height / 45;
 
             int row = 0;
             int column = 0;
@@ -140,9 +149,9 @@ namespace Common
                     }
                 }
 
-                if (GUI.Button(new Rect(rect.x + space + (column * (calcWidth + space)), rect.y + space + (row * (22 + space)), calcWidth, 22), Buttons[i].Name, GetCustomStyle(Buttons[i].Pressed, Buttons[i].Type)))
+                if (GUI.Button(new Rect(rect.x + space + (column * (calcWidth + space)), rect.y + space + (row * (buttonHeight + space)), calcWidth, buttonHeight), Buttons[i].Name, GetGUIStyle(Buttons[i])))
                 {
-                    lastYcoord = rect.y + (rows * (22 + space));
+                    lastYcoord = rect.y + (rows * (buttonHeight + space));
                     return i;
                 }
                 
@@ -152,90 +161,109 @@ namespace Common
                     row++;
             }
 
-            lastYcoord = rect.y + (rows * (22 + space));
+            lastYcoord = rect.y + (rows * (buttonHeight + space));
             return -1;
-        }        
-
+        }
+        
         public static GUIStyle Normal;        
         public static GUIStyle Toggle;
         public static GUIStyle Tab;
         public static GUIStyle Label;
         public static GUIStyle Box;
 
-        public static bool SetCustomStyles()
-        {
+        public static bool InitGUIStyles()
+        {            
             Normal = new GUIStyle(GUI.skin.button)
-            {
-                fontStyle = FontStyle.Bold,
+            {                
                 alignment = TextAnchor.MiddleCenter
             };           
 
             Toggle = new GUIStyle(GUI.skin.button)
-            {
-                fontStyle = FontStyle.Bold,
+            {                
                 alignment = TextAnchor.MiddleCenter
             };
 
             Tab = new GUIStyle(GUI.skin.button)
-            {
-                fontStyle = FontStyle.Bold,
+            {                
                 alignment = TextAnchor.MiddleCenter
             };
 
             Label = new GUIStyle(GUI.skin.label)
             {
-                fontStyle = FontStyle.Bold,
-                alignment = TextAnchor.MiddleLeft,
+                alignment = TextAnchor.MiddleLeft                
             };
 
             Box = new GUIStyle(GUI.skin.box)
-            {
-                fontStyle = FontStyle.Bold,
-                alignment = TextAnchor.MiddleCenter,
+            {                
+                alignment = TextAnchor.MiddleCenter
             };            
             return true;
         }
 
-        public static GUIStyle GetCustomStyle(bool pressed, BUTTONTYPE type)
-        {
-            switch(type)
+        public static GUIStyle GetGUIStyle(ButtonInfo buttonInfo = null, BUTTONTYPE buttonType = BUTTONTYPE.NORMAL_CENTER)
+        {                                 
+            if (buttonInfo == null)
+            {
+                buttonInfo = new ButtonInfo()
+                {
+                    Name = "",
+                    Bold = false,
+                    Enabled = true,
+                    Pressed = false,
+                    Type = buttonType
+                };                
+            }
+
+
+            switch(buttonInfo.Type)
             {
                 case BUTTONTYPE.NORMAL_CENTER:
-                    if (pressed)
+                    if (buttonInfo.Pressed)
                     {
                         Normal.normal.textColor = Color.green;
-                        Normal.hover.textColor = Color.yellow;
-                        Normal.active.textColor = Color.green;
-                        Normal.alignment = TextAnchor.MiddleCenter;
+                        Normal.hover.textColor = Color.yellow;                        
                     }
                     else
                     {
                         Normal.normal.textColor = Color.gray;
-                        Normal.hover.textColor = Color.white;
-                        Normal.active.textColor = Color.green;
-                        Normal.alignment = TextAnchor.MiddleCenter;
-                    }                    
+                        Normal.hover.textColor = Color.white;                        
+                    }
+
+                    if (buttonInfo.Bold)
+                        Normal.fontStyle = FontStyle.Bold;
+                    else
+                        Normal.fontStyle = FontStyle.Normal;
+
+                    Normal.active.textColor = Color.green;
+                    Normal.alignment = TextAnchor.MiddleCenter;
+                    Normal.fontSize = Screen.height / 80;
+                    
                     return Normal;
 
                 case BUTTONTYPE.NORMAL_LEFTALIGN:
-                    if (pressed)
+                    if (buttonInfo.Pressed)
                     {
                         Normal.normal.textColor = Color.green;
-                        Normal.hover.textColor = Color.yellow;
-                        Normal.active.textColor = Color.green;
-                        Normal.alignment = TextAnchor.MiddleLeft;
+                        Normal.hover.textColor = Color.yellow;                        
                     }
                     else
                     {
                         Normal.normal.textColor = Color.gray;
-                        Normal.hover.textColor = Color.white;
-                        Normal.active.textColor = Color.green;
-                        Normal.alignment = TextAnchor.MiddleLeft;
+                        Normal.hover.textColor = Color.white;                        
                     }
+
+                    if (buttonInfo.Bold)
+                        Normal.fontStyle = FontStyle.Bold;
+                    else
+                        Normal.fontStyle = FontStyle.Normal;
+
+                    Normal.active.textColor = Color.green;
+                    Normal.alignment = TextAnchor.MiddleLeft;
+                    Normal.fontSize = Screen.height / 80;
                     return Normal;
 
                 case BUTTONTYPE.TOGGLE_CENTER:
-                    if (pressed)
+                    if (buttonInfo.Pressed)
                     {
                         Toggle.normal.textColor = Color.green;
                         Toggle.hover.textColor = Color.green;
@@ -247,23 +275,45 @@ namespace Common
                         Toggle.hover.textColor = Color.red;
                         Toggle.active.textColor = Color.green;
                     }
+
+                    if (buttonInfo.Bold)
+                        Toggle.fontStyle = FontStyle.Bold;
+                    else
+                        Toggle.fontStyle = FontStyle.Normal;
+
+                    Toggle.fontSize = Screen.height / 80;
                     return Toggle;
 
                 case BUTTONTYPE.TAB_CENTER:
-                    if (pressed)
+                    if (buttonInfo.Pressed)
                     {
                         Tab.normal.textColor = Color.green;
                         Tab.hover.textColor = Color.green;
-                        Tab.active.textColor = Color.green;
                     }
                     else
                     {
                         Tab.normal.textColor = Color.gray;
-                        Tab.hover.textColor = Color.white;
-                        Tab.active.textColor = Color.green;
-                    }                    
+                        Tab.hover.textColor = Color.white;                        
+                    }
+
+                    if (buttonInfo.Bold)
+                        Tab.fontStyle = FontStyle.Bold;
+                    else
+                        Tab.fontStyle = FontStyle.Normal;
+
+                    Tab.active.textColor = Color.green;
+
+                    Tab.fontSize = Screen.height / 80;
                     return Tab;
+
                 default:
+                    Normal.normal.textColor = Color.gray;
+                    Normal.hover.textColor = Color.white;
+                    Normal.active.textColor = Color.green;
+                    Normal.fontStyle = FontStyle.Normal;                    
+                    Normal.alignment = TextAnchor.MiddleLeft;
+
+                    Normal.fontSize = Screen.height / 80;
                     return Normal;
             }
         }

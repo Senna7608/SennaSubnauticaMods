@@ -34,13 +34,13 @@ namespace CheatManager.Config
                 hotkeyButtons.Add(key.Value);
             }
 
-            GUIHelper.CreateButtonsList(hotkeyButtons.ToArray(), GUIHelper.BUTTONTYPE.NORMAL_CENTER, ref buttonInfos);
+            GUIHelper.CreateButtonsGroup(hotkeyButtons.ToArray(), GUIHelper.BUTTONTYPE.NORMAL_CENTER, ref buttonInfos);            
         }
 
         public void OnGUI()
         {
             if (!initStyles)
-                initStyles = GUIHelper.SetCustomStyles();
+                initStyles = GUIHelper.InitGUIStyles();
 
             windowRect = GUIHelper.CreatePopupWindow(new Rect(0, 0, 310, 200), "CheatManager: Key Bindings", false, true);
 
@@ -57,11 +57,12 @@ namespace CheatManager.Config
                 buttonInfos[sBtn].Name = "Press any key!";
             }           
             
-            if (GUI.Button(new Rect(windowRect.x + space, lastY + space * 2, windowRect.width / 2 - space * 2, 40), "Save & Close", GUIHelper.GetCustomStyle(false, GUIHelper.BUTTONTYPE.NORMAL_CENTER)))
+            if (GUI.Button(new Rect(windowRect.x + space, lastY + space * 2, windowRect.width / 2 - space * 2, 40), "Save"))
+
             {                
                 SaveAndExit();
             }
-            else if (GUI.Button(new Rect(windowRect.x + space + windowRect.width / 2, lastY + space * 2, windowRect.width / 2 - space * 2, 40), "Cancel", GUIHelper.GetCustomStyle(false, GUIHelper.BUTTONTYPE.NORMAL_CENTER)))
+            else if (GUI.Button(new Rect(windowRect.x + space + windowRect.width / 2, lastY + space * 2, windowRect.width / 2 - space * 2, 40), "Cancel"))
             {
                 Destroy(Instance);
             }            
@@ -87,8 +88,7 @@ namespace CheatManager.Config
 
             yield return WaitForKey();
 
-            int isFirst = 0;
-            int isLast = 0;
+            int isFirst = 0;            
             int keyCount = 0;
 
             for(int i = 0; i < hotkeyButtons.Count; i++)
@@ -98,14 +98,13 @@ namespace CheatManager.Config
                     if (keyCount == 0)
                         isFirst = i;
 
-                    keyCount++;
-                    isLast = i;                    
+                    keyCount++;                                        
                 }                
             }
 
-            if (keyCount > 0)
+            if (keyCount > 0 && isFirst != selected)
             {
-                Debug.Log("[CheatManager] Warning! Duplicate keybind! Swapping keys...");
+                Debug.Log("[CheatManager] Error! Duplicate keybind found, swapping keys...");
                 hotkeyButtons[isFirst] = hotkeyButtons[selected];
                 buttonInfos[isFirst].Name = hotkeyButtons[selected];
             }

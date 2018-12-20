@@ -7,26 +7,25 @@ namespace ScannerModule
     public class ScannerModuleSeamoth : MonoBehaviour
     {
         // Some code extracted with dnSpy from Assembly-CSharp.dll:ScannerTool 
-        [AssertNotNull]
+       
         private EnergyMixin energyMixin;        
         public float powerConsumption = 0.5f;
         public const float scanDistance = 50f;
         
-        public FMOD_CustomLoopingEmitter scanSound;
-        [AssertNotNull]
+        public FMOD_CustomLoopingEmitter scanSound;        
         public FMODAsset completeSound;
         public Texture scanCircuitTex;
         public Color scanCircuitColor = Color.white;
         public Texture scanOrganicTex;
         public Color scanOrganicColor = Color.white;
-        [AssertNotNull]
+        
         public VFXController fxControl;
         private ScanState stateLast;
         private ScanState stateCurrent;
         private float idleTimer;
         private Material scanMaterialCircuitFX;
         private Material scanMaterialOrganicFX;
-        [AssertNotNull]
+        
         private VFXOverlayMaterial scanFX;
         public bool toggle;
         public bool isScanning;
@@ -90,7 +89,7 @@ namespace ScannerModule
             }
 
             seamoth.onToggle += OnToggle;
-            Utils.GetLocalPlayerComp().playerModeChanged.AddHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
+            Player.main.playerModeChanged.AddHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
         }
 
         private void OnPlayerModeChanged(Player.Mode playerMode)
@@ -328,9 +327,10 @@ namespace ScannerModule
         private void OnDestroy()
         {
             if (scanFX != null)
-            {
                 StopScanFX();
-            }
+
+            Player.main.playerModeChanged.RemoveHandler(gameObject, OnPlayerModeChanged);
+            seamoth.onToggle -= OnToggle;
         } 
     }
 }

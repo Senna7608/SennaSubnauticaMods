@@ -71,7 +71,7 @@ namespace LaserCannon
         public void OnDestroy()
         {
             seamoth.onToggle -= OnToggle;
-            Player.main.playerModeChanged.RemoveHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
+            Player.main.playerModeChanged.RemoveHandler(gameObject, OnPlayerModeChanged);
             Destroy(this);
         }
 
