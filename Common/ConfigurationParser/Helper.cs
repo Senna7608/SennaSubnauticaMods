@@ -19,7 +19,7 @@ namespace ConfigurationParser
 
     public class Helper
     {
-        public static void CreateDefaultConfigFile(string filename, string programName, string version,List<ConfigData> configData)
+        public static void CreateDefaultConfigFile(string filename, string programName, string version, List<ConfigData> configData)
         {            
             File.WriteAllText(filename,$"[{programName}]\r\nVersion: {version}\r\n");
 
@@ -27,17 +27,48 @@ namespace ConfigurationParser
             
             foreach (ConfigData data in configData)
             {
-                if (!parser.SectionIsExists(data.Section))
+                if (!parser.IsExists(data.Section))
                     parser.AddNewSection(data.Section);
 
                 parser.SetKeyValueInSection(data.Section, data.Key, data.Value);
             }            
         }
         
-        public static object GetKeyValue(string filename, string section, string key)
+        public static string GetKeyValue(string filename, string section, string key)
         {
             Parser parser = new Parser(filename);
-            return parser.GetKeyValueFromSection(section, key);
+
+            if (parser.IsExists(section, key))
+            {
+                return parser.GetKeyValueFromSection(section, key);
+            }
+            else
+                return string.Empty;
+        }        
+
+        public static Dictionary<string, string> GetAllKeyValuesFromSection(string filename, string section, string[] keys)
+        {
+            Parser parser = new Parser(filename);                
+
+            Dictionary<string, string> result = new Dictionary<string, string>();
+
+            if (!parser.IsExists(section))
+            {
+                result.Add(section, "Error");
+                return result;
+            }            
+
+            foreach (string key in keys)
+            {
+                if (parser.IsExists(section, key))
+                {
+                    result.Add(key, parser.GetKeyValueFromSection(section, key));                    
+                }
+                else
+                    result.Add(section, key);
+            }
+
+            return result;
         }
 
         public static void SetKeyValue(string filename, string section, string key, string value)
@@ -45,20 +76,6 @@ namespace ConfigurationParser
             Parser parser = new Parser(filename);
             parser.SetKeyValueInSection(section, key, value);
         }
-
-        public static Dictionary<string, string> GetAllKeyValuesFromSection(string filename, string section, string[] keys)
-        {
-            Parser parser = new Parser(filename);
-
-            Dictionary<string, string> result = new Dictionary<string, string>();
-
-            foreach (string key in keys)
-            {
-                result.Add(key, parser.GetKeyValueFromSection(section, key));
-            }
-
-            return result;
-        }        
 
         public static bool SetAllKeyValuesInSection(string filename, string section, Dictionary<string, string> keyValuePairs)
         {
