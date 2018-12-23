@@ -1,4 +1,5 @@
 ﻿using Harmony;
+using Common;
 using UnityEngine;
 
 namespace SlotExtender.Patchers
@@ -20,12 +21,8 @@ namespace SlotExtender.Patchers
     {
         internal static void Postfix(SeaMoth __instance)
         {
-            if (__instance.GetComponent<SlotExtender>() == null)
-            {
-                __instance.gameObject.AddComponent<SlotExtender>();
-
-                Debug.Log($"[SlotExtender] Added component to instance: {__instance.name} ID: {__instance.GetInstanceID()}");
-            }
+            __instance.gameObject.AddOrGetComponent<SlotExtender>();
+            Debug.Log($"[SlotExtender] Added component to instance: {__instance.name} ID: {__instance.GetInstanceID()}");            
         }
     }
 }

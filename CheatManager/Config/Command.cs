@@ -15,7 +15,7 @@ namespace CheatManager.Config
 
         private void OnConsoleCommand_cmconfig(NotificationCenter.Notification n)
         {
-            Bindings.InitWindow();
+            ConfigUI.InitWindow();
         }
 
         public static CmConfig Load()

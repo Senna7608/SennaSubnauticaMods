@@ -14,9 +14,10 @@ namespace CheatManager.Config
         private const string PROGRAM_NAME = "CheatManager";
         private static readonly string FILENAME = $"{Environment.CurrentDirectory}\\QMods\\{PROGRAM_NAME}\\config.txt";
 
-        private static readonly string[] SECTIONS = { "Hotkeys" };
+        private static readonly string[] SECTIONS = { "Hotkeys", "Settings" };
         internal static Dictionary<string, KeyCode> KEYBINDINGS;
         internal static Dictionary<string, string> Section_hotkeys;
+        internal static Dictionary<string, string> Section_settings;
 
         private static readonly string[] SECTION_HOTKEYS =
         {
@@ -25,12 +26,18 @@ namespace CheatManager.Config
             "ToggleConsole"
         };
 
+        private static readonly string[] SECTION_SETTINGS =
+        {
+            "OverPowerMultiplier"            
+        };
+
         private static readonly List<ConfigData> DEFAULT_CONFIG = new List<ConfigData>
         {
             new ConfigData(SECTIONS[0], SECTION_HOTKEYS[0], KeyCode.F5.ToString()),
             new ConfigData(SECTIONS[0], SECTION_HOTKEYS[1], KeyCode.F4.ToString()),
-            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[2], KeyCode.Delete.ToString())
-        };        
+            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[2], KeyCode.Delete.ToString()),
+            new ConfigData(SECTIONS[1], SECTION_SETTINGS[0], 2.ToString())
+    };        
 
         internal static void InitConfig()
         {
@@ -44,6 +51,17 @@ namespace CheatManager.Config
             }
 
             Section_hotkeys = Helper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[0], SECTION_HOTKEYS);
+            Section_settings = Helper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[1], SECTION_SETTINGS);
+
+            int.TryParse(Section_settings[SECTION_SETTINGS[0]], out int ovpMultiplier);
+            UnityEngine.Debug.Log($"ovp: {ovpMultiplier}");
+            if (ovpMultiplier > 0 && ovpMultiplier <= 10)
+                CheatManager.OverPowerMultiplier = ovpMultiplier;
+            else
+            {
+                CheatManager.OverPowerMultiplier = 2;
+                Helper.SetKeyValue(FILENAME, SECTIONS[1], Section_settings[SECTION_SETTINGS[0]], 2.ToString());
+            }
 
             SetKeyBindings();
             
@@ -52,6 +70,7 @@ namespace CheatManager.Config
         internal static void WriteConfig()
         {
             Helper.SetAllKeyValuesInSection(FILENAME, SECTIONS[0], Section_hotkeys);
+            Helper.SetAllKeyValuesInSection(FILENAME, SECTIONS[1], Section_settings);
         }
 
         internal static void SyncConfig()

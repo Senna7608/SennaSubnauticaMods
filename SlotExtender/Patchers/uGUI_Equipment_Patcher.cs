@@ -10,7 +10,7 @@ namespace SlotExtender.Patchers
     {        
         internal static void Prefix(uGUI_Equipment __instance)
         {
-            __instance.gameObject.AddComponent<Initialize_uGUI>();
+            __instance.gameObject.AddOrGetComponent<Initialize_uGUI>();
         }
         
         internal static void Postfix(ref uGUI_Equipment __instance)

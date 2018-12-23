@@ -15,9 +15,9 @@ namespace SlotExtender.Config
         public static Dictionary<string,KeyCode> KEYBINDINGS;
         private const string PROGRAM_NAME = "SlotExtender";
         private static readonly string[] SECTIONS = { "Hotkeys" };
-        private static readonly string FILENAME = Environment.CurrentDirectory + "\\QMods\\SlotExtender\\config.txt";
+        private static readonly string FILENAME = $"{Environment.CurrentDirectory}\\QMods\\SlotExtender\\config.txt";
         internal static Dictionary<string, string> Section_hotkeys;
-        internal static Dictionary<string, string> SLOTKEYS = new Dictionary<string, string>();
+        public static Dictionary<string, string> SLOTKEYS = new Dictionary<string, string>();
 
         private static readonly string[] SECTION_HOTKEYS =
         {
@@ -33,14 +33,14 @@ namespace SlotExtender.Config
 
         private static readonly List<ConfigData> DEFAULT_CONFIG = new List<ConfigData>
         {
-            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[0], KeyCode.R.ToString()),            
-            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[1], KeyCode.Alpha6.ToString()),
-            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[2], KeyCode.Alpha7.ToString()),
-            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[3], KeyCode.Alpha8.ToString()),
-            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[4], KeyCode.Alpha9.ToString()),
-            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[5], KeyCode.I.ToString()),
-            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[6], KeyCode.O.ToString()),
-            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[7], KeyCode.P.ToString())
+            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[0], InputHelper.GetKeyCodeAsInputName(KeyCode.R)),            
+            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[1], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha6)),
+            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[2], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha7)),
+            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[3], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha8)),
+            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[4], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha9)),
+            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[5], InputHelper.GetKeyCodeAsInputName(KeyCode.I)),
+            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[6], InputHelper.GetKeyCodeAsInputName(KeyCode.O)),
+            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[7], InputHelper.GetKeyCodeAsInputName(KeyCode.P))
         };        
 
         internal static void InitSLOTKEYS()
@@ -89,7 +89,7 @@ namespace SlotExtender.Config
         {
             foreach (string key in SECTION_HOTKEYS)
             {
-                Section_hotkeys[key] = KEYBINDINGS[key].ToString();                
+                Section_hotkeys[key] = InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[key]);                
             }
 
             WriteConfig();
@@ -104,9 +104,8 @@ namespace SlotExtender.Config
             foreach (KeyValuePair<string, string> kvp in Section_hotkeys)
             {
                 try
-                {
-                    KeyCode keyCode = (KeyCode)Enum.Parse(typeof(KeyCode), kvp.Value);
-                    KEYBINDINGS.Add(kvp.Key, keyCode);
+                {                    
+                    KEYBINDINGS.Add(kvp.Key, InputHelper.GetInputNameAsKeyCode(kvp.Value));
                 }
                 catch (ArgumentException)
                 {
@@ -116,7 +115,7 @@ namespace SlotExtender.Config
                     {
                         if (DEFAULT_CONFIG[i].Key.Equals(kvp.Key))
                         {
-                            KEYBINDINGS.Add(kvp.Key, (KeyCode)Enum.Parse(typeof(KeyCode), DEFAULT_CONFIG[i].Value, true));
+                            KEYBINDINGS.Add(kvp.Key, InputHelper.GetInputNameAsKeyCode(DEFAULT_CONFIG[i].Value));
                             sync = true;
                         }
                     }

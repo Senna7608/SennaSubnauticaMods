@@ -5,17 +5,19 @@ using Common;
 
 namespace CheatManager.Config
 {
-    internal class Bindings : MonoBehaviour
+    internal class ConfigUI : MonoBehaviour
     {
-        public static Bindings Instance { get; private set; }
+        public static ConfigUI Instance { get; private set; }
         private Rect windowRect;
         private static bool initStyles = false;
         private static int selected = -1;
         private Event keyEvent;
         private KeyCode newKey;
         private static bool waitingForKey = false;
-        private List<string> hotkeyLabels = new List<string>();
-        private List<string> hotkeyButtons = new List<string>();
+        private List<string> HotkeyLabels = new List<string>();
+        private List<string> HotkeyButtons = new List<string>();
+        private List<string> SettingLabels = new List<string>();
+
         private List<GUIHelper.ButtonInfo> buttonInfos = new List<GUIHelper.ButtonInfo>();
         private static readonly float space = 10f;
 
@@ -30,11 +32,16 @@ namespace CheatManager.Config
         {
             foreach (KeyValuePair<string, string> key in Config.Section_hotkeys)
             {
-                hotkeyLabels.Add(key.Key);
-                hotkeyButtons.Add(key.Value);
+                HotkeyLabels.Add(key.Key);
+                HotkeyButtons.Add(key.Value);
             }
 
-            GUIHelper.CreateButtonsGroup(hotkeyButtons.ToArray(), GUIHelper.BUTTONTYPE.NORMAL_CENTER, ref buttonInfos);            
+            foreach (KeyValuePair<string, string> key in Config.Section_settings)
+            {
+                SettingLabels.Add(key.Key);                
+            }
+
+            GUIHelper.CreateButtonsGroup(HotkeyButtons.ToArray(), GUIHelper.BUTTONTYPE.NORMAL_CENTER, ref buttonInfos);            
         }
 
         public void OnGUI()
@@ -42,23 +49,22 @@ namespace CheatManager.Config
             if (!initStyles)
                 initStyles = GUIHelper.InitGUIStyles();
 
-            windowRect = GUIHelper.CreatePopupWindow(new Rect(0, 0, 310, 200), "CheatManager: Key Bindings", false, true);
+            windowRect = GUIHelper.CreatePopupWindow(new Rect(0, 0, 310, 240), "CheatManager: Configuration interface", false, true);
 
-            GUI.FocusControl("CheatManager.Bindings");
+            GUI.FocusControl("CheatManager.ConfigUI");
 
-            GUIHelper.CreateItemsGrid(new Rect(windowRect.x, windowRect.y, windowRect.width / 2, windowRect.height), space, 1, hotkeyLabels, GUIHelper.GUI_ITEM.TEXTFIELD);            
+            GUIHelper.CreateItemsGrid(new Rect(windowRect.x, windowRect.y, windowRect.width / 2, windowRect.height), space, 1, HotkeyLabels, GUIHelper.GUI_ITEM.TEXTFIELD);            
 
             int sBtn = GUIHelper.CreateButtonsGrid(new Rect(windowRect.x + windowRect.width / 2, windowRect.y, windowRect.width / 2, windowRect.height), space, 1, buttonInfos, out float lastY);
-                       
+                        
             if (sBtn != -1)
             {
-                StartAssignment(hotkeyButtons[sBtn]);
+                StartAssignment(HotkeyButtons[sBtn]);
                 selected = sBtn;
                 buttonInfos[sBtn].Name = "Press any key!";
             }           
             
             if (GUI.Button(new Rect(windowRect.x + space, lastY + space * 2, windowRect.width / 2 - space * 2, 40), "Save"))
-
             {                
                 SaveAndExit();
             }
@@ -91,9 +97,9 @@ namespace CheatManager.Config
             int isFirst = 0;            
             int keyCount = 0;
 
-            for(int i = 0; i < hotkeyButtons.Count; i++)
+            for(int i = 0; i < HotkeyButtons.Count; i++)
             {
-                if (hotkeyButtons[i].Equals(newKey.ToString()))
+                if (HotkeyButtons[i].Equals(newKey.ToString()))
                 {
                     if (keyCount == 0)
                         isFirst = i;
@@ -105,12 +111,12 @@ namespace CheatManager.Config
             if (keyCount > 0 && isFirst != selected)
             {
                 Debug.Log("[CheatManager] Error! Duplicate keybind found, swapping keys...");
-                hotkeyButtons[isFirst] = hotkeyButtons[selected];
-                buttonInfos[isFirst].Name = hotkeyButtons[selected];
+                HotkeyButtons[isFirst] = HotkeyButtons[selected];
+                buttonInfos[isFirst].Name = HotkeyButtons[selected];
             }
 
-            hotkeyButtons[selected] = newKey.ToString();
-            buttonInfos[selected].Name = hotkeyButtons[selected];
+            HotkeyButtons[selected] = newKey.ToString();
+            buttonInfos[selected].Name = HotkeyButtons[selected];
             selected = -1;            
             yield return null;
         }
@@ -123,9 +129,9 @@ namespace CheatManager.Config
 
         private void SaveAndExit()
         {
-            for (int i = 0; i < hotkeyLabels.Count; i++)
+            for (int i = 0; i < HotkeyLabels.Count; i++)
             {
-                Config.Section_hotkeys[hotkeyLabels[i]] = hotkeyButtons[i];
+                Config.Section_hotkeys[HotkeyLabels[i]] = HotkeyButtons[i];
             }
 
             Config.WriteConfig();
@@ -139,17 +145,17 @@ namespace CheatManager.Config
             Instance = Load();                    
         }
 
-        public static Bindings Load()
+        public static ConfigUI Load()
         {
             if (Instance == null)
             {
-                Instance = FindObjectOfType(typeof(Bindings)) as Bindings;
+                Instance = FindObjectOfType(typeof(ConfigUI)) as ConfigUI;
 
                 if (Instance == null)
                 {
-                    GameObject go = new GameObject().AddComponent<Bindings>().gameObject;
-                    go.name = "CheatManager.Bindings";
-                    Instance = go.GetComponent<Bindings>();
+                    GameObject go = new GameObject().AddComponent<ConfigUI>().gameObject;
+                    go.name = "CheatManager.ConfigUI";
+                    Instance = go.GetComponent<ConfigUI>();
                 }
             }
 

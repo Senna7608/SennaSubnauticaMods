@@ -6,18 +6,15 @@ namespace SlotExtender
     public class SlotExtender : MonoBehaviour
     {
         public SlotExtender Instance { get; private set; }
-        public Vehicle ThisVehicle { get; private set; }
-        public Player PlayerMain { get; private set; }
+        public Vehicle ThisVehicle { get; private set; }        
+        public Player PlayerMain { get; private set; }        
 
-        internal bool isActive = false;
+        internal bool isActive = false;        
 
         internal void Awake()
         {
             //get this SlotExtender instance
             Instance = gameObject.GetComponent<SlotExtender>();
-
-            //add console commad for configuration window
-            gameObject.AddComponent<Config.SxConfig>();
 
             if (Instance.GetComponent<SeaMoth>())
             {
@@ -36,7 +33,7 @@ namespace SlotExtender
                 //add extra slots
                 foreach (string slotID in SlotHelper.NewExosuitSlotIDs)
                     ThisVehicle.modules.AddSlot(slotID);
-            }
+            }            
         }
 
         internal void Start()
@@ -47,8 +44,8 @@ namespace SlotExtender
             PlayerMain.GetPDA().Open();
             PlayerMain.GetPDA().Close();
             //add and start a handler to check the player mode if changed
-            PlayerMain.playerModeChanged.AddHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
-        }
+            PlayerMain.playerModeChanged.AddHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));            
+        }        
 
         internal void OnPlayerModeChanged(Player.Mode playerMode)
         {

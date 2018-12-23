@@ -1,4 +1,5 @@
 ﻿using Harmony;
+using Common;
 
 namespace CheatManager
 {
@@ -11,7 +12,7 @@ namespace CheatManager
             [HarmonyPostfix]
             internal static void Postfix(SeaMoth __instance)
             {
-                __instance.gameObject.AddComponent<VehicleOverDrive>();
+                __instance.gameObject.AddOrGetComponent<VehicleOverDrive>();
             }
         }
 
@@ -22,7 +23,7 @@ namespace CheatManager
             [HarmonyPostfix]
             internal static void Postfix(Exosuit __instance)
             {
-                __instance.gameObject.AddComponent<VehicleOverDrive>();
+                __instance.gameObject.AddOrGetComponent<VehicleOverDrive>();
             }
         }
 
@@ -34,7 +35,7 @@ namespace CheatManager
             [HarmonyPostfix]
             internal static void Postfix(CyclopsMotorMode __instance)
             {
-                __instance.gameObject.AddComponent<CyclopsOverDrive>();
+                __instance.gameObject.AddOrGetComponent<CyclopsOverDrive>();
             }
         }
 
@@ -44,7 +45,7 @@ namespace CheatManager
         {
             internal static void Postfix(Seaglide __instance)
             {
-                __instance.gameObject.AddComponent<SeaglideOverDrive>();
+                __instance.gameObject.AddOrGetComponent<SeaglideOverDrive>();
             }
         }
     }

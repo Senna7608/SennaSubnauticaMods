@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 
 namespace Common
 {
@@ -34,7 +35,43 @@ namespace Common
                 case KeyCode.Alpha8:
                     return "8";
                 case KeyCode.Alpha9:
-                    return "9";                    
+                    return "9";
+                case KeyCode.Slash:
+                    return "/";
+                case KeyCode.Equals:
+                    return "=";
+                case KeyCode.LeftBracket:
+                    return "[";
+                case KeyCode.RightBracket:
+                    return "]";
+                case KeyCode.BackQuote:
+                    return "`";
+                case KeyCode.Backslash:
+                    return "\\";
+                case KeyCode.Underscore:
+                    return "_";
+                case KeyCode.LeftParen:
+                    return "(";
+                case KeyCode.RightParen:
+                    return ")";
+                case KeyCode.Asterisk:
+                    return "*";
+                case KeyCode.Plus:
+                    return "+";
+                case KeyCode.Minus:
+                    return "-";
+                case KeyCode.Question:
+                    return "?";
+                case KeyCode.Colon:
+                    return ":";
+                case KeyCode.Semicolon:
+                    return ";";
+                case KeyCode.Comma:
+                    return ",";
+                case KeyCode.Period:
+                    return ".";
+                case KeyCode.Greater:
+                    return ">";
 
                 case KeyCode.JoystickButton0:
                     return "ControllerButtonA";
@@ -61,6 +98,98 @@ namespace Common
             }
         }
 
+        public static KeyCode GetInputNameAsKeyCode(string input)
+        {
+            switch (input)
+            {
+                case "MouseButtonLeft":
+                    return KeyCode.Mouse0;
+                case "MouseButtonRight":
+                    return KeyCode.Mouse1;
+                case "MouseButtonMiddle":
+                    return KeyCode.Mouse2;
+
+                case "0":
+                    return KeyCode.Alpha0;
+                case "1":
+                    return KeyCode.Alpha1;
+                case "2":
+                    return KeyCode.Alpha2;
+                case "3":
+                    return KeyCode.Alpha3;
+                case "4":
+                    return KeyCode.Alpha4;
+                case "5":
+                    return KeyCode.Alpha5;
+                case "6":
+                    return KeyCode.Alpha6;
+                case "7":
+                    return KeyCode.Alpha7;
+                case "8":
+                    return KeyCode.Alpha8;
+                case "9":
+                    return KeyCode.Alpha9;
+                case "/":
+                    return KeyCode.Slash;
+                case "=":
+                    return KeyCode.Equals;
+                case "[":
+                    return KeyCode.LeftBracket;
+                case "]":
+                    return KeyCode.RightBracket;
+                case "`":
+                    return KeyCode.BackQuote;
+                case "\\":
+                    return KeyCode.Backslash;
+                case "_":
+                    return KeyCode.Underscore;
+                case "(":
+                    return KeyCode.LeftParen;
+                case ")":
+                    return KeyCode.RightParen;
+                case "*":
+                    return KeyCode.Asterisk;
+                case "+":
+                    return KeyCode.Plus;
+                case "-":
+                    return KeyCode.Minus;
+                case "?":
+                    return KeyCode.Question;
+                case ":":
+                    return KeyCode.Colon;
+                case ";":
+                    return KeyCode.Semicolon;
+                case ",":
+                    return KeyCode.Comma;
+                case ".":
+                    return KeyCode.Period;
+                case ">":
+                    return KeyCode.Greater;
+
+                case "ControllerButtonA":
+                    return KeyCode.JoystickButton0;
+                case "ControllerButtonB":
+                    return KeyCode.JoystickButton1;
+                case "ControllerButtonX":
+                    return KeyCode.JoystickButton2;
+                case "ControllerButtonY":
+                    return KeyCode.JoystickButton3;
+                case "ControllerButtonLeftBumper":
+                    return KeyCode.JoystickButton4;
+                case "ControllerButtonRightBumper":
+                    return KeyCode.JoystickButton5;
+                case "ControllerButtonBack":
+                    return KeyCode.JoystickButton6;
+                case "ControllerButtonHome":
+                    return KeyCode.JoystickButton7;
+                case "ControllerButtonLeftStick":
+                    return KeyCode.JoystickButton8;
+                case "ControllerButtonRightStick":
+                    return KeyCode.JoystickButton9;
+                default:
+                    return (KeyCode)Enum.Parse(typeof(KeyCode), input);
+            }
+        }
 
     }
 }

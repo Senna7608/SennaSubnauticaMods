@@ -1,16 +1,17 @@
 ﻿//#define DEBUG_PROGRAM
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UWE;
 using Common;
-using System.Collections;
+using System.Reflection;
 
 namespace CheatManager
 {
     public class CheatManager : MonoBehaviour
     {
-        public static CheatManager Instance { get; private set; }        
+        public static CheatManager Instance { get; private set; }
+
+        public static int OverPowerMultiplier { get; set; }
 
         private static bool initStyles = false;
 
@@ -490,6 +491,38 @@ namespace CheatManager
             return false;
         }
 
+        internal static void OverPower(bool enable)
+        {
+            Survival survival = Player.main.GetComponent<Survival>();
+            FieldInfo kUpdateHungerInterval_field = survival.GetType().GetField("kUpdateHungerInterval", BindingFlags.NonPublic | BindingFlags.Instance);
+            Oxygen o2 = Player.main.GetComponent<OxygenManager>().GetComponent<Oxygen>();
+
+            if (enable)
+            {
+                kUpdateHungerInterval_field.SetValue(survival, 10 / OverPowerMultiplier);
+
+                if (o2.isPlayer)
+                {
+                    o2.oxygenCapacity = 45 * OverPowerMultiplier;
+                }
+
+                Player.main.liveMixin.data.maxHealth = 100 * OverPowerMultiplier;
+                Player.main.liveMixin.health = 100 * OverPowerMultiplier;
+            }
+            else
+            {
+                kUpdateHungerInterval_field.SetValue(survival, 10f);
+
+                if (o2.isPlayer)
+                {
+                    o2.oxygenCapacity = 45f;
+                    o2.oxygenAvailable = 45f;
+                }
+
+                Player.main.liveMixin.data.maxHealth = 100f;
+                Player.main.liveMixin.health = 100f;
+            }
+        }
     }
 }
 

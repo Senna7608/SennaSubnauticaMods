@@ -5,14 +5,14 @@ using Common;
 
 namespace SlotExtender.Config
 {
-    internal class Bindings : MonoBehaviour
+    internal class ConfigUI : MonoBehaviour
     {
-        public static Bindings Instance { get; private set; }
+        public static ConfigUI Instance { get; private set; }
         private Rect windowRect;
         private static bool initStyles = false;
         private static int selected = -1;
         private Event keyEvent;
-        private KeyCode newKey;
+        private string newKey;
         private static bool waitingForKey = false;
         private List<string> hotkeyLabels = new List<string>();
         private List<string> hotkeyButtons = new List<string>();
@@ -42,7 +42,7 @@ namespace SlotExtender.Config
             if (!initStyles)
                 initStyles = GUIHelper.InitGUIStyles();
 
-            windowRect = GUIHelper.CreatePopupWindow(new Rect(0, 0, Screen.width / 6, Screen.height / 2.9f), "SlotExtender: Key Bindings", false, false);
+            windowRect = GUIHelper.CreatePopupWindow(new Rect(0, 0, Screen.width / 6, Screen.height / 2.9f), "SlotExtender Configuration Window", false, false);
 
             GUI.FocusControl("SlotExtender.Bindings");
 
@@ -70,7 +70,7 @@ namespace SlotExtender.Config
 
             if (keyEvent.isKey && waitingForKey)
             {
-                newKey = keyEvent.keyCode;
+                newKey = InputHelper.GetKeyCodeAsInputName(keyEvent.keyCode);
                 waitingForKey = false;
             }
         }        
@@ -92,7 +92,7 @@ namespace SlotExtender.Config
 
             for (int i = 0; i < hotkeyButtons.Count; i++)
             {
-                if (hotkeyButtons[i].Equals(newKey.ToString()))
+                if (hotkeyButtons[i].Equals(newKey))
                 {
                     if (keyCount == 0)
                         isFirst = i;
@@ -108,7 +108,7 @@ namespace SlotExtender.Config
                 buttonInfo[isFirst].Name = hotkeyButtons[selected];
             }
 
-            hotkeyButtons[selected] = newKey.ToString();
+            hotkeyButtons[selected] = newKey;
             buttonInfo[selected].Name = hotkeyButtons[selected];
             selected = -1;            
 
@@ -139,17 +139,17 @@ namespace SlotExtender.Config
             Instance = Load();                    
         }
 
-        public static Bindings Load()
+        public static ConfigUI Load()
         {
             if (Instance == null)
             {
-                Instance = FindObjectOfType(typeof(Bindings)) as Bindings;
+                Instance = FindObjectOfType(typeof(ConfigUI)) as ConfigUI;
 
                 if (Instance == null)
                 {
-                    GameObject go = new GameObject().AddComponent<Bindings>().gameObject;
-                    go.name = "SlotExtender.Bindings";
-                    Instance = go.GetComponent<Bindings>();
+                    GameObject go = new GameObject().AddComponent<ConfigUI>().gameObject;
+                    go.name = "SlotExtender.ConfigUI";
+                    Instance = go.GetComponent<ConfigUI>();
                 }
             }
 

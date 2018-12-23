@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using System;
 
 namespace ConfigurationParser
 {
@@ -14,7 +15,15 @@ namespace ConfigurationParser
 
         public string GetKeyValue(string key)
         {
-            return this[key];
+            try
+            {
+                return this[key];
+            }
+            catch
+            {
+                Console.WriteLine($"Parser Error! [{key}] is missing!");
+                return key;
+            }
         }        
 
         public void SetKeyValue(string key, string value)

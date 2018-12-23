@@ -114,8 +114,7 @@ namespace Common
                 row++;                               
             }            
         }
-
-
+        
         public static int CreateButtonsGrid(Rect rect, float space, int columns, List<ButtonInfo> Buttons, out float lastYcoord, bool alignRightDown = true)
         {            
             float calcWidth = (rect.width - ((columns + 1) * space)) / columns;

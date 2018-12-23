@@ -4,6 +4,7 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using Common;
 
 namespace SlotExtender
 {
@@ -12,16 +13,16 @@ namespace SlotExtender
         public static void Load()
         {
             try
-            {                
+            {
                 HarmonyInstance.Create("Subnautica.SlotExtender.mod").PatchAll(Assembly.GetExecutingAssembly());
                 SceneManager.sceneLoaded += new UnityAction<Scene, LoadSceneMode>(OnSceneLoaded);                
             }
             catch (Exception ex)
             {
                 Debug.LogException(ex);
-            } 
+            }
 
-            DevConsole.disableConsole = false;
+            UnityHelper.EnableConsole();
             Config.Config.InitConfig();
         }
 
@@ -29,7 +30,9 @@ namespace SlotExtender
         {
             if (scene.name == "StartScreen")
             {
-                Config.SxConfig.Load();
+                //add console commad for configuration window
+                Config.SEConfig.Load();
+                //add an action if changed controls
                 GameInput.OnBindingsChanged += GameInput_OnBindingsChanged;                
             }
         }

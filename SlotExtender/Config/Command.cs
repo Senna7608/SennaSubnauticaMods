@@ -2,33 +2,33 @@
 
 namespace SlotExtender.Config
 {
-    public class SxConfig : MonoBehaviour
+    public class SEConfig : MonoBehaviour
     {
-        public static SxConfig Instance { get; private set; }
+        public static SEConfig Instance { get; private set; }
 
         public void Awake()
         {
             Instance = this;           
-            DevConsole.RegisterConsoleCommand(this, "sxconfig", false, false);
-            Debug.Log("[SlotExtender] Information: Enter 'sxconfig' command for configuration window.");
+            DevConsole.RegisterConsoleCommand(this, "seconfig", false, false);
+            Debug.Log("[SlotExtender] Information: Enter 'seconfig' command for configuration window.");
         }
         
-        private void OnConsoleCommand_sxconfig(NotificationCenter.Notification n)
+        private void OnConsoleCommand_seconfig(NotificationCenter.Notification n)
         {
-            Bindings.InitWindow();
+            ConfigUI.InitWindow();
         }
 
-        public static SxConfig Load()
+        public static SEConfig Load()
         {
             if (Instance == null)
             {
-                Instance = FindObjectOfType(typeof(SxConfig)) as SxConfig;
+                Instance = FindObjectOfType(typeof(SEConfig)) as SEConfig;
 
                 if (Instance == null)
                 {
-                    GameObject sxconfig_command = new GameObject().AddComponent<SxConfig>().gameObject;
-                    sxconfig_command.name = "SxConfig";
-                    Instance = sxconfig_command.GetComponent<SxConfig>();
+                    GameObject sxconfig_command = new GameObject().AddComponent<SEConfig>().gameObject;
+                    sxconfig_command.name = "SEConfig";
+                    Instance = sxconfig_command.GetComponent<SEConfig>();
                 }
             }
 

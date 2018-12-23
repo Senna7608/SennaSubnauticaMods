@@ -1,8 +1,10 @@
 [CheatManager]
-Version: 1.5.3
+Version: 1.6.0
 
 [Hotkeys]
 ToggleWindow: F5
 ToggleMouse: F4
 ToggleConsole: Delete
 
+[Settings]
+OverPowerMultiplier: 10

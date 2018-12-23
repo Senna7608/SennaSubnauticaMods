@@ -19,14 +19,16 @@ namespace ConfigurationParser
 
         public string GetKeyValueFromSection(string section, string key)
         {
+            if (!IsExists(section, key))
+                return "Error";
             try
             {
                 return _sections[section].GetKeyValue(key);
             }
             catch
             {
-                Console.WriteLine($"Parser Error! Section [{section}] or Key [{key}] is missing!");
-                return "Parser Error";
+                Console.WriteLine($"Parser Error! Section [{section}] or Key [{key}] is missing from file: '{_reader.FilePath}'");
+                return key;
             }
         }
 
@@ -35,10 +37,33 @@ namespace ConfigurationParser
             SetAndWrite(section, key, value);
         }
 
-        public bool SectionIsExists(string section)
+        public bool IsExists(string section)
         {
-            return _sections.ContainsKey(section);
+            try
+            {
+                return _sections.ContainsKey(section);
+            }
+            catch
+            {
+                Console.WriteLine($"Parser Error! Section [{section}] is missing from file: '{_reader.FilePath}'");
+                return false;
+            }            
         }
+
+        public bool IsExists(string section, string key)
+        {
+            if (!IsExists(section))
+                return false;
+            try
+            {
+                return _sections[section].ContainsKey(key);
+            }
+            catch
+            {
+                Console.WriteLine($"Parser Error! Section [{section}] or Key [{key}] is missing from file: '{_reader.FilePath}'");
+                return false;
+            }            
+        }        
 
         public bool AddNewSection(string section)
         {
@@ -49,7 +74,7 @@ namespace ConfigurationParser
             }
             catch
             {
-                Console.WriteLine($"Parser Error! Section [{section}] is already included in dictionary!");
+                Console.WriteLine($"Parser Error! Section [{section}] creation error!");
                 return false;
             }
         }

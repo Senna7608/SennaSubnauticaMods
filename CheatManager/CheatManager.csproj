@@ -69,7 +69,7 @@
     <Compile Include="Config\Command.cs" />
     <Compile Include="Config\Config.cs" />
     <Compile Include="CyclopsOverDrive.cs" />
-    <Compile Include="Config\Bindings.cs" />
+    <Compile Include="Config\ConfigUI.cs" />
     <Compile Include="InfoBar.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Main.cs" />

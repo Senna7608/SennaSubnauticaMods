@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Reflection;
 using Common;
 
 namespace CheatManager
@@ -109,7 +108,7 @@ namespace CheatManager
 
                 case 19:
                     toggleButtons[19].Pressed = !toggleButtons[19].Pressed;
-                    OverPower(toggleButtons[19].Pressed);                    
+                    CheatManager.OverPower(toggleButtons[19].Pressed);                    
                     ErrorMessage.AddMessage(toggleButtons[19].Pressed ? "overPower cheat is now True" : "overPower cheat is now False");
                     break;  
             }
@@ -128,40 +127,6 @@ namespace CheatManager
                 currentdaynightTab = daynightTabID;
                 DevConsole.SendConsoleCommand("daynightspeed " + DayNightSpeed[daynightTabID]);
             }
-        }
-
-        internal static void OverPower(bool enable)
-        {
-            Survival survival = Player.main.GetComponent<Survival>();
-            FieldInfo kUpdateHungerInterval_field = survival.GetType().GetField("kUpdateHungerInterval", BindingFlags.NonPublic | BindingFlags.Instance);
-            Oxygen o2 = Player.main.GetComponent<OxygenManager>().GetComponent<Oxygen>();
-
-            if (enable)
-            {                
-                kUpdateHungerInterval_field.SetValue(survival, 1f);
-                
-                if (o2.isPlayer)
-                {
-                    o2.oxygenCapacity = 90f;
-                }
-
-                Player.main.liveMixin.data.maxHealth = 200f;
-                Player.main.liveMixin.health = 200f;
-            }
-            else
-            {                
-                kUpdateHungerInterval_field.SetValue(survival, 10f);
-                
-                if (o2.isPlayer)
-                {
-                    o2.oxygenCapacity = 45f;
-                    o2.oxygenAvailable = 45f;
-                }
-
-                Player.main.liveMixin.data.maxHealth = 100f;
-                Player.main.liveMixin.health = 100f;
-            }
-        }
-        
+        }        
     }
 }

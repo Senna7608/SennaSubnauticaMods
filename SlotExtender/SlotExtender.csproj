@@ -68,7 +68,7 @@
   <ItemGroup>
     <Compile Include="Config\Command.cs" />
     <Compile Include="Config\Config.cs" />
-    <Compile Include="Config\Bindings.cs" />
+    <Compile Include="Config\ConfigUI.cs" />
     <Compile Include="Initialize_uGUI.cs" />
     <Compile Include="Patchers\MQS_Patcher.cs" />
     <Compile Include="Patchers\uGUI_Equipment_Patcher.cs" />
