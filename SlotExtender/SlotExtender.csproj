@@ -50,6 +50,7 @@
     <Reference Include="MoreQuickSlots">
       <HintPath>.\MoreQuickSlots.dll</HintPath>
       <Private>False</Private>
+      <Aliases>global</Aliases>
     </Reference>
     <Reference Include="SMLHelper">
       <HintPath>D:\Subnautica\QMods\Modding Helper\SMLHelper.dll</HintPath>

@@ -14,11 +14,12 @@ namespace SlotExtender.Patchers
             return false;
         }
     }
+    
 
     [HarmonyPatch(typeof(Exosuit))]
     [HarmonyPatch("Awake")]
     internal class Exosuit_Awake_Patch
-    {
+    {        
         internal static void Postfix(Exosuit __instance)
         {            
             __instance.gameObject.AddOrGetComponent<SlotExtender>();

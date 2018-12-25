@@ -54,7 +54,7 @@ namespace CheatManager.Config
             Section_settings = Helper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[1], SECTION_SETTINGS);
 
             int.TryParse(Section_settings[SECTION_SETTINGS[0]], out int ovpMultiplier);
-            UnityEngine.Debug.Log($"ovp: {ovpMultiplier}");
+            
             if (ovpMultiplier > 0 && ovpMultiplier <= 10)
                 CheatManager.OverPowerMultiplier = ovpMultiplier;
             else

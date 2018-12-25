@@ -8,7 +8,7 @@ namespace SlotExtender
     {
         internal static Initialize_uGUI Instance { get; private set; }        
 
-        internal static Dictionary<string, Text> SlotText = new Dictionary<string, Text>();
+        internal Dictionary<string, Text> SlotText = new Dictionary<string, Text>();
 
         private bool isPatched = false;
 
@@ -49,7 +49,12 @@ namespace SlotExtender
        
         internal void Awake()
         {
-            Instance = this;
+            Instance = gameObject.GetComponent<Initialize_uGUI>();            
+        }
+
+        public void OnDestroy()
+        {
+            Destroy(Instance);
         }
         
         internal void Add_uGUIslots(uGUI_Equipment instance, Dictionary<string, uGUI_EquipmentSlot> allSlots)
