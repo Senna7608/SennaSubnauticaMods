@@ -6,16 +6,13 @@
     public static class RefHelp
     {
         public static object GetPrivateField<T>(this T instance, string fieldName, BindingFlags bindingFlags = BindingFlags.Default)
-        {
-            FieldInfo fieldInfo = typeof(T).GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance | bindingFlags);
-            return fieldInfo.GetValue(instance);
-        }
+            => typeof(T).GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance | bindingFlags).GetValue(instance);
 
         public static void SetPrivateField<T>(this T instance, string fieldName, object value, BindingFlags bindingFlags = BindingFlags.Default)
-        {
-            FieldInfo fieldInfo = typeof(T).GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance | bindingFlags);
-            fieldInfo.SetValue(instance, value);
-        }
+            => typeof(T).GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance | bindingFlags).SetValue(instance, value);
+
+        public static void InvokePrivateMethod<T>(this T instance, string methodName, BindingFlags bindingFlags = BindingFlags.Default, params object[] parms)
+            => typeof(T).GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance | bindingFlags).Invoke(instance, parms);
 
         public static void CloneFieldsInto<T>(this T original, T copy)
         {
