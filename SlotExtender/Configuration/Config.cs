@@ -7,7 +7,7 @@ using UnityEngine;
 using ConfigurationParser;
 using Common;
 
-namespace SlotExtender.Config
+namespace SlotExtender.Configuration
 {
     public static class Config
     {
@@ -21,7 +21,8 @@ namespace SlotExtender.Config
 
         private static readonly string[] SECTION_HOTKEYS =
         {
-            "Show",            
+            "Upgrade",
+            "Storage",
             "Slot_6",
             "Slot_7",
             "Slot_8",
@@ -33,14 +34,15 @@ namespace SlotExtender.Config
 
         private static readonly List<ConfigData> DEFAULT_CONFIG = new List<ConfigData>
         {
-            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[0], InputHelper.GetKeyCodeAsInputName(KeyCode.R)),            
-            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[1], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha6)),
-            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[2], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha7)),
-            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[3], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha8)),
-            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[4], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha9)),
-            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[5], InputHelper.GetKeyCodeAsInputName(KeyCode.I)),
-            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[6], InputHelper.GetKeyCodeAsInputName(KeyCode.O)),
-            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[7], InputHelper.GetKeyCodeAsInputName(KeyCode.P))
+            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[0], InputHelper.GetKeyCodeAsInputName(KeyCode.T)),
+            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[1], InputHelper.GetKeyCodeAsInputName(KeyCode.R)),
+            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[2], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha6)),
+            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[3], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha7)),
+            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[4], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha8)),
+            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[5], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha9)),
+            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[6], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha0)),
+            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[7], InputHelper.GetKeyCodeAsInputName(KeyCode.O)),
+            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[8], InputHelper.GetKeyCodeAsInputName(KeyCode.P))
         };        
 
         internal static void InitSLOTKEYS()
@@ -52,20 +54,20 @@ namespace SlotExtender.Config
             SLOTKEYS.Add("Slot3", GameInput.GetBindingName(GameInput.Button.Slot3, GameInput.BindingSet.Primary));
             SLOTKEYS.Add("Slot4", GameInput.GetBindingName(GameInput.Button.Slot4, GameInput.BindingSet.Primary));
             SLOTKEYS.Add("Slot5", GameInput.GetBindingName(GameInput.Button.Slot5, GameInput.BindingSet.Primary));
-            SLOTKEYS.Add("Slot6", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_HOTKEYS[1]]));
-            SLOTKEYS.Add("Slot7", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_HOTKEYS[2]]));
-            SLOTKEYS.Add("Slot8", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_HOTKEYS[3]]));
-            SLOTKEYS.Add("Slot9", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_HOTKEYS[4]]));
-            SLOTKEYS.Add("Slot10", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_HOTKEYS[5]]));
-            SLOTKEYS.Add("Slot11", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_HOTKEYS[6]]));
-            SLOTKEYS.Add("Slot12", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_HOTKEYS[7]]));
+            SLOTKEYS.Add("Slot6", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_HOTKEYS[2]]));
+            SLOTKEYS.Add("Slot7", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_HOTKEYS[3]]));
+            SLOTKEYS.Add("Slot8", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_HOTKEYS[4]]));
+            SLOTKEYS.Add("Slot9", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_HOTKEYS[5]]));
+            SLOTKEYS.Add("Slot10", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_HOTKEYS[6]]));
+            SLOTKEYS.Add("Slot11", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_HOTKEYS[7]]));
+            SLOTKEYS.Add("Slot12", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_HOTKEYS[8]]));
         }
                
         internal static void InitConfig()
         {
             if (!File.Exists(FILENAME))
             {
-                UnityEngine.Debug.Log($"[{PROGRAM_NAME}] Warning! Configuration file is missing. Creating a new one.");
+                Logger.Log($"Warning! Configuration file is missing. Creating a new one.");
 
                 VERSION = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
                 
@@ -76,13 +78,13 @@ namespace SlotExtender.Config
 
             SetKeyBindings();            
 
-            UnityEngine.Debug.Log($"[{PROGRAM_NAME}] Configuration loaded and initialized.");
+            Logger.Log($"Configuration loaded and initialized.");
         }
         
         internal static void WriteConfig()
         {
             if (Helper.SetAllKeyValuesInSection(FILENAME, SECTIONS[0], Section_hotkeys))
-                UnityEngine.Debug.Log($"[{PROGRAM_NAME}] Configuration saved.");            
+                Logger.Log($"Configuration saved.");            
         }
 
         internal static void SyncConfig()
@@ -109,7 +111,7 @@ namespace SlotExtender.Config
                 }
                 catch (ArgumentException)
                 {
-                    UnityEngine.Debug.Log($"[{PROGRAM_NAME}] Warning! ({kvp.Value}) is not a valid KeyCode! Setting default value!");
+                    Logger.Log($"Warning! ({kvp.Value}) is not a valid KeyCode! Setting default value!");
 
                     for (int i = 0; i < DEFAULT_CONFIG.Count; i++)
                     {

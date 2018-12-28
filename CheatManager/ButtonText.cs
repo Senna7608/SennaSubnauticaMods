@@ -1,8 +1,8 @@
 ﻿namespace CheatManager
 {
-    internal static class ButtonText
+    internal class ButtonText
     {
-        internal static readonly string[] Buttons = new string[]
+        internal readonly string[] Buttons = new string[]
         {
             "day",
             "night",
@@ -14,7 +14,7 @@
             "BackWarp"
         };
 
-        internal static readonly string[] DayNightTab = new string[]
+        internal readonly string[] DayNightTab = new string[]
         {
             "0.1",
             "0.25",
@@ -25,7 +25,7 @@
         };
 
 
-        internal static readonly string[] ToggleButtons = new string[]
+        internal readonly string[] ToggleButtons = new string[]
         {
             "freedom",
             "creative",
@@ -49,7 +49,7 @@
             "overPower"
         };
 
-        internal static readonly string[] CategoriesTab = new string[]
+        internal readonly string[] CategoriesTab = new string[]
         {
             "Vehicles",
             "Tools",

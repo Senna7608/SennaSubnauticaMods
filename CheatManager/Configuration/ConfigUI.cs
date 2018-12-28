@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Common;
 
-namespace CheatManager.Config
+namespace CheatManager.Configuration
 {
     internal class ConfigUI : MonoBehaviour
     {
@@ -136,7 +136,7 @@ namespace CheatManager.Config
 
             Config.WriteConfig();
             Config.SetKeyBindings();
-            CheatManager.Instance.UpdateTitle();
+            Main.Instance.UpdateTitle();
             Destroy(Instance);
         }
 

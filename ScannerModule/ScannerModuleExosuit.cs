@@ -5,24 +5,29 @@ using UWE;
 namespace ScannerModule
 {
     public class ScannerModuleExosuit : MonoBehaviour
-    {        
-       
-        private EnergyMixin energyMixin;        
-        public FMOD_CustomLoopingEmitter scanSound;        
-        public FMODAsset completeSoundAsset;        
-        public FMODAsset scanSoundAsset;       
-        private Exosuit exosuit;
+    {
+        public ScannerModuleExosuit Instance { get; private set; }
+        public int moduleSlotID { get; set; }
+        private Exosuit thisExosuit { get; set; }
+        private Player playerMain { get; set; }
+        private EnergyMixin energyMixin { get; set; }
+        private HandReticle handReticleMain { get; set; }
 
-        public const float powerConsumption = 0.5f;
-        public const float scanDistance = 50f;        
-        private bool isScanning = false;
-        public bool toggle; 
+        private FMOD_CustomLoopingEmitter scanSound;
+        private FMODAsset completeSoundAsset;
+        private FMODAsset scanSoundAsset;
+        
+        private const float powerConsumption = 0.5f;
+        private const float scanDistance = 50f;        
+        private float idleTimer;        
+
+        private bool isToggle;
+        private bool isScanning;
+        private bool isActive;
+        private bool isPlayerInThisExosuit;
+
         private ScanState stateLast;
         private ScanState stateCurrent;
-        private float idleTimer;
-        private bool isActive;
-        
-        HandReticle main = HandReticle.main;
 
         public enum ScanState
         {
@@ -32,8 +37,13 @@ namespace ScannerModule
 
         public void Awake()
         {
-            exosuit = gameObject.GetComponent<Exosuit>();
-            energyMixin = exosuit.GetComponent<EnergyMixin>();
+            Instance = gameObject.GetComponent<ScannerModuleExosuit>();
+            thisExosuit = Instance.GetComponent<Exosuit>();
+            energyMixin = thisExosuit.GetComponent<EnergyMixin>();
+            playerMain = Player.main;
+            handReticleMain = HandReticle.main;
+
+            isPlayerInThisExosuit = playerMain.GetVehicle() == thisExosuit ? true : false;
             scanSoundAsset = ScriptableObject.CreateInstance<FMODAsset>();
             scanSoundAsset.path = "event:/tools/scanner/scan_loop";
             scanSound = gameObject.AddComponent<FMOD_CustomLoopingEmitter>();
@@ -44,27 +54,59 @@ namespace ScannerModule
 
         public void Start()
         {
-            exosuit.onToggle += OnToggle;
-            Player.main.playerModeChanged.AddHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
+            thisExosuit.onToggle += OnToggle;
+            thisExosuit.modules.onAddItem += OnAddItem;
+            thisExosuit.modules.onRemoveItem += OnRemoveItem;
+            playerMain.playerModeChanged.AddHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
+        }
+
+        private void OnRemoveItem(InventoryItem item)
+        {
+            if (item.item.GetTechType() == ScannerModule.TechTypeID)
+            {
+                moduleSlotID = -1;
+                Instance.enabled = false;
+            }
+        }
+
+        private void OnAddItem(InventoryItem item)
+        {
+            if (item.item.GetTechType() == ScannerModule.TechTypeID)
+            {
+                moduleSlotID = thisExosuit.GetSlotByItem(item) - 2;
+                Instance.enabled = true;
+            }
         }
 
         private void OnPlayerModeChanged(Player.Mode playerMode)
         {
             if (playerMode == Player.Mode.LockedPiloting)
-            {                
-                OnEnable();
+            {
+                if (playerMain.GetVehicle() == thisExosuit)
+                {
+                    isPlayerInThisExosuit = true;
+                    OnEnable();
+                    return;
+                }
+                else
+                {
+                    isPlayerInThisExosuit = false;
+                    OnDisable();
+                    return;
+                }
             }
             else
             {
+                isPlayerInThisExosuit = false;
                 OnDisable();
             }
         }
 
         private void OnToggle(int slotID, bool state)
         {
-            if (exosuit.GetSlotBinding(slotID) == ScannerModule.TechTypeID)
+            if (thisExosuit.GetSlotBinding(slotID) == ScannerModule.TechTypeID)
             {
-                toggle = state;
+                isToggle = state;
 
                 if (state)
                 {
@@ -79,22 +121,20 @@ namespace ScannerModule
 
         public void OnEnable()
         {
-            isActive = Player.main.inExosuit && toggle;
-
+            isActive = isPlayerInThisExosuit && playerMain.isPiloting && isToggle && moduleSlotID > -1;
         }
 
         public void OnDisable()
         {
-
             scanSound.Stop();
             isActive = false;
-            toggle = false;
+            isToggle = false;
             stateCurrent = ScanState.None;
             Modules.SetInteractColor(Modules.Colors.White);
             Modules.SetProgressColor(Modules.Colors.White);
         }
 
-        private void Update()
+        public void Update()
         {
             if (isActive)
             {
@@ -104,18 +144,18 @@ namespace ScannerModule
                 {
                     if (result != PDAScanner.Result.Known)
                     {                        
-                        main.SetInteractText("AutoScan", "Active", false, false, HandReticle.Hand.None);
-                        main.SetIcon(HandReticle.IconType.Scan, 1.5f);
+                        handReticleMain.SetInteractText("AutoScan", "Active", false, false, HandReticle.Hand.None);
+                        handReticleMain.SetIcon(HandReticle.IconType.Scan, 1.5f);
                     }
                 }
                 else
                 {
-                    main.SetInteractText(PDAScanner.scanTarget.techType.AsString(false), true, HandReticle.Hand.None);
-                    main.SetIcon(HandReticle.IconType.Progress, 10f);
-                    main.progressText.text = Mathf.RoundToInt(PDAScanner.scanTarget.progress * 100f) + "%";
+                    handReticleMain.SetInteractText(PDAScanner.scanTarget.techType.AsString(false), true, HandReticle.Hand.None);
+                    handReticleMain.SetIcon(HandReticle.IconType.Progress, 10f);
+                    handReticleMain.progressText.text = Mathf.RoundToInt(PDAScanner.scanTarget.progress * 100f) + "%";
                     Modules.SetProgressColor(Modules.Colors.Orange);
-                    main.progressImage.fillAmount = Mathf.Clamp01(PDAScanner.scanTarget.progress);
-                    main.SetProgress(PDAScanner.scanTarget.progress);                    
+                    handReticleMain.progressImage.fillAmount = Mathf.Clamp01(PDAScanner.scanTarget.progress);
+                    handReticleMain.SetProgress(PDAScanner.scanTarget.progress);                    
                 }
 
                 if (idleTimer > 0f)
@@ -205,8 +245,10 @@ namespace ScannerModule
 
         private void OnDestroy()
         {
-            Player.main.playerModeChanged.RemoveHandler(gameObject, OnPlayerModeChanged);
-            exosuit.onToggle -= OnToggle;
+            playerMain.playerModeChanged.RemoveHandler(gameObject, OnPlayerModeChanged);
+            thisExosuit.onToggle -= OnToggle;
+            thisExosuit.modules.onAddItem -= OnAddItem;
+            thisExosuit.modules.onRemoveItem -= OnRemoveItem;
         }
     }
 }

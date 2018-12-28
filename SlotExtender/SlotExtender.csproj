@@ -34,6 +34,24 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Beta|AnyCPU'">
+    <OutputPath>bin\Beta\</OutputPath>
+    <Optimize>true</Optimize>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <DefineConstants>
+    </DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
       <HintPath>D:\Subnautica\Subnautica_Data\Managed\0Harmony.dll</HintPath>
@@ -67,10 +85,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Config\Command.cs" />
-    <Compile Include="Config\Config.cs" />
-    <Compile Include="Config\ConfigUI.cs" />
+    <Compile Include="Configuration\Command.cs" />
+    <Compile Include="Configuration\Config.cs" />
+    <Compile Include="Configuration\ConfigUI.cs" />
     <Compile Include="Initialize_uGUI.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Patchers\MQS_Patcher.cs" />
     <Compile Include="Patchers\uGUI_Equipment_Patcher.cs" />
     <Compile Include="Patchers\Equipment_Patcher.cs" />

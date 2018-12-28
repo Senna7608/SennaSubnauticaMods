@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 namespace SlotExtender
 {
@@ -75,7 +74,7 @@ namespace SlotExtender
                 foreach (string slotID in NewExosuitSlotIDs)
                     Equipment.slotMapping.Add(slotID, EquipmentType.ExosuitModule);
 
-                Debug.Log("[SlotExtender] Equipment slot mapping Patched!");
+                Logger.Log("Equipment slot mapping Patched!");
                 SlotMappingExpanded = true;
             }
         }

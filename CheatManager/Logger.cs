@@ -5,28 +5,28 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Common;
-using CheatManager.Config;
+using CheatManager.Configuration;
 
 namespace CheatManager
 {
     public class Logger : MonoBehaviour
     {
-        public static Logger Instance { get; private set; }
+        public Logger Instance { get; private set; }
         private Rect windowRect;       
         
-        private static Vector2 scrollPos = Vector2.zero;
-        private static float contentHeight = 0;
-        private static float drawingPos;
-        private static List<LOG> logMessage = new List<LOG>();
-        private static int messageCount = 0;       
-        
-        public bool show = false;
-        public static string inputField = string.Empty;
+        private Vector2 scrollPos = Vector2.zero;
+        private float contentHeight = 0;
+        private float drawingPos;
+        private List<LOG> logMessage = new List<LOG>();
+        private int messageCount = 0;
+
+        private bool show = false;
+        private string inputField = string.Empty;
 
 #if MAXMESSAGE_INFINITY
         private static readonly int MAXLOG = int.MaxValue;
 #else
-        private static readonly int MAXLOG = 100; 
+        private readonly int MAXLOG = 100; 
 #endif
         //private static List<string> history = new List<string>();
 
@@ -39,7 +39,7 @@ namespace CheatManager
             public LogType type;
         }
         
-        private static readonly Dictionary<LogType, Color> logTypeColors = new Dictionary<LogType, Color>()
+        private readonly Dictionary<LogType, Color> logTypeColors = new Dictionary<LogType, Color>()
         {
             { LogType.Error, Color.magenta },
             { LogType.Assert, Color.blue },
@@ -49,7 +49,7 @@ namespace CheatManager
 
         };        
          
-        public static Logger Load()
+        public Logger()
         {
             if (Instance == null)
             {
@@ -61,18 +61,16 @@ namespace CheatManager
                     logger.name = "CheatManager.Logger";
                     Instance = logger.GetComponent<Logger>();                    
                 }
-            }
-
-            return Instance;
+            }            
         }
         
-
         public void Awake()
         {
             Instance = this;            
             DontDestroyOnLoad(this);            
             useGUILayout = false;
-            InfoBar.InitInfoBar(show);
+            Application.logMessageReceived += HandleLog;
+            //InfoBar.InitInfoBar(show);
 #if DEBUG
             show = true;
 #endif
@@ -80,21 +78,11 @@ namespace CheatManager
 
         public void OnDestroy()
         {
+            Application.logMessageReceived -= HandleLog;
             logMessage.Clear();
             Destroy(this);
         }
 
-#if DEBUG_GAMELOG
-        public void OnEnable()
-        {
-            Application.logMessageReceived += HandleLog;            
-        }
-
-        public void OnDisable()
-        {
-            Application.logMessageReceived -= HandleLog;            
-        }             
-#endif 
         void OnGUI()
         {             
             if (!show)
@@ -102,7 +90,7 @@ namespace CheatManager
                 return;
             }
 
-            windowRect = GUIHelper.CreatePopupWindow(new Rect(Screen.width - (Screen.width / 4.8f), Screen.height - (Screen.height / 4), Screen.width / 4.8f, Screen.height / 4), $"CheatManager Console (Press {Config.Config.KEYBINDINGS["ToggleConsole"]} to toggle)", true, true);
+            windowRect = GUIHelper.CreatePopupWindow(new Rect(Screen.width - (Screen.width / 4.8f), Screen.height - (Screen.height / 4), Screen.width / 4.8f, Screen.height / 4), $"CheatManager Console (Press {Config.KEYBINDINGS["ToggleConsole"]} to toggle)", true, true);
 
             Rect scrollRect = new Rect(windowRect.x, windowRect.y + 5, windowRect.width - 5, windowRect.height - 37);
 
@@ -190,7 +178,7 @@ namespace CheatManager
             
         public void Update()
         {
-            if (Input.GetKeyDown(Config.Config.KEYBINDINGS["ToggleConsole"]))
+            if (Input.GetKeyDown(Config.KEYBINDINGS["ToggleConsole"]))
             {
                 show = !show;
                 InfoBar.isShow = show;
@@ -269,12 +257,12 @@ namespace CheatManager
 
         }
 
-        public static void Log(string message) => Instance.Write(message);
+        public void Log(string message) => Instance.Write(message);
 
-        public static void Log(string message, LogType type) => Instance.Write(message, type);
+        public void Log(string message, LogType type) => Instance.Write(message, type);
 
-        public static void Log(string message, LogType type, params object[] arg) => Instance.Write(message, type, arg);
+        public void Log(string message, LogType type, params object[] arg) => Instance.Write(message, type, arg);
 
-        public static void HandleLog(string message, string stacktrace, LogType type) => Instance.Write(message, stacktrace, type);
+        public void HandleLog(string message, string stacktrace, LogType type) => Instance.Write(message, stacktrace, type);
     }
 }

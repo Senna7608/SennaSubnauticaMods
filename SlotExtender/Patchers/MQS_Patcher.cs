@@ -3,14 +3,15 @@ using System.Reflection;
 using Harmony;
 using System.Collections.Generic;
 using UnityEngine;
+using SlotExtender.Configuration;
 
 namespace SlotExtender.Patchers
 {
     internal class MQS_Patcher
     {
-        HarmonyInstance hInstance;
+        internal HarmonyInstance hInstance;
 
-        public MQS_Patcher(HarmonyInstance hInstance)
+        internal MQS_Patcher(HarmonyInstance hInstance)
         {
             this.hInstance = hInstance;
         }
@@ -22,7 +23,8 @@ namespace SlotExtender.Patchers
                 hInstance.Patch(typeof(MoreQuickSlots.GameController).GetMethod("CreateNewText",
                     BindingFlags.NonPublic |
                     BindingFlags.Instance |
-                    BindingFlags.Static), new HarmonyMethod(typeof(MQS_GameController_CreateNewText_Patch), "Prefix"), null);
+                    BindingFlags.Static),
+                    new HarmonyMethod(typeof(MQS_GameController_CreateNewText_Patch), "Prefix"), null);
             }
             catch (Exception ex)
             {
@@ -37,11 +39,12 @@ namespace SlotExtender.Patchers
     [HarmonyPatch("CreateNewText")]
     internal class MQS_GameController_CreateNewText_Patch
     {
+        [HarmonyPrefix]
         internal static void Prefix(ref string newText, int index)
         {
             List<string> slotkeys = new List<string>();
             
-            foreach (KeyValuePair<string, string> kvp in Config.Config.SLOTKEYS)
+            foreach (KeyValuePair<string, string> kvp in Config.SLOTKEYS)
             {
                 slotkeys.Add(kvp.Value);
             }

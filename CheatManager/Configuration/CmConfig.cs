@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace CheatManager.Config
+namespace CheatManager.Configuration
 {
     public class CmConfig : MonoBehaviour
     {

@@ -6,7 +6,7 @@ using System.IO;
 using System.Reflection;
 using System.Diagnostics;
 
-namespace CheatManager.Config
+namespace CheatManager.Configuration
 {
     public static class Config
     {
@@ -56,10 +56,10 @@ namespace CheatManager.Config
             int.TryParse(Section_settings[SECTION_SETTINGS[0]], out int ovpMultiplier);
             
             if (ovpMultiplier > 0 && ovpMultiplier <= 10)
-                CheatManager.OverPowerMultiplier = ovpMultiplier;
+                Main.OverPowerMultiplier = ovpMultiplier;
             else
             {
-                CheatManager.OverPowerMultiplier = 2;
+                Main.OverPowerMultiplier = 2;
                 Helper.SetKeyValue(FILENAME, SECTIONS[1], Section_settings[SECTION_SETTINGS[0]], 2.ToString());
             }
 

@@ -3,21 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using Common;
 
-namespace SlotExtender.Config
+namespace SlotExtender.Configuration
 {
     internal class ConfigUI : MonoBehaviour
     {
-        public static ConfigUI Instance { get; private set; }
+        public ConfigUI Instance { get; private set; }
         private Rect windowRect;
-        private static bool initStyles = false;
-        private static int selected = -1;
+        private bool initStyles = false;
+        private int selected = -1;
         private Event keyEvent;
         private string newKey;
-        private static bool waitingForKey = false;
+        private bool waitingForKey = false;
         private List<string> hotkeyLabels = new List<string>();
         private List<string> hotkeyButtons = new List<string>();
         private List<GUIHelper.ButtonInfo> buttonInfo = new List<GUIHelper.ButtonInfo>();
-        private static readonly float space = 10f;
+        private readonly float space = 10f;
 
         public void Awake()
         {
@@ -42,7 +42,7 @@ namespace SlotExtender.Config
             if (!initStyles)
                 initStyles = GUIHelper.InitGUIStyles();
 
-            windowRect = GUIHelper.CreatePopupWindow(new Rect(0, 0, Screen.width / 6, Screen.height / 2.9f), "SlotExtender Configuration Window", false, false);
+            windowRect = GUIHelper.CreatePopupWindow(new Rect(0, 0, Screen.width / 6, hotkeyButtons.Count * 45), "SlotExtender Configuration Window", false, false);
 
             GUI.FocusControl("SlotExtender.Bindings");
 
@@ -75,7 +75,7 @@ namespace SlotExtender.Config
             }
         }        
 
-        public void StartAssignment(object keyName)
+        private void StartAssignment(object keyName)
         {
             if (!waitingForKey)
                 StartCoroutine(AssignKey(keyName));
@@ -103,7 +103,7 @@ namespace SlotExtender.Config
 
             if (keyCount > 0 && isFirst != selected)
             {
-                Debug.Log("[SlotExtender] Error! Duplicate keybind found, swapping keys...");
+                Logger.Log("Error! Duplicate keybind found, swapping keys...");
                 hotkeyButtons[isFirst] = hotkeyButtons[selected];
                 buttonInfo[isFirst].Name = hotkeyButtons[selected];
             }
@@ -134,12 +134,7 @@ namespace SlotExtender.Config
             Destroy(Instance);
         }
 
-        internal static void InitWindow()
-        {
-            Instance = Load();                    
-        }
-
-        public static ConfigUI Load()
+        public ConfigUI()
         {
             if (Instance == null)
             {
@@ -151,9 +146,7 @@ namespace SlotExtender.Config
                     go.name = "SlotExtender.ConfigUI";
                     Instance = go.GetComponent<ConfigUI>();
                 }
-            }
-
-            return Instance;
+            }            
         }
     }    
 }

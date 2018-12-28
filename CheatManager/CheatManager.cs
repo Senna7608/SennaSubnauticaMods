@@ -3,105 +3,98 @@ using System.Collections.Generic;
 using UnityEngine;
 using UWE;
 using Common;
-using System.Reflection;
+using CheatManager.Configuration;
 
 namespace CheatManager
 {
     public class CheatManager : MonoBehaviour
-    {
-        public static CheatManager Instance { get; private set; }
+    {  
+        internal CheatManager Instance { get; private set; }
 
-        public static int OverPowerMultiplier { get; set; }
+        internal Player PlayerMain { get; private set; }
 
-        private static bool initStyles = false;
+        internal ButtonControl buttonControl;
+        internal ButtonText buttonText;
+        internal TechnologyMatrix techMatrix;
+        internal WarpTargets warpTargets;
 
-        private static Vector2 scrollPos = Vector2.zero;
-        private static bool isActive;
-        private static Rect windowRect = new Rect();
-        private static readonly float space = 3;       
+        private bool initStyles = false;
 
-        private static readonly string[][] WarpData = WarpTargets.Targets;
+        private Vector2 scrollPos = Vector2.zero;
+        private bool isActive;
+        private Rect windowRect = new Rect();
+        private readonly float space = 3;
+
+        //private readonly string[][] WarpData; = WarpTargets.Targets;
 
         private string windowTitle;
-        internal static string prevCwPos = null;
+        internal string prevCwPos = null;
 
-        internal static bool seamothCanFly = false;
+        internal bool seamothCanFly = false;
 
         internal Utils.MonitoredValue<bool> isSeaglideFast = new Utils.MonitoredValue<bool>();
 
-        internal static float seamothSpeedMultiplier;
-        internal static float exosuitSpeedMultiplier;
-        internal static float cyclopsSpeedMultiplier;
+        internal float seamothSpeedMultiplier;
+        internal float exosuitSpeedMultiplier;
+        internal float cyclopsSpeedMultiplier;
 
-        internal static float playerPrevInfectionLevel = 0f;
+        internal float playerPrevInfectionLevel = 0f;
 
         private int normalButtonID = -1;
         private int toggleButtonID = -1;
         private int daynightTabID = 4;
         private int categoriesTabID = 0;
-        private static int vehicleSettingsID = -1;
+        private int vehicleSettingsID = -1;
 
         private int currentdaynightTab = 4;
         private int currentTab = 0;
 
-        internal static FMODAsset warpSound;
+        internal FMODAsset warpSound;
 
-        internal static string seamothName;
-        internal static string exosuitName;
-        internal static string cyclopsName;
+        internal string seamothName;
+        internal string exosuitName;
+        internal string cyclopsName;
 
-        private static List<TechMatrix.TechTypeData>[] TechnologyMatrix;
+        private List<TechnologyMatrix.TechTypeData>[] tMatrix;
 
-        private static List<GUIHelper.ButtonInfo> Buttons;
-        private static List<GUIHelper.ButtonInfo> toggleButtons;
-        private static List<GUIHelper.ButtonInfo> daynightTab;
-        private static List<GUIHelper.ButtonInfo> categoriesTab;
-        private static List<GUIHelper.ButtonInfo> vehicleSettings;
+        private List<GUIHelper.ButtonInfo> Buttons;
+        private List<GUIHelper.ButtonInfo> toggleButtons;
+        private List<GUIHelper.ButtonInfo> daynightTab;
+        private List<GUIHelper.ButtonInfo> categoriesTab;
+        private List<GUIHelper.ButtonInfo> vehicleSettings;
 
-        internal static bool initToggleButtons = false;
+        internal bool initToggleButtons = false;
 
 #if DEBUG_PROGRAM
             internal static float crTimer = 10;
 #endif                
-        public static CheatManager Load()
-        {
-            if (Instance == null)
-            {
-                Instance = FindObjectOfType(typeof(CheatManager)) as CheatManager;
-
-                if (Instance == null)
-                {
-                    GameObject cheatmanager = new GameObject().AddComponent<CheatManager>().gameObject;
-                    cheatmanager.name = "CheatManager";
-                    Instance = cheatmanager.GetComponent<CheatManager>();
-                }
-            }
-
-            return Instance;
-        }
-
+     
         public void Awake()
-        {            
-            Instance = this;
+        {
+            Instance = Main.Instance;
             useGUILayout = false;
             
             UpdateTitle();
+            warpTargets = new WarpTargets();
             warpSound = ScriptableObject.CreateInstance<FMODAsset>();
             warpSound.path = "event:/tools/gravcannon/fire";
 
-            TechnologyMatrix = new List<TechMatrix.TechTypeData>[TechMatrix.techMatrix.Length];
-            TechMatrix.InitTechMatrixList(ref TechnologyMatrix);
+            techMatrix = new TechnologyMatrix();
+
+            tMatrix = new List<TechnologyMatrix.TechTypeData>[techMatrix.baseTechMatrix.Length];
+
+            techMatrix.InitTechMatrixList(ref tMatrix);
 
             if (Main.isExistsSMLHelperV2)
-            {               
-                TechMatrix.IsExistsModdersTechTypes(ref TechnologyMatrix, TechMatrix.Known_Modded_TechTypes);
+            {
+                techMatrix.IsExistsModdersTechTypes(ref tMatrix, techMatrix.Known_Modded_TechTypes);
             }
             else
             {
-                Logger.Log("[CheatManager] Warning:\n'SMLHelper.V2' not found! Some functions are not available!", LogType.Warning);
+                Main.logger.Log("[CheatManager] Warning:\n'SMLHelper.V2' not found! Some functions are not available!", LogType.Warning);
             }
 
-            TechMatrix.SortTechLists(ref TechnologyMatrix);
+            techMatrix.SortTechLists(ref tMatrix);
 
             Buttons = new List<GUIHelper.ButtonInfo>();
             toggleButtons = new List<GUIHelper.ButtonInfo>();
@@ -109,22 +102,24 @@ namespace CheatManager
             categoriesTab = new List<GUIHelper.ButtonInfo>();
             vehicleSettings = new List<GUIHelper.ButtonInfo>();
 
-            GUIHelper.CreateButtonsGroup(ButtonText.Buttons, GUIHelper.BUTTONTYPE.NORMAL_CENTER, ref Buttons);
-            GUIHelper.CreateButtonsGroup(ButtonText.ToggleButtons, GUIHelper.BUTTONTYPE.TOGGLE_CENTER, ref toggleButtons);
-            GUIHelper.CreateButtonsGroup(ButtonText.DayNightTab, GUIHelper.BUTTONTYPE.TAB_CENTER, ref daynightTab);
-            GUIHelper.CreateButtonsGroup(ButtonText.CategoriesTab, GUIHelper.BUTTONTYPE.TAB_CENTER, ref categoriesTab);
+            buttonText = new ButtonText();
 
-            var searchSeaGlide = new TechMatrix.TechTypeSearch(TechType.Seaglide);
-            string seaglideName = TechnologyMatrix[1][TechnologyMatrix[1].FindIndex(searchSeaGlide.EqualsWith)].Name;
+            GUIHelper.CreateButtonsGroup(buttonText.Buttons, GUIHelper.BUTTONTYPE.NORMAL_CENTER, ref Buttons);
+            GUIHelper.CreateButtonsGroup(buttonText.ToggleButtons, GUIHelper.BUTTONTYPE.TOGGLE_CENTER, ref toggleButtons);
+            GUIHelper.CreateButtonsGroup(buttonText.DayNightTab, GUIHelper.BUTTONTYPE.TAB_CENTER, ref daynightTab);
+            GUIHelper.CreateButtonsGroup(buttonText.CategoriesTab, GUIHelper.BUTTONTYPE.TAB_CENTER, ref categoriesTab);
 
-            var searchSeamoth = new TechMatrix.TechTypeSearch(TechType.Seamoth);
-            seamothName = TechnologyMatrix[0][TechnologyMatrix[0].FindIndex(searchSeamoth.EqualsWith)].Name;
+            var searchSeaGlide = new TechnologyMatrix.TechTypeSearch(TechType.Seaglide);
+            string seaglideName = tMatrix[1][tMatrix[1].FindIndex(searchSeaGlide.EqualsWith)].Name;
 
-            var searchExosuit = new TechMatrix.TechTypeSearch(TechType.Exosuit);
-            exosuitName = TechnologyMatrix[0][TechnologyMatrix[0].FindIndex(searchExosuit.EqualsWith)].Name;
+            var searchSeamoth = new TechnologyMatrix.TechTypeSearch(TechType.Seamoth);
+            seamothName = tMatrix[0][tMatrix[0].FindIndex(searchSeamoth.EqualsWith)].Name;
 
-            var searchCyclops = new TechMatrix.TechTypeSearch(TechType.Cyclops);
-            cyclopsName = TechnologyMatrix[0][TechnologyMatrix[0].FindIndex(searchCyclops.EqualsWith)].Name;
+            var searchExosuit = new TechnologyMatrix.TechTypeSearch(TechType.Exosuit);
+            exosuitName = tMatrix[0][tMatrix[0].FindIndex(searchExosuit.EqualsWith)].Name;
+
+            var searchCyclops = new TechnologyMatrix.TechTypeSearch(TechType.Cyclops);
+            cyclopsName = tMatrix[0][tMatrix[0].FindIndex(searchCyclops.EqualsWith)].Name;
 
             string[] vehicleSetButtons = { $"{seamothName} Can Fly", $"{seaglideName} Speed Fast" };
 
@@ -138,6 +133,8 @@ namespace CheatManager
 
             exosuitSpeedMultiplier = 1;
             cyclopsSpeedMultiplier = 1;
+
+            buttonControl = new ButtonControl();
         }        
 
         public void OnDestroy()
@@ -147,7 +144,7 @@ namespace CheatManager
             daynightTab = null;
             categoriesTab = null;
             vehicleSettings = null;
-            TechnologyMatrix = null;
+            tMatrix = null;
             initToggleButtons = false;
             prevCwPos = null;
             warpSound = null;            
@@ -185,44 +182,44 @@ namespace CheatManager
 
         internal void UpdateTitle()
         {
-            windowTitle = $"CheatManager v.{Config.Config.VERSION}, {Config.Config.KEYBINDINGS["ToggleWindow"]} Toggle Window, {Config.Config.KEYBINDINGS["ToggleMouse"]} Toggle Mouse";
+            windowTitle = $"CheatManager v.{Config.VERSION}, {Config.KEYBINDINGS["ToggleWindow"]} Toggle Window, {Config.KEYBINDINGS["ToggleMouse"]} Toggle Mouse";
         }
 
         public void Update()
         {
             if (Player.main != null)
-            {
-                if (Input.GetKeyDown(Config.Config.KEYBINDINGS["ToggleWindow"]))
+            {                
+                if (Input.GetKeyDown(Config.KEYBINDINGS["ToggleWindow"]))
                 {
                     isActive = !isActive;
                 }
 
                 if (isActive)
                 {
-                    if (Input.GetKeyDown(Config.Config.KEYBINDINGS["ToggleMouse"]))
+                    if (Input.GetKeyDown(Config.KEYBINDINGS["ToggleMouse"]))
                     {
                         UWE.Utils.lockCursor = !UWE.Utils.lockCursor;
                     }
 
                     if(!initToggleButtons)
                     {
-                        ReadGameValues();
+                        ReadGameValues();                        
                         initToggleButtons = true;
                     }                   
 
                     if (normalButtonID != -1)
                     {
-                        ButtonControl.NormalButtonControl(normalButtonID, ref Buttons, ref toggleButtons);                        
+                        buttonControl.NormalButtonControl(normalButtonID, ref Buttons, ref toggleButtons);                        
                     }
 
                     if (toggleButtonID != -1)
                     {
-                        ButtonControl.ToggleButtonControl(toggleButtonID, ref toggleButtons);                        
+                        buttonControl.ToggleButtonControl(toggleButtonID, ref toggleButtons);                        
                     }
 
                     if (daynightTabID != -1)
                     {
-                        ButtonControl.DayNightButtonControl(daynightTabID, ref currentdaynightTab, ref daynightTab);
+                        buttonControl.DayNightButtonControl(daynightTabID, ref currentdaynightTab, ref daynightTab);
                     }
 
                     if (categoriesTabID != -1)
@@ -262,13 +259,14 @@ namespace CheatManager
                 
                 if (toggleButtons[18].Pressed)
                 {
-                    Player.main.infectedMixin.SetInfectedAmount(0f);
+                    PlayerMain.infectedMixin.SetInfectedAmount(0f);
                 }                                        
             }
         }
 
-        internal static void ReadGameValues()
-        {            
+        internal void ReadGameValues()
+        {
+            PlayerMain = Player.main;
             toggleButtons[0].Pressed = GameModeUtils.IsOptionActive(GameModeOption.NoSurvival);
             toggleButtons[1].Pressed = GameModeUtils.IsOptionActive(GameModeOption.NoBlueprints);
             toggleButtons[2].Pressed = GameModeUtils.RequiresSurvival();
@@ -293,7 +291,7 @@ namespace CheatManager
         }
         
 
-        public static void ExecuteCommand(object message, object command)
+        public void ExecuteCommand(object message, object command)
         {
             if (message != null)
             {
@@ -353,14 +351,14 @@ namespace CheatManager
         }       
 
 
-        private static void TabControl(int category)
+        private void TabControl(int category)
         {
             int scrollItems;
 
             if (category == 19)
-                scrollItems = WarpData.Length;            
+                scrollItems = warpTargets.Targets.Length;            
             else           
-                scrollItems = TechnologyMatrix[category].Count;            
+                scrollItems = tMatrix[category].Count;            
 
             float width = windowRect.width;
 
@@ -381,13 +379,13 @@ namespace CheatManager
             {
                 if (category == 19)
                 {
-                    itemName = WarpData[i][1];
-                    selectedTech = WarpData[i][0];                    
+                    itemName = warpTargets.Targets[i][1];
+                    selectedTech = warpTargets.Targets[i][0];                    
                 }                
                 else
                 {                    
-                    itemName = TechnologyMatrix[category][i].Name; 
-                    selectedTech = TechnologyMatrix[category][i].TechType.ToString();                    
+                    itemName = tMatrix[category][i].Name; 
+                    selectedTech = tMatrix[category][i].TechType.ToString();                    
                 }               
 
                 if (GUI.Button(new Rect(windowRect.x, windowRect.y + (i * 26), width, 22), itemName, GUIHelper.GetGUIStyle(null, GUIHelper.BUTTONTYPE.NORMAL_LEFTALIGN)))                
@@ -395,9 +393,9 @@ namespace CheatManager
                     switch (category)
                     {
                         case 0:
-                            if (!Player.main.IsInBase() && !Player.main.IsInSubmarine() && !Player.main.escapePod.value)
+                            if (!PlayerMain.IsInBase() && !PlayerMain.IsInSubmarine() && !PlayerMain.escapePod.value)
                             {
-                                if (TechnologyMatrix[category][i].TechType == TechType.Cyclops)
+                                if (tMatrix[category][i].TechType == TechType.Cyclops)
                                     ExecuteCommand($"{itemName}  has spawned", "sub cyclops");
                                 else
                                     ExecuteCommand($"{itemName}  has spawned", $"spawn {selectedTech}");
@@ -463,14 +461,14 @@ namespace CheatManager
             
         }
         
-        private static void Teleport(string name, string Vector3string)
+        private void Teleport(string name, string Vector3string)
         {
             Vector3 currentWorldPos = MainCamera.camera.transform.position;
             prevCwPos = string.Format("{0:D} {1:D} {2:D}", (int)currentWorldPos.x, (int)currentWorldPos.y, (int)currentWorldPos.z);
             if (IsPlayerInVehicle())
-            {                
-                Player.main.GetVehicle().TeleportVehicle(WarpTargets.ConvertStringPosToVector3(Vector3string), Quaternion.identity);
-                Player.main.CompleteTeleportation();
+            {
+                PlayerMain.GetVehicle().TeleportVehicle(warpTargets.ConvertStringPosToVector3(Vector3string), Quaternion.identity);
+                PlayerMain.CompleteTeleportation();
                 ErrorMessage.AddMessage($"Vehicle and Player Warped to: {name}\n({Vector3string})");
             }
             else
@@ -478,12 +476,12 @@ namespace CheatManager
                 ExecuteCommand($"Player Warped to: {name}\n({Vector3string})", $"warp {Vector3string}");
             }
 
-            Utils.PlayFMODAsset(warpSound, Player.main.transform, 20f);
+            Utils.PlayFMODAsset(warpSound, PlayerMain.transform, 20f);
         }
 
-        internal static bool IsPlayerInVehicle()
+        internal bool IsPlayerInVehicle()
         {
-            if (Player.main.inSeamoth == true || Player.main.inExosuit == true)
+            if (PlayerMain.inSeamoth == true || PlayerMain.inExosuit == true)
             {
                 return true;
             }
@@ -491,27 +489,25 @@ namespace CheatManager
             return false;
         }
 
-        internal static void OverPower(bool enable)
+        internal void OverPower(bool enable)
         {
-            Survival survival = Player.main.GetComponent<Survival>();
-            FieldInfo kUpdateHungerInterval_field = survival.GetType().GetField("kUpdateHungerInterval", BindingFlags.NonPublic | BindingFlags.Instance);
-            Oxygen o2 = Player.main.GetComponent<OxygenManager>().GetComponent<Oxygen>();
+            Oxygen o2 = PlayerMain.GetComponent<OxygenManager>().GetComponent<Oxygen>();
 
             if (enable)
             {
-                kUpdateHungerInterval_field.SetValue(survival, 10 / OverPowerMultiplier);
+                PlayerMain.GetComponent<Survival>().SetPrivateField("kUpdateHungerInterval", 10 / Main.OverPowerMultiplier);
 
                 if (o2.isPlayer)
                 {
-                    o2.oxygenCapacity = 45 * OverPowerMultiplier;
+                    o2.oxygenCapacity = 45 * Main.OverPowerMultiplier;
                 }
 
-                Player.main.liveMixin.data.maxHealth = 100 * OverPowerMultiplier;
-                Player.main.liveMixin.health = 100 * OverPowerMultiplier;
+                PlayerMain.liveMixin.data.maxHealth = 100 * Main.OverPowerMultiplier;
+                PlayerMain.liveMixin.health = 100 * Main.OverPowerMultiplier;
             }
             else
             {
-                kUpdateHungerInterval_field.SetValue(survival, 10f);
+                PlayerMain.GetComponent<Survival>().SetPrivateField("kUpdateHungerInterval", 10f);
 
                 if (o2.isPlayer)
                 {
@@ -519,8 +515,8 @@ namespace CheatManager
                     o2.oxygenAvailable = 45f;
                 }
 
-                Player.main.liveMixin.data.maxHealth = 100f;
-                Player.main.liveMixin.health = 100f;
+                PlayerMain.liveMixin.data.maxHealth = 100f;
+                PlayerMain.liveMixin.health = 100f;
             }
         }
     }

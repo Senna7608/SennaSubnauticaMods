@@ -7,14 +7,16 @@ namespace SlotExtender.Patchers
 {
     [HarmonyPatch(typeof(uGUI_Equipment))]
     [HarmonyPatch("Awake")]
-    public class uGUI_Equipment_Awake_Patch
-    {            
-        public static void Prefix(uGUI_Equipment __instance)
+    internal class uGUI_Equipment_Awake_Patch
+    {
+        [HarmonyPrefix]
+        internal static void Prefix(uGUI_Equipment __instance)
         {
-            var component = __instance.gameObject.AddOrGetComponent<Initialize_uGUI>();            
+            __instance.gameObject.AddIfNotComponent<Initialize_uGUI>();            
         }
-        
-        public static void Postfix(ref uGUI_Equipment __instance)
+
+        [HarmonyPostfix]
+        internal static void Postfix(ref uGUI_Equipment __instance)
         {
             var allSlots = (Dictionary<string, uGUI_EquipmentSlot>)__instance.GetPrivateField("allSlots", BindingFlags.SetField);
 

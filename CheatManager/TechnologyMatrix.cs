@@ -5,7 +5,7 @@ using SMLHelper.V2.Handlers;
 
 namespace CheatManager
 {
-    public class TechMatrix
+    public class TechnologyMatrix
     {
         public class TechTypeData : IComparable<TechTypeData>
         {
@@ -46,18 +46,18 @@ namespace CheatManager
         }
 
 
-        public static List<TechType> addedTechTypes = new List<TechType>();
+        //public static List<TechType> addedTechTypes = new List<TechType>();
 
-        public static void InitTechMatrixList(ref List<TechTypeData>[] TechnologyMatrix)
+        public void InitTechMatrixList(ref List<TechTypeData>[] TechnologyMatrix)
         {
-            for (int i = 0; i < techMatrix.Length; i++)
+            for (int i = 0; i < baseTechMatrix.Length; i++)
             {
                 TechnologyMatrix[i] = new List<TechTypeData>();
 
-                for (int j = 0; j < techMatrix[i].Length; j++)
+                for (int j = 0; j < baseTechMatrix[i].Length; j++)
                 {
                     string name;
-                    TechType techType = techMatrix[i][j];
+                    TechType techType = baseTechMatrix[i][j];
                     if (techType == TechType.SeaEmperorBaby)
                     {
                         name = Language.main.Get(TechTypeExtensions.AsString(TechType.SeaEmperorJuvenile, false));
@@ -68,14 +68,14 @@ namespace CheatManager
                     }
                     else
                     {
-                        name = Language.main.Get(TechTypeExtensions.AsString(techMatrix[i][j], false));
+                        name = Language.main.Get(TechTypeExtensions.AsString(baseTechMatrix[i][j], false));
                     }
                     TechnologyMatrix[i].Add(new TechTypeData(techType, name));                    
                 }                
             }            
         }
         
-        public static void SortTechLists(ref List<TechTypeData>[] TechnologyMatrix)
+        public void SortTechLists(ref List<TechTypeData>[] TechnologyMatrix)
         {
             foreach (List<TechTypeData> item in TechnologyMatrix)
             {
@@ -83,7 +83,7 @@ namespace CheatManager
             }            
         }
         
-        public static void IsExistsModdersTechTypes(ref List<TechTypeData>[] TechnologyMatrix, Dictionary<string, CATEGORY> dictionary)
+        public void IsExistsModdersTechTypes(ref List<TechTypeData>[] TechnologyMatrix, Dictionary<string, CATEGORY> dictionary)
         {
             foreach (KeyValuePair<string, CATEGORY> pair in dictionary)
             {
@@ -97,7 +97,7 @@ namespace CheatManager
                     if (TechTypeExtensions.AsString(techType, false) == pair.Key)
                     {
                         TechnologyMatrix[(int)pair.Value].Add(new TechTypeData(techType, Language.main.Get(TechTypeExtensions.AsString(techType, false))));
-                        addedTechTypes.Add(techType);
+                        //addedTechTypes.Add(techType);
                         Debug.Log($"[CheatManager]:\n '{pair.Key}' found in TechTypeExtensions and added to TechMatrix.");
                     }
                 }
@@ -128,7 +128,7 @@ namespace CheatManager
             BaseModule,
         };
         
-        public static readonly Dictionary<string, CATEGORY> Known_Modded_TechTypes = new Dictionary<string, CATEGORY>
+        public readonly Dictionary<string, CATEGORY> Known_Modded_TechTypes = new Dictionary<string, CATEGORY>
         {
             //{ "SeaMothMk2", CATEGORY.Vehicles },
             //{ "SeaMothMk3", CATEGORY.Vehicles },
@@ -160,7 +160,7 @@ namespace CheatManager
             { "AncientSword", CATEGORY.Tools }
         };
 
-        public static readonly TechType[][] techMatrix = new TechType[][]
+        public readonly TechType[][] baseTechMatrix = new TechType[][]
         {
             #region Vehicles
 

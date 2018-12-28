@@ -7,17 +7,19 @@ namespace SlotExtender.Patchers
     [HarmonyPatch("GetSlotType")]
     internal class Equipment_GetSlotType_Patch
     {
+        [HarmonyPrefix]
         internal static void Prefix(string slot, ref EquipmentType __result)
         {
             SlotHelper.ExpandSlotMapping();
         }
     }
-
+    
     [HarmonyPatch(typeof(Equipment))]
     [HarmonyPatch("AllowedToAdd")]
     [HarmonyPatch(new Type[] { typeof(string), typeof(Pickupable), typeof(bool) })]
     internal class Equipment_AllowedToAdd_Patch
-    { 
+    {
+        [HarmonyPrefix]
         internal static bool Prefix(Equipment __instance, string slot, Pickupable pickupable, bool verbose, ref bool __result)
         {
             bool notAllowedInExtendedSlots = pickupable.GetTechType() == TechType.VehicleStorageModule ||
@@ -42,5 +44,5 @@ namespace SlotExtender.Patchers
             }
             return true;            
         }        
-    }    
+    }   
 }

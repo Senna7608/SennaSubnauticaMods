@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using SlotExtender.Configuration;
 
 namespace SlotExtender
 {
@@ -98,7 +99,7 @@ namespace SlotExtender
                     {
                         int.TryParse(item.Key.Substring(13), out int slotNum);
                         item.Value.rectTransform.anchoredPosition = slotPos[slotNum - 1];                        
-                        Text text = AddSlotNumber(item.Value.transform, Config.Config.SLOTKEYS[$"Slot{slotNum}"], slotNum);
+                        Text text = AddSlotNumber(item.Value.transform, Config.SLOTKEYS[$"Slot{slotNum}"], slotNum);
                         SlotText.Add(text.gameObject.name, text);
                         //AddSlotNumbers(item.Value.transform, slotNum.ToString());
                     }
@@ -107,7 +108,7 @@ namespace SlotExtender
                     {
                         int.TryParse(item.Key.Substring(13), out int slotNum);
                         item.Value.rectTransform.anchoredPosition = slotPos[slotNum - 1];
-                        AddSlotNumber(item.Value.transform, Config.Config.SLOTKEYS[$"Slot{slotNum}"], slotNum);
+                        AddSlotNumber(item.Value.transform, Config.SLOTKEYS[$"Slot{slotNum}"], slotNum);
                         //AddSlotNumbers(item.Value.transform, slotNum.ToString());
                     }
 
@@ -122,14 +123,14 @@ namespace SlotExtender
                     }                    
                 }
 
-                Debug.Log("[SlotExtender] uGUI_EquipmentSlots Patched!");
+                Logger.Log("uGUI_EquipmentSlots Patched!");
                 isPatched = true;
             }
         }
 
         internal void RefreshText()
         {
-            foreach (KeyValuePair<string, string> kvp in Config.Config.SLOTKEYS)
+            foreach (KeyValuePair<string, string> kvp in Config.SLOTKEYS)
             {
                 SlotText[kvp.Key].text = kvp.Value;
             }

@@ -14,31 +14,23 @@ namespace RepairModule
 
         private FMODAsset weldSoundAsset;
         private FMOD_CustomLoopingEmitter weldSound;
-
-        HandReticle main = HandReticle.main;
-
+        private HandReticle main = HandReticle.main;
         private const float powerConsumption = 5f;
         private float repairPerSec;
-        private bool toggle;
+        private bool isToggle;
         private bool isActive;
-                
-        private float idleTimer = 3f;
+        private bool isPlayerInThisVehicle;
 
-        private RepairMode currentMode = RepairMode.None;
+        private float idleTimer = 3f;        
 
-        private enum RepairMode
-        {
-            None,
-            Repair,
-            Disabled
-        };
-
-        internal void Awake()
+        public void Awake()
         {
             Instance = gameObject.GetComponent<RepairModuleControl>();
             thisVehicle = Instance.GetComponent<Vehicle>();            
             energyMixin = thisVehicle.GetComponent<EnergyMixin>();            
-            playerMain = Player.main;            
+            playerMain = Player.main;
+
+            isPlayerInThisVehicle = playerMain.GetVehicle() == thisVehicle ? true : false;
             weldSoundAsset = ScriptableObject.CreateInstance<FMODAsset>();
             weldSoundAsset.path = "event:/tools/welder/weld_loop";
             weldSound = gameObject.AddComponent<FMOD_CustomLoopingEmitter>();
@@ -46,15 +38,15 @@ namespace RepairModule
             repairPerSec = thisVehicle.liveMixin.maxHealth * 0.1f;            
         }
 
-        internal void Start()
+        public void Start()
         {            
             thisVehicle.onToggle += OnToggle;            
-            thisVehicle.modules.onAddItem += Modules_onAddItem;
-            thisVehicle.modules.onRemoveItem += Modules_onRemoveItem;
+            thisVehicle.modules.onAddItem += OnAddItem;
+            thisVehicle.modules.onRemoveItem += OnRemoveItem;
             playerMain.playerModeChanged.AddHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
         }
 
-        internal void Modules_onRemoveItem(InventoryItem item)
+        private void OnRemoveItem(InventoryItem item)
         {
             if (item.item.GetTechType() == RepairModule.TechTypeID)
             {
@@ -63,7 +55,7 @@ namespace RepairModule
             }
         }
 
-        internal void Modules_onAddItem(InventoryItem item)
+        private void OnAddItem(InventoryItem item)
         {            
             if (item.item.GetTechType() == RepairModule.TechTypeID)
             {
@@ -76,136 +68,128 @@ namespace RepairModule
             }
         }
 
-        internal void OnDestroy()
+        public void OnDestroy()
         {
             thisVehicle.onToggle -= OnToggle;
-            thisVehicle.modules.onAddItem -= Modules_onAddItem;
-            thisVehicle.modules.onRemoveItem -= Modules_onRemoveItem;
+            thisVehicle.modules.onAddItem -= OnAddItem;
+            thisVehicle.modules.onRemoveItem -= OnRemoveItem;
             playerMain.playerModeChanged.RemoveHandler(gameObject, OnPlayerModeChanged);
-            Destroy(Instance);
+            Modules.SetInteractColor(Modules.Colors.White);
+            Destroy(Instance);            
         }
-       
-        internal void OnPlayerModeChanged(Player.Mode playerMode)
+
+        private void OnPlayerModeChanged(Player.Mode playerMode)
         {
             if (playerMode == Player.Mode.LockedPiloting)
             {
                 if (playerMain.GetVehicle() == thisVehicle)
                 {
+                    isPlayerInThisVehicle = true;
                     OnEnable();
                     return;
                 }
                 else
                 {
+                    isPlayerInThisVehicle = false;
                     OnDisable();
                     return;
                 }
             }
             else
+            {
+                isPlayerInThisVehicle = false;
                 OnDisable();
+            }
         }
 
         private void OnToggle(int slotID, bool state)
         {
             if (thisVehicle.GetSlotBinding(slotID) == RepairModule.TechTypeID)
             {
-                toggle = state;
+                isToggle = state;
                 
                 if (state)
                 {
                     OnEnable();
                     return;
-                }                
-            }
-
-            OnDisable();
+                }
+                else
+                    OnDisable();
+            }            
         }
 
-        public void OnEnable()
+        private void OnEnable()
         {
-            isActive = playerMain.GetMode() == Player.Mode.LockedPiloting && toggle && moduleSlotID > -1;            
+            isActive = isPlayerInThisVehicle && playerMain.isPiloting && isToggle && moduleSlotID > -1;            
         }
 
-        public void OnDisable()
+        private void OnDisable()
         {           
             weldSound.Stop();
-            isActive = false;
-            toggle = false;
-            currentMode = RepairMode.Disabled;            
+            isActive = false;                                
             Modules.SetInteractColor(Modules.Colors.White);
             Modules.SetProgressColor(Modules.Colors.White);            
-        }
-          
+        }        
 
         public void Update()
         {
-            if (isActive)
+            if (!isActive)
+                return;
+
+            else if (thisVehicle.liveMixin.health < thisVehicle.liveMixin.maxHealth && energyMixin.charge > energyMixin.capacity * 0.1f)                
+            {                
+                weldSound.Play();                    
+                energyMixin.ConsumeEnergy(powerConsumption * Time.deltaTime);                    
+                main.SetIcon(HandReticle.IconType.Progress, 1.5f);
+                thisVehicle.liveMixin.health += Time.deltaTime * repairPerSec;                    
+                main.SetInteractText("Repairing...", false, HandReticle.Hand.None);
+
+                if (thisVehicle.liveMixin.health < thisVehicle.liveMixin.maxHealth * 0.5f)                    
+                {
+                    Modules.SetProgressColor(Modules.Colors.Red);
+                    Modules.SetInteractColor(Modules.Colors.Red);
+                }
+                else if (thisVehicle.liveMixin.health < thisVehicle.liveMixin.maxHealth * 0.75f && thisVehicle.liveMixin.health > thisVehicle.liveMixin.maxHealth * 0.5f)                    
+                {
+                    Modules.SetProgressColor(Modules.Colors.Yellow);
+                    Modules.SetInteractColor(Modules.Colors.Yellow);
+                }
+                else if (thisVehicle.liveMixin.health > thisVehicle.liveMixin.maxHealth * 0.75f)                    
+                {
+                    Modules.SetProgressColor(Modules.Colors.Green);
+                    Modules.SetInteractColor(Modules.Colors.Green);
+                }
+
+                main.SetProgress(thisVehicle.liveMixin.health / thisVehicle.liveMixin.maxHealth);                    
+
+                if (thisVehicle.liveMixin.health >= thisVehicle.liveMixin.maxHealth)                    
+                {
+                    thisVehicle.liveMixin.health = thisVehicle.liveMixin.maxHealth;                    
+                    thisVehicle.SlotKeyDown(moduleSlotID);
+                    return;
+                }                    
+            }
+            else if (energyMixin.charge <= energyMixin.capacity * 0.1f)
             {
-                if (thisVehicle.liveMixin.health < thisVehicle.liveMixin.maxHealth && energyMixin.charge > energyMixin.capacity * 0.1f)                
+                if (idleTimer > 0f)
                 {
-                    currentMode = RepairMode.Repair;
-                    weldSound.Play();
-                    
-                    energyMixin.ConsumeEnergy(powerConsumption * Time.deltaTime);                    
-                    
-                    main.SetIcon(HandReticle.IconType.Progress, 1.5f);
-                    thisVehicle.liveMixin.health += Time.deltaTime * repairPerSec;                    
-                    main.SetInteractText("Repairing...", false, HandReticle.Hand.None);
-
-                    if (thisVehicle.liveMixin.health < thisVehicle.liveMixin.maxHealth * 0.5f)                    
-                    {
-                        Modules.SetProgressColor(Modules.Colors.Red);
-                        Modules.SetInteractColor(Modules.Colors.Red);
-                    }
-                    else if (thisVehicle.liveMixin.health < thisVehicle.liveMixin.maxHealth * 0.75f && thisVehicle.liveMixin.health > thisVehicle.liveMixin.maxHealth * 0.5f)                    
-                    {
-                        Modules.SetProgressColor(Modules.Colors.Yellow);
-                        Modules.SetInteractColor(Modules.Colors.Yellow);
-                    }
-                    else if (thisVehicle.liveMixin.health > thisVehicle.liveMixin.maxHealth * 0.75f)                    
-                    {
-                        Modules.SetProgressColor(Modules.Colors.Green);
-                        Modules.SetInteractColor(Modules.Colors.Green);
-                    }
-
-                    main.SetProgress(thisVehicle.liveMixin.health / thisVehicle.liveMixin.maxHealth);                    
-
-                    if (thisVehicle.liveMixin.health >= thisVehicle.liveMixin.maxHealth)                    
-                    {
-                        thisVehicle.liveMixin.health = thisVehicle.liveMixin.maxHealth;                        
-                        currentMode = RepairMode.None;
-                        thisVehicle.SlotKeyDown(moduleSlotID);
-                        return;
-                    }                    
+                    weldSound.Stop();
+                    idleTimer = Mathf.Max(0f, idleTimer - Time.deltaTime);
+                    Modules.SetInteractColor(Modules.Colors.Red);
+                    main.SetInteractText("Warning!\nLow Power!", "Repair Module Disabled!", false, false, HandReticle.Hand.None);
                 }
-
-                else if (energyMixin.charge <= energyMixin.capacity * 0.1f)
-                {
-                    if (idleTimer > 0f)
-                    {
-                        weldSound.Stop();
-                        idleTimer = Mathf.Max(0f, idleTimer - Time.deltaTime);
-                        Modules.SetInteractColor(Modules.Colors.Red);
-                        main.SetInteractText("Warning!\nLow Power!", "Repair Module Disabled!", false, false, HandReticle.Hand.None);
-                    }
-                    else
-                    {                        
-                        idleTimer = 3f;
-                        thisVehicle.SlotKeyDown(moduleSlotID);
-                        return;
-                    }
-                }
-
-                if (currentMode == RepairMode.None || currentMode == RepairMode.Disabled && thisVehicle.liveMixin.health == thisVehicle.liveMixin.maxHealth)                
-                {
+                else
+                {                        
+                    idleTimer = 3f;
                     thisVehicle.SlotKeyDown(moduleSlotID);
                     return;
                 }
-            }
-            else if (currentMode == RepairMode.Repair)
+            }                
+            else if (thisVehicle.liveMixin.health == thisVehicle.liveMixin.maxHealth)                
             {
-               thisVehicle.SlotKeyDown(moduleSlotID);
-            }
-
+                thisVehicle.SlotKeyDown(moduleSlotID);
+                return;
+            }            
         } 
     }
 }

@@ -6,34 +6,36 @@ namespace ScannerModule
 {
     public class ScannerModuleSeamoth : MonoBehaviour
     {
-        // Some code extracted with dnSpy from Assembly-CSharp.dll:ScannerTool 
-       
-        private EnergyMixin energyMixin;        
-        public float powerConsumption = 0.5f;
-        public const float scanDistance = 50f;
-        
-        public FMOD_CustomLoopingEmitter scanSound;        
-        public FMODAsset completeSound;
-        public Texture scanCircuitTex;
-        public Color scanCircuitColor = Color.white;
-        public Texture scanOrganicTex;
-        public Color scanOrganicColor = Color.white;
-        
-        public VFXController fxControl;
+        public ScannerModuleSeamoth Instance { get; private set; }
+        public int moduleSlotID { get; set; }
+        private SeaMoth thisSeamoth { get; set; }
+        private Player playerMain { get; set; }
+        private EnergyMixin energyMixin { get; set; }
+        private Transform leftTorpedoSlot { get; set; }
+
+        private GameObject scanBeam;
+        private float powerConsumption = 0.5f;
+        private const float scanDistance = 50f;
+
+        private FMOD_CustomLoopingEmitter scanSound;
+        private FMODAsset completeSound;
+        private Texture scanCircuitTex;
+        private Color scanCircuitColor = Color.white;
+        private Texture scanOrganicTex;
+        private Color scanOrganicColor = Color.white;
+
+        private VFXController fxControl;
         private ScanState stateLast;
         private ScanState stateCurrent;
         private float idleTimer;
         private Material scanMaterialCircuitFX;
-        private Material scanMaterialOrganicFX;
-        
+        private Material scanMaterialOrganicFX;        
         private VFXOverlayMaterial scanFX;
-        public bool toggle;
-        public bool isScanning;
-        public bool isActive;
 
-        private SeaMoth seamoth;
-        public GameObject scanBeam;        
-        private Transform leftTorpedoSlot;
+        private bool isToggle;
+        private bool isScanning;
+        private bool isActive;
+        private bool isPlayerInThisSeamoth;
 
         public enum ScanState
         {
@@ -43,10 +45,13 @@ namespace ScannerModule
 
         public void Awake()
         {
-            seamoth = gameObject.GetComponent<SeaMoth>();
-            leftTorpedoSlot = seamoth.torpedoTubeLeft.transform;
-            energyMixin = seamoth.GetComponent<EnergyMixin>();
+            Instance = gameObject.GetComponent<ScannerModuleSeamoth>();
+            thisSeamoth = Instance.GetComponent<SeaMoth>();            
+            leftTorpedoSlot = thisSeamoth.torpedoTubeLeft.transform;
+            energyMixin = thisSeamoth.GetComponent<EnergyMixin>();
+            playerMain = Player.main;
 
+            isPlayerInThisSeamoth = playerMain.GetVehicle() == thisSeamoth ? true : false;
             var scannerPrefab = Resources.Load<GameObject>("WorldEntities/Tools/Scanner").GetComponent<ScannerTool>();
             //ScannerTool scannerPrefab = CraftData.InstantiateFromPrefab(TechType.Scanner, false).GetComponent<ScannerTool>();
             scanSound = Instantiate(scannerPrefab.scanSound, gameObject.transform);
@@ -88,30 +93,62 @@ namespace ScannerModule
                 scanMaterialOrganicFX.SetColor(ShaderPropertyID._Color, scanOrganicColor);
             }
 
-            seamoth.onToggle += OnToggle;
-            Player.main.playerModeChanged.AddHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
+            thisSeamoth.onToggle += OnToggle;
+            thisSeamoth.modules.onAddItem += OnAddItem;
+            thisSeamoth.modules.onRemoveItem += OnRemoveItem;
+            playerMain.playerModeChanged.AddHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
+        }
+
+        private void OnRemoveItem(InventoryItem item)
+        {
+            if (item.item.GetTechType() == ScannerModule.TechTypeID)
+            {                
+                moduleSlotID = -1;
+                Instance.enabled = false;                
+            }
+        }
+
+        private void OnAddItem(InventoryItem item)
+        {
+            if (item.item.GetTechType() == ScannerModule.TechTypeID)
+            {
+                moduleSlotID = thisSeamoth.GetSlotByItem(item);
+                Instance.enabled = true;
+            }
         }
 
         private void OnPlayerModeChanged(Player.Mode playerMode)
         {
             if (playerMode == Player.Mode.LockedPiloting)
-            {                
-                OnEnable();
+            {
+                if (playerMain.GetVehicle() == thisSeamoth)
+                {
+                    isPlayerInThisSeamoth = true;
+                    OnEnable();
+                    return;
+                }
+                else
+                {
+                    isPlayerInThisSeamoth = false;
+                    OnDisable();
+                    return;
+                }
             }
             else
-            {                
+            {
+                isPlayerInThisSeamoth = false;
                 OnDisable();
-            }
+            }                
         }
 
 
         private void OnToggle(int slotID, bool state)
         {
-            if (seamoth.GetSlotBinding(slotID) == ScannerModule.TechTypeID)
+            if (thisSeamoth.GetSlotBinding(slotID) == ScannerModule.TechTypeID)
             {
-                toggle = state;
+                isToggle = state;
 
-                if (toggle)
+                if (isToggle)
                 {
                     OnEnable();
                 }
@@ -124,7 +161,7 @@ namespace ScannerModule
 
         public void OnEnable()
         {
-            isActive = Player.main.inSeamoth && toggle;
+            isActive = isPlayerInThisSeamoth && playerMain.isPiloting && isToggle && moduleSlotID > -1;
         }
 
         public void OnDisable()
@@ -329,8 +366,10 @@ namespace ScannerModule
             if (scanFX != null)
                 StopScanFX();
 
-            Player.main.playerModeChanged.RemoveHandler(gameObject, OnPlayerModeChanged);
-            seamoth.onToggle -= OnToggle;
+            playerMain.playerModeChanged.RemoveHandler(gameObject, OnPlayerModeChanged);
+            thisSeamoth.onToggle -= OnToggle;
+            thisSeamoth.modules.onAddItem -= OnAddItem;
+            thisSeamoth.modules.onRemoveItem -= OnRemoveItem;
         } 
     }
 }

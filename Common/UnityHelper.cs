@@ -19,15 +19,19 @@ namespace Common
             }
         }
 
+        public static bool AddIfNotComponent<T>(this GameObject gameObject) where T : Component
+        {
+            if (gameObject.GetComponent<T>() == null)
+            {
+                gameObject.AddComponent<T>();
+                return true;
+            }
+            return false;           
+        }
+
         public static void EnableConsole()
         {
             DevConsole.disableConsole = false;
         }
-              
-
-
-
-
-
     }
 }

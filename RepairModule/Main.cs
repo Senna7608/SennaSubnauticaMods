@@ -1,5 +1,4 @@
-﻿//#define DEBUG_REPAIR_MODULE
-using System;
+﻿using System;
 using System.Reflection;
 using Harmony;
 using UnityEngine;
@@ -21,26 +20,36 @@ namespace RepairModule
             catch (Exception ex)
             {
                 Debug.LogException(ex);
-            }            
-
+            }
         }
     }
 
     [HarmonyPatch(typeof(Vehicle))]
-    [HarmonyPatch("OnUpgradeModuleChange")]
+    [HarmonyPatch("OnUpgradeModuleChange")] 
     [HarmonyPatch(new Type[] { typeof(int), typeof(TechType), typeof(bool) })]
     public class Vehicle_OnUpgradeModuleChange_Patch
     {
+        [HarmonyPostfix]
         static void Postfix(Vehicle __instance, int slotID, TechType techType, bool added)
         {
             if (techType == RepairModule.TechTypeID && added)
             {
                 var control = __instance.gameObject.AddOrGetComponent<RepairModuleControl>();
-                
-                if (__instance.GetType() == typeof(Exosuit))
+
+                if (__instance.GetType() == typeof(SeaMoth))
+                {
+                    control.moduleSlotID = slotID;
+                    return;
+                }
+                else if (__instance.GetType() == typeof(Exosuit))
+                {
                     control.moduleSlotID = slotID - 2;
+                    return;
+                }
                 else
-                    control.moduleSlotID = slotID;                
+                {
+                    Debug.Log("[RepairModule] Error! Unknown Vehicle Type!");
+                }
             }
         }
     }        

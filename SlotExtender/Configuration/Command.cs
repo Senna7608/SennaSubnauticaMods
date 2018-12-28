@@ -1,24 +1,24 @@
 ﻿using UnityEngine;
 
-namespace SlotExtender.Config
+namespace SlotExtender.Configuration
 {
     public class SEConfig : MonoBehaviour
     {
-        public static SEConfig Instance { get; private set; }
-
+        public SEConfig Instance { get; private set; }
+        
         public void Awake()
         {
             Instance = this;           
             DevConsole.RegisterConsoleCommand(this, "seconfig", false, false);
-            Debug.Log("[SlotExtender] Information: Enter 'seconfig' command for configuration window.");
+            Logger.Log("Information: Enter 'seconfig' command for configuration window.");
         }
         
         private void OnConsoleCommand_seconfig(NotificationCenter.Notification n)
         {
-            ConfigUI.InitWindow();
+            ConfigUI configUI = new ConfigUI();
         }
 
-        public static SEConfig Load()
+        public SEConfig ()
         {
             if (Instance == null)
             {
@@ -26,13 +26,11 @@ namespace SlotExtender.Config
 
                 if (Instance == null)
                 {
-                    GameObject sxconfig_command = new GameObject().AddComponent<SEConfig>().gameObject;
-                    sxconfig_command.name = "SEConfig";
-                    Instance = sxconfig_command.GetComponent<SEConfig>();
+                    GameObject seconfig_command = new GameObject().AddComponent<SEConfig>().gameObject;
+                    seconfig_command.name = "SEConfig";
+                    Instance = seconfig_command.GetComponent<SEConfig>();
                 }
-            }
-
-            return Instance;
+            }            
         }
     }
 }

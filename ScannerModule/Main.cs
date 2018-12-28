@@ -2,6 +2,7 @@
 using System.Reflection;
 using Harmony;
 using UnityEngine;
+using Common;
 
 namespace ScannerModule
 {
@@ -23,59 +24,32 @@ namespace ScannerModule
         }
     }
 
-    [HarmonyPatch(typeof(SeaMoth))]
+    [HarmonyPatch(typeof(Vehicle))]
     [HarmonyPatch("OnUpgradeModuleChange")]
-    public class SeaMoth_OnUpgradeModuleChange_Patch
+    [HarmonyPatch(new Type[] { typeof(int), typeof(TechType), typeof(bool) })]
+    public class Vehicle_OnUpgradeModuleChange_Patch
     {
-        static void Postfix(SeaMoth __instance, int slotID, TechType techType, bool added)
+        static void Postfix(Vehicle __instance, int slotID, TechType techType, bool added)
         {
-            if (techType == ScannerModule.TechTypeID)
+            if (techType == ScannerModule.TechTypeID && added)
             {
-                if (added)
+                if (__instance.GetType() == typeof(SeaMoth))
                 {
-                    if (__instance.GetComponent<ScannerModuleSeamoth>() == null)
-                    {
-                        __instance.gameObject.AddComponent<ScannerModuleSeamoth>();                                               
-                        Debug.Log($"[ScannerModule] Added component to instance: {__instance.name} ID: {__instance.GetInstanceID()}");
-                    }
-                    else
-                    {
-                        __instance.GetComponent<ScannerModuleSeamoth>().enabled = true;
-                    }
+                    var seamoth_control = __instance.gameObject.AddOrGetComponent<ScannerModuleSeamoth>();
+                    seamoth_control.moduleSlotID = slotID;
+                    return;
+                }
+                else if (__instance.GetType() == typeof(Exosuit))
+                {
+                    var exosuit_control = __instance.gameObject.AddOrGetComponent<ScannerModuleExosuit>();
+                    exosuit_control.moduleSlotID = slotID - 2;
+                    return;
                 }
                 else
                 {
-                    __instance.GetComponent<ScannerModuleSeamoth>().enabled = false;
+                    Debug.Log("[ScannerModule] Error! Unidentified Vehicle Type!");
                 }
             }
         }
-    }
-
-    [HarmonyPatch(typeof(Exosuit))]
-    [HarmonyPatch("OnUpgradeModuleChange")]
-    public class Exosuit_OnUpgradeModuleChange_Patch
-    {
-        static void Postfix(Exosuit __instance, int slotID, TechType techType, bool added)
-        {
-            if (techType == ScannerModule.TechTypeID)
-            {
-                if (added)
-                {
-                    if (__instance.GetComponent<ScannerModuleExosuit>() == null)
-                    {
-                        __instance.gameObject.AddComponent<ScannerModuleExosuit>();                        
-                        Debug.Log($"[ScannerModule] Added component to instance: {__instance.name} ID: {__instance.GetInstanceID()}");
-                    }
-                    else
-                    {
-                        __instance.GetComponent<ScannerModuleExosuit>().enabled = true;
-                    }
-                }
-                else
-                {
-                    __instance.GetComponent<ScannerModuleExosuit>().enabled = false;
-                }
-            }
-        }
-    }   
+    }    
 }

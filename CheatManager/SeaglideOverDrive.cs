@@ -37,7 +37,7 @@ namespace CheatManager
 
         public void SetSeaglideSpeed()
         {         
-            if (CheatManager.Instance.isSeaglideFast.value && Player.main.motorMode == Player.MotorMode.Seaglide && Player.main.IsUnderwater())
+            if (Main.Instance.isSeaglideFast.value && Player.main.motorMode == Player.MotorMode.Seaglide && Player.main.IsUnderwater())
             {
                 Player.main.playerController.underWaterController.acceleration = 60f;
                 Player.main.playerController.underWaterController.verticalMaxSpeed = 75f;

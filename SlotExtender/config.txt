@@ -1,8 +1,9 @@
 [SlotExtender]
-Version: 2.3.0.0
+Version: 2.4
 
 [Hotkeys]
-Show: R
+Upgrade: T
+Storage: R
 Slot_6: 6
 Slot_7: 7
 Slot_8: 8

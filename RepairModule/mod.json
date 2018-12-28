@@ -2,7 +2,7 @@
   "Id": "RepairModule",
   "DisplayName": "RepairModule",
   "Author": "Senna",
-  "Version": "2.1",
+  "Version": "2.2",
   "Enable": true,
   "AssemblyName": "RepairModule.dll",
   "EntryMethod": "RepairModule.Main.Load",

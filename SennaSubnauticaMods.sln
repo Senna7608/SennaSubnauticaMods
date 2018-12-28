@@ -21,8 +21,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crowbar", "Crowbar\Crowbar.
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		Common\Common.projitems*{1306dea8-6a8b-4e61-a63e-779b439b6590}*SharedItemsImports = 4
-		Common\Common.projitems*{1ed43566-559a-4962-804d-9b5a23163808}*SharedItemsImports = 4
 		Common\Common.projitems*{38021293-9c9f-474a-a3f0-c782fc93a15a}*SharedItemsImports = 4
 		Common\Common.projitems*{7723914c-1e34-4c61-9965-7f00fb55a12d}*SharedItemsImports = 4
 		Common\Common.projitems*{99ed7304-8603-4a34-9cba-a38557a64d0c}*SharedItemsImports = 4
