@@ -7,11 +7,14 @@ namespace LaserCannon
 {
     public class LaserCannon_Seamoth : MonoBehaviour
     {
-        public static LaserCannon_Seamoth Main { get; private set; }
+        public LaserCannon_Seamoth Instance { get; private set; }
+        public int moduleSlotID { get; set; }
 
-        
-        public SeaMoth seamoth;
-        private EnergyMixin energyMixin; 
+        private SeaMoth thisSeamoth { get; set; }
+        private EnergyMixin energyMixin { get; set; }
+        private Player playerMain { get; set; }
+        private PDA PdaMain { get; set; }
+
         private FMODAsset shootSound;
         private FMOD_CustomLoopingEmitter loopingEmitter;
         private GameObject laserBeam;
@@ -20,28 +23,36 @@ namespace LaserCannon
         private float powerConsumption = 1f;
         private float laserDamage = 1f;
         private const float maxLaserDistance = 70f;
-
-        private float idleTimer = 3f;
-        private bool toggle;
-        public int slotID;
-        private bool shoot = false;
-        private bool repeat;
-        private bool laserCannonEnabled;
+        private float idleTimer = 3f;        
+        
         private float targetDist;
-        private Vector3[] beamPositions = new Vector3[3];       
-        private GameObject targetGameobject;        
+        private Vector3[] beamPositions = new Vector3[3];
+        private GameObject targetGameobject;
         private Color beamcolor = Modules.Colors.Default;
-        private bool onlyHostile = false; 
+
+        private bool isToggle;
+        private bool isShoot;
+        private bool isRepeat;
+        private bool isActive;
+        private bool isPlayerInThisVehicle;
+        private bool isOnlyHostile;
+
+        private string lowPower_title;
+        private string lowPower_message;
 
         public void Awake()
         {
-            Main = this;
+            Instance = gameObject.GetComponent<LaserCannon_Seamoth>();
+            thisSeamoth = Instance.GetComponent<SeaMoth>();
+            energyMixin = thisSeamoth.GetComponent<EnergyMixin>();
+            playerMain = Player.main;
+            PdaMain = playerMain.GetPDA();
 
-            seamoth = gameObject.GetComponent<SeaMoth>();
-            energyMixin = seamoth.GetComponent<EnergyMixin>();
+            isPlayerInThisVehicle = playerMain.GetVehicle() == thisSeamoth ? true : false;
+
             var repulsionCannonPrefab = Resources.Load<GameObject>("WorldEntities/Tools/RepulsionCannon").GetComponent<RepulsionCannon>();
             //RepulsionCannon repulsionCannonPrefab = CraftData.InstantiateFromPrefab(TechType.RepulsionCannon, false).GetComponent<RepulsionCannon>();
-            shootSound = Instantiate(repulsionCannonPrefab.shootSound, seamoth.transform);
+            shootSound = Instantiate(repulsionCannonPrefab.shootSound, thisSeamoth.transform);
             //Destroy(repulsionCannonPrefab);
 
             loopingEmitter = gameObject.AddComponent<FMOD_CustomLoopingEmitter>();
@@ -49,7 +60,7 @@ namespace LaserCannon
 
             var powerRelayPrefab = Resources.Load<GameObject>("Submarine/Build/PowerTransmitter").GetComponent<PowerFX>();
             //PowerFX powerRelayPrefab = CraftData.InstantiateFromPrefab(TechType.PowerTransmitter, false).GetComponent<PowerFX>();
-            laserBeam = Instantiate(powerRelayPrefab.vfxPrefab, seamoth.transform);
+            laserBeam = Instantiate(powerRelayPrefab.vfxPrefab, thisSeamoth.transform);
             laserBeam.SetActive(false);
             //Destroy(powerRelayPrefab);
 
@@ -60,19 +71,47 @@ namespace LaserCannon
             lineRenderer.loop = false;
             
             SetBeamColor();
+            ShootOnlyHostile();
+            SetLaserStrength();
+            SetWarningMessage();            
         }
 
-        private void Start()
-        { 
-            seamoth.onToggle += OnToggle;
-            Player.main.playerModeChanged.AddHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));            
+        public void Start()
+        {
+            thisSeamoth.onToggle += OnToggle;
+            thisSeamoth.modules.onAddItem += OnAddItem;
+            thisSeamoth.modules.onRemoveItem += OnRemoveItem;
+            playerMain.playerModeChanged.AddHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));            
+        }
+
+        private void OnRemoveItem(InventoryItem item)
+        {
+            if (item.item.GetTechType() == LaserCannon.TechTypeID)
+            {
+                moduleSlotID = -1;
+                OnDisable();
+                Instance.enabled = false;
+            }
+        }
+
+        private void OnAddItem(InventoryItem item)
+        {
+            if (item.item.GetTechType() == LaserCannon.TechTypeID)
+            {               
+                moduleSlotID = thisSeamoth.GetSlotByItem(item);
+                OnEnable();
+                Instance.enabled = true;
+            }
         }
 
         public void OnDestroy()
         {
-            seamoth.onToggle -= OnToggle;
-            Player.main.playerModeChanged.RemoveHandler(gameObject, OnPlayerModeChanged);
-            Destroy(this);
+            thisSeamoth.onToggle -= OnToggle;
+            thisSeamoth.modules.onAddItem -= OnAddItem;
+            thisSeamoth.modules.onRemoveItem -= OnRemoveItem;
+            playerMain.playerModeChanged.RemoveHandler(gameObject, OnPlayerModeChanged);
+            Modules.SetInteractColor(Modules.Colors.White);
+            Destroy(Instance);
         }
 
         public void SetBeamColor()
@@ -82,7 +121,7 @@ namespace LaserCannon
 
         public void ShootOnlyHostile()
         {
-            onlyHostile = bool.Parse(Config.program_settings["OnlyHostile"].ToString());
+            isOnlyHostile = bool.Parse(Config.program_settings["OnlyHostile"].ToString());
         }
 
         public void SetLaserStrength()
@@ -91,23 +130,41 @@ namespace LaserCannon
             powerConsumption = 1 + laserDamage * 1f;            
         }
 
+        public void SetWarningMessage()
+        {
+            lowPower_title = Config.language_settings[Config.SECTION_LANGUAGE[17]];
+            lowPower_message = Config.language_settings[Config.SECTION_LANGUAGE[18]];
+        }
+
         private void OnPlayerModeChanged(Player.Mode playerMode)
         {
             if (playerMode == Player.Mode.LockedPiloting)
-            {                
-                OnEnable();
+            {
+                if (playerMain.GetVehicle() == thisSeamoth)
+                {
+                    isPlayerInThisVehicle = true;
+                    OnEnable();
+                    return;
+                }
+                else
+                {
+                    isPlayerInThisVehicle = false;
+                    OnDisable();
+                    return;
+                }
             }
             else
             {
+                isPlayerInThisVehicle = false;
                 OnDisable();
             }
         }
 
         private void OnToggle(int slotID, bool state)
         {
-            if (seamoth.GetSlotBinding(slotID) == LaserCannon.TechTypeID)
+            if (thisSeamoth.GetSlotBinding(slotID) == LaserCannon.TechTypeID)
             {
-                toggle = state;
+                isToggle = state;
 
                 if (state)
                 {                    
@@ -122,16 +179,16 @@ namespace LaserCannon
 
         public void OnEnable()
         {            
-            laserCannonEnabled = Player.main.inSeamoth && toggle;
+            isActive = isPlayerInThisVehicle && playerMain.isPiloting && isToggle && moduleSlotID > -1;
         }
 
         public void OnDisable()
-        {            
+        {
             laserBeam.SetActive(false);
             loopingEmitter.Stop();
-            laserCannonEnabled = false;
-            shoot = false;
-            repeat = false;
+            isActive = false;
+            isShoot = false;
+            isRepeat = false;
             Modules.SetInteractColor(Modules.Colors.White);
         }
 
@@ -152,8 +209,7 @@ namespace LaserCannon
                     {                        
                         liveMixin.TakeDamage(laserDamage, position, DamageType.Explosive, null);
                         WorldForces.AddExplosion(position, DayNightCycle.main.timePassed, 5f, 4f);
-                    }                    
-                        
+                    }                        
                 }
                 else
                 {
@@ -168,7 +224,7 @@ namespace LaserCannon
 
         private Vector3 CalculateLaserBeam()
         {
-            Targeting.GetTarget(seamoth.gameObject, maxLaserDistance, out targetGameobject, out targetDist);
+            Targeting.GetTarget(thisSeamoth.gameObject, maxLaserDistance, out targetGameobject, out targetDist);
             
             if (targetDist == 0f)
             {
@@ -176,7 +232,7 @@ namespace LaserCannon
             }
             else
             {
-                if (onlyHostile)
+                if (isOnlyHostile)
                 {
                     Targeting.GetRoot(targetGameobject, out TechType targetTechType, out GameObject examinedGameObject);
 
@@ -190,57 +246,61 @@ namespace LaserCannon
                 return MainCamera.camera.transform.position + targetDist * MainCamera.camera.transform.forward;                
             }
         }
-       
+                
         public void Update()
         {
-            if (laserCannonEnabled)
-            { 
+            if (isActive)
+            {
+                if (isActive && IngameMenu.main.isActiveAndEnabled || isActive && PdaMain.state == PDA.State.Opening)
+                {
+                    thisSeamoth.SlotKeyDown(moduleSlotID);                    
+                }
                 if (energyMixin.charge < energyMixin.capacity * 0.1f)
                 {
                     if (idleTimer > 0f)
                     {
-                        toggle = false;
-                        shoot = false;
-                        repeat = false;
+                        isToggle = false;
+                        isShoot = false;
+                        isRepeat = false;
                         idleTimer = Mathf.Max(0f, idleTimer - Time.deltaTime);
-                        HandReticle.main.SetInteractText("Warning!\nLow Power!", "Laser Cannon Disabled!", false, false, HandReticle.Hand.None);
                         Modules.SetInteractColor(Modules.Colors.Red);
+                        HandReticle.main.SetInteractText(lowPower_title, lowPower_message, false, false, HandReticle.Hand.None);                        
                     }
                     else
                     {
                         idleTimer = 3;
-                        seamoth.SlotKeyDown(slotID);
+                        thisSeamoth.SlotKeyDown(moduleSlotID);
                     }
                 }
 
-                if (toggle)
+                if (isToggle)
                 {
                     if (GameInput.GetButtonDown(GameInput.Button.LeftHand))
                     {
-                        shoot = true;
+                        isShoot = true;
                     }
                     if (GameInput.GetButtonUp(GameInput.Button.LeftHand))
                     {
-                        shoot = false;
+                        isShoot = false;
                         laserBeam.SetActive(false);
                     }
-                    if (shoot)
+                    if (isShoot)
                     {
                         RepeatCycle(Time.time, 0.4f);
                     }
                 }
-            }                   
+            }
         }
-        
+
         public void LateUpdate()
         {
-            if (laserCannonEnabled)
+            if (isActive)
             {
-                if (shoot && repeat)
+                if (isShoot && isRepeat)
                 {                    
-                    beamPositions[0] = seamoth.torpedoTubeLeft.transform.position;
+                    beamPositions[0] = thisSeamoth.torpedoTubeLeft.transform.position;
                     beamPositions[1] = CalculateLaserBeam();
-                    beamPositions[2] = seamoth.torpedoTubeRight.transform.position;                    
+                    beamPositions[2] = thisSeamoth.torpedoTubeRight.transform.position;                    
                     lineRenderer.positionCount = beamPositions.Length;                    
                     lineRenderer.SetPositions(beamPositions);
                     lineRenderer.material.color = Color.Lerp(beamcolor, Color.clear, 0.1f);
@@ -261,9 +321,9 @@ namespace LaserCannon
             float x = Mathf.Repeat(value, length);
            
             if (x < 0.3f && x > 0f)
-                repeat = true;
+                isRepeat = true;
             else
-                repeat = false;
+                isRepeat = false;
         }
 
 
@@ -297,17 +357,6 @@ namespace LaserCannon
             TechType.ShaleChunk,
             TechType.SpikePlant
         };
-
-
-
-
-
-
-
-
-
-
-
     }
 }
 

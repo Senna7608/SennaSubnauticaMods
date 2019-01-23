@@ -7,10 +7,11 @@ namespace RepairModule
     public class RepairModuleControl : MonoBehaviour
     {
         public RepairModuleControl Instance { get; private set; }
+
         public int moduleSlotID { get; set; }
         private Vehicle thisVehicle { get; set; }
         private EnergyMixin energyMixin { get; set; }
-        private Player playerMain { get; set; }
+        private Player playerMain { get; set; }        
 
         private FMODAsset weldSoundAsset;
         private FMOD_CustomLoopingEmitter weldSound;
@@ -24,13 +25,14 @@ namespace RepairModule
         private float idleTimer = 3f;        
 
         public void Awake()
-        {
+        {            
             Instance = gameObject.GetComponent<RepairModuleControl>();
             thisVehicle = Instance.GetComponent<Vehicle>();            
             energyMixin = thisVehicle.GetComponent<EnergyMixin>();            
-            playerMain = Player.main;
+            playerMain = Player.main;            
 
             isPlayerInThisVehicle = playerMain.GetVehicle() == thisVehicle ? true : false;
+
             weldSoundAsset = ScriptableObject.CreateInstance<FMODAsset>();
             weldSoundAsset.path = "event:/tools/welder/weld_loop";
             weldSound = gameObject.AddComponent<FMOD_CustomLoopingEmitter>();

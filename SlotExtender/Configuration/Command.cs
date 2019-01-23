@@ -4,13 +4,15 @@ namespace SlotExtender.Configuration
 {
     public class SEConfig : MonoBehaviour
     {
+        private const string Message = "Information: Enter 'seconfig' command for configuration window.";
+
         public SEConfig Instance { get; private set; }
         
         public void Awake()
         {
             Instance = this;           
             DevConsole.RegisterConsoleCommand(this, "seconfig", false, false);
-            Logger.Log("Information: Enter 'seconfig' command for configuration window.");
+            Logger.Log(Message);
         }
         
         private void OnConsoleCommand_seconfig(NotificationCenter.Notification n)

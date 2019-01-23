@@ -6,5 +6,9 @@ ToggleWindow: F5
 ToggleMouse: F4
 ToggleConsole: Delete
 
+[Program]
+EnableConsole: True
+EnableInfoBar: False
+
 [Settings]
-OverPowerMultiplier: 2
+OverPowerMultiplier: 10

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using SMLHelper.V2.Crafting;
 using SMLHelper.V2.Handlers;
+using Common;
 
 namespace LaserCannon
 {
@@ -18,7 +19,9 @@ namespace LaserCannon
                   fabricatorTab: "SeamothModules",
                   requiredAnalysis: TechType.BaseUpgradeConsole,
                   groupForPDA: TechGroup.VehicleUpgrades,
-                  categoryForPDA: TechCategory.VehicleUpgrades)
+                  categoryForPDA: TechCategory.VehicleUpgrades,
+                  gamerResourceFileName: null
+                  )
         {
         }
                

@@ -1,6 +1,7 @@
 ﻿using SMLHelper.V2.Assets;
 using SMLHelper.V2.MonoBehaviours;
 using UnityEngine;
+using Common.DebugHelper;
 
 namespace AncientSword
 {
@@ -15,6 +16,9 @@ namespace AncientSword
         
         public override GameObject GetGameObject()
         {
+            //GameObject prefab = CraftData.GetPrefabForTechType(TechType.Knife);
+            //GameObject gameObject = Object.Instantiate(prefab);
+            
             GameObject gameObject = Main.assetBundle.LoadAsset<GameObject>("AncientSword");                      
 
             foreach (Renderer renderer in gameObject.GetComponentsInChildren<Renderer>())
@@ -49,15 +53,16 @@ namespace AncientSword
             vfxFabricating.posOffset = new Vector3(0f, 0, 0f);
             vfxFabricating.eulerOffset = new Vector3(0f, 90f, -90f);
             vfxFabricating.scaleFactor = 0.5f;
-
+            
             AncientSword component = gameObject.AddComponent<AncientSword>();
-
+            
             var knifePrefab = Resources.Load<GameObject>("WorldEntities/Tools/Knife").GetComponent<Knife>();
 
             component.attackSound = Object.Instantiate(knifePrefab.attackSound, gameObject.transform);
             component.underwaterMissSound = Object.Instantiate(knifePrefab.underwaterMissSound, gameObject.transform);
             component.surfaceMissSound = Object.Instantiate(knifePrefab.surfaceMissSound, gameObject.transform);
-
+            
+            //DebugHelper.DebugGameObject(gameObject);
             return gameObject;
         }        
     }

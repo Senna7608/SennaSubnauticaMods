@@ -28,9 +28,9 @@ namespace LaserCannon
             Config.program_settings["OnlyHostile"] = args.Value.ToString();
             Config.WriteConfig();
 
-            if (LaserCannon_Seamoth.Main != null)
+            if (Main.Instance != null)
             {
-                LaserCannon_Seamoth.Main.SendMessage("ShootOnlyHostile", SendMessageOptions.DontRequireReceiver);
+                Main.Instance.SendMessage("ShootOnlyHostile", SendMessageOptions.DontRequireReceiver);
             }
         }
 
@@ -44,9 +44,9 @@ namespace LaserCannon
 
             Config.WriteConfig();
 
-            if (LaserCannon_Seamoth.Main != null)
+            if (Main.Instance != null)
             {
-                LaserCannon_Seamoth.Main.SendMessage("SetBeamColor", SendMessageOptions.DontRequireReceiver);
+                Main.Instance.SendMessage("SetBeamColor", SendMessageOptions.DontRequireReceiver);
             }
         }
 
@@ -58,9 +58,9 @@ namespace LaserCannon
             Config.program_settings["Damage"] = args.Value.ToString();
             Config.WriteConfig();
 
-            if (LaserCannon_Seamoth.Main != null)
+            if (Main.Instance != null)
             {
-                LaserCannon_Seamoth.Main.SendMessage("SetLaserStrength", SendMessageOptions.DontRequireReceiver);
+                Main.Instance.SendMessage("SetLaserStrength", SendMessageOptions.DontRequireReceiver);
             }
         }
     }

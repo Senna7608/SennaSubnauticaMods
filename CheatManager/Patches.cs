@@ -12,7 +12,7 @@ namespace CheatManager
             [HarmonyPostfix]
             internal static void Postfix(SeaMoth __instance)
             {
-                __instance.gameObject.AddOrGetComponent<VehicleOverDrive>();
+                __instance.gameObject.AddIfNeedComponent<VehicleOverDrive>();
             }
         }
 
@@ -23,7 +23,7 @@ namespace CheatManager
             [HarmonyPostfix]
             internal static void Postfix(Exosuit __instance)
             {
-                __instance.gameObject.AddOrGetComponent<VehicleOverDrive>();
+                __instance.gameObject.AddIfNeedComponent<VehicleOverDrive>();
             }
         }
 
@@ -35,7 +35,7 @@ namespace CheatManager
             [HarmonyPostfix]
             internal static void Postfix(CyclopsMotorMode __instance)
             {
-                __instance.gameObject.AddOrGetComponent<CyclopsOverDrive>();
+                __instance.gameObject.AddIfNeedComponent<CyclopsOverDrive>();
             }
         }
 
@@ -43,9 +43,10 @@ namespace CheatManager
         [HarmonyPatch("Awake")]
         internal class Seaglide_Awake_Patch
         {
+            [HarmonyPostfix]
             internal static void Postfix(Seaglide __instance)
             {
-                __instance.gameObject.AddOrGetComponent<SeaglideOverDrive>();
+                __instance.gameObject.AddIfNeedComponent<SeaglideOverDrive>();
             }
         }
     }

@@ -7,29 +7,24 @@ namespace SlotExtender
 {
     internal class Initialize_uGUI : MonoBehaviour
     {
-        internal static Initialize_uGUI Instance { get; private set; }        
+        internal static Initialize_uGUI Instance { get; private set; }
 
-        internal Dictionary<string, Text> SlotText = new Dictionary<string, Text>();
+        private Dictionary<string, Text> SlotText = new Dictionary<string, Text>();
 
         private bool isPatched = false;
-
-        internal uGUI_EquipmentSlot temp_slot;
-
+        private uGUI_EquipmentSlot temp_slot;
         private const float Unit = 200f;
         private const float RowStep = Unit * 2.2f / 3;
-
         private const float TopRow = Unit;
         private const float SecondRow = TopRow - RowStep;
         private const float ThirdRow = SecondRow - RowStep;
         private const float FourthRow = ThirdRow - RowStep;
         private const float FifthRow = FourthRow - RowStep;
-
         private const float CenterColumn = 0f;
         private const float RightColumn = RowStep;
         private const float LeftColumn = -RowStep;
-        
 
-        internal static readonly Vector2[] slotPos = new Vector2[12]
+        private readonly Vector2[] slotPos = new Vector2[12]
         {
             new Vector2(LeftColumn, TopRow), //slot 1
             new Vector2(CenterColumn, TopRow),  //slot 2
@@ -47,8 +42,8 @@ namespace SlotExtender
             new Vector2(CenterColumn, FourthRow),  //slot 11
             new Vector2(RightColumn, FourthRow)  //slot 12
         };
-       
-        internal void Awake()
+
+        public void Awake()
         {
             Instance = gameObject.GetComponent<Initialize_uGUI>();            
         }
@@ -99,17 +94,15 @@ namespace SlotExtender
                     {
                         int.TryParse(item.Key.Substring(13), out int slotNum);
                         item.Value.rectTransform.anchoredPosition = slotPos[slotNum - 1];                        
-                        Text text = AddSlotNumber(item.Value.transform, Config.SLOTKEYS[$"Slot{slotNum}"], slotNum);
+                        Text text = AddTextToSlotIcon(item.Value.transform, Config.SLOTKEYS[$"Slot{slotNum}"], slotNum);
                         SlotText.Add(text.gameObject.name, text);
-                        //AddSlotNumbers(item.Value.transform, slotNum.ToString());
                     }
                     
                     if (item.Value.name.StartsWith("ExosuitModule"))
                     {
                         int.TryParse(item.Key.Substring(13), out int slotNum);
                         item.Value.rectTransform.anchoredPosition = slotPos[slotNum - 1];
-                        AddSlotNumber(item.Value.transform, Config.SLOTKEYS[$"Slot{slotNum}"], slotNum);
-                        //AddSlotNumbers(item.Value.transform, slotNum.ToString());
+                        AddTextToSlotIcon(item.Value.transform, Config.SLOTKEYS[$"Slot{slotNum}"], slotNum);                     
                     }
 
                     if (item.Value.name == "ExosuitArmLeft")
@@ -128,6 +121,7 @@ namespace SlotExtender
             }
         }
 
+        
         internal void RefreshText()
         {
             foreach (KeyValuePair<string, string> kvp in Config.SLOTKEYS)
@@ -139,9 +133,9 @@ namespace SlotExtender
         //based on RandyKnapp's MoreQuickSlots Subnautica mod: "CreateNewText()" method
         //found on GitHub:https://github.com/RandyKnapp/SubnauticaModSystem
 
-        internal Text AddSlotNumber(Transform parent, string slotKey, int slotNum)
+        private Text AddTextToSlotIcon(Transform parent, string slotKey, int slotNum)
         {
-            Text text = Instantiate(HandReticle.main.interactPrimaryText);
+            Text text = Instantiate(HandReticle.main.interactPrimaryText);            
             text.gameObject.layer = parent.gameObject.layer;
             text.gameObject.name = $"Slot{slotNum}";
             text.transform.SetParent(parent, false);
@@ -153,7 +147,7 @@ namespace SlotExtender
             text.color = Color.green;
             RectTransformExtensions.SetParams(text.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), parent);
             text.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 100);
-            text.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 100);
+            text.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 100);            
             text.rectTransform.anchoredPosition = new Vector2(0, 70);
             text.alignment = TextAnchor.MiddleCenter;
             text.raycastTarget = false;

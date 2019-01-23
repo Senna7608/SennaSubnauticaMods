@@ -1,18 +1,26 @@
 ﻿namespace Common
 {
     using System;
+    using System.Collections.Generic;
     using System.Reflection;
+    using UnityEngine;
 
     public static class RefHelp
     {
         public static object GetPrivateField<T>(this T instance, string fieldName, BindingFlags bindingFlags = BindingFlags.Default)
-            => typeof(T).GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance | bindingFlags).GetValue(instance);
+        {
+            return typeof(T).GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic | bindingFlags).GetValue(instance);
+        }
 
         public static void SetPrivateField<T>(this T instance, string fieldName, object value, BindingFlags bindingFlags = BindingFlags.Default)
-            => typeof(T).GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance | bindingFlags).SetValue(instance, value);
+        {
+            typeof(T).GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic | bindingFlags).SetValue(instance, value);
+        }
 
         public static void InvokePrivateMethod<T>(this T instance, string methodName, BindingFlags bindingFlags = BindingFlags.Default, params object[] parms)
-            => typeof(T).GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance | bindingFlags).Invoke(instance, parms);
+        {
+            typeof(T).GetMethod(methodName, BindingFlags.Instance | BindingFlags.NonPublic | bindingFlags).Invoke(instance, parms);
+        }
 
         public static void CloneFieldsInto<T>(this T original, T copy)
         {
@@ -37,12 +45,18 @@
 
         public static bool IsNamespaceExists(string desiredNamespace)
         {
-            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+            for (int i = 0; i < assemblies.Length; i++)
             {
-                foreach (Type type in assembly.GetTypes())
+                Type[] types = assemblies[i].GetTypes();
+
+                for (int j = 0; j < types.Length; j++)
                 {
-                    if (type.Namespace == desiredNamespace)
+                    if (types[j].Namespace == desiredNamespace)
+                    {
                         return true;
+                    }
                 }
             }
             return false;

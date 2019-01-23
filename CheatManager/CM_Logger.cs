@@ -4,14 +4,14 @@
 
 using System.Collections.Generic;
 using UnityEngine;
-using Common;
+using Common.GUIHelper;
 using CheatManager.Configuration;
 
 namespace CheatManager
 {
-    public class Logger : MonoBehaviour
+    public class CM_Logger : MonoBehaviour
     {
-        public Logger Instance { get; private set; }
+        public CM_Logger Instance { get; private set; }
         private Rect windowRect;       
         
         private Vector2 scrollPos = Vector2.zero;
@@ -49,31 +49,30 @@ namespace CheatManager
 
         };        
          
-        public Logger()
+        public CM_Logger()
         {
             if (Instance == null)
             {
-                Instance = FindObjectOfType(typeof(Logger)) as Logger;
+                Instance = FindObjectOfType(typeof(CM_Logger)) as CM_Logger;
 
                 if (Instance == null)
                 {
-                    GameObject logger = new GameObject().AddComponent<Logger>().gameObject;
-                    logger.name = "CheatManager.Logger";
-                    Instance = logger.GetComponent<Logger>();                    
+                    GameObject cm_logger = new GameObject().AddComponent<CM_Logger>().gameObject;
+                    cm_logger.name = "CM_Logger";
+                    Instance = cm_logger.GetComponent<CM_Logger>();                    
                 }
             }            
         }
         
         public void Awake()
         {
+#if DEBUG
+            show = true;
+#endif          
             Instance = this;            
             DontDestroyOnLoad(this);            
             useGUILayout = false;
-            Application.logMessageReceived += HandleLog;
-            //InfoBar.InitInfoBar(show);
-#if DEBUG
-            show = true;
-#endif
+            Application.logMessageReceived += HandleLog;            
         }        
 
         public void OnDestroy()
@@ -90,7 +89,7 @@ namespace CheatManager
                 return;
             }
 
-            windowRect = GUIHelper.CreatePopupWindow(new Rect(Screen.width - (Screen.width / 4.8f), Screen.height - (Screen.height / 4), Screen.width / 4.8f, Screen.height / 4), $"CheatManager Console (Press {Config.KEYBINDINGS["ToggleConsole"]} to toggle)", true, true);
+            windowRect = SNWindow.CreateWindow(new Rect(Screen.width - (Screen.width / 4.8f), Screen.height - (Screen.height / 4), Screen.width / 4.8f, Screen.height / 4), $"CheatManager Console (Press {Config.KEYBINDINGS["ToggleConsole"]} to toggle)", true, true);
 
             Rect scrollRect = new Rect(windowRect.x, windowRect.y + 5, windowRect.width - 5, windowRect.height - 37);
 
@@ -180,8 +179,7 @@ namespace CheatManager
         {
             if (Input.GetKeyDown(Config.KEYBINDINGS["ToggleConsole"]))
             {
-                show = !show;
-                InfoBar.isShow = show;
+                show = !show;                
             }
         }        
 

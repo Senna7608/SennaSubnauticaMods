@@ -12,14 +12,9 @@ namespace AncientSword
             }
         }
         
-        [AssertNotNull]
-        public FMODAsset attackSound;
-
-        [AssertNotNull]
-        public FMODAsset underwaterMissSound;
-
-        [AssertNotNull]
-        public FMODAsset surfaceMissSound;
+       public FMODAsset attackSound;        
+       public FMODAsset underwaterMissSound;
+       public FMODAsset surfaceMissSound;
         
         public DamageType damageType = DamageType.Normal;
 

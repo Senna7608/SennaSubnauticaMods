@@ -23,7 +23,7 @@ namespace RepairModule
             }
         }
     }
-
+    
     [HarmonyPatch(typeof(Vehicle))]
     [HarmonyPatch("OnUpgradeModuleChange")] 
     [HarmonyPatch(new Type[] { typeof(int), typeof(TechType), typeof(bool) })]
@@ -52,5 +52,5 @@ namespace RepairModule
                 }
             }
         }
-    }        
+    }       
 }

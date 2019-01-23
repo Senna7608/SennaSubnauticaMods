@@ -1,11 +1,11 @@
 [LaserCannon]
-Version: 1.2.2.0
+Version: 1.3
 
 [Program]
 OnlyHostile: False
-BeamColor: Red
-Damage: 1
-Language: Hungarian
+BeamColor: Default
+Damage: 25
+Language: English
 
 [English]
 Item_Name: Laser Cannon
@@ -25,11 +25,13 @@ Option_Color_Orange: Orange
 Option_Color_Lime: Lime green
 Option_Color_Amethyst: Purple
 Option_Color_Default: Default
+LowPower_Title: Warning! Low Power!
+LowPower_Message: Laser Cannon Disabled!
 
 [German]
 Item_Name: Laserkanone
 Item_Description: Wiedergewonnene Laserstrahltechnologie von einem alten Precursor Waffenfragment.
-Option_Title: Laser Cannon Modul Optionen
+Option_Title: Laserkanone Modul Optionen
 Option_OnlyHostile: Nur feindliches Ziel beschädigen
 Option_BeamColor: Laserstrahl Farbe
 Option_Damage: Laserstrahl schaden
@@ -44,6 +46,8 @@ Option_Color_Orange: Orange
 Option_Color_Lime: Lindgrün
 Option_Color_Amethyst: Lila
 Option_Color_Default: Standard
+LowPower_Title: Warnung! Geringer Strom!
+LowPower_Message: Laserkanone Deaktiviert!
 
 [Hungarian]
 Item_Name: Lézerágyú
@@ -63,6 +67,8 @@ Option_Color_Orange: Narancssárga
 Option_Color_Lime: Limezöld
 Option_Color_Amethyst: Lila
 Option_Color_Default: Alapbeállítás
+LowPower_Title: Vigyázat! Kevés az Energia!
+LowPower_Message: Lézerágyú letiltva!
 
 [Bulgarian]
 Item_Name: 
@@ -82,6 +88,8 @@ Option_Color_Orange:
 Option_Color_Lime: 
 Option_Color_Amethyst: 
 Option_Color_Default: 
+LowPower_Title: 
+LowPower_Message: 
 
 [Chinese (Simplified)]
 Item_Name: 
@@ -101,6 +109,8 @@ Option_Color_Orange:
 Option_Color_Lime: 
 Option_Color_Amethyst: 
 Option_Color_Default: 
+LowPower_Title: 
+LowPower_Message: 
 
 [Croatian]
 Item_Name: 
@@ -120,6 +130,8 @@ Option_Color_Orange:
 Option_Color_Lime: 
 Option_Color_Amethyst: 
 Option_Color_Default: 
+LowPower_Title: 
+LowPower_Message: 
 
 [Czech]
 Item_Name: 
@@ -139,6 +151,8 @@ Option_Color_Orange:
 Option_Color_Lime: 
 Option_Color_Amethyst: 
 Option_Color_Default: 
+LowPower_Title: 
+LowPower_Message: 
 
 [Danish]
 Item_Name: 
@@ -158,6 +172,8 @@ Option_Color_Orange:
 Option_Color_Lime: 
 Option_Color_Amethyst: 
 Option_Color_Default: 
+LowPower_Title: 
+LowPower_Message: 
 
 [Dutch]
 Item_Name: 
@@ -177,6 +193,8 @@ Option_Color_Orange:
 Option_Color_Lime: 
 Option_Color_Amethyst: 
 Option_Color_Default: 
+LowPower_Title: 
+LowPower_Message: 
 
 [Finnish]
 Item_Name: 
@@ -196,6 +214,8 @@ Option_Color_Orange:
 Option_Color_Lime: 
 Option_Color_Amethyst: 
 Option_Color_Default: 
+LowPower_Title: 
+LowPower_Message: 
 
 [French]
 Item_Name: 
@@ -215,6 +235,8 @@ Option_Color_Orange:
 Option_Color_Lime: 
 Option_Color_Amethyst: 
 Option_Color_Default: 
+LowPower_Title: 
+LowPower_Message: 
 
 [Greek]
 Item_Name: 
@@ -234,6 +256,8 @@ Option_Color_Orange:
 Option_Color_Lime: 
 Option_Color_Amethyst: 
 Option_Color_Default: 
+LowPower_Title: 
+LowPower_Message: 
 
 [Hebrew]
 Item_Name: 
@@ -253,6 +277,8 @@ Option_Color_Orange:
 Option_Color_Lime: 
 Option_Color_Amethyst: 
 Option_Color_Default: 
+LowPower_Title: 
+LowPower_Message: 
 
 [Irish]
 Item_Name: 
@@ -272,6 +298,8 @@ Option_Color_Orange:
 Option_Color_Lime: 
 Option_Color_Amethyst: 
 Option_Color_Default: 
+LowPower_Title: 
+LowPower_Message: 
 
 [Italian]
 Item_Name: 
@@ -291,6 +319,8 @@ Option_Color_Orange:
 Option_Color_Lime: 
 Option_Color_Amethyst: 
 Option_Color_Default: 
+LowPower_Title: 
+LowPower_Message: 
 
 [Japanese]
 Item_Name: 
@@ -310,6 +340,8 @@ Option_Color_Orange:
 Option_Color_Lime: 
 Option_Color_Amethyst: 
 Option_Color_Default: 
+LowPower_Title: 
+LowPower_Message: 
 
 [Korean]
 Item_Name: 
@@ -329,6 +361,8 @@ Option_Color_Orange:
 Option_Color_Lime: 
 Option_Color_Amethyst: 
 Option_Color_Default: 
+LowPower_Title: 
+LowPower_Message: 
 
 [Latvian]
 Item_Name: 
@@ -348,6 +382,8 @@ Option_Color_Orange:
 Option_Color_Lime: 
 Option_Color_Amethyst: 
 Option_Color_Default: 
+LowPower_Title: 
+LowPower_Message: 
 
 [Lithuanian]
 Item_Name: 
@@ -367,6 +403,8 @@ Option_Color_Orange:
 Option_Color_Lime: 
 Option_Color_Amethyst: 
 Option_Color_Default: 
+LowPower_Title: 
+LowPower_Message: 
 
 [Norwegian]
 Item_Name: 
@@ -386,6 +424,8 @@ Option_Color_Orange:
 Option_Color_Lime: 
 Option_Color_Amethyst: 
 Option_Color_Default: 
+LowPower_Title: 
+LowPower_Message: 
 
 [Polish]
 Item_Name: 
@@ -405,6 +445,8 @@ Option_Color_Orange:
 Option_Color_Lime: 
 Option_Color_Amethyst: 
 Option_Color_Default: 
+LowPower_Title: 
+LowPower_Message: 
 
 [Portuguese (Brazil)]
 Item_Name: 
@@ -424,6 +466,8 @@ Option_Color_Orange:
 Option_Color_Lime: 
 Option_Color_Amethyst: 
 Option_Color_Default: 
+LowPower_Title: 
+LowPower_Message: 
 
 [Portuguese]
 Item_Name: 
@@ -443,6 +487,8 @@ Option_Color_Orange:
 Option_Color_Lime: 
 Option_Color_Amethyst: 
 Option_Color_Default: 
+LowPower_Title: 
+LowPower_Message: 
 
 [Romanian]
 Item_Name: 
@@ -462,6 +508,8 @@ Option_Color_Orange:
 Option_Color_Lime: 
 Option_Color_Amethyst: 
 Option_Color_Default: 
+LowPower_Title: 
+LowPower_Message: 
 
 [Russian]
 Item_Name: 
@@ -481,6 +529,8 @@ Option_Color_Orange:
 Option_Color_Lime: 
 Option_Color_Amethyst: 
 Option_Color_Default: 
+LowPower_Title: 
+LowPower_Message: 
 
 [Serbian]
 Item_Name: 
@@ -500,6 +550,8 @@ Option_Color_Orange:
 Option_Color_Lime: 
 Option_Color_Amethyst: 
 Option_Color_Default: 
+LowPower_Title: 
+LowPower_Message: 
 
 [Slovak]
 Item_Name: 
@@ -519,6 +571,8 @@ Option_Color_Orange:
 Option_Color_Lime: 
 Option_Color_Amethyst: 
 Option_Color_Default: 
+LowPower_Title: 
+LowPower_Message: 
 
 [Spanish]
 Item_Name: 
@@ -538,6 +592,8 @@ Option_Color_Orange:
 Option_Color_Lime: 
 Option_Color_Amethyst: 
 Option_Color_Default: 
+LowPower_Title: 
+LowPower_Message: 
 
 [Swedish]
 Item_Name: 
@@ -557,6 +613,8 @@ Option_Color_Orange:
 Option_Color_Lime: 
 Option_Color_Amethyst: 
 Option_Color_Default: 
+LowPower_Title: 
+LowPower_Message: 
 
 [Thai]
 Item_Name: 
@@ -576,6 +634,8 @@ Option_Color_Orange:
 Option_Color_Lime: 
 Option_Color_Amethyst: 
 Option_Color_Default: 
+LowPower_Title: 
+LowPower_Message: 
 
 [Turkish]
 Item_Name: 
@@ -595,6 +655,8 @@ Option_Color_Orange:
 Option_Color_Lime: 
 Option_Color_Amethyst: 
 Option_Color_Default: 
+LowPower_Title: 
+LowPower_Message: 
 
 [Ukrainian]
 Item_Name: 
@@ -614,6 +676,8 @@ Option_Color_Orange:
 Option_Color_Lime: 
 Option_Color_Amethyst: 
 Option_Color_Default: 
+LowPower_Title: 
+LowPower_Message: 
 
 [Vietnamese]
 Item_Name: 
@@ -633,4 +697,5 @@ Option_Color_Orange:
 Option_Color_Lime: 
 Option_Color_Amethyst: 
 Option_Color_Default: 
-
+LowPower_Title: 
+LowPower_Message: 

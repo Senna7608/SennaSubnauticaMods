@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Common;
+using Common.GUIHelper;
 
 namespace CheatManager
 {
@@ -7,7 +7,7 @@ namespace CheatManager
     {
         internal static readonly float[] DayNightSpeed = { 0.1f, 0.25f, 0.5f, 0.75f, 1f, 2f };        
 
-        internal void NormalButtonControl(int normalButtonID, ref List<GUIHelper.ButtonInfo> Buttons, ref List<GUIHelper.ButtonInfo> toggleButtons)
+        internal void NormalButtonControl(int normalButtonID, ref List<Button.ButtonInfo> Buttons, ref List<Button.ButtonInfo> toggleButtons)
         {
             switch (normalButtonID)
             {
@@ -39,7 +39,7 @@ namespace CheatManager
         }
 
 
-        internal void ToggleButtonControl (int toggleButtonID, ref List<GUIHelper.ButtonInfo> toggleButtons)
+        internal void ToggleButtonControl (int toggleButtonID, ref List<Button.ButtonInfo> toggleButtons)
         {
             switch (toggleButtonID)
             {
@@ -110,7 +110,7 @@ namespace CheatManager
 
                 case 19:
                     toggleButtons[19].Pressed = !toggleButtons[19].Pressed;
-                    OverPower(toggleButtons[19].Pressed);                    
+                    Main.Instance.OverPower(toggleButtons[19].Pressed);                   
                     ErrorMessage.AddMessage(toggleButtons[19].Pressed ? "overPower cheat is now True" : "overPower cheat is now False");
                     break;  
             }
@@ -118,7 +118,7 @@ namespace CheatManager
             Main.Instance.ReadGameValues();
         }                
 
-        internal void DayNightButtonControl(int daynightTabID, ref int currentdaynightTab, ref List<GUIHelper.ButtonInfo> daynightTab)
+        internal void DayNightButtonControl(int daynightTabID, ref int currentdaynightTab, ref List<Button.ButtonInfo> daynightTab)
         {
             if (daynightTabID != currentdaynightTab)
             {

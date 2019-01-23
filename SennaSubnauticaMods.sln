@@ -19,8 +19,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AncientSword", "AncientSwor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crowbar", "Crowbar\Crowbar.csproj", "{CB8E67FB-764C-42A2-8BB2-C90BDCED7D5C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CannonArm", "CannonArm\CannonArm.csproj", "{2F4899A3-9373-47AD-88CF-3F5A27D5E3F0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickSlotExtender", "QuickSlotExtender\QuickSlotExtender.csproj", "{091061EA-9A9C-4737-B6CA-2A57596AC087}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Common\Common.projitems*{091061ea-9a9c-4737-b6ca-2a57596ac087}*SharedItemsImports = 4
+		Common\Common.projitems*{1306dea8-6a8b-4e61-a63e-779b439b6590}*SharedItemsImports = 4
+		Common\Common.projitems*{1ed43566-559a-4962-804d-9b5a23163808}*SharedItemsImports = 4
+		Common\Common.projitems*{2f4899a3-9373-47ad-88cf-3f5a27d5e3f0}*SharedItemsImports = 4
 		Common\Common.projitems*{38021293-9c9f-474a-a3f0-c782fc93a15a}*SharedItemsImports = 4
 		Common\Common.projitems*{7723914c-1e34-4c61-9965-7f00fb55a12d}*SharedItemsImports = 4
 		Common\Common.projitems*{99ed7304-8603-4a34-9cba-a38557a64d0c}*SharedItemsImports = 4
@@ -61,6 +69,14 @@ Global
 		{CB8E67FB-764C-42A2-8BB2-C90BDCED7D5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CB8E67FB-764C-42A2-8BB2-C90BDCED7D5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CB8E67FB-764C-42A2-8BB2-C90BDCED7D5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F4899A3-9373-47AD-88CF-3F5A27D5E3F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F4899A3-9373-47AD-88CF-3F5A27D5E3F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F4899A3-9373-47AD-88CF-3F5A27D5E3F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F4899A3-9373-47AD-88CF-3F5A27D5E3F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{091061EA-9A9C-4737-B6CA-2A57596AC087}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{091061EA-9A9C-4737-B6CA-2A57596AC087}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{091061EA-9A9C-4737-B6CA-2A57596AC087}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{091061EA-9A9C-4737-B6CA-2A57596AC087}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

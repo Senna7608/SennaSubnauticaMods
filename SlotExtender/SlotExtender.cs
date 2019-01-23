@@ -7,9 +7,9 @@ namespace SlotExtender
     public class SlotExtender : MonoBehaviour
     {
         public SlotExtender Instance { get; private set; }
-        private Vehicle ThisVehicle { get; set; }
-        private Player PlayerMain { get; set; }        
-        private PDA PdaMain { get; set; }
+        private Vehicle ThisVehicle;
+        private Player PlayerMain;
+        private PDA PdaMain;
         internal bool isActive = false;        
 
         internal void Awake()
@@ -52,6 +52,7 @@ namespace SlotExtender
             PdaMain.Close();
             //add and start a handler to check the player mode if changed
             PlayerMain.playerModeChanged.AddHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
+            isActive = PlayerMain.GetVehicle() == ThisVehicle ? true : false;
         }        
 
         internal void OnPlayerModeChanged(Player.Mode playerMode)
@@ -82,7 +83,7 @@ namespace SlotExtender
                 return; // Slot Extender not active. Exit method.
 
             if (!PlayerMain.inSeamoth && !PlayerMain.inExosuit)
-                return; // Player not in vehicle. Exit method.
+                return; // Player not in any vehicle. Exit method.
 
             if (Input.GetKeyDown(Config.KEYBINDINGS["Upgrade"]))
             {

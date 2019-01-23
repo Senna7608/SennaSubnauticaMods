@@ -1,13 +1,5 @@
-﻿//#define DEBUG_VEHICLE_OVERDRIVE
-
-#if DEBUG_VEHICLE_OVERDRIVE
-using System.Collections;
-using Common.DebugHelper;
-#endif
-
-using UnityEngine;
+﻿using UnityEngine;
 using UWE;
-
 
 namespace CheatManager
 {
@@ -37,9 +29,6 @@ namespace CheatManager
         private const float Exosuit_Default_SidewardForce = 3f;
         private const float Exosuit_Default_VerticalForce = 2f;
 
-#if DEBUG_VEHICLE_OVERDRIVE
-        private string vehicleID;        
-#endif
         public void Awake()
         {
             Instance = gameObject.GetComponent<VehicleOverDrive>();
@@ -54,55 +43,22 @@ namespace CheatManager
             }
             else
             {
-                Main.logger.Log("Unknown Vehicle type error! Instance destroyed!");
+                Debug.Log("Unknown Vehicle type error! Instance destroyed!");
                 Destroy(Instance);
             }
 
-#if DEBUG_VEHICLE_OVERDRIVE
-            DebugHelper.DebugVehicle(Instance.GetType().ToString(), "Awake", ThisVehicle);
-#endif
             OnPlayerModeChanged(Player.main.GetMode());                  
         }
-
-#if DEBUG_VEHICLE_OVERDRIVE
-        private void PrintForces(string callFrom)
-        {
-            Logger.Log("[CheatManager]\n" +
-                $"Object class: {Instance.GetType()}\n" +
-                $"Object name: {ThisVehicle.name}\n" +
-                $"Object ID: {vehicleID}\n" +
-                $"Method name: {callFrom}\n" +                
-                $"ForwardForce: {ThisVehicle.forwardForce}\n" +
-                $"BackWardForce: {ThisVehicle.backwardForce}\n" +
-                $"VerticalForce: {ThisVehicle.verticalForce}\n" +
-                $"SidewardForce: {ThisVehicle.sidewardForce}\n" +
-                $"SidewaysTorque: {ThisVehicle.sidewaysTorque}");
-        }
-#endif
 
         public void Start()
         {
             TechTypeExtensions.FromString("SpeedModule", out SpeedModule, true);
-
-#if DEBUG_VEHICLE_OVERDRIVE
-            vehicleID = Instance.GetInstanceID().ToString();
-            PrintForces("Start");            
-#endif
             ThisEquipment = ThisVehicle.modules;
             ThisEquipment.onAddItem += OnAddItem;
             ThisEquipment.onRemoveItem += OnRemoveItem;
             Player.main.playerModeChanged.AddHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));            
         }
 
-#if DEBUG_VEHICLE_OVERDRIVE
-        private IEnumerator CheckForces()
-        {
-            yield return new WaitForSeconds(10);
-            PrintForces("Coroutine");
-            if (isActive)
-                StartCoroutine(CheckForces());
-        }
-#endif
         internal void OnPlayerModeChanged(Player.Mode playerMode)
         {
             if (playerMode == Player.Mode.LockedPiloting)
@@ -110,10 +66,6 @@ namespace CheatManager
                 if (Player.main.GetVehicle() == ThisVehicle)
                 {
                     isActive = true;
-
-#if DEBUG_VEHICLE_OVERDRIVE
-                    StartCoroutine(CheckForces());
-#endif
                 }
                 else
                 {
@@ -124,9 +76,6 @@ namespace CheatManager
             {
                 isActive = false;
             }
-#if DEBUG_VEHICLE_OVERDRIVE
-            print($"OnPlayermodeChanged: {playerMode}, isActive: {isActive}");
-#endif
         }
 
         public void OnDestroy()
@@ -166,32 +115,29 @@ namespace CheatManager
             if (prev_seamothmultiplier != Main.Instance.seamothSpeedMultiplier || prev_seamothCanFly != Main.Instance.seamothCanFly || prevSpeedModuleCount != SpeedModuleCount)
             {
                 float boost = SpeedModuleCount * SpeedModuleBoost;
+                float multiplier = Main.Instance.seamothSpeedMultiplier;
 
-                if (Main.Instance.seamothSpeedMultiplier == 1)
+                if (multiplier == 1)
                 {
                     ThisVehicle.forwardForce = Seamoth_Default_ForwardForce + boost;
                     ThisVehicle.backwardForce = Seamoth_Default_BackwardForce;
                     ThisVehicle.sidewardForce = Seamoth_Default_SidewardForce;
                     ThisVehicle.verticalForce = Seamoth_Default_VerticalForce;
-                    prev_seamothmultiplier = Main.Instance.seamothSpeedMultiplier;
+                    prev_seamothmultiplier = multiplier;
                 }
                 else
                 {
                     float overDrive = MaxSpeed * (((float)SpeedModuleCount + 10) / 10);
-                    ThisVehicle.forwardForce = (Seamoth_Default_ForwardForce + boost) + (Main.Instance.seamothSpeedMultiplier * ((overDrive - (Seamoth_Default_ForwardForce + boost)) / 5));
-                    ThisVehicle.backwardForce = (Seamoth_Default_BackwardForce + boost) + (Main.Instance.seamothSpeedMultiplier * ((overDrive - (Seamoth_Default_BackwardForce + boost)) / 5));
-                    ThisVehicle.sidewardForce = (Seamoth_Default_SidewardForce + boost) + (Main.Instance.seamothSpeedMultiplier * ((overDrive - (Seamoth_Default_SidewardForce + boost)) / 5));
-                    ThisVehicle.verticalForce = (Seamoth_Default_VerticalForce + boost) + (Main.Instance.seamothSpeedMultiplier * ((overDrive - (Seamoth_Default_VerticalForce + boost)) / 5));
-                    prev_seamothmultiplier = Main.Instance.seamothSpeedMultiplier;
+                    ThisVehicle.forwardForce = CalcForce(Seamoth_Default_ForwardForce, boost, overDrive, multiplier);
+                    ThisVehicle.backwardForce = CalcForce(Seamoth_Default_BackwardForce, boost, overDrive, multiplier);
+                    ThisVehicle.sidewardForce = CalcForce(Seamoth_Default_SidewardForce, boost, overDrive, multiplier);
+                    ThisVehicle.verticalForce = CalcForce(Seamoth_Default_VerticalForce, boost, overDrive, multiplier);                   
+                    prev_seamothmultiplier = multiplier;
                 }
 
                 prevSpeedModuleCount = SpeedModuleCount;
                 ThisVehicle.moveOnLand = Main.Instance.seamothCanFly;
                 prev_seamothCanFly = Main.Instance.seamothCanFly;
-
-#if DEBUG_VEHICLE_OVERDRIVE
-                PrintForces("Update");
-#endif
             }
 
         }
@@ -200,17 +146,11 @@ namespace CheatManager
         {
             if (prev_exosuitmultiplier != Main.Instance.exosuitSpeedMultiplier || prevSpeedModuleCount != SpeedModuleCount)
             {
-                float boost = 0;
-                float multiplier = Main.Instance.exosuitSpeedMultiplier;
+                float boost = SpeedModuleCount * SpeedModuleBoost;
+                float multiplier = Main.Instance.exosuitSpeedMultiplier;                
 
-                if (SpeedModuleCount > 0)
+                if (multiplier == 1)
                 {
-                    boost = SpeedModuleCount * SpeedModuleBoost;
-                }
-
-                if (Main.Instance.exosuitSpeedMultiplier == 1)
-                {
-
                     ThisVehicle.forwardForce = Exosuit_Default_ForwardForce + boost;
                     ThisVehicle.backwardForce = Exosuit_Default_BackwardForce;
                     ThisVehicle.sidewardForce = Exosuit_Default_SidewardForce;
@@ -220,19 +160,20 @@ namespace CheatManager
                 else
                 {
                     float overDrive = MaxSpeed * (((float)SpeedModuleCount + 10) / 10);
-                    ThisVehicle.forwardForce = (Exosuit_Default_ForwardForce + boost) + (multiplier * ((overDrive - (Exosuit_Default_ForwardForce + boost)) / 5));
-                    ThisVehicle.backwardForce = (Exosuit_Default_BackwardForce + boost) + (multiplier * ((overDrive - (Exosuit_Default_BackwardForce + boost)) / 5));
-                    ThisVehicle.sidewardForce = (Exosuit_Default_SidewardForce + boost) + (multiplier * ((overDrive - (Exosuit_Default_SidewardForce + boost)) / 5));
-                    ThisVehicle.verticalForce = (Exosuit_Default_VerticalForce + boost) + (multiplier * ((overDrive - (Exosuit_Default_VerticalForce + boost)) / 5));
+                    ThisVehicle.forwardForce = CalcForce(Exosuit_Default_ForwardForce, boost, overDrive, multiplier);
+                    ThisVehicle.backwardForce = CalcForce(Exosuit_Default_BackwardForce, boost, overDrive, multiplier);
+                    ThisVehicle.sidewardForce = CalcForce(Exosuit_Default_SidewardForce, boost, overDrive, multiplier);
+                    ThisVehicle.verticalForce = CalcForce(Exosuit_Default_VerticalForce, boost, overDrive, multiplier);                    
                     prev_exosuitmultiplier = multiplier;
                 }
 
                 prevSpeedModuleCount = SpeedModuleCount;
-
-#if DEBUG_VEHICLE_OVERDRIVE
-                PrintForces("Update");
-#endif
             }
+        }
+
+        private float CalcForce(float defaultForce, float boost, float overDrive, float multiplier)
+        {
+          return  defaultForce + boost + (multiplier * ((overDrive - (defaultForce + boost)) / 5));
         }
 
     }

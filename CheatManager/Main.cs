@@ -12,8 +12,11 @@ namespace CheatManager
     public static class Main
     {
         public static CheatManager Instance { get; private set; }
-        public static Logger logger { get; private set; }
+        public static CM_Logger CmLogger { get; private set; }
+        public static CM_InfoBar CmInfoBar { get; private set; }
 
+        internal static bool isConsoleEnabled { get; set; }
+        internal static bool isInfoBarEnabled { get; set; }
         internal static int OverPowerMultiplier { get; set; }
 
         internal static bool isExistsSMLHelperV2;        
@@ -44,7 +47,13 @@ namespace CheatManager
             {
                 DisplayManager.OnDisplayChanged += Screen_OnDisplayChanged;
                 Config.InitConfig();
-                logger = new Logger();
+
+                if (isConsoleEnabled)
+                    CmLogger = new CM_Logger();
+
+                if (isInfoBarEnabled)
+                    CmInfoBar = new CM_InfoBar();
+
                 CmConfig.Load();
             }
         }

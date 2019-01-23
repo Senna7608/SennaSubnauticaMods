@@ -12,7 +12,7 @@ namespace SlotExtender.Patchers
         [HarmonyPrefix]
         internal static void Prefix(uGUI_Equipment __instance)
         {
-            __instance.gameObject.AddIfNotComponent<Initialize_uGUI>();            
+           __instance.gameObject.AddIfNeedComponent<Initialize_uGUI>();            
         }
 
         [HarmonyPostfix]

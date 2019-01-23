@@ -4,11 +4,14 @@ using Harmony;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using Common;
 
 namespace LaserCannon
 {
     public static class Main
     {
+        public static LaserCannon_Seamoth Instance { get; internal set; }        
+
         public static void Load()
         {
             try
@@ -33,38 +36,21 @@ namespace LaserCannon
                 Language.main.OnLanguageChanged += Config.OnLanguageChanged;
             }
         }
-    }        
-    
-
+    }
 
     [HarmonyPatch(typeof(SeaMoth))]
     [HarmonyPatch("OnUpgradeModuleChange")]
+    [HarmonyPatch(new Type[] { typeof(int), typeof(TechType), typeof(bool) })]
     public class SeaMoth_OnUpgradeModuleChange_Patch
     {
+        [HarmonyPostfix]
         static void Postfix(SeaMoth __instance, int slotID, TechType techType, bool added)
         {            
-            if (techType == LaserCannon.TechTypeID)
+            if (techType == LaserCannon.TechTypeID && added)
             {
-                if (added)
-                {
-                    if (__instance.GetComponent<LaserCannon_Seamoth>() == null)
-                    {
-                        var laserCannon = __instance.gameObject.AddComponent<LaserCannon_Seamoth>();                        
-                        laserCannon.slotID = slotID;
-                        Debug.Log($"[LaserCannon] Added component to instance: {__instance.name} ID: {__instance.GetInstanceID()}");
-                    }
-                    else
-                    {
-                        var laserCannon = __instance.GetComponent<LaserCannon_Seamoth>();
-                        laserCannon.seamoth = __instance.GetComponent<SeaMoth>();
-                        laserCannon.slotID = slotID;
-                        laserCannon.enabled = true;
-                    }
-                }
-                else
-                {
-                    __instance.GetComponent<LaserCannon_Seamoth>().enabled = false;
-                }
+                var control = __instance.gameObject.AddOrGetComponent<LaserCannon_Seamoth>();
+                control.moduleSlotID = slotID;
+                Main.Instance = control;               
             }                                  
         }
     }

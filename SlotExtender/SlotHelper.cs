@@ -1,10 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using SlotExtender.Configuration;
 
 namespace SlotExtender
 {
     internal static class SlotHelper
     {
         private static bool SlotMappingExpanded = false;
+
+        internal static string[] SessionSeamothSlotIDs { get; private set; }
+        internal static string[] SessionExosuitSlotIDs { get; private set; }
 
         internal static readonly string[] ExpandedSeamothSlotIDs = new string[12]
         {
@@ -40,27 +45,43 @@ namespace SlotExtender
             "ExosuitModule10",
             "ExosuitModule11",
             "ExosuitModule12"
-        };
+        };        
 
         internal static IEnumerable<string> NewSeamothSlotIDs
         {
             get
             {
-                for (int i = 4; i < ExpandedSeamothSlotIDs.Length; i++)
+                for (int i = 4; i < Config.MAXSLOTS; i++)
                 {
                     yield return ExpandedSeamothSlotIDs[i];
                 }
             }
-        }
+        }        
 
         internal static IEnumerable<string> NewExosuitSlotIDs
         {
             get
             {
-                for (int i = 6; i < ExpandedExosuitSlotIDs.Length; i++)
+                for (int i = 6; i < Config.MAXSLOTS + 2; i++)
                 {
                     yield return ExpandedExosuitSlotIDs[i];
                 }
+            }
+        }
+        
+        internal static void InitSlotIDs()
+        {
+            SessionSeamothSlotIDs = (string[])Array.CreateInstance(typeof(string), Config.MAXSLOTS);
+            SessionExosuitSlotIDs = (string[])Array.CreateInstance(typeof(string), Config.MAXSLOTS + 2);
+
+            for (int i = 0; i < Config.MAXSLOTS; i++)
+            {
+                SessionSeamothSlotIDs[i] = ExpandedSeamothSlotIDs[i];               
+            }
+
+            for (int i = 0; i < Config.MAXSLOTS + 2; i++)
+            {                
+                SessionExosuitSlotIDs[i] = ExpandedExosuitSlotIDs[i];
             }
         }
 

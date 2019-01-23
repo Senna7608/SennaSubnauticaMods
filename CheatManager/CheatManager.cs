@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UWE;
 using Common;
+using Common.GUIHelper;
 using CheatManager.Configuration;
 
 namespace CheatManager
@@ -10,61 +11,52 @@ namespace CheatManager
     public class CheatManager : MonoBehaviour
     {  
         internal CheatManager Instance { get; private set; }
-
         internal Player PlayerMain { get; private set; }
 
         internal ButtonControl buttonControl;
         internal ButtonText buttonText;
         internal TechnologyMatrix techMatrix;
         internal WarpTargets warpTargets;
-
-        private bool initStyles = false;
-
-        private Vector2 scrollPos = Vector2.zero;
-        private bool isActive;
-        private Rect windowRect = new Rect();
-        private readonly float space = 3;
-
-        //private readonly string[][] WarpData; = WarpTargets.Targets;
-
-        private string windowTitle;
-        internal string prevCwPos = null;
-
-        internal bool seamothCanFly = false;
-
+        private Vector2 scrollPos;
+        private Rect windowRect;
+        private Rect drawRect;
+        internal FMODAsset warpSound;
         internal Utils.MonitoredValue<bool> isSeaglideFast = new Utils.MonitoredValue<bool>();
+
+        private List<TechnologyMatrix.TechTypeData>[] tMatrix;
+        private List<Button.ButtonInfo> Buttons;
+        private List<Button.ButtonInfo> toggleButtons;
+        private List<Button.ButtonInfo> daynightTab;
+        private List<Button.ButtonInfo> categoriesTab;
+        private List<Button.ButtonInfo> vehicleSettings;
+
+        private List<SNGUI.GuiItem> commands;
+
+        internal bool isActive;
+        internal bool initStyles = false;
+        internal bool seamothCanFly = false;
+        internal bool initToggleButtons = false;
+               
+        internal string prevCwPos = null;
+        internal string seamothName;
+        internal string exosuitName;
+        internal string cyclopsName;
 
         internal float seamothSpeedMultiplier;
         internal float exosuitSpeedMultiplier;
         internal float cyclopsSpeedMultiplier;
-
         internal float playerPrevInfectionLevel = 0f;
 
+        private readonly float space = 3;
+        private string windowTitle;
         private int normalButtonID = -1;
         private int toggleButtonID = -1;
         private int daynightTabID = 4;
         private int categoriesTabID = 0;
         private int vehicleSettingsID = -1;
-
         private int currentdaynightTab = 4;
-        private int currentTab = 0;
-
-        internal FMODAsset warpSound;
-
-        internal string seamothName;
-        internal string exosuitName;
-        internal string cyclopsName;
-
-        private List<TechnologyMatrix.TechTypeData>[] tMatrix;
-
-        private List<GUIHelper.ButtonInfo> Buttons;
-        private List<GUIHelper.ButtonInfo> toggleButtons;
-        private List<GUIHelper.ButtonInfo> daynightTab;
-        private List<GUIHelper.ButtonInfo> categoriesTab;
-        private List<GUIHelper.ButtonInfo> vehicleSettings;
-
-        internal bool initToggleButtons = false;
-
+        private int currentTab = 0;        
+ 
 #if DEBUG_PROGRAM
             internal static float crTimer = 10;
 #endif                
@@ -73,41 +65,42 @@ namespace CheatManager
         {
             Instance = Main.Instance;
             useGUILayout = false;
-            
+#if DEBUG
+            isActive = true;
+#endif
             UpdateTitle();
             warpTargets = new WarpTargets();
             warpSound = ScriptableObject.CreateInstance<FMODAsset>();
             warpSound.path = "event:/tools/gravcannon/fire";
 
             techMatrix = new TechnologyMatrix();
-
             tMatrix = new List<TechnologyMatrix.TechTypeData>[techMatrix.baseTechMatrix.Length];
-
             techMatrix.InitTechMatrixList(ref tMatrix);
-
             if (Main.isExistsSMLHelperV2)
             {
                 techMatrix.IsExistsModdersTechTypes(ref tMatrix, techMatrix.Known_Modded_TechTypes);
             }
             else
             {
-                Main.logger.Log("[CheatManager] Warning:\n'SMLHelper.V2' not found! Some functions are not available!", LogType.Warning);
+                Debug.LogWarning("[CheatManager] Warning: 'SMLHelper.V2' not found! Some functions are not available!");
             }
-
             techMatrix.SortTechLists(ref tMatrix);
 
-            Buttons = new List<GUIHelper.ButtonInfo>();
-            toggleButtons = new List<GUIHelper.ButtonInfo>();
-            daynightTab = new List<GUIHelper.ButtonInfo>();
-            categoriesTab = new List<GUIHelper.ButtonInfo>();
-            vehicleSettings = new List<GUIHelper.ButtonInfo>();
-
+            //Buttons = new List<Button.ButtonInfo>();
+            commands = new List<SNGUI.GuiItem>();
+            toggleButtons = new List<Button.ButtonInfo>();
+            daynightTab = new List<Button.ButtonInfo>();
+            categoriesTab = new List<Button.ButtonInfo>();
+            vehicleSettings = new List<Button.ButtonInfo>();
             buttonText = new ButtonText();
 
-            GUIHelper.CreateButtonsGroup(buttonText.Buttons, GUIHelper.BUTTONTYPE.NORMAL_CENTER, ref Buttons);
-            GUIHelper.CreateButtonsGroup(buttonText.ToggleButtons, GUIHelper.BUTTONTYPE.TOGGLE_CENTER, ref toggleButtons);
-            GUIHelper.CreateButtonsGroup(buttonText.DayNightTab, GUIHelper.BUTTONTYPE.TAB_CENTER, ref daynightTab);
-            GUIHelper.CreateButtonsGroup(buttonText.CategoriesTab, GUIHelper.BUTTONTYPE.TAB_CENTER, ref categoriesTab);
+            drawRect = SNWindow.InitWindowRect(new Rect(Screen.width - (Screen.width / 4.8f), 0, Screen.width / 4.8f, Screen.height / 4 * 3), true);
+
+
+            Button.CreateButtonsGroup(buttonText.Buttons, Button.BUTTONTYPE.NORMAL_CENTER, ref Buttons);
+            Button.CreateButtonsGroup(buttonText.ToggleButtons, Button.BUTTONTYPE.TOGGLE_CENTER, ref toggleButtons);
+            Button.CreateButtonsGroup(buttonText.DayNightTab, Button.BUTTONTYPE.TAB_CENTER, ref daynightTab);
+            Button.CreateButtonsGroup(buttonText.CategoriesTab, Button.BUTTONTYPE.TAB_CENTER, ref categoriesTab);
 
             var searchSeaGlide = new TechnologyMatrix.TechTypeSearch(TechType.Seaglide);
             string seaglideName = tMatrix[1][tMatrix[1].FindIndex(searchSeaGlide.EqualsWith)].Name;
@@ -123,11 +116,11 @@ namespace CheatManager
 
             string[] vehicleSetButtons = { $"{seamothName} Can Fly", $"{seaglideName} Speed Fast" };
 
-            GUIHelper.CreateButtonsGroup(vehicleSetButtons, GUIHelper.BUTTONTYPE.TOGGLE_CENTER, ref vehicleSettings);
+            Button.CreateButtonsGroup(vehicleSetButtons, Button.BUTTONTYPE.TOGGLE_CENTER, ref vehicleSettings);
 
             daynightTab[4].Pressed = true;
             categoriesTab[0].Pressed = true;
-            toggleButtons[17].Pressed = false;
+            toggleButtons[17].Pressed = false;            
             Buttons[7].Enabled = false;
             Buttons[7].Pressed = true;
 
@@ -156,8 +149,7 @@ namespace CheatManager
 
         public void Start()
         {
-            isSeaglideFast.changedEvent.AddHandler(this, new Event<Utils.MonitoredValue<bool>>.HandleFunction(IsSeaglideFast));
-            
+            isSeaglideFast.changedEvent.AddHandler(this, new Event<Utils.MonitoredValue<bool>>.HandleFunction(IsSeaglideFast));           
 
 #if DEBUG_PROGRAM
             StartCoroutine(DebugProgram());
@@ -173,8 +165,6 @@ namespace CheatManager
                 StartCoroutine(DebugProgram());
         }
 #endif
-
-
         private void IsSeaglideFast(Utils.MonitoredValue<bool> parms)
         {
             SeaglideOverDrive.Instance.SetSeaglideSpeed();            
@@ -310,9 +300,9 @@ namespace CheatManager
                 return;
 
             if (!initStyles)
-                initStyles = GUIHelper.InitGUIStyles();
+                initStyles = SNStyles.InitGUIStyles();
 
-            windowRect = GUIHelper.CreatePopupWindow(new Rect(Screen.width - (Screen.width / 4.8f), 0, Screen.width / 4.8f, Screen.height / 4 * 3), windowTitle);
+            windowRect = SNWindow.CreateWindow(new Rect(Screen.width - (Screen.width / 4.8f), 0, Screen.width / 4.8f, Screen.height / 4 * 3), windowTitle);
 
             float lastYcoord = windowRect.y;
             float baseHeight = windowRect.height;
@@ -324,23 +314,23 @@ namespace CheatManager
 
             GUI.Label(windowRect, "Commands:");
 
-            normalButtonID = GUIHelper.CreateButtonsGrid(new Rect(windowRect.x, windowRect.y + 22, windowRect.width, baseHeight), space, 4, Buttons, out lastYcoord);
+            normalButtonID = Button.CreateButtonsGrid(new Rect(windowRect.x, windowRect.y + 22, windowRect.width, baseHeight), space, 4, Buttons, out lastYcoord);
 
             GUI.Label(new Rect(windowRect.x, lastYcoord + space, 150, 22), "Toggle Commands:");            
 
-            toggleButtonID = GUIHelper.CreateButtonsGrid(new Rect(windowRect.x, lastYcoord + space + 22, windowRect.width, baseHeight - (lastYcoord + 22 + space)), space, 4, toggleButtons, out lastYcoord);            
+            toggleButtonID = Button.CreateButtonsGrid(new Rect(windowRect.x, lastYcoord + space + 22, windowRect.width, baseHeight - (lastYcoord + 22 + space)), space, 4, toggleButtons, out lastYcoord);            
 
             GUI.Label(new Rect(windowRect.x, lastYcoord + space, 150, 22), "Day/Night Speed:");            
 
-            daynightTabID = GUIHelper.CreateButtonsGrid(new Rect(windowRect.x, lastYcoord + space + 22, windowRect.width, baseHeight), space, 6, daynightTab , out lastYcoord);            
+            daynightTabID = Button.CreateButtonsGrid(new Rect(windowRect.x, lastYcoord + space + 22, windowRect.width, baseHeight), space, 6, daynightTab , out lastYcoord);            
 
             GUI.Label(new Rect(windowRect.x, lastYcoord + space, 100, 22), "Categories:");            
 
-            categoriesTabID = GUIHelper.CreateButtonsGrid(new Rect(windowRect.x, lastYcoord + space + 22, windowRect.width, baseHeight), space, 4, categoriesTab, out lastYcoord);
+            categoriesTabID = Button.CreateButtonsGrid(new Rect(windowRect.x, lastYcoord + space + 22, windowRect.width, baseHeight), space, 4, categoriesTab, out lastYcoord);
 
             GUI.Label(new Rect(windowRect.x, lastYcoord + space, 150, 22), "Select Item in Category:");            
 
-            GUI.Label(new Rect(windowRect.x + 150, lastYcoord + space, 100, 22), categoriesTab[currentTab].Name, GUIHelper.Label);
+            GUI.Label(new Rect(windowRect.x + 150, lastYcoord + space, 100, 22), categoriesTab[currentTab].Name, SNStyles.GetGuiStyle(SNGUI.GuiItemType.LABEL));
             
             windowRect.x = windowRect.x + 5;
             windowRect.y = lastYcoord + 22 + (space * 2);
@@ -388,7 +378,7 @@ namespace CheatManager
                     selectedTech = tMatrix[category][i].TechType.ToString();                    
                 }               
 
-                if (GUI.Button(new Rect(windowRect.x, windowRect.y + (i * 26), width, 22), itemName, GUIHelper.GetGUIStyle(null, GUIHelper.BUTTONTYPE.NORMAL_LEFTALIGN)))                
+                if (GUI.Button(new Rect(windowRect.x, windowRect.y + (i * 26), width, 22), itemName, SNStyles.GetGuiStyle(SNGUI.GuiItemType.NORMALBUTTON)))                
                 {
                     switch (category)
                     {
@@ -443,9 +433,9 @@ namespace CheatManager
             {
                 windowRect.y += (4 * 26) + 2;
 
-                GUI.Box(new Rect(windowRect.x, windowRect.y, windowRect.width, 23), "Vehicle Settings:", GUIHelper.Box);
+                GUI.Box(new Rect(windowRect.x, windowRect.y, windowRect.width, 23), "Vehicle Settings:", SNStyles.GetGuiStyle(SNGUI.GuiItemType.BOX));
                 
-                vehicleSettingsID = GUIHelper.CreateButtonsGrid(new Rect(windowRect.x - 5 , windowRect.y + 27, windowRect.width + 10, 22), space, 2, vehicleSettings, out float lastYcoord);
+                vehicleSettingsID = Button.CreateButtonsGrid(new Rect(windowRect.x - 5 , windowRect.y + 27, windowRect.width + 10, 22), space, 2, vehicleSettings, out float lastYcoord);
                 
                 GUI.Label(new Rect(windowRect.x, windowRect.y + 53, 250, 22), seamothName + " speed multiplier: " + string.Format("{0:#.##}", seamothSpeedMultiplier));
                 

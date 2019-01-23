@@ -18,7 +18,9 @@ namespace ScannerModule
                   fabricatorTab: "CommonModules",
                   requiredAnalysis: TechType.BaseUpgradeConsole,
                   groupForPDA: TechGroup.VehicleUpgrades,
-                  categoryForPDA: TechCategory.VehicleUpgrades)
+                  categoryForPDA: TechCategory.VehicleUpgrades,
+                  gamerResourceFileName: null
+                  )
         {
         }
                
@@ -27,8 +29,7 @@ namespace ScannerModule
             base.Patch();
             CraftDataHandler.SetEquipmentType(TechType, EquipmentType.VehicleModule);
             CraftDataHandler.SetQuickSlotType(TechType, QuickSlotType.Selectable);
-            TechTypeID = TechType;
-            
+            TechTypeID = TechType;            
         }
         
         protected override TechData GetRecipe()

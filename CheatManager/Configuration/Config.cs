@@ -14,9 +14,9 @@ namespace CheatManager.Configuration
         private const string PROGRAM_NAME = "CheatManager";
         private static readonly string FILENAME = $"{Environment.CurrentDirectory}\\QMods\\{PROGRAM_NAME}\\config.txt";
 
-        private static readonly string[] SECTIONS = { "Hotkeys", "Settings" };
+        private static readonly string[] SECTIONS = { "Hotkeys", "Program", "Settings" };
         internal static Dictionary<string, KeyCode> KEYBINDINGS;
-        internal static Dictionary<string, string> Section_hotkeys;
+        internal static Dictionary<string, string> Section_hotkeys;        
         internal static Dictionary<string, string> Section_settings;
 
         private static readonly string[] SECTION_HOTKEYS =
@@ -24,6 +24,12 @@ namespace CheatManager.Configuration
             "ToggleWindow",
             "ToggleMouse",
             "ToggleConsole"
+        };
+
+        private static readonly string[] SECTION_PROGRAM =
+        {
+            "EnableConsole",
+            "EnableInfoBar"
         };
 
         private static readonly string[] SECTION_SETTINGS =
@@ -36,7 +42,9 @@ namespace CheatManager.Configuration
             new ConfigData(SECTIONS[0], SECTION_HOTKEYS[0], KeyCode.F5.ToString()),
             new ConfigData(SECTIONS[0], SECTION_HOTKEYS[1], KeyCode.F4.ToString()),
             new ConfigData(SECTIONS[0], SECTION_HOTKEYS[2], KeyCode.Delete.ToString()),
-            new ConfigData(SECTIONS[1], SECTION_SETTINGS[0], 2.ToString())
+            new ConfigData(SECTIONS[1], SECTION_PROGRAM[0], true.ToString()),
+            new ConfigData(SECTIONS[1], SECTION_PROGRAM[1], true.ToString()),
+            new ConfigData(SECTIONS[2], SECTION_SETTINGS[0], 2.ToString())
     };        
 
         internal static void InitConfig()
@@ -50,8 +58,11 @@ namespace CheatManager.Configuration
                 Helper.CreateDefaultConfigFile(FILENAME, PROGRAM_NAME, VERSION, DEFAULT_CONFIG);
             }
 
-            Section_hotkeys = Helper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[0], SECTION_HOTKEYS);
-            Section_settings = Helper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[1], SECTION_SETTINGS);
+            Main.isConsoleEnabled = bool.Parse(Helper.GetKeyValue(FILENAME, SECTIONS[1], SECTION_PROGRAM[0]));
+            Main.isInfoBarEnabled = bool.Parse(Helper.GetKeyValue(FILENAME, SECTIONS[1], SECTION_PROGRAM[1]));
+
+            Section_hotkeys = Helper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[0], SECTION_HOTKEYS);            
+            Section_settings = Helper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[2], SECTION_SETTINGS);
 
             int.TryParse(Section_settings[SECTION_SETTINGS[0]], out int ovpMultiplier);
             

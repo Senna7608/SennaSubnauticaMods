@@ -19,9 +19,12 @@ namespace SlotExtender
         {
             try
             {
+                Config.LoadConfig();
+                SlotHelper.InitSlotIDs();
+
                 hInstance = HarmonyInstance.Create("Subnautica.SlotExtender.mod");
 
-                //Harmony autopatch not working if MoreQuickSlots mod not installed
+                //Harmony autopatch not working if MoreQuickSlots mod not installed therefore switch to manual patching mode
                 //hInstance.PatchAll(Assembly.GetExecutingAssembly());
                 
                 //begin manual patch
@@ -67,15 +70,15 @@ namespace SlotExtender
             //check MoreQuickSlots namespace is exists
             if (RefHelp.IsNamespaceExists("MoreQuickSlots"))
             {
-                Logger.Log("-> MoreQuickSlots namespace is exist! trying to install a Cross-MOD patch...");
+                Logger.Log("-> MoreQuickSlots namespace is exist! Trying to install a Cross-MOD patch...");
                 //if yes construct a Harmony patch
                 MQS_Patcher mqs_patcher = new MQS_Patcher(hInstance);
 
                 if (mqs_patcher.InitPatch())
-                    Logger.Log("-> MoreQuickSlots Cross-MOD patch succesfully installed!");
+                    Logger.Log("-> MoreQuickSlots Cross-MOD patch installed!");
                 else
-                    Logger.Log("-> MoreQuickSlots Cross-MOD patch failed!");
-            }                       
+                    Logger.Log("-> MoreQuickSlots Cross-MOD patch install failed!");
+            }            
         }
 
         private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -85,7 +88,7 @@ namespace SlotExtender
                 //enabling game console
                 UnityHelper.EnableConsole();
                 //loading config from file
-                Configuration.Config.InitConfig();
+                Config.InitConfig();
                 //add console commad for configuration window
                 sEConfig = new SEConfig();
                 //add an action if changed controls
@@ -96,10 +99,12 @@ namespace SlotExtender
         internal static void GameInput_OnBindingsChanged()
         {
             //input changed, refreshing key bindings
-            Configuration.Config.InitSLOTKEYS();
+            Config.InitSLOTKEYS();            
             
-            if (Initialize_uGUI.Instance)
+            if (Initialize_uGUI.Instance != null)
+            {
                 Initialize_uGUI.Instance.RefreshText();
+            }            
         }        
     }    
 }

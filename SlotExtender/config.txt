@@ -1,6 +1,9 @@
 [SlotExtender]
 Version: 2.4
 
+[Settings]
+MaxSlots: 12
+
 [Hotkeys]
 Upgrade: T
 Storage: R

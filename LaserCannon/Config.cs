@@ -76,7 +76,7 @@ namespace LaserCannon
         public static readonly string[] SECTION_LANGUAGE =
         {
             "Item_Name",
-            "Item_Description",
+            "Item_Description",            
             "Option_Title",
             "Option_OnlyHostile",
             "Option_BeamColor",
@@ -91,14 +91,16 @@ namespace LaserCannon
             "Option_Color_Orange",
             "Option_Color_Lime",
             "Option_Color_Amethyst",
-            "Option_Color_Default"
+            "Option_Color_Default",
+            "LowPower_Title",
+            "LowPower_Message",
         };
 
         private static readonly List<ConfigData> DEFAULT_CONFIG = new List<ConfigData>
         {
             new ConfigData(SECTIONS[0], SECTION_PROGRAM[0], false.ToString()),
-            new ConfigData(SECTIONS[0], SECTION_PROGRAM[1], Modules.Colors.ColorNames[0]),
-            new ConfigData(SECTIONS[0], SECTION_PROGRAM[2], 1.ToString()),
+            new ConfigData(SECTIONS[0], SECTION_PROGRAM[1], "Default"),
+            new ConfigData(SECTIONS[0], SECTION_PROGRAM[2], 50.ToString()),
             new ConfigData(SECTIONS[0], SECTION_PROGRAM[3], Languages[6]),
 
             new ConfigData(SECTIONS[1], SECTION_LANGUAGE[0], "Laser Cannon"),
@@ -118,10 +120,12 @@ namespace LaserCannon
             new ConfigData(SECTIONS[1], SECTION_LANGUAGE[14], "Lime green"),
             new ConfigData(SECTIONS[1], SECTION_LANGUAGE[15], "Purple"),
             new ConfigData(SECTIONS[1], SECTION_LANGUAGE[16], "Default"),
+            new ConfigData(SECTIONS[1], SECTION_LANGUAGE[17], "Warning! Low Power!"),
+            new ConfigData(SECTIONS[1], SECTION_LANGUAGE[18], "Laser Cannon Disabled!"),
 
             new ConfigData(SECTIONS[2], SECTION_LANGUAGE[0], "Laserkanone"),
             new ConfigData(SECTIONS[2], SECTION_LANGUAGE[1], "Wiedergewonnene Laserstrahltechnologie von einem alten Precursor Waffenfragment."),
-            new ConfigData(SECTIONS[2], SECTION_LANGUAGE[2], "Laser Cannon Modul Optionen"),
+            new ConfigData(SECTIONS[2], SECTION_LANGUAGE[2], "Laserkanone Modul Optionen"),
             new ConfigData(SECTIONS[2], SECTION_LANGUAGE[3], "Nur feindliches Ziel beschädigen"),
             new ConfigData(SECTIONS[2], SECTION_LANGUAGE[4], "Laserstrahl Farbe"),
             new ConfigData(SECTIONS[2], SECTION_LANGUAGE[5], "Laserstrahl schaden"),
@@ -136,6 +140,8 @@ namespace LaserCannon
             new ConfigData(SECTIONS[2], SECTION_LANGUAGE[14], "Lindgrün"),
             new ConfigData(SECTIONS[2], SECTION_LANGUAGE[15], "Lila"),
             new ConfigData(SECTIONS[2], SECTION_LANGUAGE[16], "Standard"),
+            new ConfigData(SECTIONS[2], SECTION_LANGUAGE[17], "Warnung! Geringer Strom!"),
+            new ConfigData(SECTIONS[2], SECTION_LANGUAGE[18], "Laserkanone Deaktiviert!"),
 
             new ConfigData(SECTIONS[3], SECTION_LANGUAGE[0], "Lézerágyú"),
             new ConfigData(SECTIONS[3], SECTION_LANGUAGE[1], "Egy ősi idegen eredetű fegyvertöredékből visszafejtett lézersugár technológia."),
@@ -153,7 +159,9 @@ namespace LaserCannon
             new ConfigData(SECTIONS[3], SECTION_LANGUAGE[13], "Narancssárga"),
             new ConfigData(SECTIONS[3], SECTION_LANGUAGE[14], "Limezöld"),
             new ConfigData(SECTIONS[3], SECTION_LANGUAGE[15], "Lila"),
-            new ConfigData(SECTIONS[3], SECTION_LANGUAGE[16], "Alapbeállítás")
+            new ConfigData(SECTIONS[3], SECTION_LANGUAGE[16], "Alapbeállítás"),
+            new ConfigData(SECTIONS[3], SECTION_LANGUAGE[17], "Vigyázat! Kevés az Energia!"),
+            new ConfigData(SECTIONS[3], SECTION_LANGUAGE[18], "Lézerágyú letiltva!"),
         };
 
         internal static void InitConfig()

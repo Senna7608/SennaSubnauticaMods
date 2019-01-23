@@ -5,57 +5,113 @@ using UnityEngine;
 using UnityEngine.Internal;
 using System.Collections.Generic;
 using System.Collections;
+using System.Text;
+using System.IO;
 
 namespace Common.DebugHelper
-{
+{   
     public static class DebugHelper
     {
+        private static readonly string FILENAME = $"{Environment.CurrentDirectory}\\DebugHelper_";
+
+        public static void Write(string logMessage) => Debug.Log(logMessage);
+
+        public static void DebugGameObject(GameObject gameObject, bool fullDebug = false)
+        {
+            if (gameObject == null)
+                return;
+
+            FileStream fileStream = new FileStream($"{FILENAME}{gameObject.name}.txt", FileMode.CreateNew, FileAccess.Write);
+
+            using (StreamWriter streamWriter = new StreamWriter(fileStream))
+            {
+                DebugGameObject(gameObject, streamWriter, fullDebug: fullDebug);
+            }
+        }              
+
+        public static void DebugGameObject(GameObject gameObject, StreamWriter streamWriter, string space = "", bool fullDebug = false)
+        {
+            if (gameObject == null)
+                return;          
+
+            streamWriter.WriteLine(space + $"Name: [{gameObject}]");
+            streamWriter.WriteLine(space + "{");
+            streamWriter.WriteLine(space + " Components:");
+            streamWriter.WriteLine(space + " {");
+
+            foreach (Component component in gameObject.GetComponents<Component>())
+            {
+                streamWriter.WriteLine(space + $"   [{component.GetType().ToString()}]");
+            }
+            streamWriter.WriteLine(space + " }");
+
+            DebugTransform(gameObject.transform, streamWriter, space, fullDebug);
+           
+            streamWriter.WriteLine(space + $"  Child:");
+            streamWriter.WriteLine(space + "   {");            
+
+            foreach (Transform child in gameObject.transform)
+            {
+                DebugGameObject(child.gameObject, streamWriter, space + "    ", fullDebug);               
+            }
+            streamWriter.WriteLine(space + "   }");
+            streamWriter.WriteLine(space + "}");            
+        }
+
+
+        private static void DebugTransform(Transform transform, StreamWriter streamWriter, string space, bool fullDebug = false)
+        {
+            streamWriter.WriteLine(space + "  Transform:");
+            streamWriter.WriteLine(space + "  {");
+            streamWriter.WriteLine(space + $"   name: [{transform}]");            
+            streamWriter.WriteLine(space + $"   parent: [{transform.parent}]");
+            streamWriter.WriteLine(space + $"   root: [{transform.root}]");
+            streamWriter.WriteLine(space + $"   childCount: [{transform.childCount}]");
+
+            if (fullDebug)
+            {
+                streamWriter.WriteLine(space);
+                streamWriter.WriteLine(space + "  Vector3:");
+                streamWriter.WriteLine(space + $"   position: {transform.position}");
+                streamWriter.WriteLine(space + $"   localPosition: {transform.localPosition}");
+                streamWriter.WriteLine(space + $"   right: {transform.right}");
+                streamWriter.WriteLine(space + $"   up: {transform.up}");
+                streamWriter.WriteLine(space + $"   eulerAngles: {transform.eulerAngles}");
+                streamWriter.WriteLine(space + $"   localEulerAngles: {transform.localEulerAngles}");
+                streamWriter.WriteLine(space + $"   forward: {transform.forward}");
+                streamWriter.WriteLine(space + $"   localScale: {transform.localScale}");
+                streamWriter.WriteLine(space + $"   lossyScale: {transform.lossyScale}");
+                streamWriter.WriteLine(space);
+                streamWriter.WriteLine(space + "  Quaternion:");
+                streamWriter.WriteLine(space + $"   rotation: {transform.rotation}");
+                streamWriter.WriteLine(space + $"   localRotation: {transform.localRotation}");
+                streamWriter.WriteLine(space);
+                streamWriter.WriteLine(space + "  Other:");                
+                streamWriter.WriteLine(space + $"   hasChanged: [{transform.hasChanged}]");
+                streamWriter.WriteLine(space + $"   hideFlags: [{transform.hideFlags}]");
+                streamWriter.WriteLine(space + $"   hierarchyCapacity: [{transform.hierarchyCapacity}]");
+                streamWriter.WriteLine(space + $"   hierarchyCount: [{transform.hierarchyCount}]");
+            }
+            streamWriter.WriteLine(space + "  }");
+        }
+
+
+
         public static void DebugVehicle(string instance, string methodName, Vehicle vehicle)
         {
-            Debug.Log("[DebugHelper]\n" +
+            Write("[DebugHelper]\n" +
                 $"Instance: {instance}\n" +                
                 $"Call from: {methodName}()\n" +
                 $"Object class: {vehicle.GetType()}\n" +
                 $"Object name: {vehicle.name}");            
         }
 
-
-        public static void DebugGameObject(string name, GameObject gameObject)
-        {
-            if (gameObject == null)
-            {
-                Debug.LogError($"[DebugHelper] GameObject: [{name}] is NULL!");
-                return;
-            }
-
-            bool noParent = false;
-
-            if (gameObject.transform.parent == null)
-                noParent = true;
-
-            Debug.Log($"[DebugHelper] DebugGameObject: [{name}]\n" +
-
-                $"\nObject:\n" +
-                $" type: {gameObject.GetType().ToString()}\n" +
-                $" name: {gameObject.name}\n" +
-                $" tag: {gameObject.tag}\n" +
-                $" scene: {gameObject.scene}\n" +
-                $" activeInHierarchy: {gameObject.activeInHierarchy}\n" +
-                $" hideFlags: {gameObject.hideFlags}\n" +
-                $" isStatic: {gameObject.isStatic}\n" +
-                $" activeSelf: {gameObject.activeSelf}\n" +
-                
-                $"\nTransform:\n" +
-                $" transform: {gameObject.transform}\n" +
-                $" parent: {(noParent ? "NULL" : gameObject.transform.parent.ToString())}"
-                );
-        }
-
-        public static void DebugCollider(string name, Collider collider)
+        
+        public static void DebugCollider(Collider collider)
         {
             if (collider == null)
             {
-                Debug.LogError($"[DebugHelper] Collider: [{name}] is NULL!");
+                Write($"[DebugHelper] DebugCollider() parameter is NULL!");
                 return;
             }
 
@@ -69,7 +125,7 @@ namespace Common.DebugHelper
             if (collider.transform.parent == null)
                 noParent = true;
 
-            Debug.Log($"[DebugHelper] DebugCollider: [{name}]\n" +
+            Write($"[DebugHelper] DebugCollider()\n" +
 
                 $"\nObject:\n" +
                 $" type: {collider.GetType().ToString()}\n" +          
@@ -101,11 +157,11 @@ namespace Common.DebugHelper
                 );
         }
 
-        public static void DebugEquipment(string name, Equipment equipment)
+        public static void DebugEquipment(Equipment equipment)
         {
             if (equipment == null)
             {
-                Debug.LogError($"[DebugHelper] Equipment: [{name}] is NULL!");
+                Write($"[DebugHelper] DebugEquipment() parameter is NULL!");
                 return;
             }
 
@@ -114,7 +170,7 @@ namespace Common.DebugHelper
             if (equipment.tr.parent == null)
                 noParent = true;
 
-            Debug.Log($"[DebugHelper] DebugEquipment: [{name}]\n" +
+            Write($"[DebugHelper] DebugEquipment()\n" +
 
                 $"\nObject:\n" +
                 $" type: {equipment.GetType().ToString()}\n" +
@@ -127,11 +183,11 @@ namespace Common.DebugHelper
         }
 
 
-        public static void DebugRectTransform(string name, RectTransform rectTransform)
+        public static void DebugRectTransform(RectTransform rectTransform)
         {
             if (rectTransform == null)
             {
-                Debug.LogError($"[DebugHelper] RectTransform: [{name}] is NULL!");
+                Write($"[DebugHelper] DebugRectTransform() parameter is NULL!");
                 return;
             }
 
@@ -140,7 +196,7 @@ namespace Common.DebugHelper
             if (rectTransform.parent == null)
                 noParent = true;
 
-            Debug.Log($"[DebugHelper] DebugRectTransform: [{name}]\n" +
+            Write($"[DebugHelper] DebugRectTransform()\n" +
 
                 $"\nObject:\n" +
                 $" type: {rectTransform.GetType().ToString()}\n" +                
@@ -183,60 +239,12 @@ namespace Common.DebugHelper
                 $" hierarchyCount: {rectTransform.hierarchyCount}\n"
                 );
         }
-
-        public static void DebugTransform(string name, Transform transform)
-        {
-            if (transform == null)
-            {
-                Debug.LogError($"[DebugHelper] transform: [{name}] is NULL!");
-                return;
-            }
-
-            bool noParent = false;
-
-            if (transform.parent == null)
-                noParent = true;
-
-            Debug.Log($"[DebugHelper] DebugTransform: [{name}]\n" +
-
-                $"\nObject:\n" +
-                $" type: {transform.GetType().ToString()}\n" +
-
-                $"\nTransform:\n" +
-                $" transform: {transform.transform}\n" +
-                $" parent: {(noParent ? "NULL" : transform.parent.ToString())}\n" +
-                $" root: {transform.root}\n" +          
-
-                $"\nVector3:\n" +
-                $" position: {transform.position}\n" +
-                $" localPosition: {transform.localPosition}\n" +                
-                $" right: {transform.right}\n" +
-                $" up: {transform.up}\n" +                
-                $" eulerAngles: {transform.eulerAngles}\n" +
-                $" localEulerAngles: {transform.localEulerAngles}\n" +
-                $" forward: {transform.forward}\n" +
-                $" localScale: {transform.localScale}\n" +
-                $" lossyScale: {transform.lossyScale}\n" +
-
-                $"\nQuaternion:\n" +
-                $" rotation: {transform.rotation}\n" +
-                $" localRotation: {transform.localRotation}\n" +
-
-                $"\nOther:\n" +
-                $" childCount: {transform.childCount}\n" +
-                $" hasChanged: {transform.hasChanged}\n" +
-                $" hideFlags: {transform.hideFlags}\n" +
-                $" hierarchyCapacity: {transform.hierarchyCapacity}\n" +
-                $" hierarchyCount: {transform.hierarchyCount}\n"
-                );
-        }
-
-
-        public static void DebugRigidbody(string name, Rigidbody rb)
+        
+        public static void DebugRigidbody(Rigidbody rb)
         {
             if (rb == null)
             {
-                Debug.LogError($"[DebugHelper] Rigidbody: [{name}] is NULL!");
+                Write($"[DebugHelper] DebugRigidbody() parameter is NULL!");
                 return;
             }
 
@@ -245,7 +253,7 @@ namespace Common.DebugHelper
             if (rb.transform.parent == null)
                 noParent = true;
 
-            Debug.Log($"[DebugHelper] DebugRigidbody: [{name}]\n" +
+            Write($"[DebugHelper] DebugRigidbody()\n" +
 
                 $"\nObject:\n" +
                 $" type: {rb.GetType().ToString()}\n" +

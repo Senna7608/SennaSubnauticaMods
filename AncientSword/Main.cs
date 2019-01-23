@@ -57,18 +57,6 @@ namespace AncientSword
             {
                 Debug.LogException(ex);
             }
-        }
-
-        public static T AddOrGetComponent<T>(this GameObject gameObject) where T : Component
-        {
-            if (gameObject.GetComponent<T>() != null)
-            {
-                return gameObject.GetComponent<T>();
-            }
-            else
-            {
-                return gameObject.AddComponent<T>();
-            }
-        }
+        }        
     }
 }

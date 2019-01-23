@@ -1,0 +1,10 @@
+﻿{
+  "Id": "CannonArm",
+  "DisplayName": "CannonArm",
+  "Author": "Senna",
+  "Version": "1.0",
+  "Enable": true,
+  "AssemblyName": "CannonArm.dll",
+  "EntryMethod": "CannonArm.Main.Load",
+  "Config": { }
+}

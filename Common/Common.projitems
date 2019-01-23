@@ -14,24 +14,16 @@
     <Compile Include="$(MSBuildThisFileDirectory)ConfigurationParser\Parser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigurationParser\Section.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigurationParser\SectionParser.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Craftable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DebugHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)DeQueue.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmProperty.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmPropertyCollection.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmPropertyCollectionList.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmPropertyListT.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmPropertyT.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmUtils.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmYesNo.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\ISerialConfirmation.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GUIHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GUIHelper\Button.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GUIHelper\SNDropDown.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GUIHelper\SNStyles.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GUIHelper\SNGUI.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GUIHelper\SNWindow.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)InputHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modules.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RefHelp.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)StringBuffer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UnityHelper.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="$(MSBuildThisFileDirectory)EasyMarkup\TestDoc.txt" />
   </ItemGroup>
 </Project>

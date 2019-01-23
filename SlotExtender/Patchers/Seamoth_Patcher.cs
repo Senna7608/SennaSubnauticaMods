@@ -10,7 +10,8 @@ namespace SlotExtender.Patchers
         [HarmonyPrefix]
         internal static bool Prefix(ref string[] __result)
         {
-            __result = SlotHelper.ExpandedSeamothSlotIDs;
+            //__result = SlotHelper.ExpandedSeamothSlotIDs;
+            __result = SlotHelper.SessionSeamothSlotIDs;
             return false;
         }
     }    
@@ -22,7 +23,7 @@ namespace SlotExtender.Patchers
         [HarmonyPostfix]
         internal static void Postfix(SeaMoth __instance)
         {
-            __instance.gameObject.AddIfNotComponent<SlotExtender>();
+            __instance.gameObject.AddIfNeedComponent<SlotExtender>();
             Logger.Log($"Added component to instance: {__instance.name} ID: {__instance.GetInstanceID()}");
         }
     }
