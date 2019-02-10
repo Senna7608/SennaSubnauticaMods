@@ -16,8 +16,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)ConfigurationParser\SectionParser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Craftable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DebugHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GUIHelper\Button.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GameHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GUIHelper\SNDropDown.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GUIHelper\HorizontalSlider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GUIHelper\SNHorizontalSlider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GUIHelper\SNScrollView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GUIHelper\SNStyles.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GUIHelper\SNGUI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GUIHelper\SNWindow.cs" />

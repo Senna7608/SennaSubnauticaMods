@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
-using Common;
 using UnityEngine;
 using UWE;
+using static Common.Modules;
+using static Common.GameHelper;
 
 namespace LaserCannon
 {
@@ -28,7 +29,7 @@ namespace LaserCannon
         private float targetDist;
         private Vector3[] beamPositions = new Vector3[3];
         private GameObject targetGameobject;
-        private Color beamcolor = Modules.Colors.Default;
+        private Color beamcolor = Colors.Default;
 
         private bool isToggle;
         private bool isShoot;
@@ -110,13 +111,13 @@ namespace LaserCannon
             thisSeamoth.modules.onAddItem -= OnAddItem;
             thisSeamoth.modules.onRemoveItem -= OnRemoveItem;
             playerMain.playerModeChanged.RemoveHandler(gameObject, OnPlayerModeChanged);
-            Modules.SetInteractColor(Modules.Colors.White);
+            SetInteractColor(Colors.White);
             Destroy(Instance);
         }
 
         public void SetBeamColor()
         {
-            beamcolor = Modules.Colors.ColorArray[Config.beamColor];            
+            beamcolor = Colors.ColorArray[Config.beamColor];            
         }
 
         public void ShootOnlyHostile()
@@ -189,7 +190,7 @@ namespace LaserCannon
             isActive = false;
             isShoot = false;
             isRepeat = false;
-            Modules.SetInteractColor(Modules.Colors.White);
+            SetInteractColor(Colors.White);
         }
 
         private void AddDamage(GameObject gameObject)
@@ -263,7 +264,7 @@ namespace LaserCannon
                         isShoot = false;
                         isRepeat = false;
                         idleTimer = Mathf.Max(0f, idleTimer - Time.deltaTime);
-                        Modules.SetInteractColor(Modules.Colors.Red);
+                        SetInteractColor(Colors.Red);
                         HandReticle.main.SetInteractText(lowPower_title, lowPower_message, false, false, HandReticle.Hand.None);                        
                     }
                     else

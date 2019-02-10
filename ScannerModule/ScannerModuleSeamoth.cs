@@ -1,6 +1,7 @@
-﻿using Common;
-using UnityEngine;
+﻿using UnityEngine;
 using UWE;
+using static Common.Modules;
+using static Common.GameHelper;
 
 namespace ScannerModule
 {
@@ -171,8 +172,8 @@ namespace ScannerModule
             scanSound.Stop();
             SetFXActive(false);           
             stateCurrent = ScanState.None;
-            Modules.SetProgressColor(Modules.Colors.White);
-            Modules.SetInteractColor(Modules.Colors.White);
+            SetProgressColor(Colors.White);
+            SetInteractColor(Colors.White);
         }
 
 
@@ -293,7 +294,7 @@ namespace ScannerModule
                 {                    
                     main.SetIcon(HandReticle.IconType.Progress, 4f);
                     main.progressText.text = Mathf.RoundToInt(PDAScanner.scanTarget.progress * 100f) + "%";
-                    Modules.SetProgressColor(Modules.Colors.Orange);                    
+                    SetProgressColor(Colors.Orange);                    
                     main.progressImage.fillAmount = Mathf.Clamp01(PDAScanner.scanTarget.progress);                    
                     main.SetProgress(PDAScanner.scanTarget.progress);
                 }                

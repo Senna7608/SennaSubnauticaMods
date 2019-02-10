@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using ConfigurationParser;
+using Common.ConfigurationParser;
 using System.IO;
 using System.Reflection;
 using System.Diagnostics;
@@ -13,11 +13,13 @@ namespace CheatManager.Configuration
         internal static string VERSION = string.Empty;        
         private const string PROGRAM_NAME = "CheatManager";
         private static readonly string FILENAME = $"{Environment.CurrentDirectory}\\QMods\\{PROGRAM_NAME}\\config.txt";
-
-        private static readonly string[] SECTIONS = { "Hotkeys", "Program", "Settings" };
+        internal static int overPowerMultiplier;
+        internal static int hungerAndThirstInterval;
+        private static readonly string[] SECTIONS = { "Hotkeys", "Program", "Settings", "ToggleButtons" };
         internal static Dictionary<string, KeyCode> KEYBINDINGS;
         internal static Dictionary<string, string> Section_hotkeys;        
         internal static Dictionary<string, string> Section_settings;
+        internal static Dictionary<string, string> Section_toggleButtons;
 
         private static readonly string[] SECTION_HOTKEYS =
         {
@@ -34,17 +36,48 @@ namespace CheatManager.Configuration
 
         private static readonly string[] SECTION_SETTINGS =
         {
-            "OverPowerMultiplier"            
+            "OverPowerMultiplier",
+            "HungerAndThirstInterval"
         };
 
+        private static readonly string[] SECTION_TOGGLEBUTTONS =
+        {
+            "fastbuild",
+            "fastscan",
+            "fastgrow",
+            "fasthatch",
+            "filterfast",
+            "radiation",
+            "invisible",
+            "nodamage",
+            "alwaysday",
+            "noinfect",
+            "overpower"
+        };
+        
         private static readonly List<ConfigData> DEFAULT_CONFIG = new List<ConfigData>
         {
             new ConfigData(SECTIONS[0], SECTION_HOTKEYS[0], KeyCode.F5.ToString()),
             new ConfigData(SECTIONS[0], SECTION_HOTKEYS[1], KeyCode.F4.ToString()),
             new ConfigData(SECTIONS[0], SECTION_HOTKEYS[2], KeyCode.Delete.ToString()),
-            new ConfigData(SECTIONS[1], SECTION_PROGRAM[0], true.ToString()),
-            new ConfigData(SECTIONS[1], SECTION_PROGRAM[1], true.ToString()),
-            new ConfigData(SECTIONS[2], SECTION_SETTINGS[0], 2.ToString())
+
+            new ConfigData(SECTIONS[1], SECTION_PROGRAM[0], false.ToString()),
+            new ConfigData(SECTIONS[1], SECTION_PROGRAM[1], false.ToString()),
+
+            new ConfigData(SECTIONS[2], SECTION_SETTINGS[0], 2.ToString()),
+            new ConfigData(SECTIONS[2], SECTION_SETTINGS[1], 1.ToString()),
+
+            new ConfigData(SECTIONS[3], SECTION_TOGGLEBUTTONS[0], false.ToString()),
+            new ConfigData(SECTIONS[3], SECTION_TOGGLEBUTTONS[1], false.ToString()),
+            new ConfigData(SECTIONS[3], SECTION_TOGGLEBUTTONS[2], false.ToString()),
+            new ConfigData(SECTIONS[3], SECTION_TOGGLEBUTTONS[3], false.ToString()),
+            new ConfigData(SECTIONS[3], SECTION_TOGGLEBUTTONS[4], false.ToString()),
+            new ConfigData(SECTIONS[3], SECTION_TOGGLEBUTTONS[5], false.ToString()),
+            new ConfigData(SECTIONS[3], SECTION_TOGGLEBUTTONS[6], false.ToString()),
+            new ConfigData(SECTIONS[3], SECTION_TOGGLEBUTTONS[7], false.ToString()),
+            new ConfigData(SECTIONS[3], SECTION_TOGGLEBUTTONS[8], false.ToString()),
+            new ConfigData(SECTIONS[3], SECTION_TOGGLEBUTTONS[9], false.ToString()),
+            new ConfigData(SECTIONS[3], SECTION_TOGGLEBUTTONS[10], false.ToString()),
     };        
 
         internal static void InitConfig()
@@ -56,6 +89,7 @@ namespace CheatManager.Configuration
                 UnityEngine.Debug.Log($"[{PROGRAM_NAME}] Warning! Configuration file is missing. Creating a new one.");                
                 
                 Helper.CreateDefaultConfigFile(FILENAME, PROGRAM_NAME, VERSION, DEFAULT_CONFIG);
+                Helper.AddInfoText(FILENAME, SECTIONS[2], "OverPowerMultiplier and HungerAndThirstInterval possible values: 1 to 10");
             }
 
             Main.isConsoleEnabled = bool.Parse(Helper.GetKeyValue(FILENAME, SECTIONS[1], SECTION_PROGRAM[0]));
@@ -63,19 +97,25 @@ namespace CheatManager.Configuration
 
             Section_hotkeys = Helper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[0], SECTION_HOTKEYS);            
             Section_settings = Helper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[2], SECTION_SETTINGS);
+            Section_toggleButtons = Helper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[3], SECTION_TOGGLEBUTTONS);
 
-            int.TryParse(Section_settings[SECTION_SETTINGS[0]], out int ovpMultiplier);
+            int.TryParse(Section_settings[SECTION_SETTINGS[0]], out overPowerMultiplier);
             
-            if (ovpMultiplier > 0 && ovpMultiplier <= 10)
-                Main.OverPowerMultiplier = ovpMultiplier;
-            else
+            if (overPowerMultiplier < 0 && overPowerMultiplier > 10)
             {
-                Main.OverPowerMultiplier = 2;
+                overPowerMultiplier = 10;
                 Helper.SetKeyValue(FILENAME, SECTIONS[1], Section_settings[SECTION_SETTINGS[0]], 2.ToString());
             }
 
-            SetKeyBindings();
-            
+            int.TryParse(Section_settings[SECTION_SETTINGS[1]], out hungerAndThirstInterval);
+
+            if (hungerAndThirstInterval < 0 && hungerAndThirstInterval > 10)
+            {
+                hungerAndThirstInterval = 10;
+                Helper.SetKeyValue(FILENAME, SECTIONS[1], Section_settings[SECTION_SETTINGS[1]], 2.ToString());
+            }
+
+            SetKeyBindings();            
         }
         
         internal static void WriteConfig()

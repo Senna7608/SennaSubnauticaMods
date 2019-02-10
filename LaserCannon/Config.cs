@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using ConfigurationParser;
+using Common.ConfigurationParser;
 using Common;
 using System.Diagnostics;
 using System.Reflection;

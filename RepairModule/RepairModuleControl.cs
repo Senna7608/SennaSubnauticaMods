@@ -1,6 +1,7 @@
-﻿using Common;
-using UnityEngine;
+﻿using UnityEngine;
 using UWE;
+using static Common.Modules;
+using static Common.GameHelper;
 
 namespace RepairModule
 {
@@ -76,7 +77,7 @@ namespace RepairModule
             thisVehicle.modules.onAddItem -= OnAddItem;
             thisVehicle.modules.onRemoveItem -= OnRemoveItem;
             playerMain.playerModeChanged.RemoveHandler(gameObject, OnPlayerModeChanged);
-            Modules.SetInteractColor(Modules.Colors.White);
+            SetInteractColor(Colors.White);
             Destroy(Instance);            
         }
 
@@ -129,8 +130,8 @@ namespace RepairModule
         {           
             weldSound.Stop();
             isActive = false;                                
-            Modules.SetInteractColor(Modules.Colors.White);
-            Modules.SetProgressColor(Modules.Colors.White);            
+            SetInteractColor(Colors.White);
+            SetProgressColor(Colors.White);            
         }        
 
         public void Update()
@@ -148,18 +149,18 @@ namespace RepairModule
 
                 if (thisVehicle.liveMixin.health < thisVehicle.liveMixin.maxHealth * 0.5f)                    
                 {
-                    Modules.SetProgressColor(Modules.Colors.Red);
-                    Modules.SetInteractColor(Modules.Colors.Red);
+                    SetProgressColor(Colors.Red);
+                    SetInteractColor(Colors.Red);
                 }
                 else if (thisVehicle.liveMixin.health < thisVehicle.liveMixin.maxHealth * 0.75f && thisVehicle.liveMixin.health > thisVehicle.liveMixin.maxHealth * 0.5f)                    
                 {
-                    Modules.SetProgressColor(Modules.Colors.Yellow);
-                    Modules.SetInteractColor(Modules.Colors.Yellow);
+                    SetProgressColor(Colors.Yellow);
+                    SetInteractColor(Colors.Yellow);
                 }
                 else if (thisVehicle.liveMixin.health > thisVehicle.liveMixin.maxHealth * 0.75f)                    
                 {
-                    Modules.SetProgressColor(Modules.Colors.Green);
-                    Modules.SetInteractColor(Modules.Colors.Green);
+                    SetProgressColor(Colors.Green);
+                    SetInteractColor(Colors.Green);
                 }
 
                 main.SetProgress(thisVehicle.liveMixin.health / thisVehicle.liveMixin.maxHealth);                    
@@ -177,7 +178,7 @@ namespace RepairModule
                 {
                     weldSound.Stop();
                     idleTimer = Mathf.Max(0f, idleTimer - Time.deltaTime);
-                    Modules.SetInteractColor(Modules.Colors.Red);
+                    SetInteractColor(Colors.Red);
                     main.SetInteractText("Warning!\nLow Power!", "Repair Module Disabled!", false, false, HandReticle.Hand.None);
                 }
                 else

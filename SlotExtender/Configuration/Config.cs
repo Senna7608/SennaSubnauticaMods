@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using UnityEngine;
-using ConfigurationParser;
+using Common.ConfigurationParser;
 using Common;
 
 namespace SlotExtender.Configuration

@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ConfigurationParser
+namespace Common.ConfigurationParser
 {
     public class SectionParser
     {

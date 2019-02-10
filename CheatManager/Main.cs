@@ -6,6 +6,7 @@ using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using Common;
 using CheatManager.Configuration;
+using CheatManager.NewCommands;
 
 namespace CheatManager
 {
@@ -16,8 +17,7 @@ namespace CheatManager
         public static CM_InfoBar CmInfoBar { get; private set; }
 
         internal static bool isConsoleEnabled { get; set; }
-        internal static bool isInfoBarEnabled { get; set; }
-        internal static int OverPowerMultiplier { get; set; }
+        internal static bool isInfoBarEnabled { get; set; }        
 
         internal static bool isExistsSMLHelperV2;        
 
@@ -27,11 +27,13 @@ namespace CheatManager
             {               
                 HarmonyInstance.Create("Subnautica.CheatManager.mod").PatchAll(Assembly.GetExecutingAssembly());
                 UnityHelper.EnableConsole();
-                SceneManager.sceneLoaded += new UnityAction<Scene, LoadSceneMode>(OnSceneLoaded); 
+                SceneManager.sceneLoaded += new UnityAction<Scene, LoadSceneMode>(OnSceneLoaded);
+
+                Config.InitConfig();                
             }
             catch (Exception ex)
             {
-                UnityEngine.Debug.LogException(ex);
+                Debug.LogException(ex);
             }
 
             isExistsSMLHelperV2 = RefHelp.IsNamespaceExists("SMLHelper.V2");            
@@ -41,28 +43,31 @@ namespace CheatManager
         {
             if (scene.name == "Main")
             {                
-                Init();                
+                Init();
+                Instance.gameObject.AddIfNeedComponent<AlwaysDayConsoleCommand>();
+                Instance.gameObject.AddIfNeedComponent<NoInfectConsoleCommand>();
+                Instance.gameObject.AddIfNeedComponent<OverPowerConsoleCommand>();
             }
             else if (scene.name == "StartScreen")
             {
-                DisplayManager.OnDisplayChanged += Screen_OnDisplayChanged;
-                Config.InitConfig();
+                //DisplayManager.OnDisplayChanged += Screen_OnDisplayChanged;               
+                
+                if (isInfoBarEnabled)
+                    CmInfoBar = new CM_InfoBar();
 
                 if (isConsoleEnabled)
                     CmLogger = new CM_Logger();
-
-                if (isInfoBarEnabled)
-                    CmInfoBar = new CM_InfoBar();
 
                 CmConfig.Load();
             }
         }
 
+        /*
         public static void Screen_OnDisplayChanged()
         {
             Debug.Log($"Resolution changed!");
         }
-
+        */
         public static CheatManager Init()
         {
             if (Instance == null)

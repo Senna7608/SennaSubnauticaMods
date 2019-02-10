@@ -1,16 +1,10 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
 
 namespace CheatManager
 {
     internal class WarpTargets
     {
-        internal Vector3 ConvertStringPosToVector3(string target)
-        {
-            string[] numbers = target.Split(' ');            
-            return new Vector3(float.Parse(numbers[0]), float.Parse(numbers[1]), float.Parse(numbers[2]));
-        }        
-
-        public readonly string[][] Targets = new string[][]
+        internal readonly List<string[]> Targets = new List<string[]>()
         {
             new string[] { "0 0 0",           "Safe Shallows"},
             new string[] { "0 500 0",         "Bungee Jumping (500m)"},

@@ -1,132 +1,166 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Common.GUIHelper;
+using static Common.GameHelper;
 
 namespace CheatManager
 {
     internal class ButtonControl : CheatManager
     {
-        internal static readonly float[] DayNightSpeed = { 0.1f, 0.25f, 0.5f, 0.75f, 1f, 2f };        
-
-        internal void NormalButtonControl(int normalButtonID, ref List<Button.ButtonInfo> Buttons, ref List<Button.ButtonInfo> toggleButtons)
+        internal static readonly float[] DayNightSpeed = { 0.1f, 0.25f, 0.5f, 0.75f, 1f, 2f };
+        
+        internal void NormalButtonControl(int normalButtonID, ref List<GuiItem> Buttons, ref List<GuiItem> toggleButtons)
         {
-            switch (normalButtonID)
+            switch ((Commands)normalButtonID)
             {
-                case 0 when toggleButtons[17].Pressed == true:
-                case 1 when toggleButtons[17].Pressed == true:
+                case Commands.day when toggleButtons[(int)ToggleCommands.alwaysday].State == GuiItemState.PRESSED:
+                case Commands.night when toggleButtons[(int)ToggleCommands.alwaysday].State == GuiItemState.PRESSED:
                     break;
-                case 0:
-                case 1:
-                case 2:
-                case 4:
-                case 5:
-                case 6:
+                case Commands.day:
+                case Commands.night:
+                case Commands.unlockall:
+                case Commands.warpme:
+                case Commands.unlockdoors:
+                case Commands.encyall:                    
                     ExecuteCommand("Send command to console: " + Buttons[normalButtonID].Name, Buttons[normalButtonID].Name);
                     break;
-
-                case 3:
+                case Commands.clearinventory:
                     ErrorMessage.AddMessage("Inventory Cleared");
                     Inventory.main.container.Clear(false);                    
                     break;
-
-                case 7:
-                    ExecuteCommand("warp" + " to: " + prevCwPos, "warp " + prevCwPos);
+                case Commands.BackWarp:                    
+                    Teleport("position", prevCwPos);
                     Utils.PlayFMODAsset(warpSound, Player.main.transform, 20f);
                     prevCwPos = null;
-                    Buttons[7].Enabled = false;
+                    Buttons[(int)Commands.BackWarp].Enabled = false;
                     break;
             }
-
         }
-
-
-        internal void ToggleButtonControl (int toggleButtonID, ref List<Button.ButtonInfo> toggleButtons)
+                
+        internal void ToggleButtonControl(int toggleButtonID, ref List<GuiItem> toggleButtons)
         {
-            switch (toggleButtonID)
+            switch ((ToggleCommands)toggleButtonID)
             {
-                case 9 when toggleButtons[1].Pressed == true:
+                case ToggleCommands.nocost when toggleButtons[(int)ToggleCommands.creative].State == GuiItemState.PRESSED:
                     break;
-                case 11 when toggleButtons[1].Pressed == true:
-                case 11 when toggleButtons[0].Pressed == true:
+                case ToggleCommands.nosurvival when toggleButtons[(int)ToggleCommands.creative].State == GuiItemState.PRESSED:
+                case ToggleCommands.nosurvival when toggleButtons[(int)ToggleCommands.freedom].State == GuiItemState.PRESSED:
                     break;
-                case 12 when toggleButtons[1].Pressed == true:
+                case ToggleCommands.oxygen when toggleButtons[(int)ToggleCommands.creative].State == GuiItemState.PRESSED:
                     break;
-                case 13 when toggleButtons[1].Pressed == true:
+                case ToggleCommands.radiation when toggleButtons[(int)ToggleCommands.creative].State == GuiItemState.PRESSED:
                     break;
-                case 14 when toggleButtons[1].Pressed == true:
+                case ToggleCommands.invisible when toggleButtons[(int)ToggleCommands.creative].State == GuiItemState.PRESSED:
                     break;
-                case 0:
-                case 1:
-                case 2:
-                case 3:
-                case 4:
-                case 5:
-                case 6:
-                case 7:
-                case 9:
-                case 10:
-                case 11:
-                case 12:
-                case 13:
-                case 14:
-                case 16:
+                case ToggleCommands.freedom:
+                case ToggleCommands.creative:
+                case ToggleCommands.survival:
+                case ToggleCommands.hardcore:
+                case ToggleCommands.fastbuild:
+                case ToggleCommands.fastscan:
+                case ToggleCommands.fastgrow:
+                case ToggleCommands.fasthatch:
+                case ToggleCommands.nocost:
+                case ToggleCommands.noenergy:
+                case ToggleCommands.nosurvival:
+                case ToggleCommands.oxygen:
+                case ToggleCommands.radiation:
+                case ToggleCommands.invisible:
+                case ToggleCommands.nodamage:
+                case ToggleCommands.noinfect:
+                case ToggleCommands.alwaysday:
+                case ToggleCommands.overpower:
+                case ToggleCommands.filterfast:
                     ExecuteCommand("", toggleButtons[toggleButtonID].Name);
                     break;
-                case 15:
-                    toggleButtons[15].Pressed = !toggleButtons[15].Pressed;
-                    ExecuteCommand(toggleButtons[15].Pressed ? "shotgun cheat is now True" : "shotgun cheat is now False", toggleButtons[toggleButtonID].Name);
-                    break;
-                case 8:
-                    toggleButtons[8].Pressed = !toggleButtons[8].Pressed;
-                    ExecuteCommand(toggleButtons[8].Pressed ? "filterFast cheat is now True" : "filterFast cheat is now False", toggleButtons[toggleButtonID].Name);
-                    break;
-                case 17:
-                    toggleButtons[17].Pressed = !toggleButtons[17].Pressed;
-                    if (toggleButtons[17].Pressed)
-                    {
-                        ErrorMessage.AddMessage("alwaysDay cheat is now True");
-                        DayNightCycle.main.sunRiseTime = 70F;
-                        DayNightCycle.main.sunSetTime = 200F;
-                    }
-                    else
-                    {
-                        ErrorMessage.AddMessage("alwaysDay cheat is now False");
-                        DayNightCycle.main.sunRiseTime = 0.125F;
-                        DayNightCycle.main.sunSetTime = 0.875F;
-                    }
-                    break;
-                case 18:
-                    if (!toggleButtons[18].Pressed)
-                    {
-                        base.playerPrevInfectionLevel = Player.main.infectedMixin.GetInfectedAmount();
-                    }
-                    else
-                    {
-                        Player.main.infectedMixin.SetInfectedAmount(Main.Instance.playerPrevInfectionLevel);
-                    }
-
-                    toggleButtons[18].Pressed = !toggleButtons[18].Pressed;
-                    ErrorMessage.AddMessage(toggleButtons[18].Pressed ? "noInfect cheat is now True" : "noInfect cheat is now False");
-                    break;
-
-                case 19:
-                    toggleButtons[19].Pressed = !toggleButtons[19].Pressed;
-                    Main.Instance.OverPower(toggleButtons[19].Pressed);                   
-                    ErrorMessage.AddMessage(toggleButtons[19].Pressed ? "overPower cheat is now True" : "overPower cheat is now False");
-                    break;  
-            }
-
-            Main.Instance.ReadGameValues();
+                case ToggleCommands.shotgun:
+                    toggleButtons[(int)ToggleCommands.shotgun].State = SNGUI.SetStateInverse(toggleButtons[(int)ToggleCommands.shotgun].State);
+                    ExecuteCommand(toggleButtons[(int)ToggleCommands.shotgun].State == GuiItemState.PRESSED ? "shotgun cheat is now True" : "shotgun cheat is now False", toggleButtons[(int)ToggleCommands.shotgun].Name);
+                    break;                    
+            }           
         }                
 
-        internal void DayNightButtonControl(int daynightTabID, ref int currentdaynightTab, ref List<Button.ButtonInfo> daynightTab)
+        internal void DayNightButtonControl(int daynightTabID, ref int currentdaynightTab, ref List<GuiItem> daynightTab)
         {
             if (daynightTabID != currentdaynightTab)
             {
-                daynightTab[currentdaynightTab].Pressed = false;
-                daynightTab[daynightTabID].Pressed = true;
+                daynightTab[currentdaynightTab].State = GuiItemState.NORMAL;
+                daynightTab[daynightTabID].State = GuiItemState.PRESSED;
                 currentdaynightTab = daynightTabID;
                 DevConsole.SendConsoleCommand("daynightspeed " + DayNightSpeed[daynightTabID]);
             }
-        }        
+        }
+        
+        internal void ScrollViewControl(int categoryTabID, ref int selected, ref List<GuiItem> scrollItems, ref List<TechTypeData>[] tMatrix, ref List<GuiItem> commands)
+        {            
+            string selectedTech;
+            Categories category = GetCategoryFromID(categoryTabID);
+
+            switch (category)
+            {
+                case Categories.Warp:
+                    selectedTech = warpTargets.Targets[selected][0];                    
+                    break;
+                default:
+                    selectedTech = tMatrix[categoryTabID][selected].TechType.ToString();
+                    break;
+            }
+            
+            switch (category)
+            {
+                case Categories.Vehicles:
+                    if (!Player.main.IsInBase() && !Player.main.IsInSubmarine() && !Player.main.escapePod.value)
+                    {
+                        switch (tMatrix[categoryTabID][selected].TechType)
+                        {
+                            case TechType.Cyclops:
+                                ExecuteCommand($"{scrollItems[selected].Name}  has spawned", "sub cyclops");
+                                break;
+                            default:
+                                ExecuteCommand($"{scrollItems[selected].Name}  has spawned", $"spawn {selectedTech}");
+                                break;
+                        }
+                        break;
+                    }
+                    ErrorMessage.AddMessage("CheatManager Error!\nVehicles cannot spawn inside Lifepod, Base or Submarine!");
+                    break;
+                case Categories.Tools:
+                case Categories.Equipment:
+                case Categories.Materials:
+                case Categories.Electronics:
+                case Categories.Upgrades:
+                case Categories.FoodAndWater:
+                case Categories.Eggs:
+                case Categories.SeaSeed:
+                case Categories.LandSeed:
+                case Categories.FloraItem:
+                    ExecuteCommand($"{scrollItems[selected].Name}  added to inventory", $"item {selectedTech}");
+                    break;
+                case Categories.LootAndDrill:
+                case Categories.Herbivores:
+                case Categories.Carnivores:
+                case Categories.Parasites:
+                case Categories.Leviathan:
+                case Categories.SeaSpawn:
+                case Categories.LandSpawn:
+                    ExecuteCommand($"{scrollItems[selected].Name}  has spawned", $"spawn {selectedTech}");
+                    break;
+                case Categories.Blueprints:
+                    ExecuteCommand($"Blueprint: {scrollItems[selected].Name} unlocked", $"unlock {selectedTech}");
+                    break;
+                case Categories.Warp:
+                    prevCwPos = Teleport(scrollItems[selected].Name, selectedTech);
+                    commands[(int)Commands.BackWarp].Enabled = true;
+                    break;
+                default:
+                    break;
+            }           
+        }
+
+        private Categories GetCategoryFromID(int id)
+        {
+            int[] result = (int[])Enum.GetValues(typeof(Categories));
+            return (Categories)result[id];
+        }
     }
 }

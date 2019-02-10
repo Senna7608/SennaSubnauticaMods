@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Common.GUIHelper
@@ -47,39 +48,39 @@ namespace Common.GUIHelper
             return windowRect;
         }
 
-        public static Rect[] SetGridItemsRect(Rect rect, int columns, int rows, int space, int itemHeight, bool alignRightDown = true, bool labeled = false)
+        public static List<Rect> SetGridItemsRect(Rect rect, int columns, int rows, int itemHeight, int spaceHorizontal, int spaceVertical, bool alignRightDown = true, bool labeled = false, bool overrideHeight = false)
         {
             if (columns < 1 || rows < 1)
             {
                 throw new ArgumentException("The number of rows or columns must not be less than one!");
             }
 
-            if (((rows * itemHeight) + rows * space) > rect.height)
+            if (!overrideHeight && ((rows * itemHeight) + (rows * spaceVertical)) > rect.height)
             {
                 throw new ArgumentException("The size of the elements is larger than window height!");
             }
 
-            float calcWidth = (rect.width - ((columns + 1) * space)) / columns;
+            float calcWidth = (rect.width - ((columns + 1) * spaceHorizontal)) / columns;
 
             int items = columns * rows;
             
             if (labeled)
             {                
-                rect.y = rect.y + (itemHeight - space / 2);
+                rect.y = rect.y + (itemHeight - spaceVertical / 2);
             }
             
-            Rect[] rects = new Rect[items];
+            List<Rect> rects = new List<Rect>();
 
             int row = 0;
             int column = 0;
 
             for (int i = 0; i < items; i++)
             {
-                rects[i] = new Rect(rect.x + space + (column * (calcWidth + space)), rect.y + space + (row * (itemHeight + space)), calcWidth, itemHeight);
+                rects.Add(new Rect(rect.x + spaceHorizontal + (column * (calcWidth + spaceHorizontal)), rect.y + spaceVertical + (row * (itemHeight + spaceVertical)), calcWidth, itemHeight));
 
                 if (alignRightDown && columns > 1)
                 {
-                    if (column == columns)
+                    if (column == columns - 1)
                     {
                         column = 0;
                         row++;
@@ -89,7 +90,7 @@ namespace Common.GUIHelper
                 }
                 else
                 {
-                    if (row == rows)
+                    if (row == rows - 1)
                     {
                         row = 0;
                         column++;
@@ -100,10 +101,9 @@ namespace Common.GUIHelper
             }
             
             if (labeled)
-            {
-                Array.Resize(ref rects, items + 1);
-                rect.y = rect.y - (itemHeight - space / 2);
-                rects[items] = new Rect(rect.x + space / 2, rect.y + space / 2, rect.width, itemHeight);
+            {                
+                rect.y = rect.y - (itemHeight - spaceVertical / 2);
+                rects.Add(new Rect(rect.x + spaceHorizontal / 2, rect.y + spaceVertical / 2, rect.width, itemHeight));
             }
             
             return rects;
@@ -151,7 +151,7 @@ namespace Common.GUIHelper
             return -1;
         }
 
-        public static Rect GetGridItemRect(ref Rect[] gridItems, int requiredColumn, int requiredRow, int columns, int rows, bool alignRightDown = true)
+        public static Rect GetGridItemRect(ref List<Rect> gridItems, int requiredColumn, int requiredRow, int columns, int rows, bool alignRightDown = true)
         {
             if (requiredColumn < 1 || requiredColumn > columns || requiredRow < 1 || requiredRow > rows)
             {
@@ -191,6 +191,17 @@ namespace Common.GUIHelper
             }
 
             throw new Exception("Unknown error!");
+        }
+
+        public static float GetNextYPos(ref List<Rect> rects)
+        {
+            if (rects.GetLast().y < rects[0].y)
+            {
+                int i = rects.Count - 2;
+                return rects[i].y + rects[i].height;
+            }
+            else
+                return rects.GetLast().y + rects.GetLast().height;
         }
     }
 }

@@ -6,12 +6,12 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("CheatManager")]
-[assembly: AssemblyDescription("QMod Plugin for Subnautica")]
+[assembly: AssemblyDescription("Subnautica mod")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Senna7608")]
+[assembly: AssemblyCompany("Senna")]
 [assembly: AssemblyProduct("CheatManager")]
 [assembly: AssemblyCopyright("Copyright ©  2018")]
-[assembly: AssemblyTrademark("Senna7608")]
+[assembly: AssemblyTrademark("Senna")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.7")]
-[assembly: AssemblyFileVersion("1.7")]
+[assembly: AssemblyVersion("2.0")]
+[assembly: AssemblyFileVersion("2.0")]

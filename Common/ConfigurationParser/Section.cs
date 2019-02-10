@@ -2,7 +2,7 @@
 using System.Text;
 using System;
 
-namespace ConfigurationParser
+namespace Common.ConfigurationParser
 {
     public class Section : Dictionary<string, string>
     {

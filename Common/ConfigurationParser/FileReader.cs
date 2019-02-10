@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace ConfigurationParser
+namespace Common.ConfigurationParser
 {
     public class FileReader
     {

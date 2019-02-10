@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace ConfigurationParser
+namespace Common.ConfigurationParser
 {
     public class ConfigData : List<ConfigData>
     {
@@ -33,7 +33,13 @@ namespace ConfigurationParser
                 parser.SetKeyValueInSection(data.Section, data.Key, data.Value);
             }            
         }
-        
+
+        public static void AddInfoText(string filename, string section, string value)
+        {
+            Parser parser = new Parser(filename);
+            parser.WriteInfoText(section, value);
+        }
+
         public static string GetKeyValue(string filename, string section, string key)
         {
             Parser parser = new Parser(filename);

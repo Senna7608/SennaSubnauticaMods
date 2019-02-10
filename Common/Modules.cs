@@ -1,7 +1,23 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Common
 {
+    public enum COLORS
+    {
+        Red,
+        Green,
+        Blue,
+        Yellow,
+        White,
+        Magenta,
+        Cyan,
+        Orange,
+        Lime,
+        Amethyst,
+        Default
+    }
+
     public static class Modules
     {
         public struct Colors
@@ -24,19 +40,19 @@ namespace Common
             
         }
 
-        public static void SetProgressColor(Color color)
+        public static Color GetColor(COLORS color)
         {
-            HandReticle.main.progressText.color = color;
-            HandReticle.main.progressImage.color = color;            
+            return Colors.ColorArray[(int)color];
         }
 
-        public static void SetInteractColor(Color color, bool isSetSecondary = true)
+        public static Color GetColor(string color)
         {
-            HandReticle.main.interactPrimaryText.color = color;
+            int result = Array.IndexOf(Colors.ColorNames, color);
 
-            if (isSetSecondary)
-                HandReticle.main.interactSecondaryText.color = color;
+            if (result < 0)
+                return Color.white;
+
+            return Colors.ColorArray[result];
         }
-
     }
 }

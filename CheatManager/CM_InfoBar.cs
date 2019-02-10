@@ -10,14 +10,16 @@ namespace CheatManager
         public CM_InfoBar Instance { get; private set; }
 
         private Rect windowRect = new Rect(0, 0, Screen.width - (Screen.width / 4.8f) - 2 , Screen.height / 45);
+        private Rect drawRect;
         internal bool isShow;
         private Int3 currentBatch = new Int3();
         private string currentBiome = "";
         private int day = 0;
+        private string infoText = string.Empty;
         private float playerInfectionLevel = 0;
         private readonly string[] daynightstr = { "Day", "Night" };
         private int isDay;
-        private Vector3 currentWorldPos = new Vector3();       
+        private Vector3 currentWorldPos = Vector3.zero;       
         private StringBuilder stringBuilder;
         private float temperature = 0;
 
@@ -40,7 +42,7 @@ namespace CheatManager
         private int numUpdates;
         private float avgFixedUpdatesPerFrame;
 
-        private Vector3 mainCameraLastPosition = Vector3.zero;
+        private Vector3 playerMainLastPosition = Vector3.zero;
         private float speed;
 
         private float timeCount = 0.0f;
@@ -50,6 +52,7 @@ namespace CheatManager
             Instance = this;
             useGUILayout = false;            
             DontDestroyOnLoad(this);
+            drawRect = new Rect(windowRect.x + 5, windowRect.y, windowRect.width, windowRect.height);
             isShow = true;
         }
 
@@ -62,6 +65,7 @@ namespace CheatManager
         {
             stringBuilder = null;
         }
+
         public void Update()
         {
             UpdateFPS();
@@ -73,17 +77,17 @@ namespace CheatManager
                 if (timeCount > 1.0f)
                 {
                     if (WaterTemperatureSimulation.main != null)
-                        temperature = WaterTemperatureSimulation.main.GetTemperature(Utils.GetLocalPlayerPos());
+                        temperature = WaterTemperatureSimulation.main.GetTemperature(Player.main.transform.position);
 
                     currentBiome = Player.main.GetBiomeString();
-                    currentBatch = LargeWorldStreamer.main.GetContainingBatch(Utils.GetLocalPlayerPos());
+                    currentBatch = LargeWorldStreamer.main.GetContainingBatch(Player.main.transform.position);
                     isDay = DayNightCycle.main.IsDay() ? 0 : 1;
                     playerInfectionLevel = Player.main.infectedMixin.GetInfectedAmount() * 100f;
                     day = (int)DayNightCycle.main.GetDay();
                     timeCount = 0.0f;                    
                 }
                 
-                currentWorldPos = MainCamera.camera.transform.position;
+                currentWorldPos = Player.main.transform.position;
 
                 stringBuilder.Remove(0, stringBuilder.Length);
                 
@@ -92,13 +96,15 @@ namespace CheatManager
                     $"   Batch: {currentBatch}" +
                     $"   Infection: {playerInfectionLevel}%" +
                     $"   Day: {day}" +
-                    $"   Day/Night: {daynightstr[isDay]}" +
+                    $"   Time of Day: {daynightstr[isDay]}" +
                     $"   Temp.: {Mathf.CeilToInt(temperature)} \u00B0C" +
                     $"   Speed: {(int)speed} km/h" +
                     $"   {string.Format("FPS: {0,3:N0}", FPS)}" +
                     $"   {string.Format("MEM: {0,3:N0} MB (+{1,6:N2} MB/s)", totalmem, diffTotalmem)}" +
                     $"   {string.Format("GC: {0,2:N0} ms (Total:{1,3})",  timeBetweenCollections, numCollections)}" +
                     $"   Fixed Updates: {avgFixedUpdatesPerFrame}");
+
+                infoText = stringBuilder.ToString();
             }            
             
         }
@@ -111,8 +117,7 @@ namespace CheatManager
             }
 
             SNWindow.CreateWindow(windowRect, null);
-            GUI.contentColor = Color.green;            
-            GUI.Label(new Rect(windowRect.x + 5, windowRect.y, windowRect.width, windowRect.height), stringBuilder.ToString());
+            GUI.Label(drawRect, infoText, SNStyles.GetGuiItemStyle(GuiItemType.LABEL, textColor: GuiColor.Green, textAnchor: TextAnchor.MiddleLeft));
         }
 
         public CM_InfoBar()
@@ -132,16 +137,19 @@ namespace CheatManager
 
         private void LateUpdate()
         {
-            speed = (((MainCamera.camera.transform.position - mainCameraLastPosition).magnitude) / Time.deltaTime);
+            if (Player.main != null)
+            {
+                speed = (((Player.main.transform.position - playerMainLastPosition).magnitude) / Time.deltaTime);
+            }
         }
 
         private void FixedUpdate()
         {
             numFixedUpdates++;            
             
-            if (MainCamera.camera != null)
+            if (Player.main != null)
             {
-                mainCameraLastPosition = MainCamera.camera.transform.position;                
+                playerMainLastPosition = Player.main.transform.position;                
             }            
         }
 

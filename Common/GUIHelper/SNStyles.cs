@@ -14,7 +14,9 @@ namespace Common.GUIHelper
         private static GUIStyle Box;
         private static GUIStyle Dropdown;
 
-        public static bool InitGUIStyles()
+        private static bool isInitStyles = false;
+
+        public static bool SetGUIStyles()
         {
             NormalButton = new GUIStyle(GUI.skin.button);
             ToggleButton = new GUIStyle(GUI.skin.button);
@@ -24,80 +26,179 @@ namespace Common.GUIHelper
             Textarea = new GUIStyle(GUI.skin.textArea);
             Box = new GUIStyle(GUI.skin.box);
             Dropdown = new GUIStyle(GUI.skin.box);
+
+            Texture2D backgroundTex = Box.normal.background;
+
+            NormalButton.normal.background = backgroundTex;
+            NormalButton.hover.background = backgroundTex;
+
+            ToggleButton.normal.background = backgroundTex;
+            ToggleButton.hover.background = backgroundTex;
+
+            Tab.normal.background = backgroundTex;
+            Tab.hover.background = backgroundTex;
+
             return true;
         }
 
-        public static GUIStyle GetGuiStyle(SNGUI.GuiItem guiItem)
+        public static GUIStyle GetGuiItemStyle(GuiItem guiItem)
         {
-            switch(guiItem.Type)
+            if (!isInitStyles)
+                isInitStyles = SetGUIStyles();
+
+            switch (guiItem.Type)
             {
-                case SNGUI.GuiItemType.NORMALBUTTON:
+                case GuiItemType.NORMALBUTTON:
                     NormalButton.fontStyle = guiItem.FontStyle;
                     NormalButton.alignment = guiItem.TextAnchor;
-                    NormalButton.normal.textColor = guiItem.NormalColor;
-                    NormalButton.onNormal.textColor = guiItem.NormalColor;
-                    NormalButton.hover.textColor = guiItem.HoverColor;
-                    NormalButton.onHover.textColor = guiItem.HoverColor;
+
+                    if (guiItem.State == GuiItemState.PRESSED)
+                    {
+                        NormalButton.normal.textColor = GetGuiColor(guiItem.ItemColor.Active);
+                        NormalButton.hover.textColor = GetGuiColor(guiItem.ItemColor.Active);
+                        NormalButton.active.textColor = GetGuiColor(guiItem.ItemColor.Active);
+                    }
+                    else
+                    {
+                        NormalButton.normal.textColor = GetGuiColor(guiItem.ItemColor.Normal);
+                        NormalButton.hover.textColor = GetGuiColor(guiItem.ItemColor.Hover);
+                        NormalButton.active.textColor = GetGuiColor(guiItem.ItemColor.Active);
+                    }
                     return NormalButton;
 
-                case SNGUI.GuiItemType.TEXTFIELD:
+                case GuiItemType.TOGGLEBUTTON:
+                    ToggleButton.fontStyle = guiItem.FontStyle;
+                    ToggleButton.alignment = guiItem.TextAnchor;
+                    
+                    if (guiItem.State == GuiItemState.PRESSED)
+                    {
+                        ToggleButton.normal.textColor = GetGuiColor(guiItem.ItemColor.Active);
+                        ToggleButton.hover.textColor = GetGuiColor(guiItem.ItemColor.Active);
+                        ToggleButton.active.textColor = GetGuiColor(guiItem.ItemColor.Active);
+                    }
+                    else
+                    {
+                        ToggleButton.normal.textColor = GetGuiColor(guiItem.ItemColor.Normal);
+                        ToggleButton.hover.textColor = GetGuiColor(guiItem.ItemColor.Normal);
+                        ToggleButton.active.textColor = GetGuiColor(guiItem.ItemColor.Normal);
+                    }                    
+                    return ToggleButton;
+
+                case GuiItemType.TAB:
+                    Tab.fontStyle = guiItem.FontStyle;
+                    Tab.alignment = guiItem.TextAnchor;
+
+                    if (guiItem.State == GuiItemState.PRESSED)
+                    {
+                        Tab.normal.textColor = GetGuiColor(guiItem.ItemColor.Active);
+                        Tab.hover.textColor = GetGuiColor(guiItem.ItemColor.Active);
+                        Tab.active.textColor = GetGuiColor(guiItem.ItemColor.Active);
+                    }
+                    else
+                    {
+                        Tab.normal.textColor = GetGuiColor(guiItem.ItemColor.Normal);
+                        Tab.hover.textColor = GetGuiColor(guiItem.ItemColor.Hover);
+                        Tab.active.textColor = GetGuiColor(guiItem.ItemColor.Active);
+                    }
+                    return Tab;
+
+                case GuiItemType.TEXTFIELD:
                     Textfield.fontStyle = guiItem.FontStyle;
                     Textfield.alignment = guiItem.TextAnchor;
-                    Textfield.normal.textColor = guiItem.NormalColor;
-                    Textfield.onNormal.textColor = guiItem.NormalColor;
-                    Textfield.hover.textColor = guiItem.HoverColor;
-                    Textfield.onHover.textColor = guiItem.HoverColor;                    
+                    Textfield.normal.textColor = GetGuiColor(guiItem.ItemColor.Normal);
+                    Textfield.hover.textColor = GetGuiColor(guiItem.ItemColor.Hover);                    
                     return Textfield;
                     
-                case SNGUI.GuiItemType.LABEL:
+                case GuiItemType.LABEL:
                     Label.fontStyle = guiItem.FontStyle;
                     Label.alignment = guiItem.TextAnchor;
-                    Label.normal.textColor = guiItem.NormalColor;
-                    Label.onNormal.textColor = guiItem.NormalColor;
-                    Label.hover.textColor = guiItem.HoverColor;
-                    Label.onHover.textColor = guiItem.HoverColor;
+                    Label.normal.textColor = GetGuiColor(guiItem.ItemColor.Normal);
+                    Label.hover.textColor = GetGuiColor(guiItem.ItemColor.Normal);
                     return Label;                    
             }
 
             throw new Exception("Unknown error!");
         }
 
-
-
-
-        public static GUIStyle GetGuiStyle(SNGUI.GuiItemType type)
+        public static Color GetGuiColor(GuiColor color)
         {
+            switch (color)
+            {
+                case GuiColor.Black:
+                    return Color.black;
+                case GuiColor.Blue:
+                    return Color.blue;
+                case GuiColor.Clear:
+                    return Color.clear;
+                case GuiColor.Cyan:
+                    return Color.cyan;
+                case GuiColor.Green:
+                    return Color.green;
+                case GuiColor.Gray:
+                    return Color.gray;
+                case GuiColor.Grey:
+                    return Color.grey;
+                case GuiColor.Magenta:
+                    return Color.magenta;
+                case GuiColor.Red:
+                    return Color.red;
+                case GuiColor.White:
+                    return Color.white;
+                case GuiColor.Yellow:
+                    return Color.yellow;
+                default:
+                    break;
+            }
+
+            return Color.white;
+        }
+
+
+        public static GUIStyle GetGuiItemStyle(GuiItemType type, GuiColor textColor = GuiColor.White, TextAnchor textAnchor = TextAnchor.MiddleCenter, FontStyle fontStyle = FontStyle.Normal, bool wordWrap = false)
+        {
+            if (!isInitStyles)
+                isInitStyles = SetGUIStyles();
+
             switch (type)
             {
-                case SNGUI.GuiItemType.NORMALBUTTON:
+                case GuiItemType.NORMALBUTTON:
+                    NormalButton.normal.textColor = GetGuiColor(textColor);
+                    NormalButton.fontStyle = fontStyle;
+                    NormalButton.alignment = textAnchor;
+                    NormalButton.wordWrap = wordWrap;
                     return NormalButton;
 
-                case SNGUI.GuiItemType.TOGGLEBUTTON:
+                case GuiItemType.TOGGLEBUTTON:
                     return ToggleButton;
 
-                case SNGUI.GuiItemType.TAB:
+                case GuiItemType.TAB:
                     return Tab;
 
-                case SNGUI.GuiItemType.LABEL:
+                case GuiItemType.LABEL:
+                    Label.normal.textColor = GetGuiColor(textColor);
+                    Label.fontStyle = fontStyle;
+                    Label.alignment = textAnchor;
+                    Label.wordWrap = wordWrap;
                     return Label;
 
-                case SNGUI.GuiItemType.TEXTFIELD:
+                case GuiItemType.TEXTFIELD:
                     return Textfield;
 
-                case SNGUI.GuiItemType.TEXTAREA:
+                case GuiItemType.TEXTAREA:
                     return Textarea;
 
-                case SNGUI.GuiItemType.BOX:
+                case GuiItemType.BOX:
                     return Box;
 
-                case SNGUI.GuiItemType.DROPDOWN:
-                    Dropdown.normal.background = MakeTex(10, 10, new Color(0f, 1f, 0f, 1f));                    
+                case GuiItemType.DROPDOWN:
+                    //Dropdown.normal.background = MakeTex(10, 10, new Color(0f, 1f, 0f, 1f));                    
                     return Dropdown;
             }
 
             throw new Exception("Unknown error!");
         }
 
+        /*
         private static Texture2D MakeTex(int width, int height, Color col)
         {
             Color[] pix = new Color[width * height];
@@ -110,103 +211,6 @@ namespace Common.GUIHelper
             result.Apply();
             return result;
         }
-
-
-        public static GUIStyle GetGUIStyle(Button.ButtonInfo buttonInfo)
-        {
-            switch (buttonInfo.Type)
-            {
-                case Button.BUTTONTYPE.NORMAL_CENTER:
-                    if (buttonInfo.Pressed)
-                    {
-                        NormalButton.normal.textColor = Color.green;
-                        NormalButton.hover.textColor = Color.yellow;
-                    }
-                    else
-                    {
-                        NormalButton.normal.textColor = Color.gray;
-                        NormalButton.hover.textColor = Color.white;
-                    }
-
-                    if (buttonInfo.Bold)
-                        NormalButton.fontStyle = FontStyle.Bold;
-                    else
-                        NormalButton.fontStyle = FontStyle.Normal;
-
-                    NormalButton.active.textColor = Color.green;
-                    NormalButton.alignment = TextAnchor.MiddleCenter;
-                    NormalButton.fontSize = Screen.height / 80;
-
-                    return NormalButton;
-
-                case Button.BUTTONTYPE.NORMAL_LEFTALIGN:
-                    if (buttonInfo.Pressed)
-                    {
-                        NormalButton.normal.textColor = Color.green;
-                        NormalButton.hover.textColor = Color.yellow;
-                    }
-                    else
-                    {
-                        NormalButton.normal.textColor = Color.gray;
-                        NormalButton.hover.textColor = Color.white;
-                    }
-
-                    if (buttonInfo.Bold)
-                        NormalButton.fontStyle = FontStyle.Bold;
-                    else
-                        NormalButton.fontStyle = FontStyle.Normal;
-
-                    NormalButton.active.textColor = Color.green;
-                    NormalButton.alignment = TextAnchor.MiddleLeft;
-                    NormalButton.fontSize = Screen.height / 80;
-                    return NormalButton;
-
-                case Button.BUTTONTYPE.TOGGLE_CENTER:
-                    if (buttonInfo.Pressed)
-                    {
-                        ToggleButton.normal.textColor = Color.green;
-                        ToggleButton.hover.textColor = Color.green;
-                        ToggleButton.active.textColor = Color.red;
-                    }
-                    else
-                    {
-                        ToggleButton.normal.textColor = Color.red;
-                        ToggleButton.hover.textColor = Color.red;
-                        ToggleButton.active.textColor = Color.green;
-                    }
-
-                    if (buttonInfo.Bold)
-                        ToggleButton.fontStyle = FontStyle.Bold;
-                    else
-                        ToggleButton.fontStyle = FontStyle.Normal;
-
-                    ToggleButton.fontSize = Screen.height / 80;
-                    return ToggleButton;
-
-                case Button.BUTTONTYPE.TAB_CENTER:
-                    if (buttonInfo.Pressed)
-                    {
-                        Tab.normal.textColor = Color.green;
-                        Tab.hover.textColor = Color.green;
-                    }
-                    else
-                    {
-                        Tab.normal.textColor = Color.gray;
-                        Tab.hover.textColor = Color.white;
-                    }
-
-                    if (buttonInfo.Bold)
-                        Tab.fontStyle = FontStyle.Bold;
-                    else
-                        Tab.fontStyle = FontStyle.Normal;
-
-                    Tab.active.textColor = Color.green;
-
-                    Tab.fontSize = Screen.height / 80;
-                    return Tab;                
-            }
-
-            throw new Exception("Unknown error!");
-        }
+        */
     }
 }

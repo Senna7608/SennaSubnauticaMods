@@ -1,6 +1,7 @@
 ﻿//#define DEBUG_CYCLOPS_OVERDRIVE
 
 using UnityEngine;
+using UWE;
 
 namespace CheatManager
 {
@@ -10,10 +11,8 @@ namespace CheatManager
 
         private SubRoot subroot;
         private SubControl subcontrol;
-
-        private float prev_multiplier;        
-
-        private CyclopsMotorMode.CyclopsMotorModes currentCyclopsMotorMode;
+        
+        public Event<CyclopsMotorMode.CyclopsMotorModes> onCyclopsMotorModeChanged = new Event<CyclopsMotorMode.CyclopsMotorModes>();
 
         private const float def_Slow_BaseForwardAccel = 4.5f;
         private const float def_Slow_BaseVerticalAccel = 4.5f;
@@ -29,54 +28,59 @@ namespace CheatManager
 
         public void Awake()
         {
-            Instance = gameObject.GetComponent<CyclopsOverDrive>();
+            if (Instance != null)
+                Destroy(this);
 
-            if (Instance == null)
-                 Destroy(this);
+            Instance = gameObject.GetComponent<CyclopsOverDrive>();            
         }
 
         public void Start()
         {
             subroot = gameObject.GetComponentInParent<SubRoot>();            
 
-            subcontrol = subroot.GetComponentInParent<SubControl>();            
+            subcontrol = subroot.GetComponentInParent<SubControl>();           
 
-            prev_multiplier = 1;            
-        }       
+            Main.Instance.onCyclopsSpeedValueChanged.AddHandler(this, new Event<object>.HandleFunction(OnCyclopsSpeedValueChanged));
+            onCyclopsMotorModeChanged.AddHandler(this, new Event<CyclopsMotorMode.CyclopsMotorModes>.HandleFunction(OnCyclopsMotorModeChanged));
+        }
 
-        public void Update()
+        private void OnCyclopsMotorModeChanged(CyclopsMotorMode.CyclopsMotorModes newMotorMode)
         {
-            if (prev_multiplier != Main.Instance.cyclopsSpeedMultiplier || currentCyclopsMotorMode != subcontrol.cyclopsMotorMode.cyclopsMotorMode)
-            {
-                switch (subcontrol.cyclopsMotorMode.cyclopsMotorMode)
-                {
-                    case CyclopsMotorMode.CyclopsMotorModes.Slow:
-                    subcontrol.BaseForwardAccel = def_Slow_BaseForwardAccel * Main.Instance.cyclopsSpeedMultiplier; ;
-                    subcontrol.BaseVerticalAccel = def_Slow_BaseVerticalAccel * Main.Instance.cyclopsSpeedMultiplier; ;
-                    subcontrol.BaseTurningTorque = def_Slow_BaseTurningTorque * Main.Instance.cyclopsSpeedMultiplier; ;
-                    break;
-                
-                    case CyclopsMotorMode.CyclopsMotorModes.Standard:
-                    subcontrol.BaseForwardAccel = def_Standard_BaseForwardAccel * Main.Instance.cyclopsSpeedMultiplier; ;
-                    subcontrol.BaseVerticalAccel = def_Standard_BaseVerticalAccel * Main.Instance.cyclopsSpeedMultiplier; ;
-                    subcontrol.BaseTurningTorque = def_Standard_BaseTurningTorque * Main.Instance.cyclopsSpeedMultiplier; ;
-                    break;
-                
-                    case CyclopsMotorMode.CyclopsMotorModes.Flank:
-                    subcontrol.BaseForwardAccel = def_Flank_BaseForwardAccel * Main.Instance.cyclopsSpeedMultiplier; ;
-                    subcontrol.BaseVerticalAccel = def_Flank_BaseVerticalAccel * Main.Instance.cyclopsSpeedMultiplier; ;
-                    subcontrol.BaseTurningTorque = def_Flank_BaseTurningTorque * Main.Instance.cyclopsSpeedMultiplier; ;
-                    break;
-                }
+            SetCyclopsOverDrive(Main.Instance.cyclopsSpeedMultiplier);
+        }
 
-                currentCyclopsMotorMode = subcontrol.cyclopsMotorMode.cyclopsMotorMode;
-                prev_multiplier = Main.Instance.cyclopsSpeedMultiplier;
+        private void OnCyclopsSpeedValueChanged(object newValue)
+        {            
+            Main.Instance.cyclopsSpeedMultiplier = (float)newValue;
+            SetCyclopsOverDrive((float)newValue);                       
+        }
+
+        private void SetCyclopsOverDrive(float multiplier)
+        {           
+            switch (subcontrol.cyclopsMotorMode.cyclopsMotorMode)
+            {
+                case CyclopsMotorMode.CyclopsMotorModes.Slow:
+                subcontrol.BaseForwardAccel = def_Slow_BaseForwardAccel * Main.Instance.cyclopsSpeedMultiplier; ;
+                subcontrol.BaseVerticalAccel = def_Slow_BaseVerticalAccel * Main.Instance.cyclopsSpeedMultiplier; ;
+                subcontrol.BaseTurningTorque = def_Slow_BaseTurningTorque * Main.Instance.cyclopsSpeedMultiplier; ;
+                break;
+                
+                case CyclopsMotorMode.CyclopsMotorModes.Standard:
+                subcontrol.BaseForwardAccel = def_Standard_BaseForwardAccel * Main.Instance.cyclopsSpeedMultiplier; ;
+                subcontrol.BaseVerticalAccel = def_Standard_BaseVerticalAccel * Main.Instance.cyclopsSpeedMultiplier; ;
+                subcontrol.BaseTurningTorque = def_Standard_BaseTurningTorque * Main.Instance.cyclopsSpeedMultiplier; ;
+                break;
+                
+                case CyclopsMotorMode.CyclopsMotorModes.Flank:
+                subcontrol.BaseForwardAccel = def_Flank_BaseForwardAccel * Main.Instance.cyclopsSpeedMultiplier; ;
+                subcontrol.BaseVerticalAccel = def_Flank_BaseVerticalAccel * Main.Instance.cyclopsSpeedMultiplier; ;
+                subcontrol.BaseTurningTorque = def_Flank_BaseTurningTorque * Main.Instance.cyclopsSpeedMultiplier; ;
+                break;
+            }                       
 
 #if DEBUG_CYCLOPS_OVERDRIVE
-                    Logger.Log($"[CheatManager]\nCyclopsOverDrive().Update()\nMotorMode: {subcontrol.cyclopsMotorMode.cyclopsMotorMode}:\nBaseForwardAccel: {subcontrol.BaseForwardAccel}\nBaseVerticalAccel: {subcontrol.BaseVerticalAccel}\nBaseTurningTorque: {subcontrol.BaseTurningTorque}");
-#endif
-            }
-           
+                    Main.CmLogger.Log($"[CheatManager]\nSetCyclopsOverDrive()\nMotorMode: {subcontrol.cyclopsMotorMode.cyclopsMotorMode}:\nBaseForwardAccel: {subcontrol.BaseForwardAccel}\nBaseVerticalAccel: {subcontrol.BaseVerticalAccel}\nBaseTurningTorque: {subcontrol.BaseTurningTorque}");
+#endif           
         }
     }
 }

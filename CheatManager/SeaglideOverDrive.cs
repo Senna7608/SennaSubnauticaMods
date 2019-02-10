@@ -30,7 +30,7 @@ namespace CheatManager
             Destroy(this);
         }
 
-        private void OnPlayerMotorModeChanged(Player.MotorMode motorMode)
+        private void OnPlayerMotorModeChanged(Player.MotorMode newMotorMode)
         {           
             SetSeaglideSpeed();            
         }

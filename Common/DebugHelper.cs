@@ -12,9 +12,9 @@ namespace Common.DebugHelper
 {   
     public static class DebugHelper
     {
-        private static readonly string FILENAME = $"{Environment.CurrentDirectory}\\DebugHelper_";
+        private static readonly string FILENAME = $"{Environment.CurrentDirectory}\\DebugHelper_";        
 
-        public static void Write(string logMessage) => Debug.Log(logMessage);
+        public static void Write(string logMessage) => Debug.Log(logMessage);        
 
         public static void DebugGameObject(GameObject gameObject, bool fullDebug = false)
         {

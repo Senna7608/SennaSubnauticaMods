@@ -2,39 +2,48 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UWE;
-using Common;
 using Common.GUIHelper;
+using static Common.GameHelper;
 using CheatManager.Configuration;
+using CheatManager.NewCommands;
+using System;
 
 namespace CheatManager
 {
     public class CheatManager : MonoBehaviour
     {  
         internal CheatManager Instance { get; private set; }
-        internal Player PlayerMain { get; private set; }
-
+        internal static WarpTargets warpTargets = new WarpTargets();
         internal ButtonControl buttonControl;
         internal ButtonText buttonText;
-        internal TechnologyMatrix techMatrix;
-        internal WarpTargets warpTargets;
+        internal TechnologyMatrix techMatrix;        
         private Vector2 scrollPos;
-        private Rect windowRect;
+
+        private static Rect windowRect = new Rect(Screen.width - (Screen.width / 4.8f), 0, Screen.width / 4.8f, (Screen.height / 4 * 3) - 2);
         private Rect drawRect;
+        private Rect scrollRect;
+
         internal FMODAsset warpSound;
+
         internal Utils.MonitoredValue<bool> isSeaglideFast = new Utils.MonitoredValue<bool>();
+        internal Utils.MonitoredValue<bool> isSeamothCanFly = new Utils.MonitoredValue<bool>();
+        internal Event<string> onConsoleCommandEntered = new Event<string>();
+        internal Event<bool> onFilterFastChanged = new Event<bool>();
+        internal Event<object> onSeamothSpeedValueChanged = new Event<object>();
+        internal Event<object> onExosuitSpeedValueChanged = new Event<object>();
+        internal Event<object> onCyclopsSpeedValueChanged = new Event<object>();
 
-        private List<TechnologyMatrix.TechTypeData>[] tMatrix;
-        private List<Button.ButtonInfo> Buttons;
-        private List<Button.ButtonInfo> toggleButtons;
-        private List<Button.ButtonInfo> daynightTab;
-        private List<Button.ButtonInfo> categoriesTab;
-        private List<Button.ButtonInfo> vehicleSettings;
+        internal List<TechTypeData>[] tMatrix;
+        internal List<GuiItem>[] scrollItemsList;        
 
-        private List<SNGUI.GuiItem> commands;
+        internal List<GuiItem> commands = new List<GuiItem>();
+        internal List<GuiItem> toggleCommands = new List<GuiItem>();
+        internal List<GuiItem> daynightTab = new List<GuiItem>();
+        internal List<GuiItem> categoriesTab = new List<GuiItem>();
+        internal List<GuiItem> vehicleSettings = new List<GuiItem>();
+        internal List<GuiItem> sliders = new List<GuiItem>();
 
-        internal bool isActive;
-        internal bool initStyles = false;
-        internal bool seamothCanFly = false;
+        internal bool isActive;        
         internal bool initToggleButtons = false;
                
         internal string prevCwPos = null;
@@ -44,38 +53,40 @@ namespace CheatManager
 
         internal float seamothSpeedMultiplier;
         internal float exosuitSpeedMultiplier;
-        internal float cyclopsSpeedMultiplier;
-        internal float playerPrevInfectionLevel = 0f;
+        internal float cyclopsSpeedMultiplier;        
 
-        private readonly float space = 3;
+        private const int SPACE = 5;
         private string windowTitle;
         private int normalButtonID = -1;
         private int toggleButtonID = -1;
         private int daynightTabID = 4;
         private int categoriesTabID = 0;
+        private int scrollviewID = -1;
         private int vehicleSettingsID = -1;
         private int currentdaynightTab = 4;
-        private int currentTab = 0;        
- 
+        private int currentTab = 0;
+        private bool filterFast;
+
 #if DEBUG_PROGRAM
             internal static float crTimer = 10;
-#endif                
-     
+#endif
+
         public void Awake()
         {
-            Instance = Main.Instance;
+            Instance = this;
             useGUILayout = false;
 #if DEBUG
             isActive = true;
 #endif
-            UpdateTitle();
-            warpTargets = new WarpTargets();
+            UpdateTitle();            
             warpSound = ScriptableObject.CreateInstance<FMODAsset>();
             warpSound.path = "event:/tools/gravcannon/fire";
 
             techMatrix = new TechnologyMatrix();
-            tMatrix = new List<TechnologyMatrix.TechTypeData>[techMatrix.baseTechMatrix.Length];
-            techMatrix.InitTechMatrixList(ref tMatrix);
+            tMatrix = new List<TechTypeData>[techMatrix.baseTechMatrix.Count];
+            techMatrix.InitTechMatrixList(ref tMatrix);           
+
+            
             if (Main.isExistsSMLHelperV2)
             {
                 techMatrix.IsExistsModdersTechTypes(ref tMatrix, techMatrix.Known_Modded_TechTypes);
@@ -84,24 +95,57 @@ namespace CheatManager
             {
                 Debug.LogWarning("[CheatManager] Warning: 'SMLHelper.V2' not found! Some functions are not available!");
             }
+            
             techMatrix.SortTechLists(ref tMatrix);
+            
+            buttonText = new ButtonText();                        
 
-            //Buttons = new List<Button.ButtonInfo>();
-            commands = new List<SNGUI.GuiItem>();
-            toggleButtons = new List<Button.ButtonInfo>();
-            daynightTab = new List<Button.ButtonInfo>();
-            categoriesTab = new List<Button.ButtonInfo>();
-            vehicleSettings = new List<Button.ButtonInfo>();
-            buttonText = new ButtonText();
+            drawRect = SNWindow.InitWindowRect(windowRect, true);
 
-            drawRect = SNWindow.InitWindowRect(new Rect(Screen.width - (Screen.width / 4.8f), 0, Screen.width / 4.8f, Screen.height / 4 * 3), true);
+            List<Rect> commandRects = SNWindow.SetGridItemsRect(drawRect, 4, 2, 24, SPACE, SPACE, true, true);
+            SNGUI.CreateGuiItemsGroup(buttonText.Buttons, commandRects, GuiItemType.NORMALBUTTON, ref commands, new GuiItemColor());
+            SNGUI.SetGuiItemsGroupLabel("Commands", commandRects.GetLast(), ref commands, new GuiItemColor(GuiColor.White));
 
+            List<Rect> toggleCommandRects = SNWindow.SetGridItemsRect(new Rect(drawRect.x, SNWindow.GetNextYPos(ref commandRects), drawRect.width, drawRect.height), 4, 5, 24, SPACE, SPACE, true, true);
+            SNGUI.CreateGuiItemsGroup(buttonText.ToggleButtons, toggleCommandRects, GuiItemType.TOGGLEBUTTON, ref toggleCommands, new GuiItemColor(GuiColor.Red, GuiColor.Green));
+            SNGUI.SetGuiItemsGroupLabel("Toggle Commands", toggleCommandRects.GetLast(), ref toggleCommands, new GuiItemColor(GuiColor.White));
 
-            Button.CreateButtonsGroup(buttonText.Buttons, Button.BUTTONTYPE.NORMAL_CENTER, ref Buttons);
-            Button.CreateButtonsGroup(buttonText.ToggleButtons, Button.BUTTONTYPE.TOGGLE_CENTER, ref toggleButtons);
-            Button.CreateButtonsGroup(buttonText.DayNightTab, Button.BUTTONTYPE.TAB_CENTER, ref daynightTab);
-            Button.CreateButtonsGroup(buttonText.CategoriesTab, Button.BUTTONTYPE.TAB_CENTER, ref categoriesTab);
+            List<Rect> daynightTabrects = SNWindow.SetGridItemsRect(new Rect(drawRect.x, SNWindow.GetNextYPos(ref toggleCommandRects), drawRect.width, drawRect.height), 6, 1, 24, SPACE, SPACE, true, true);
+            SNGUI.CreateGuiItemsGroup(buttonText.DayNightTab, daynightTabrects, GuiItemType.TAB, ref daynightTab, new GuiItemColor());
+            SNGUI.SetGuiItemsGroupLabel("Day/Night Speed:", daynightTabrects.GetLast(), ref daynightTab, new GuiItemColor(GuiColor.White));
 
+            List<Rect> categoriesTabrects = SNWindow.SetGridItemsRect(new Rect(drawRect.x, SNWindow.GetNextYPos(ref daynightTabrects), drawRect.width, drawRect.height), 4, 5, 24, SPACE, SPACE, true, true);
+            SNGUI.CreateGuiItemsGroup(buttonText.CategoriesTab, categoriesTabrects, GuiItemType.TAB, ref categoriesTab, new GuiItemColor(GuiColor.Gray, GuiColor.Green, GuiColor.White));
+            SNGUI.SetGuiItemsGroupLabel("Categories:", categoriesTabrects.GetLast(), ref categoriesTab, new GuiItemColor(GuiColor.White));            
+
+            float nextYpos = SNWindow.GetNextYPos(ref categoriesTabrects);
+            scrollRect = new Rect(drawRect.x + SPACE, nextYpos, drawRect.width - (SPACE * 2), drawRect.height - nextYpos);
+
+            List<Rect>[] scrollItemRects = new List<Rect>[tMatrix.Length + 1];
+
+            for (int i = 0; i < tMatrix.Length; i++)
+            {
+                float width = drawRect.width;
+
+                if (tMatrix[i].Count * 26 > scrollRect.height)
+                    width -= 20;                
+                
+                scrollItemRects[i] = SNWindow.SetGridItemsRect(new Rect(0, 0, width, tMatrix[i].Count * 26), 1, tMatrix[i].Count, 24, SPACE, 2, false, false, true);
+            }
+
+            scrollItemRects[tMatrix.Length] = SNWindow.SetGridItemsRect(new Rect(0, 0, drawRect.width - 20, warpTargets.Targets.Count * 26), 1, warpTargets.Targets.Count, 24, SPACE, 2, false, false, true);
+            
+            scrollItemsList = new List<GuiItem>[tMatrix.Length + 1];
+            
+            for (int i = 0; i < tMatrix.Length; i++)
+            {
+                scrollItemsList[i] = new List<GuiItem>();
+                CreateTechGroup(tMatrix[i], scrollItemRects[i], GuiItemType.NORMALBUTTON, ref scrollItemsList[i], new GuiItemColor(GuiColor.Gray, GuiColor.Green, GuiColor.White),  GuiItemState.NORMAL, true, FontStyle.Normal, TextAnchor.MiddleLeft);                
+            }
+            
+            scrollItemsList[tMatrix.Length] = new List<GuiItem>();
+            AddListToGroup(warpTargets.Targets, scrollItemRects[tMatrix.Length], GuiItemType.NORMALBUTTON, ref scrollItemsList[tMatrix.Length], new GuiItemColor(GuiColor.Gray, GuiColor.Green, GuiColor.White), GuiItemState.NORMAL, true, FontStyle.Normal, TextAnchor.MiddleLeft);
+            
             var searchSeaGlide = new TechnologyMatrix.TechTypeSearch(TechType.Seaglide);
             string seaglideName = tMatrix[1][tMatrix[1].FindIndex(searchSeaGlide.EqualsWith)].Name;
 
@@ -116,24 +160,82 @@ namespace CheatManager
 
             string[] vehicleSetButtons = { $"{seamothName} Can Fly", $"{seaglideName} Speed Fast" };
 
-            Button.CreateButtonsGroup(vehicleSetButtons, Button.BUTTONTYPE.TOGGLE_CENTER, ref vehicleSettings);
+            float scrollRectheight = 5 * (scrollItemsList[0][0].Rect.height + 2);            
+            float y = scrollRect.y + scrollRectheight + SPACE;            
 
-            daynightTab[4].Pressed = true;
-            categoriesTab[0].Pressed = true;
-            toggleButtons[17].Pressed = false;            
-            Buttons[7].Enabled = false;
-            Buttons[7].Pressed = true;
+            List<Rect> vehicleSettingsRects = SNWindow.SetGridItemsRect(new Rect(drawRect.x, y, drawRect.width, drawRect.height), 2, 1, 24, SPACE, SPACE, false, true);
+            SNGUI.CreateGuiItemsGroup(vehicleSetButtons, vehicleSettingsRects, GuiItemType.TOGGLEBUTTON, ref vehicleSettings, new GuiItemColor(GuiColor.Red, GuiColor.Green));
+            SNGUI.SetGuiItemsGroupLabel("Vehicle settings:", vehicleSettingsRects.GetLast(), ref vehicleSettings, new GuiItemColor(GuiColor.White));
 
+            string[] sliderLabels = { $"{seamothName} speed multiplier:", $"{exosuitName} speed multiplier:", $"{cyclopsName} speed multiplier:" };
+
+            List<Rect> slidersRects = SNWindow.SetGridItemsRect(new Rect(drawRect.x, SNWindow.GetNextYPos(ref vehicleSettingsRects), drawRect.width, drawRect.height), 1, 3, 34, SPACE, SPACE, false, false);
+            SNGUI.CreateGuiItemsGroup(sliderLabels, slidersRects, GuiItemType.HORIZONTALSLIDER, ref sliders, new GuiItemColor());
+
+            sliders[0].OnChangedEvent = onSeamothSpeedValueChanged;
+            sliders[1].OnChangedEvent = onExosuitSpeedValueChanged;
+            sliders[2].OnChangedEvent = onCyclopsSpeedValueChanged;
+
+            commands[(int)Commands.BackWarp].Enabled = false;
+            commands[(int)Commands.BackWarp].State = GuiItemState.PRESSED;
+            
+            daynightTab[4].State = GuiItemState.PRESSED;
+            categoriesTab[0].State = GuiItemState.PRESSED;
+
+            seamothSpeedMultiplier = 1;
             exosuitSpeedMultiplier = 1;
             cyclopsSpeedMultiplier = 1;
 
-            buttonControl = new ButtonControl();
-        }        
+            isSeamothCanFly.Update(false);
+            buttonControl = new ButtonControl();            
+        }
 
-        public void OnDestroy()
+        public void AddListToGroup(List<string[]> names, List<Rect> rects, GuiItemType type, ref List<GuiItem> guiItems, GuiItemColor itemColor,
+                                               GuiItemState state = GuiItemState.NORMAL, bool enabled = true, FontStyle fontStyle = FontStyle.Normal,
+                                               TextAnchor textAnchor = TextAnchor.MiddleCenter)
+        {            
+            for (int i = 0; i < names.Count; i++)
+            {
+                guiItems.Add(new GuiItem()
+                {
+                    Name = names[i][1],
+                    Type = type,
+                    Enabled = enabled,
+                    Rect = rects[i],
+                    ItemColor = itemColor,
+                    State = state,
+                    FontStyle = fontStyle,
+                    TextAnchor = textAnchor
+                });
+            }            
+        }
+        
+        public void CreateTechGroup(List<TechTypeData> techTypeDatas, List<Rect> rects, GuiItemType type, ref List<GuiItem> guiItems, GuiItemColor itemColor,
+                                               GuiItemState state = GuiItemState.NORMAL, bool enabled = true, FontStyle fontStyle = FontStyle.Normal,
+                                               TextAnchor textAnchor = TextAnchor.MiddleCenter)
         {
-            Buttons = null;
-            toggleButtons = null;
+            guiItems.Clear();
+                       
+            for (int i = 0; i < techTypeDatas.Count; i++)
+            {
+                guiItems.Add(new GuiItem()
+                {
+                    Name = techTypeDatas[i].Name,
+                    Type = type,
+                    Enabled = enabled,
+                    Rect = rects[i],
+                    ItemColor = itemColor,
+                    State = state,
+                    FontStyle = fontStyle,
+                    TextAnchor = textAnchor
+                });
+            }
+        }
+     
+        public void OnDestroy()
+        {            
+            commands = null;            
+            toggleCommands = null;
             daynightTab = null;
             categoriesTab = null;
             vehicleSettings = null;
@@ -141,20 +243,31 @@ namespace CheatManager
             initToggleButtons = false;
             prevCwPos = null;
             warpSound = null;            
-            isActive = false;
-            seamothCanFly = false;            
-            initStyles = false;
+            isActive = false;                    
             isSeaglideFast.changedEvent.RemoveHandler(this, IsSeaglideFast);
+            onConsoleCommandEntered.RemoveHandler(this, OnConsoleCommandEntered);
         }
 
         public void Start()
         {
-            isSeaglideFast.changedEvent.AddHandler(this, new Event<Utils.MonitoredValue<bool>>.HandleFunction(IsSeaglideFast));           
+            isSeaglideFast.changedEvent.AddHandler(this, new Event<Utils.MonitoredValue<bool>>.HandleFunction(IsSeaglideFast));            
+            onConsoleCommandEntered.AddHandler(this, new Event<string>.HandleFunction(OnConsoleCommandEntered));
+            onFilterFastChanged.AddHandler(this, new Event<bool>.HandleFunction(OnFilterFastChanged));
 
 #if DEBUG_PROGRAM
             StartCoroutine(DebugProgram());
 #endif
-        }        
+        }
+
+        private void OnFilterFastChanged(bool enabled)
+        {
+            filterFast = enabled;                        
+        }
+
+        private void OnConsoleCommandEntered(string command)
+        {            
+            UpdateButtonsState();                     
+        }
 
 #if DEBUG_PROGRAM
         private IEnumerator DebugProgram()
@@ -165,7 +278,7 @@ namespace CheatManager
                 StartCoroutine(DebugProgram());
         }
 #endif
-        private void IsSeaglideFast(Utils.MonitoredValue<bool> parms)
+        private void IsSeaglideFast(Utils.MonitoredValue<bool> isFast)
         {
             SeaglideOverDrive.Instance.SetSeaglideSpeed();            
         }
@@ -184,331 +297,149 @@ namespace CheatManager
                     isActive = !isActive;
                 }
 
-                if (isActive)
+                if (!isActive)
+                    return;
+                
+                if (Input.GetKeyDown(Config.KEYBINDINGS["ToggleMouse"]))
                 {
-                    if (Input.GetKeyDown(Config.KEYBINDINGS["ToggleMouse"]))
-                    {
-                        UWE.Utils.lockCursor = !UWE.Utils.lockCursor;
-                    }
+                    UWE.Utils.lockCursor = !UWE.Utils.lockCursor;
+                }
 
-                    if(!initToggleButtons)
-                    {
-                        ReadGameValues();                        
-                        initToggleButtons = true;
-                    }                   
+                if(!initToggleButtons && !uGUI.main.loading.IsLoading)
+                {
+                    SetToggleButtons();                                                
+                    initToggleButtons = true;
+                    UpdateButtonsState();
+                }
+                if (normalButtonID != -1)
+                {                        
+                    buttonControl.NormalButtonControl(normalButtonID, ref commands, ref toggleCommands);
+                }
 
-                    if (normalButtonID != -1)
-                    {
-                        buttonControl.NormalButtonControl(normalButtonID, ref Buttons, ref toggleButtons);                        
-                    }
+                if (toggleButtonID != -1)
+                {                        
+                    buttonControl.ToggleButtonControl(toggleButtonID, ref toggleCommands);
+                }
 
-                    if (toggleButtonID != -1)
-                    {
-                        buttonControl.ToggleButtonControl(toggleButtonID, ref toggleButtons);                        
-                    }
+                if (daynightTabID != -1)
+                {
+                    buttonControl.DayNightButtonControl(daynightTabID, ref currentdaynightTab, ref daynightTab);
+                }
 
-                    if (daynightTabID != -1)
+                if (categoriesTabID != -1)
+                {
+                    if (categoriesTabID != currentTab)
                     {
-                        buttonControl.DayNightButtonControl(daynightTabID, ref currentdaynightTab, ref daynightTab);
-                    }
-
-                    if (categoriesTabID != -1)
-                    {
-                        if (categoriesTabID != currentTab)
-                        {
-                            categoriesTab[currentTab].Pressed = false;
-                            categoriesTab[categoriesTabID].Pressed = true;
-                            currentTab = categoriesTabID;
-                            scrollPos = Vector2.zero;
-                        }
-                    }
-
-                    if (vehicleSettingsID != -1)
-                    {
-                        if (vehicleSettingsID == 0)
-                        {
-                            seamothCanFly = !seamothCanFly;
-                            vehicleSettings[0].Pressed = seamothCanFly;                            
-                        }
-
-                        if (vehicleSettingsID == 1)
-                        {
-                            if (SeaglideOverDrive.Instance != null)
-                            {
-                                isSeaglideFast.Update(!isSeaglideFast.value);
-                                vehicleSettings[1].Pressed = isSeaglideFast.value;
-                            }
-                            else
-                            {
-                                ErrorMessage.AddMessage("CheatManager Error!\nYou do not have a Seaglide!");
-                            }
-                            
-                        }
+                        categoriesTab[currentTab].State = SNGUI.SetStateInverse(categoriesTab[currentTab].State);
+                        categoriesTab[categoriesTabID].State = SNGUI.SetStateInverse(categoriesTab[categoriesTabID].State);
+                        currentTab = categoriesTabID;
+                        scrollPos = Vector2.zero;
                     }
                 }
-                
-                if (toggleButtons[18].Pressed)
-                {
-                    PlayerMain.infectedMixin.SetInfectedAmount(0f);
-                }                                        
-            }
-        }
 
-        internal void ReadGameValues()
-        {
-            PlayerMain = Player.main;
-            toggleButtons[0].Pressed = GameModeUtils.IsOptionActive(GameModeOption.NoSurvival);
-            toggleButtons[1].Pressed = GameModeUtils.IsOptionActive(GameModeOption.NoBlueprints);
-            toggleButtons[2].Pressed = GameModeUtils.RequiresSurvival();
-            toggleButtons[3].Pressed = GameModeUtils.IsPermadeath();
-            toggleButtons[4].Pressed = NoCostConsoleCommand.main.fastBuildCheat;
-            toggleButtons[5].Pressed = NoCostConsoleCommand.main.fastScanCheat;
-            toggleButtons[6].Pressed = NoCostConsoleCommand.main.fastGrowCheat;
-            toggleButtons[7].Pressed = NoCostConsoleCommand.main.fastHatchCheat;
-          //toggleButtons[8].Pressed = filterfast cheat
-            toggleButtons[9].Pressed = GameModeUtils.IsOptionActive(GameModeOption.NoCost);
-            toggleButtons[10].Pressed = GameModeUtils.IsCheatActive(GameModeOption.NoEnergy);
-            toggleButtons[11].Pressed = GameModeUtils.IsOptionActive(GameModeOption.NoSurvival);
-            toggleButtons[12].Pressed = GameModeUtils.IsOptionActive(GameModeOption.NoOxygen);
-            toggleButtons[13].Pressed = GameModeUtils.IsOptionActive(GameModeOption.NoRadiation);
-            toggleButtons[14].Pressed = GameModeUtils.IsInvisible();
-          //toggleButtons[15].Pressed = shotgun cheat
-            toggleButtons[16].Pressed = NoDamageConsoleCommand.main.GetNoDamageCheat();
-          //toggleButtons[17].Pressed = alwaysDay cheat
-          //toggleButtons[18].Pressed = noInfect cheat                      
-            toggleButtons[19].Enabled = GameModeUtils.RequiresSurvival();
-            vehicleSettings[0].Pressed = seamothCanFly;            
+                if (scrollviewID != -1)
+                {
+                    buttonControl.ScrollViewControl(currentTab, ref scrollviewID, ref scrollItemsList[currentTab], ref tMatrix, ref commands);
+                }
+
+                if (vehicleSettingsID != -1)
+                {
+                    if (vehicleSettingsID == 0)
+                    {                        
+                        isSeamothCanFly.Update(!isSeamothCanFly.value);
+                        vehicleSettings[0].State = SNGUI.ConvertBoolToState(isSeamothCanFly.value);                
+                    }
+
+                    if (vehicleSettingsID == 1)
+                    {
+                        if (SeaglideOverDrive.Instance != null)
+                        {
+                            isSeaglideFast.Update(!isSeaglideFast.value);
+                            vehicleSettings[1].State = SNGUI.ConvertBoolToState(isSeaglideFast.value);
+                        }
+                        else
+                        {
+                            ErrorMessage.AddMessage("CheatManager Error!\nYou do not have a Seaglide!");
+                        }                            
+                    }
+                }
+                                                                     
+            }
         }
         
 
-        public void ExecuteCommand(object message, object command)
+        private void SetToggleButtons()
         {
-            if (message != null)
+            foreach (KeyValuePair<string, string> kvp in Config.Section_toggleButtons)
             {
-                ErrorMessage.AddMessage(message.ToString());
-            }
+                bool.TryParse(kvp.Value, out bool result);
 
-            if (command != null)
-            {
-                DevConsole.SendConsoleCommand(command.ToString());                
-            }            
-        }        
+                if (result)
+                {
+                    ExecuteCommand("", kvp.Key);
+                }
+            }
+        }
+        
+
+        internal void UpdateButtonsState()
+        {
+            toggleCommands[(int)ToggleCommands.freedom].State = SNGUI.ConvertBoolToState(GameModeUtils.IsOptionActive(GameModeOption.NoSurvival));
+            toggleCommands[(int)ToggleCommands.creative].State = SNGUI.ConvertBoolToState(GameModeUtils.IsOptionActive(GameModeOption.NoBlueprints));
+            toggleCommands[(int)ToggleCommands.survival].State = SNGUI.ConvertBoolToState(GameModeUtils.RequiresSurvival());
+            toggleCommands[(int)ToggleCommands.hardcore].State = SNGUI.ConvertBoolToState(GameModeUtils.IsPermadeath());
+            toggleCommands[(int)ToggleCommands.fastbuild].State = SNGUI.ConvertBoolToState(NoCostConsoleCommand.main.fastBuildCheat);
+            toggleCommands[(int)ToggleCommands.fastscan].State = SNGUI.ConvertBoolToState(NoCostConsoleCommand.main.fastScanCheat);
+            toggleCommands[(int)ToggleCommands.fastgrow].State = SNGUI.ConvertBoolToState(NoCostConsoleCommand.main.fastGrowCheat);
+            toggleCommands[(int)ToggleCommands.fasthatch].State = SNGUI.ConvertBoolToState(NoCostConsoleCommand.main.fastHatchCheat);
+            toggleCommands[(int)ToggleCommands.filterfast].State = SNGUI.ConvertBoolToState(filterFast);
+            //toggleCommands[(int)ToggleCommands.filterfast].State = filterfast cheat
+            toggleCommands[(int)ToggleCommands.nocost].State = SNGUI.ConvertBoolToState(GameModeUtils.IsOptionActive(GameModeOption.NoCost));
+            toggleCommands[(int)ToggleCommands.noenergy].State = SNGUI.ConvertBoolToState(GameModeUtils.IsCheatActive(GameModeOption.NoEnergy));
+            toggleCommands[(int)ToggleCommands.nosurvival].State = SNGUI.ConvertBoolToState(GameModeUtils.IsOptionActive(GameModeOption.NoSurvival));
+            toggleCommands[(int)ToggleCommands.oxygen].State = SNGUI.ConvertBoolToState(GameModeUtils.IsOptionActive(GameModeOption.NoOxygen));
+            toggleCommands[(int)ToggleCommands.radiation].State = SNGUI.ConvertBoolToState(GameModeUtils.IsOptionActive(GameModeOption.NoRadiation));
+            toggleCommands[(int)ToggleCommands.invisible].State = SNGUI.ConvertBoolToState(GameModeUtils.IsInvisible());
+            //toggleCommands[(int)ToggleCommands.shotgun].State = shotgun cheat
+            toggleCommands[(int)ToggleCommands.nodamage].State = SNGUI.ConvertBoolToState(NoDamageConsoleCommand.main.GetNoDamageCheat());
+            toggleCommands[(int)ToggleCommands.noinfect].State = SNGUI.ConvertBoolToState(NoInfectConsoleCommand.main.GetNoInfectCheat());
+            toggleCommands[(int)ToggleCommands.alwaysday].State = SNGUI.ConvertBoolToState(AlwaysDayConsoleCommand.main.GetAlwaysDayCheat());
+            toggleCommands[(int)ToggleCommands.overpower].Enabled = GameModeUtils.RequiresSurvival();
+
+            if (toggleCommands[(int)ToggleCommands.overpower].Enabled)
+                toggleCommands[(int)ToggleCommands.overpower].State = SNGUI.ConvertBoolToState(OverPowerConsoleCommand.main.GetOverPowerCheat());
+
+            vehicleSettings[0].State = SNGUI.ConvertBoolToState(isSeamothCanFly.value);
+            vehicleSettings[1].State = SNGUI.ConvertBoolToState(isSeaglideFast.value);
+        }               
         
         public void OnGUI()
         {
             if (!isActive)
-                return;
+                return;            
 
-            if (!initStyles)
-                initStyles = SNStyles.InitGUIStyles();
-
-            windowRect = SNWindow.CreateWindow(new Rect(Screen.width - (Screen.width / 4.8f), 0, Screen.width / 4.8f, Screen.height / 4 * 3), windowTitle);
-
-            float lastYcoord = windowRect.y;
-            float baseHeight = windowRect.height;
-
-            windowRect.x += 5;
-            windowRect.y += space;
-            windowRect.width -= 10;
-            windowRect.height = 22;
-
-            GUI.Label(windowRect, "Commands:");
-
-            normalButtonID = Button.CreateButtonsGrid(new Rect(windowRect.x, windowRect.y + 22, windowRect.width, baseHeight), space, 4, Buttons, out lastYcoord);
-
-            GUI.Label(new Rect(windowRect.x, lastYcoord + space, 150, 22), "Toggle Commands:");            
-
-            toggleButtonID = Button.CreateButtonsGrid(new Rect(windowRect.x, lastYcoord + space + 22, windowRect.width, baseHeight - (lastYcoord + 22 + space)), space, 4, toggleButtons, out lastYcoord);            
-
-            GUI.Label(new Rect(windowRect.x, lastYcoord + space, 150, 22), "Day/Night Speed:");            
-
-            daynightTabID = Button.CreateButtonsGrid(new Rect(windowRect.x, lastYcoord + space + 22, windowRect.width, baseHeight), space, 6, daynightTab , out lastYcoord);            
-
-            GUI.Label(new Rect(windowRect.x, lastYcoord + space, 100, 22), "Categories:");            
-
-            categoriesTabID = Button.CreateButtonsGrid(new Rect(windowRect.x, lastYcoord + space + 22, windowRect.width, baseHeight), space, 4, categoriesTab, out lastYcoord);
-
-            GUI.Label(new Rect(windowRect.x, lastYcoord + space, 150, 22), "Select Item in Category:");            
-
-            GUI.Label(new Rect(windowRect.x + 150, lastYcoord + space, 100, 22), categoriesTab[currentTab].Name, SNStyles.GetGuiStyle(SNGUI.GuiItemType.LABEL));
+            SNWindow.CreateWindow(windowRect, windowTitle);
             
-            windowRect.x = windowRect.x + 5;
-            windowRect.y = lastYcoord + 22 + (space * 2);
-            windowRect.width = windowRect.width - 10;
-            windowRect.height = (baseHeight - windowRect.y) + 20;            
+            normalButtonID = SNGUI.DrawGuiItemsGroup(ref commands);
+            toggleButtonID = SNGUI.DrawGuiItemsGroup(ref toggleCommands);
+            daynightTabID = SNGUI.DrawGuiItemsGroup(ref daynightTab);
+            categoriesTabID = SNGUI.DrawGuiItemsGroup(ref categoriesTab);
             
-            TabControl(currentTab);            
-        }       
-
-
-        private void TabControl(int category)
-        {
-            int scrollItems;
-
-            if (category == 19)
-                scrollItems = warpTargets.Targets.Length;            
-            else           
-                scrollItems = tMatrix[category].Count;            
-
-            float width = windowRect.width;
-
-            if (scrollItems > 10 && category != 0)
-                width -= 20;
-
-            if (scrollItems > 4 && category == 0)
+            if (currentTab == 0)
             {
-                windowRect.height = 104;
-                width -= 20;
-            }
+                scrollviewID = SNScrollView.CreateScrollView(scrollRect, ref scrollPos, ref scrollItemsList[currentTab], "Select Item in Category:", categoriesTab[currentTab].Name, 4);
 
-            scrollPos = GUI.BeginScrollView(windowRect, scrollPos, new Rect(windowRect.x, windowRect.y, width, scrollItems * 26));
-
-            string itemName, selectedTech;
-
-            for (int i = 0; i < scrollItems; i++)
-            {
-                if (category == 19)
-                {
-                    itemName = warpTargets.Targets[i][1];
-                    selectedTech = warpTargets.Targets[i][0];                    
-                }                
-                else
-                {                    
-                    itemName = tMatrix[category][i].Name; 
-                    selectedTech = tMatrix[category][i].TechType.ToString();                    
-                }               
-
-                if (GUI.Button(new Rect(windowRect.x, windowRect.y + (i * 26), width, 22), itemName, SNStyles.GetGuiStyle(SNGUI.GuiItemType.NORMALBUTTON)))                
-                {
-                    switch (category)
-                    {
-                        case 0:
-                            if (!PlayerMain.IsInBase() && !PlayerMain.IsInSubmarine() && !PlayerMain.escapePod.value)
-                            {
-                                if (tMatrix[category][i].TechType == TechType.Cyclops)
-                                    ExecuteCommand($"{itemName}  has spawned", "sub cyclops");
-                                else
-                                    ExecuteCommand($"{itemName}  has spawned", $"spawn {selectedTech}");
-                                break;
-                            }
-                            ErrorMessage.AddMessage("CheatManager Error!\nVehicles cannot spawn inside Lifepod, Base or Submarine!");
-                            break;                       
-                        case 1:
-                        case 2:
-                        case 3:
-                        case 4:
-                        case 5:
-                        case 6:                       
-                        case 11:
-                        case 12:
-                        case 13:
-                        case 14:
-                        case 15:                                                    
-                            ExecuteCommand($"{itemName}  added to inventory", $"item {selectedTech}");
-                            break;                        
-                        case 7:
-                        case 8:
-                        case 9:
-                        case 10:                        
-                        case 16:
-                        case 17:
-                            ExecuteCommand($"{itemName}  has spawned", $"spawn {selectedTech}");                             
-                            break;
-                        case 18:
-                            ExecuteCommand($"Blueprint: {itemName} unlocked", $"unlock {selectedTech}");                            
-                            break;
-                        case 19:
-                            Teleport(itemName, selectedTech);
-                            Buttons[7].Enabled = true;
-                            break;                        
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            GUI.EndScrollView();
-
-            if (category == 0)
-            {
-                windowRect.y += (4 * 26) + 2;
-
-                GUI.Box(new Rect(windowRect.x, windowRect.y, windowRect.width, 23), "Vehicle Settings:", SNStyles.GetGuiStyle(SNGUI.GuiItemType.BOX));
+                vehicleSettingsID = SNGUI.DrawGuiItemsGroup(ref vehicleSettings);
                 
-                vehicleSettingsID = Button.CreateButtonsGrid(new Rect(windowRect.x - 5 , windowRect.y + 27, windowRect.width + 10, 22), space, 2, vehicleSettings, out float lastYcoord);
-                
-                GUI.Label(new Rect(windowRect.x, windowRect.y + 53, 250, 22), seamothName + " speed multiplier: " + string.Format("{0:#.##}", seamothSpeedMultiplier));
-                
-                seamothSpeedMultiplier = (GUI.HorizontalSlider(new Rect(windowRect.x, windowRect.y + 79, windowRect.width, 10), seamothSpeedMultiplier, 1f, 5f));
-
-                GUI.Label(new Rect(windowRect.x, windowRect.y + 93 , 250, 22), exosuitName + " speed multiplier: " + string.Format("{0:#.##}",exosuitSpeedMultiplier));
-                exosuitSpeedMultiplier = GUI.HorizontalSlider(new Rect(windowRect.x, windowRect.y + 119, windowRect.width, 10), exosuitSpeedMultiplier, 1f, 5f);
-
-                GUI.Label(new Rect(windowRect.x, windowRect.y + 133, 250, 22), cyclopsName + " speed multiplier: " + string.Format("{0:#.##}", cyclopsSpeedMultiplier));
-                cyclopsSpeedMultiplier = GUI.HorizontalSlider(new Rect(windowRect.x, windowRect.y + 159, windowRect.width, 10), cyclopsSpeedMultiplier, 1.0F, 5.0F);
-                
-            }    
-            
-        }
-        
-        private void Teleport(string name, string Vector3string)
-        {
-            Vector3 currentWorldPos = MainCamera.camera.transform.position;
-            prevCwPos = string.Format("{0:D} {1:D} {2:D}", (int)currentWorldPos.x, (int)currentWorldPos.y, (int)currentWorldPos.z);
-            if (IsPlayerInVehicle())
-            {
-                PlayerMain.GetVehicle().TeleportVehicle(warpTargets.ConvertStringPosToVector3(Vector3string), Quaternion.identity);
-                PlayerMain.CompleteTeleportation();
-                ErrorMessage.AddMessage($"Vehicle and Player Warped to: {name}\n({Vector3string})");
+                SNHorizontalSlider.CreateHorizontalSlider(sliders[0].Rect, ref seamothSpeedMultiplier, 1f, 5f, sliders[0].Name, sliders[0].OnChangedEvent);
+                SNHorizontalSlider.CreateHorizontalSlider(sliders[1].Rect, ref exosuitSpeedMultiplier, 1f, 5f, sliders[1].Name, sliders[1].OnChangedEvent);
+                SNHorizontalSlider.CreateHorizontalSlider(sliders[2].Rect, ref cyclopsSpeedMultiplier, 1f, 5f, sliders[2].Name, sliders[2].OnChangedEvent);
             }
             else
             {
-                ExecuteCommand($"Player Warped to: {name}\n({Vector3string})", $"warp {Vector3string}");
+                scrollviewID = SNScrollView.CreateScrollView(scrollRect, ref scrollPos, ref scrollItemsList[currentTab], "Select Item in Category:", categoriesTab[currentTab].Name);
             }
-
-            Utils.PlayFMODAsset(warpSound, PlayerMain.transform, 20f);
-        }
-
-        internal bool IsPlayerInVehicle()
-        {
-            if (PlayerMain.inSeamoth == true || PlayerMain.inExosuit == true)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        internal void OverPower(bool enable)
-        {
-            Oxygen o2 = PlayerMain.GetComponent<OxygenManager>().GetComponent<Oxygen>();
-
-            if (enable)
-            {
-                PlayerMain.GetComponent<Survival>().SetPrivateField("kUpdateHungerInterval", 10 / Main.OverPowerMultiplier);
-
-                if (o2.isPlayer)
-                {
-                    o2.oxygenCapacity = 45 * Main.OverPowerMultiplier;
-                }
-
-                PlayerMain.liveMixin.data.maxHealth = 100 * Main.OverPowerMultiplier;
-                PlayerMain.liveMixin.health = 100 * Main.OverPowerMultiplier;
-            }
-            else
-            {
-                PlayerMain.GetComponent<Survival>().SetPrivateField("kUpdateHungerInterval", 10f);
-
-                if (o2.isPlayer)
-                {
-                    o2.oxygenCapacity = 45f;
-                    o2.oxygenAvailable = 45f;
-                }
-
-                PlayerMain.liveMixin.data.maxHealth = 100f;
-                PlayerMain.liveMixin.health = 100f;
-            }
-        }
+        }        
     }
 }
 

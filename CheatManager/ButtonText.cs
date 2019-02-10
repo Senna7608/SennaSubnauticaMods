@@ -1,8 +1,68 @@
 ﻿namespace CheatManager
 {
+    internal enum Commands
+    {
+        day,
+        night,
+        unlockall,
+        clearinventory,
+        unlockdoors,
+        encyall,
+        warpme,        
+        BackWarp
+    }
+
+    internal enum ToggleCommands
+    {
+        freedom,
+        creative,
+        survival,
+        hardcore,
+        fastbuild,
+        fastscan,
+        fastgrow,
+        fasthatch,
+        filterfast,
+        nocost,
+        noenergy,
+        nosurvival,
+        oxygen,
+        radiation,
+        invisible,
+        shotgun,
+        nodamage,
+        alwaysday,
+        noinfect,
+        overpower,
+    }
+
+    internal enum Categories
+    {
+        Vehicles,
+        Tools,
+        Equipment,
+        Materials,
+        Electronics,
+        Upgrades,
+        FoodAndWater,
+        LootAndDrill,
+        Herbivores,
+        Carnivores,
+        Parasites,
+        Leviathan,
+        Eggs,
+        SeaSeed,
+        LandSeed,
+        FloraItem,
+        SeaSpawn,
+        LandSpawn,
+        Blueprints,
+        Warp,        
+    }    
+
     internal class ButtonText
     {
-        internal readonly string[] Buttons = new string[]
+        internal readonly string[] Buttons = new string[8]
         {
             "day",
             "night",
@@ -14,7 +74,7 @@
             "BackWarp"
         };
 
-        internal readonly string[] DayNightTab = new string[]
+        internal readonly string[] DayNightTab = new string[6]
         {
             "0.1",
             "0.25",
@@ -25,7 +85,7 @@
         };
 
 
-        internal readonly string[] ToggleButtons = new string[]
+        internal readonly string[] ToggleButtons = new string[20]
         {
             "freedom",
             "creative",
@@ -44,12 +104,12 @@
             "invisible",
             "shotgun",
             "nodamage",            
-            "alwaysDay",
-            "noInfect",
-            "overPower"
+            "alwaysday",
+            "noinfect",
+            "overpower"
         };
 
-        internal readonly string[] CategoriesTab = new string[]
+        internal readonly string[] CategoriesTab = new string[20]
         {
             "Vehicles",
             "Tools",

@@ -35,7 +35,7 @@ namespace Common.GUIHelper
             {                
                 GUI.Box(listRect, "");
                 
-                listEntry = GUI.SelectionGrid(listRect, listEntry, listContent, 1, SNStyles.GetGuiStyle(SNGUI.GuiItemType.NORMALBUTTON));
+                listEntry = GUI.SelectionGrid(listRect, listEntry, listContent, 1, SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON));
             }            
 
             if (done)

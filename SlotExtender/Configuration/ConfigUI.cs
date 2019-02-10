@@ -12,18 +12,17 @@ namespace SlotExtender.Configuration
         internal ConfigUI Instance { get; private set; }
         
         private Rect windowRect;
-        private Rect[] buttonsRect;
-        private Rect[] itemsRect;
-        private const int space = 10;
-        private bool initStyles = false;
+        private List<Rect> buttonsRect;
+        private List<Rect> itemsRect;
+        private const int space = 10;       
         private int selected = -1;
         private Event keyEvent;
         private string newKey;
         private bool waitingForKey = false;
         private List<string> hotkeyLabels = new List<string>();
         private List<string> hotkeyButtons = new List<string>();
-        private List<SNGUI.GuiItem> buttonInfo = new List<SNGUI.GuiItem>();
-        private List<SNGUI.GuiItem> itemInfo = new List<SNGUI.GuiItem>();
+        private List<GuiItem> buttonInfo = new List<GuiItem>();
+        private List<GuiItem> itemInfo = new List<GuiItem>();
 
         private static GUIContent[] dropDownContent = new GUIContent[]
         {            
@@ -61,27 +60,24 @@ namespace SlotExtender.Configuration
             windowRect = SNWindow.InitWindowRect(new Rect(0, 0, Screen.width / 6, hotkeyLabels.Count * 47));
 
             itemsRect = SNWindow.SetGridItemsRect(new Rect(windowRect.x, windowRect.y, windowRect.width / 2, windowRect.height),
-                                                1, hotkeyLabels.Count, space, Screen.height / 45, false, true);           
+                                                1, hotkeyLabels.Count, Screen.height / 45, space, space, false, true);           
 
             buttonsRect = SNWindow.SetGridItemsRect(new Rect(windowRect.x + windowRect.width / 2, windowRect.y, windowRect.width / 2, windowRect.height),
-                                                  1, hotkeyButtons.Count + 1, space, Screen.height / 45, false, true);
+                                                  1, hotkeyButtons.Count + 1, Screen.height / 45, space, space, false, true);
 
-            SNGUI.CreateGuiItemsGroup(hotkeyLabels.ToArray(), itemsRect, SNGUI.GuiItemType.LABEL,
-                                      ref itemInfo, Color.green, Color.green, true, FontStyle.Bold, TextAnchor.MiddleLeft);            
+            SNGUI.CreateGuiItemsGroup(hotkeyLabels.ToArray(), itemsRect, GuiItemType.LABEL,
+                                      ref itemInfo, new GuiItemColor(), fontStyle: FontStyle.Bold, textAnchor: TextAnchor.MiddleLeft);            
 
-            SNGUI.CreateGuiItemsGroup(hotkeyButtons.ToArray(), buttonsRect, SNGUI.GuiItemType.NORMALBUTTON,
-                                      ref buttonInfo, Color.white, Color.green, true, FontStyle.Bold, TextAnchor.MiddleCenter);            
+            SNGUI.CreateGuiItemsGroup(hotkeyButtons.ToArray(), buttonsRect, GuiItemType.NORMALBUTTON,
+                                      ref buttonInfo, new GuiItemColor(), fontStyle: FontStyle.Bold, textAnchor: TextAnchor.MiddleCenter);            
 
-            SNGUI.SetGuiItemsGroupLabel("Functions", itemsRect.GetLast(), ref itemInfo, Color.white, Color.white);
+            SNGUI.SetGuiItemsGroupLabel("Functions", itemsRect.GetLast(), ref itemInfo, new GuiItemColor());
 
-            SNGUI.SetGuiItemsGroupLabel("Hotkeys", buttonsRect.GetLast(), ref buttonInfo, Color.white, Color.white);
+            SNGUI.SetGuiItemsGroupLabel("Hotkeys", buttonsRect.GetLast(), ref buttonInfo, new GuiItemColor());
         }
 
         public void OnGUI()
         {
-            if (!initStyles)
-                initStyles = SNStyles.InitGUIStyles();
-
             SNWindow.CreateWindow(new Rect(0, 0, Screen.width / 6, hotkeyLabels.Count * 47), "SlotExtender Configuration Window", false, false);
 
             GUI.FocusControl("SlotExtender.ConfigUI");
@@ -97,21 +93,23 @@ namespace SlotExtender.Configuration
                 buttonInfo[sBtn].Name = "Press any key!";
             }                       
 
-            SNDropDown.CreateDropdown(buttonsRect[buttonsRect.Length - 2], ref isVisible, ref dropdownSelection, dropDownContent);
+            SNDropDown.CreateDropdown(buttonsRect[buttonsRect.Count - 2], ref isVisible, ref dropdownSelection, dropDownContent);
 
-            float y = itemsRect[itemsRect.Length - 2].y + space * 2 + itemsRect[0].height;
+            float y = itemsRect[itemsRect.Count - 2].y + space * 2 + itemsRect[0].height;
 
-            if (GUI.Button(new Rect(itemsRect[0].x, y, itemsRect[0].width, Screen.height / 22.5f), "Save", SNStyles.GetGuiStyle(SNGUI.GuiItemType.NORMALBUTTON)))
+            if (GUI.Button(new Rect(itemsRect[0].x, y, itemsRect[0].width, Screen.height / 22.5f), "Save", SNStyles.GetGuiStyle(GuiItemType.NORMALBUTTON)))
             {
                 SaveAndExit();
             }
+
             if (!isVisible)
             {
-                if (GUI.Button(new Rect(buttonsRect[0].x, y, buttonsRect[0].width, Screen.height / 22.5f), "Cancel", SNStyles.GetGuiStyle(SNGUI.GuiItemType.NORMALBUTTON)))
+                if (GUI.Button(new Rect(buttonsRect[0].x, y, buttonsRect[0].width, Screen.height / 22.5f), "Cancel", SNStyles.GetGuiStyle(GuiItemType.NORMALBUTTON)))
                 {
                     Destroy(Instance);
                 }
             }
+
             keyEvent = Event.current;
 
             if (keyEvent.isKey && waitingForKey)
@@ -202,7 +200,11 @@ namespace SlotExtender.Configuration
                     go.name = "SlotExtender.ConfigUI";
                     Instance = go.GetComponent<ConfigUI>();
                 }
-            }            
+            }
+            else
+            {
+                Instance.Awake();
+            }
         }
     }    
 }

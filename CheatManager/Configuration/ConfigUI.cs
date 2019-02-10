@@ -2,16 +2,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using Common.GUIHelper;
+using UWE;
+using System;
 
 namespace CheatManager.Configuration
 {
     internal class ConfigUI : MonoBehaviour
     {
         public static ConfigUI Instance { get; private set; }
-        private Rect windowRect;
-        private Rect[] buttonsRect;
-        private Rect[] itemsRect;
-        private static bool initStyles = false;
+        private Rect windowRect = new Rect(0, 0, 310, 240);
+        private Rect drawRect;
+        private List<Rect> buttonsRect;       
         private static int selected = -1;
         private Event keyEvent;
         private KeyCode newKey;
@@ -19,9 +20,8 @@ namespace CheatManager.Configuration
         private List<string> HotkeyLabels = new List<string>();
         private List<string> HotkeyButtons = new List<string>();
         private List<string> SettingLabels = new List<string>();
-
-        private List<SNGUI.GuiItem> buttonInfo = new List<SNGUI.GuiItem>();
-        private List<SNGUI.GuiItem> itemInfo = new List<SNGUI.GuiItem>();
+        private List<GuiItem> buttonInfo = new List<GuiItem>();
+        private List<GuiItem> itemInfo = new List<GuiItem>();
 
         private static readonly float space = 10f;
 
@@ -45,27 +45,22 @@ namespace CheatManager.Configuration
                 SettingLabels.Add(key.Key);                
             }
 
-            windowRect = SNWindow.InitWindowRect(new Rect(0, 0, 310, 240), true);
+            drawRect = SNWindow.InitWindowRect(windowRect, true);
 
-            itemsRect = SNWindow.SetGridItemsRect(new Rect(windowRect.x, windowRect.y, windowRect.width / 2, windowRect.height),
-                                                1, HotkeyLabels.Count, 10, Screen.height / 45);
+            List<Rect> itemsRect = SNWindow.SetGridItemsRect(new Rect(drawRect.x, drawRect.y, drawRect.width / 2, drawRect.height),
+                                                1, HotkeyLabels.Count, Screen.height / 45, 10, 10);
 
-            buttonsRect = SNWindow.SetGridItemsRect(new Rect(windowRect.x + windowRect.width / 2, windowRect.y, windowRect.width / 2, windowRect.height),
-                                                  1, HotkeyButtons.Count + 1, 10, Screen.height / 45);
+            buttonsRect = SNWindow.SetGridItemsRect(new Rect(drawRect.x + drawRect.width / 2, drawRect.y, drawRect.width / 2, drawRect.height),
+                                                  1, HotkeyButtons.Count + 1, Screen.height / 45, 10, 10);
 
-            SNGUI.CreateGuiItemsGroup(HotkeyLabels.ToArray(), itemsRect, SNGUI.GuiItemType.TEXTFIELD,
-                                      ref itemInfo, Color.green, Color.green, true, FontStyle.Bold, TextAnchor.MiddleRight);
+            SNGUI.CreateGuiItemsGroup(HotkeyLabels.ToArray(), itemsRect, GuiItemType.TEXTFIELD, ref itemInfo, new GuiItemColor());
 
-            SNGUI.CreateGuiItemsGroup(HotkeyButtons.ToArray(), buttonsRect, SNGUI.GuiItemType.NORMALBUTTON,
-                                      ref buttonInfo, Color.white, Color.green, true, FontStyle.Bold, TextAnchor.MiddleCenter);
+            SNGUI.CreateGuiItemsGroup(HotkeyButtons.ToArray(), buttonsRect, GuiItemType.NORMALBUTTON, ref buttonInfo, new GuiItemColor(GuiColor.Gray, GuiColor.White, GuiColor.Green), GuiItemState.NORMAL, true, FontStyle.Bold, TextAnchor.MiddleCenter);
         }
 
         public void OnGUI()
         {
-            if (!initStyles)
-                initStyles = SNStyles.InitGUIStyles();
-
-            SNWindow.CreateWindow(new Rect(0, 0, 310, 240), "CheatManager: Configuration interface", false, true);
+            SNWindow.CreateWindow(windowRect, "CheatManager: Configuration interface", false, true);
 
             GUI.FocusControl("CheatManager.ConfigUI");
 
@@ -80,15 +75,15 @@ namespace CheatManager.Configuration
                 buttonInfo[sBtn].Name = "Press any key!";
             }           
             
-            if (GUI.Button(new Rect(windowRect.x + space, buttonsRect.GetLast().y + space * 2, windowRect.width / 2 - space * 2, 40), "Save"))
+            if (GUI.Button(new Rect(drawRect.x + space, buttonsRect.GetLast().y + space * 2, drawRect.width / 2 - space * 2, 40), "Save"))
             {                
                 SaveAndExit();
             }
-            else if (GUI.Button(new Rect(windowRect.x + space + windowRect.width / 2, buttonsRect.GetLast().y + space * 2, windowRect.width / 2 - space * 2, 40), "Cancel"))
+            else if (GUI.Button(new Rect(drawRect.x + space + drawRect.width / 2, buttonsRect.GetLast().y + space * 2, drawRect.width / 2 - space * 2, 40), "Cancel"))
             {
                 Destroy(Instance);
-            }            
-
+            }
+            
             keyEvent = Event.current;
 
             if (keyEvent.isKey && waitingForKey)
@@ -151,8 +146,7 @@ namespace CheatManager.Configuration
             }
 
             Config.WriteConfig();
-            Config.SetKeyBindings();
-            Main.Instance.UpdateTitle();
+            Config.SetKeyBindings();            
             Destroy(Instance);
         }
 
