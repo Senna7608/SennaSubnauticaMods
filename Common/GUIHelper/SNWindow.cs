@@ -203,5 +203,14 @@ namespace Common.GUIHelper
             else
                 return rects.GetLast().y + rects.GetLast().height;
         }
+
+        public static void ExpandWidth(ref List<Rect> rects, int requiredColumn, int requiredRow, int totalColumns, int totalRows, float expandSize, bool aligRightDown = true)
+        {
+            int item = GetGridItemInt(requiredColumn, requiredRow, totalColumns, totalRows, aligRightDown);
+            Rect expandedRect = rects[item];
+            expandedRect.width += expandSize;
+            rects[item] = expandedRect;
+        }
+
     }
 }

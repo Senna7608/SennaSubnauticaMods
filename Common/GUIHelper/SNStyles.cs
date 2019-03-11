@@ -41,6 +41,7 @@ namespace Common.GUIHelper
             return true;
         }
 
+        
         public static GUIStyle GetGuiItemStyle(GuiItem guiItem)
         {
             if (!isInitStyles)
@@ -152,8 +153,7 @@ namespace Common.GUIHelper
 
             return Color.white;
         }
-
-
+        
         public static GUIStyle GetGuiItemStyle(GuiItemType type, GuiColor textColor = GuiColor.White, TextAnchor textAnchor = TextAnchor.MiddleCenter, FontStyle fontStyle = FontStyle.Normal, bool wordWrap = false)
         {
             if (!isInitStyles)
@@ -179,6 +179,7 @@ namespace Common.GUIHelper
                     Label.fontStyle = fontStyle;
                     Label.alignment = textAnchor;
                     Label.wordWrap = wordWrap;
+                    Label.clipping = TextClipping.Overflow;
                     return Label;
 
                 case GuiItemType.TEXTFIELD:

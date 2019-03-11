@@ -1,10 +1,10 @@
-﻿namespace Common
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Reflection;
-    using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
+using UnityEngine;
 
+namespace Common
+{
     public static class RefHelp
     {
         public static object GetPrivateField<T>(this T instance, string fieldName, BindingFlags bindingFlags = BindingFlags.Default)
@@ -45,20 +45,28 @@
 
         public static bool IsNamespaceExists(string desiredNamespace)
         {
-            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-
-            for (int i = 0; i < assemblies.Length; i++)
+            try
             {
-                Type[] types = assemblies[i].GetTypes();
+                Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
-                for (int j = 0; j < types.Length; j++)
+                for (int i = 0; i < assemblies.Length; i++)
                 {
-                    if (types[j].Namespace == desiredNamespace)
+                    Type[] types = assemblies[i].GetTypes();
+
+                    for (int j = 0; j < types.Length; j++)
                     {
-                        return true;
+                        if (types[j].Namespace == desiredNamespace)
+                        {
+                            return true;
+                        }
                     }
                 }
             }
+            catch
+            {
+                return false;
+            }
+
             return false;
         }
     }

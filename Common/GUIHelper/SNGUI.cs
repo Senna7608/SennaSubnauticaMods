@@ -104,7 +104,7 @@ namespace Common.GUIHelper
                     State = state,
                     FontStyle = fontStyle,
                     TextAnchor = textAnchor,
-                    OnChangedEvent = onChangedEvent,
+                    OnChangedEvent = onChangedEvent
                 });
             }
 
@@ -113,7 +113,7 @@ namespace Common.GUIHelper
 
         public static bool AddGuiItemToGroup(string name, Rect rect, GuiItemType type, ref List<GuiItem> guiItems, GuiItemColor itemColor,
                                              GuiItemState state = GuiItemState.NORMAL, bool enabled = true, FontStyle fontStyle = FontStyle.Normal,
-                                             TextAnchor textAnchor = TextAnchor.MiddleCenter)
+                                             TextAnchor textAnchor = TextAnchor.MiddleCenter, Event<object> onChangedEvent = null)
         {            
             guiItems.Add(new GuiItem()
             {
@@ -124,7 +124,8 @@ namespace Common.GUIHelper
                 ItemColor = itemColor,
                 State = state,
                 FontStyle = fontStyle,
-                TextAnchor = textAnchor
+                TextAnchor = textAnchor,
+                OnChangedEvent = onChangedEvent
             });
            
             return true;

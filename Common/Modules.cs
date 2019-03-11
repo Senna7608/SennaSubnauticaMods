@@ -54,5 +54,16 @@ namespace Common
 
             return Colors.ColorArray[result];
         }
+
+        public static string GetColorName(Color color)
+        {
+            for (int i = 0; i < Colors.ColorArray.Length; i++)
+            {
+                if (Colors.ColorArray[i].Equals(color))
+                    return Colors.ColorNames[i];
+            }
+
+            return null;
+        }
     }
 }

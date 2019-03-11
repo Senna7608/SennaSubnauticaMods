@@ -21,7 +21,7 @@ namespace Common.DebugHelper
             if (gameObject == null)
                 return;
 
-            FileStream fileStream = new FileStream($"{FILENAME}{gameObject.name}.txt", FileMode.CreateNew, FileAccess.Write);
+            FileStream fileStream = new FileStream($"{FILENAME}{gameObject.name}.txt", FileMode.Create, FileAccess.Write);
 
             using (StreamWriter streamWriter = new StreamWriter(fileStream))
             {

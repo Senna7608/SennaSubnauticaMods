@@ -13,16 +13,16 @@ namespace Common
 
             if (command != null)
             {
-                Debug.Log(command);
+                SNLogger.Log((string)command);
                 DevConsole.SendConsoleCommand(command.ToString());
             }
         }
 
         public static bool IsPlayerInVehicle()
         {
-            return Player.main.motorMode == Player.MotorMode.Vehicle ? true : false;
+            return Player.main.inSeamoth || Player.main.inExosuit ? true : false;
         }
-               
+
         public static Vector3 ConvertStringPosToVector3(string target)
         {
             string[] numbers = target.Split(' ');

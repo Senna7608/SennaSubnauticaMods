@@ -27,7 +27,6 @@ namespace Common
         protected readonly TechCategory CategoryForPDA;
 
         internal readonly string GameResourceFileName;        
-        //internal readonly Type[] ComponentsToAdd;
 
         protected Craftable(
             string nameID,
@@ -39,8 +38,7 @@ namespace Common
             TechType requiredAnalysis,
             TechGroup groupForPDA,
             TechCategory categoryForPDA,
-            string gamerResourceFileName            
-            //Type[] componentsToAdd
+            string gamerResourceFileName
             )
             : base(nameID, $"{nameID}Prefab")
         {
@@ -53,8 +51,7 @@ namespace Common
             RequiredForUnlock = requiredAnalysis;
             GroupForPDA = groupForPDA;
             CategoryForPDA = categoryForPDA;
-            GameResourceFileName = gamerResourceFileName;            
-            //ComponentsToAdd = componentsToAdd;
+            GameResourceFileName = gamerResourceFileName;
         }
 
         public virtual void Patch()
@@ -79,20 +76,7 @@ namespace Common
                 prefab = CraftData.GetPrefabForTechType(PrefabTemplate);
             else
                 prefab = Resources.Load<GameObject>(GameResourceFileName);
-
-            /*
-            var obj = UnityEngine.Object.Instantiate(prefab);            
-
-            if (ComponentsToAdd != null)
-            {
-                foreach (Type component in ComponentsToAdd)
-                {
-                  bool result = prefab.AddIfNeedComponent(component);
-                    if (result)
-                        Debug.Log($"[Craftable] Log: Component: [{component.Name}] added to prefab: [{prefab.name}]");
-                }
-            }
-            */
+            
             return UnityEngine.Object.Instantiate(prefab);
         }        
     }
