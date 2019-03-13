@@ -2,7 +2,7 @@
 
 namespace AncientSword
 {
-    public class AncientSword : PlayerTool, IProtoEventListener
+    public class AncientSword : PlayerTool
     {
         public override string animToolName
         {
@@ -12,18 +12,20 @@ namespace AncientSword
             }
         }
         
-       public FMODAsset attackSound;        
-       public FMODAsset underwaterMissSound;
-       public FMODAsset surfaceMissSound;
+        public Animator animator;
+
+        public FMODAsset attackSound;        
+        public FMODAsset underwaterMissSound;
+        public FMODAsset surfaceMissSound;
         
         public DamageType damageType = DamageType.Normal;
 
         public float damage = 50f;
 
-        public float attackDist = 5f;
+        public float attackDist = 6f;
 
-        public VFXEventTypes vfxEventType = VFXEventTypes.knife;              
-
+        public VFXEventTypes vfxEventType = VFXEventTypes.knife;
+        
         public override void OnToolUseAnim(GUIHand hand)
         {
             Vector3 position = default(Vector3);
@@ -129,16 +131,6 @@ namespace AncientSword
                     CraftData.AddToInventory(harvestOutputData, num, false, false);
                 }
             }
-        }
-
-        public void OnProtoSerialize(ProtobufSerializer serializer)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void OnProtoDeserialize(ProtobufSerializer serializer)
-        {
-            throw new System.NotImplementedException();
-        }
+        }        
     }
 }

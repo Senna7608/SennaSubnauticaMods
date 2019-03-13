@@ -1,7 +1,6 @@
 ﻿using SMLHelper.V2.Assets;
-using SMLHelper.V2.MonoBehaviours;
 using UnityEngine;
-using Common.DebugHelper;
+using FMODUnity;
 
 namespace AncientSword
 {
@@ -15,54 +14,77 @@ namespace AncientSword
         }
         
         public override GameObject GetGameObject()
-        {
-            //GameObject prefab = CraftData.GetPrefabForTechType(TechType.Knife);
-            //GameObject gameObject = Object.Instantiate(prefab);
+        {            
+            GameObject gameObject = Object.Instantiate(Resources.Load<GameObject>("worldentities/doodads/precursor/prison/relics/alien_relic_08"));
             
-            GameObject gameObject = Main.assetBundle.LoadAsset<GameObject>("AncientSword");                      
+            GameObject modelGO = gameObject.FindChild("alien_relic_08_world_rot").FindChild("alien_relic_08_hlpr").
+                       FindChild("alien_relic_08_ctrl").FindChild("alien_relic_08");
 
-            foreach (Renderer renderer in gameObject.GetComponentsInChildren<Renderer>())
-            {
-                renderer.material.shader = Shader.Find("MarmosetUBER");
-                renderer.material.SetColor("_Emission", new Color(1f, 1f, 1f));
-            }
-            
-            gameObject.AddComponent<PrefabIdentifier>().ClassId = ClassID;
-            gameObject.AddComponent<TechTag>().type = TechType;            
-            gameObject.AddComponent<BoxCollider>().size = new Vector3(0.1f, 0.1f, 0.1f);
-            gameObject.AddComponent<LargeWorldEntity>().cellLevel = LargeWorldEntity.CellLevel.Near;
-            gameObject.AddComponent<Pickupable>().isPickupable = true;            
-            
-            Fixer fixer = gameObject.AddComponent<Fixer>();
-            fixer.ClassId = ClassID;
-            fixer.techType = TechType;
+            modelGO.transform.SetParent(gameObject.transform);
+            modelGO.name = "sword_model";
+            modelGO.transform.localPosition = new Vector3(0.06f, 0.27f, 0.05f);
+            modelGO.transform.localRotation = Quaternion.Euler(350f, 265f, 172f);
+            modelGO.transform.localScale = new Vector3(0.63f, 0.63f, 0.63f);
 
-            SkyApplier skyApplier = gameObject.AddComponent<SkyApplier>();
+            GameObject colliderGO = new GameObject("collider_container");
+            colliderGO.transform.SetParent(gameObject.transform);
+            colliderGO.transform.localPosition = new Vector3(0f, 0f, 0.01f);
+            colliderGO.transform.localScale = new Vector3(1f, 1f, 1f);
+            colliderGO.transform.localRotation = Quaternion.Euler(7f, 358f, 355f);
+
+            BoxCollider boxCollider = colliderGO.AddOrGetComponent<BoxCollider>();
+            boxCollider.size = new Vector3(0.13f, 0.83f, 0.05f);
+            boxCollider.center = new Vector3(0f, 0.12f, 0f);            
+
+            Object.DestroyImmediate(gameObject.FindChild("Cube"));
+            Object.DestroyImmediate(gameObject.FindChild("alien_relic_08_world_rot"));
+            Object.DestroyImmediate(gameObject.GetComponent<ImmuneToPropulsioncannon>());
+            Object.DestroyImmediate(gameObject.GetComponent<CapsuleCollider>());
+            Object.DestroyImmediate(gameObject.GetComponent<EntityTag>());            
+
+            gameObject.AddOrGetComponent<PrefabIdentifier>().ClassId = ClassID;
+            gameObject.AddOrGetComponent<TechTag>().type = TechType;            
+            gameObject.AddOrGetComponent<Pickupable>().isPickupable = true;            
+            gameObject.AddOrGetComponent<LargeWorldEntity>().cellLevel = LargeWorldEntity.CellLevel.Near;
+
+            gameObject.AddIfNeedComponent<VFXSurface>();
+            gameObject.AddIfNeedComponent<EcoTarget>();
+            gameObject.AddIfNeedComponent<FMOD_CustomEmitter>();
+            gameObject.AddIfNeedComponent<StudioEventEmitter>();
+
+            SkyApplier skyApplier = gameObject.AddOrGetComponent<SkyApplier>();
             skyApplier.renderers = gameObject.GetComponentsInChildren<MeshRenderer>();
             skyApplier.anchorSky = Skies.Auto;
+            
+            Rigidbody rigidbody = gameObject.AddOrGetComponent<Rigidbody>();                     
+            rigidbody.useGravity = false;                    
 
-            WorldForces worldForces = gameObject.AddComponent<WorldForces>();
-            Rigidbody rigidbody = gameObject.AddComponent<Rigidbody>();
-            
-            worldForces.underwaterGravity = 0;
-            worldForces.useRigidbody = rigidbody;
+            WorldForces worldForces = gameObject.AddOrGetComponent<WorldForces>();
+            worldForces.underwaterGravity = 1f;
+            worldForces.handleGravity = true;
+            worldForces.aboveWaterDrag = 1f;
+            worldForces.underwaterDrag = 0.00001f;
+            worldForces.handleDrag = true;
+            worldForces.useRigidbody = rigidbody;           
 
-            VFXFabricating vfxFabricating = gameObject.AddComponent<VFXFabricating>();
-            vfxFabricating.localMinY = -3f;
-            vfxFabricating.localMaxY = 3f;
-            vfxFabricating.posOffset = new Vector3(0f, 0, 0f);
-            vfxFabricating.eulerOffset = new Vector3(0f, 90f, -90f);
-            vfxFabricating.scaleFactor = 0.5f;
-            
-            AncientSword component = gameObject.AddComponent<AncientSword>();
-            
-            var knifePrefab = Resources.Load<GameObject>("WorldEntities/Tools/Knife").GetComponent<Knife>();
+            VFXFabricating vfxFabricating = modelGO.AddOrGetComponent<VFXFabricating>();
+            vfxFabricating.localMinY = -0.4f;
+            vfxFabricating.localMaxY = 0.2f; 
+            vfxFabricating.posOffset = new Vector3(-0.054f, 0f, -0.06f);
+            vfxFabricating.eulerOffset = new Vector3(0f, 0f, 90f);
+            vfxFabricating.scaleFactor = 1f;
 
-            component.attackSound = Object.Instantiate(knifePrefab.attackSound, gameObject.transform);
-            component.underwaterMissSound = Object.Instantiate(knifePrefab.underwaterMissSound, gameObject.transform);
-            component.surfaceMissSound = Object.Instantiate(knifePrefab.surfaceMissSound, gameObject.transform);
+            AncientSword component = gameObject.AddOrGetComponent<AncientSword>();
+
+            Knife knife = Resources.Load<GameObject>("WorldEntities/Tools/Knife").GetComponent<Knife>();
             
-            //DebugHelper.DebugGameObject(gameObject);
+            component.mainCollider = boxCollider;
+            component.socket = PlayerTool.Socket.RightHand;            
+            component.ikAimRightArm = true;
+            component.attackSound = Object.Instantiate(knife.attackSound, gameObject.transform);
+            component.underwaterMissSound = Object.Instantiate(knife.underwaterMissSound, gameObject.transform);
+            component.surfaceMissSound = Object.Instantiate(knife.surfaceMissSound, gameObject.transform);            
+
             return gameObject;
         }        
     }
