@@ -11,9 +11,12 @@ using System.Reflection;
 namespace SlotExtender
 {
     public static class Main
-    {
+    {        
         public static HarmonyInstance hInstance;
         public static SEConfig sEConfig;
+
+        internal static InputFieldListener ListenerInstance { get; set; }
+        public static bool isConsoleActive;
 
         public static void Load()
         {
@@ -26,8 +29,11 @@ namespace SlotExtender
 
                 //Harmony autopatch not working if MoreQuickSlots mod not installed therefore switch to manual patching mode
                 //hInstance.PatchAll(Assembly.GetExecutingAssembly());
-                
+
                 //begin manual patch
+                hInstance.Patch(typeof(DevConsole).GetMethod("SetState"),
+                    new HarmonyMethod(typeof(DevConsole_SetState_Patch), "Prefix"), null);
+
                 hInstance.Patch(typeof(Equipment).GetMethod("GetSlotType"),
                     new HarmonyMethod(typeof(Equipment_GetSlotType_Patch), "Prefix"),  null);
                 
@@ -70,14 +76,14 @@ namespace SlotExtender
             //check MoreQuickSlots namespace is exists
             if (RefHelp.IsNamespaceExists("MoreQuickSlots"))
             {
-                Logger.Log("-> MoreQuickSlots namespace is exist! Trying to install a Cross-MOD patch...");
+                SNLogger.Log($"[{Config.PROGRAM_NAME}] -> MoreQuickSlots namespace is exist! Trying to install a Cross-MOD patch...");
                 //if yes construct a Harmony patch
                 MQS_Patcher mqs_patcher = new MQS_Patcher(hInstance);
 
                 if (mqs_patcher.InitPatch())
-                    Logger.Log("-> MoreQuickSlots Cross-MOD patch installed!");
+                    SNLogger.Log($"[{Config.PROGRAM_NAME}] -> MoreQuickSlots Cross-MOD patch installed!");
                 else
-                    Logger.Log("-> MoreQuickSlots Cross-MOD patch install failed!");
+                    SNLogger.Log($"[{Config.PROGRAM_NAME}] -> MoreQuickSlots Cross-MOD patch install failed!");
             }            
         }
 
@@ -93,7 +99,12 @@ namespace SlotExtender
                 sEConfig = new SEConfig();
                 //add an action if changed controls
                 GameInput.OnBindingsChanged += GameInput_OnBindingsChanged;                
-            }            
+            }
+            if (scene.name == "Main")
+            {
+                //creating a console input field listener to skip SlotExdender Update method key events conflict
+                ListenerInstance = InitializeListener();
+            }
         }
 
         internal static void GameInput_OnBindingsChanged()
@@ -105,6 +116,21 @@ namespace SlotExtender
             {
                 Initialize_uGUI.Instance.RefreshText();
             }            
-        }        
+        }
+
+        internal static InputFieldListener InitializeListener()
+        {
+            if (ListenerInstance == null)
+            {
+                ListenerInstance = UnityEngine.Object.FindObjectOfType(typeof(InputFieldListener)) as InputFieldListener;
+
+                if (ListenerInstance == null)
+                {
+                    GameObject inputFieldListener = new GameObject("InputFieldListener");
+                    ListenerInstance = inputFieldListener.AddOrGetComponent<InputFieldListener>();                    
+                }
+            }
+            return ListenerInstance;
+        }
     }    
 }

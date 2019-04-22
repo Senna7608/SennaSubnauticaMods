@@ -2,9 +2,12 @@
   "Id": "SlotExtender",
   "DisplayName": "SlotExtender",
   "Author": "Senna7608, PrimeSonic",
-  "Version": "2.4",
+  "Version": "2.5",
+  "Dependencies": [],
+  "LoadBefore": [],
+  "LoadAfter": [],
   "Enable": true,
+  "Game": "Subnautica",
   "AssemblyName": "SlotExtender.dll",
-  "EntryMethod": "SlotExtender.Main.Load",
-  "Config": { }
+  "EntryMethod": "SlotExtender.Main.Load"  
 }

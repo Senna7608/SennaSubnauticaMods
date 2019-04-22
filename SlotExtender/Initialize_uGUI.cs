@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using SlotExtender.Configuration;
+using Common;
 
 namespace SlotExtender
 {
@@ -116,7 +117,7 @@ namespace SlotExtender
                     }                    
                 }
 
-                Logger.Log("uGUI_EquipmentSlots Patched!");
+                SNLogger.Log($"[{Config.PROGRAM_NAME}] uGUI_EquipmentSlots Patched!");
                 isPatched = true;
             }
         }
@@ -144,7 +145,7 @@ namespace SlotExtender
             text.enabled = true;
             text.text = slotKey;
             text.fontSize = 17;
-            text.color = Color.green;
+            text.color = Config.TEXTCOLOR;
             RectTransformExtensions.SetParams(text.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), parent);
             text.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 100);
             text.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 100);            

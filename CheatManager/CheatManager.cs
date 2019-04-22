@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UWE;
+using Common;
 using Common.GUIHelper;
 using static Common.GameHelper;
 using CheatManager.Configuration;
@@ -19,7 +20,7 @@ namespace CheatManager
         internal TechnologyMatrix techMatrix;        
         private Vector2 scrollPos;
 
-        private static Rect windowRect = new Rect(Screen.width - (Screen.width / 4.8f), 0, Screen.width / 4.8f, (Screen.height / 4 * 3) - 2);
+        private static Rect windowRect = new Rect(Screen.width - (Screen.width / Config.ASPECT), 0, Screen.width / Config.ASPECT, (Screen.height / 4 * 3) - 2);
         private Rect drawRect;
         private Rect scrollRect;
 
@@ -56,6 +57,10 @@ namespace CheatManager
         internal float cyclopsSpeedMultiplier;        
 
         private const int SPACE = 5;
+        private const int ITEMSIZE = 24;
+        private const int SLIDERHEIGHT = 34;
+        private const int MAXSHOWITEMS = 4;
+
         private string windowTitle;
         private int normalButtonID = -1;
         private int toggleButtonID = -1;
@@ -93,7 +98,7 @@ namespace CheatManager
             }
             else
             {
-                Debug.LogWarning("[CheatManager] Warning: 'SMLHelper.V2' not found! Some functions are not available!");
+                SNLogger.Log($"[{Config.PROGRAM_NAME}] Warning: 'SMLHelper.V2' not found! Some functions are not available!");
             }
             
             techMatrix.SortTechLists(ref tMatrix);
@@ -102,21 +107,21 @@ namespace CheatManager
 
             drawRect = SNWindow.InitWindowRect(windowRect, true);
 
-            List<Rect> commandRects = SNWindow.SetGridItemsRect(drawRect, 4, 2, 24, SPACE, SPACE, true, true);
-            SNGUI.CreateGuiItemsGroup(buttonText.Buttons, commandRects, GuiItemType.NORMALBUTTON, ref commands, new GuiItemColor());
-            SNGUI.SetGuiItemsGroupLabel("Commands", commandRects.GetLast(), ref commands, new GuiItemColor(GuiColor.White));
+            List<Rect> commandRects = drawRect.SetGridItemsRect( 4, 2, ITEMSIZE, SPACE, SPACE, true, true);
+            commands.CreateGuiItemsGroup(buttonText.Buttons, commandRects, GuiItemType.NORMALBUTTON, new GuiItemColor());
+            commands.SetGuiItemsGroupLabel("Commands", commandRects.GetLast(), new GuiItemColor(GuiColor.White));
 
-            List<Rect> toggleCommandRects = SNWindow.SetGridItemsRect(new Rect(drawRect.x, SNWindow.GetNextYPos(ref commandRects), drawRect.width, drawRect.height), 4, 5, 24, SPACE, SPACE, true, true);
-            SNGUI.CreateGuiItemsGroup(buttonText.ToggleButtons, toggleCommandRects, GuiItemType.TOGGLEBUTTON, ref toggleCommands, new GuiItemColor(GuiColor.Red, GuiColor.Green));
-            SNGUI.SetGuiItemsGroupLabel("Toggle Commands", toggleCommandRects.GetLast(), ref toggleCommands, new GuiItemColor(GuiColor.White));
+            List<Rect> toggleCommandRects = new Rect(drawRect.x, SNWindow.GetNextYPos(ref commandRects), drawRect.width, drawRect.height).SetGridItemsRect( 4, 5, ITEMSIZE, SPACE, SPACE, true, true);
+            toggleCommands.CreateGuiItemsGroup(buttonText.ToggleButtons, toggleCommandRects, GuiItemType.TOGGLEBUTTON, new GuiItemColor(GuiColor.Red, GuiColor.Green));
+            toggleCommands.SetGuiItemsGroupLabel("Toggle Commands", toggleCommandRects.GetLast(), new GuiItemColor(GuiColor.White));
 
-            List<Rect> daynightTabrects = SNWindow.SetGridItemsRect(new Rect(drawRect.x, SNWindow.GetNextYPos(ref toggleCommandRects), drawRect.width, drawRect.height), 6, 1, 24, SPACE, SPACE, true, true);
-            SNGUI.CreateGuiItemsGroup(buttonText.DayNightTab, daynightTabrects, GuiItemType.TAB, ref daynightTab, new GuiItemColor());
-            SNGUI.SetGuiItemsGroupLabel("Day/Night Speed:", daynightTabrects.GetLast(), ref daynightTab, new GuiItemColor(GuiColor.White));
+            List<Rect> daynightTabrects = new Rect(drawRect.x, SNWindow.GetNextYPos(ref toggleCommandRects), drawRect.width, drawRect.height).SetGridItemsRect( 6, 1, ITEMSIZE, SPACE, SPACE, true, true);
+            daynightTab.CreateGuiItemsGroup(buttonText.DayNightTab, daynightTabrects, GuiItemType.TAB, new GuiItemColor());
+            daynightTab.SetGuiItemsGroupLabel("Day/Night Speed:", daynightTabrects.GetLast(), new GuiItemColor(GuiColor.White));
 
-            List<Rect> categoriesTabrects = SNWindow.SetGridItemsRect(new Rect(drawRect.x, SNWindow.GetNextYPos(ref daynightTabrects), drawRect.width, drawRect.height), 4, 5, 24, SPACE, SPACE, true, true);
-            SNGUI.CreateGuiItemsGroup(buttonText.CategoriesTab, categoriesTabrects, GuiItemType.TAB, ref categoriesTab, new GuiItemColor(GuiColor.Gray, GuiColor.Green, GuiColor.White));
-            SNGUI.SetGuiItemsGroupLabel("Categories:", categoriesTabrects.GetLast(), ref categoriesTab, new GuiItemColor(GuiColor.White));            
+            List<Rect> categoriesTabrects = new Rect(drawRect.x, SNWindow.GetNextYPos(ref daynightTabrects), drawRect.width, drawRect.height).SetGridItemsRect( 4, 5, ITEMSIZE, SPACE, SPACE, true, true);
+            categoriesTab.CreateGuiItemsGroup(buttonText.CategoriesTab, categoriesTabrects, GuiItemType.TAB, new GuiItemColor(GuiColor.Gray, GuiColor.Green, GuiColor.White));
+            categoriesTab.SetGuiItemsGroupLabel("Categories:", categoriesTabrects.GetLast(), new GuiItemColor(GuiColor.White));            
 
             float nextYpos = SNWindow.GetNextYPos(ref categoriesTabrects);
             scrollRect = new Rect(drawRect.x + SPACE, nextYpos, drawRect.width - (SPACE * 2), drawRect.height - nextYpos);
@@ -127,13 +132,16 @@ namespace CheatManager
             {
                 float width = drawRect.width;
 
+                if (i == 0 && tMatrix[0].Count > MAXSHOWITEMS)
+                    width -= 20;
+
                 if (tMatrix[i].Count * 26 > scrollRect.height)
                     width -= 20;                
                 
-                scrollItemRects[i] = SNWindow.SetGridItemsRect(new Rect(0, 0, width, tMatrix[i].Count * 26), 1, tMatrix[i].Count, 24, SPACE, 2, false, false, true);
+                scrollItemRects[i] = SNWindow.SetGridItemsRect(new Rect(0, 0, width, tMatrix[i].Count * (ITEMSIZE + SPACE)), 1, tMatrix[i].Count, ITEMSIZE, SPACE, 2, false, false, true);
             }
 
-            scrollItemRects[tMatrix.Length] = SNWindow.SetGridItemsRect(new Rect(0, 0, drawRect.width - 20, warpTargets.Targets.Count * 26), 1, warpTargets.Targets.Count, 24, SPACE, 2, false, false, true);
+            scrollItemRects[tMatrix.Length] = SNWindow.SetGridItemsRect(new Rect(0, 0, drawRect.width - 20, warpTargets.Targets.Count * (ITEMSIZE + SPACE)), 1, warpTargets.Targets.Count, ITEMSIZE, SPACE, 2, false, false, true);
             
             scrollItemsList = new List<GuiItem>[tMatrix.Length + 1];
             
@@ -163,14 +171,14 @@ namespace CheatManager
             float scrollRectheight = 5 * (scrollItemsList[0][0].Rect.height + 2);            
             float y = scrollRect.y + scrollRectheight + SPACE;            
 
-            List<Rect> vehicleSettingsRects = SNWindow.SetGridItemsRect(new Rect(drawRect.x, y, drawRect.width, drawRect.height), 2, 1, 24, SPACE, SPACE, false, true);
-            SNGUI.CreateGuiItemsGroup(vehicleSetButtons, vehicleSettingsRects, GuiItemType.TOGGLEBUTTON, ref vehicleSettings, new GuiItemColor(GuiColor.Red, GuiColor.Green));
-            SNGUI.SetGuiItemsGroupLabel("Vehicle settings:", vehicleSettingsRects.GetLast(), ref vehicleSettings, new GuiItemColor(GuiColor.White));
+            List<Rect> vehicleSettingsRects = new Rect(drawRect.x, y, drawRect.width, drawRect.height).SetGridItemsRect( 2, 1, ITEMSIZE, SPACE, SPACE, false, true);
+            vehicleSettings.CreateGuiItemsGroup(vehicleSetButtons, vehicleSettingsRects, GuiItemType.TOGGLEBUTTON, new GuiItemColor(GuiColor.Red, GuiColor.Green));
+            vehicleSettings.SetGuiItemsGroupLabel("Vehicle settings:", vehicleSettingsRects.GetLast(), new GuiItemColor(GuiColor.White));
 
             string[] sliderLabels = { $"{seamothName} speed multiplier:", $"{exosuitName} speed multiplier:", $"{cyclopsName} speed multiplier:" };
 
-            List<Rect> slidersRects = SNWindow.SetGridItemsRect(new Rect(drawRect.x, SNWindow.GetNextYPos(ref vehicleSettingsRects), drawRect.width, drawRect.height), 1, 3, 34, SPACE, SPACE, false, false);
-            SNGUI.CreateGuiItemsGroup(sliderLabels, slidersRects, GuiItemType.HORIZONTALSLIDER, ref sliders, new GuiItemColor());
+            List<Rect> slidersRects = new Rect(drawRect.x, SNWindow.GetNextYPos(ref vehicleSettingsRects), drawRect.width, drawRect.height).SetGridItemsRect( 1, 3, SLIDERHEIGHT, SPACE, SPACE, false, false);
+            sliders.CreateGuiItemsGroup(sliderLabels, slidersRects, GuiItemType.HORIZONTALSLIDER, new GuiItemColor());
 
             sliders[0].OnChangedEvent = onSeamothSpeedValueChanged;
             sliders[1].OnChangedEvent = onExosuitSpeedValueChanged;
@@ -185,8 +193,7 @@ namespace CheatManager
             seamothSpeedMultiplier = 1;
             exosuitSpeedMultiplier = 1;
             cyclopsSpeedMultiplier = 1;
-
-            isSeamothCanFly.Update(false);
+            
             buttonControl = new ButtonControl();            
         }
 
@@ -243,21 +250,20 @@ namespace CheatManager
             initToggleButtons = false;
             prevCwPos = null;
             warpSound = null;            
-            isActive = false;                    
-            isSeaglideFast.changedEvent.RemoveHandler(this, IsSeaglideFast);
+            isActive = false;            
             onConsoleCommandEntered.RemoveHandler(this, OnConsoleCommandEntered);
+            onFilterFastChanged.RemoveHandler(this, OnFilterFastChanged);
         }
 
         public void Start()
-        {
-            isSeaglideFast.changedEvent.AddHandler(this, new Event<Utils.MonitoredValue<bool>>.HandleFunction(IsSeaglideFast));            
+        {                       
             onConsoleCommandEntered.AddHandler(this, new Event<string>.HandleFunction(OnConsoleCommandEntered));
             onFilterFastChanged.AddHandler(this, new Event<bool>.HandleFunction(OnFilterFastChanged));
 
 #if DEBUG_PROGRAM
             StartCoroutine(DebugProgram());
 #endif
-        }
+        }        
 
         private void OnFilterFastChanged(bool enabled)
         {
@@ -278,11 +284,6 @@ namespace CheatManager
                 StartCoroutine(DebugProgram());
         }
 #endif
-        private void IsSeaglideFast(Utils.MonitoredValue<bool> isFast)
-        {
-            SeaglideOverDrive.Instance.SetSeaglideSpeed();            
-        }
-
         internal void UpdateTitle()
         {
             windowTitle = $"CheatManager v.{Config.VERSION}, {Config.KEYBINDINGS["ToggleWindow"]} Toggle Window, {Config.KEYBINDINGS["ToggleMouse"]} Toggle Mouse";
@@ -330,8 +331,8 @@ namespace CheatManager
                 {
                     if (categoriesTabID != currentTab)
                     {
-                        categoriesTab[currentTab].State = SNGUI.SetStateInverse(categoriesTab[currentTab].State);
-                        categoriesTab[categoriesTabID].State = SNGUI.SetStateInverse(categoriesTab[categoriesTabID].State);
+                        //categoriesTab[currentTab].State = SNGUI.SetStateInverse(categoriesTab[currentTab].State);
+                        //categoriesTab[categoriesTabID].State = SNGUI.SetStateInverse(categoriesTab[categoriesTabID].State);
                         currentTab = categoriesTabID;
                         scrollPos = Vector2.zero;
                     }
@@ -351,19 +352,11 @@ namespace CheatManager
                     }
 
                     if (vehicleSettingsID == 1)
-                    {
-                        if (SeaglideOverDrive.Instance != null)
-                        {
-                            isSeaglideFast.Update(!isSeaglideFast.value);
-                            vehicleSettings[1].State = SNGUI.ConvertBoolToState(isSeaglideFast.value);
-                        }
-                        else
-                        {
-                            ErrorMessage.AddMessage("CheatManager Error!\nYou do not have a Seaglide!");
-                        }                            
+                    {                        
+                        isSeaglideFast.Update(!isSeaglideFast.value);
+                        vehicleSettings[1].State = SNGUI.ConvertBoolToState(isSeaglideFast.value);                                                
                     }
-                }
-                                                                     
+                }                                                                     
             }
         }
         
@@ -392,8 +385,7 @@ namespace CheatManager
             toggleCommands[(int)ToggleCommands.fastscan].State = SNGUI.ConvertBoolToState(NoCostConsoleCommand.main.fastScanCheat);
             toggleCommands[(int)ToggleCommands.fastgrow].State = SNGUI.ConvertBoolToState(NoCostConsoleCommand.main.fastGrowCheat);
             toggleCommands[(int)ToggleCommands.fasthatch].State = SNGUI.ConvertBoolToState(NoCostConsoleCommand.main.fastHatchCheat);
-            toggleCommands[(int)ToggleCommands.filterfast].State = SNGUI.ConvertBoolToState(filterFast);
-            //toggleCommands[(int)ToggleCommands.filterfast].State = filterfast cheat
+            toggleCommands[(int)ToggleCommands.filterfast].State = SNGUI.ConvertBoolToState(filterFast);            
             toggleCommands[(int)ToggleCommands.nocost].State = SNGUI.ConvertBoolToState(GameModeUtils.IsOptionActive(GameModeOption.NoCost));
             toggleCommands[(int)ToggleCommands.noenergy].State = SNGUI.ConvertBoolToState(GameModeUtils.IsCheatActive(GameModeOption.NoEnergy));
             toggleCommands[(int)ToggleCommands.nosurvival].State = SNGUI.ConvertBoolToState(GameModeUtils.IsOptionActive(GameModeOption.NoSurvival));
@@ -419,17 +411,17 @@ namespace CheatManager
                 return;            
 
             SNWindow.CreateWindow(windowRect, windowTitle);
-            
-            normalButtonID = SNGUI.DrawGuiItemsGroup(ref commands);
-            toggleButtonID = SNGUI.DrawGuiItemsGroup(ref toggleCommands);
-            daynightTabID = SNGUI.DrawGuiItemsGroup(ref daynightTab);
-            categoriesTabID = SNGUI.DrawGuiItemsGroup(ref categoriesTab);
+
+            normalButtonID = commands.DrawGuiItemsGroup();
+            toggleButtonID = toggleCommands.DrawGuiItemsGroup();
+            daynightTabID = daynightTab.DrawGuiItemsGroup();
+            categoriesTabID = categoriesTab.DrawGuiItemsGroup();
             
             if (currentTab == 0)
             {
-                scrollviewID = SNScrollView.CreateScrollView(scrollRect, ref scrollPos, ref scrollItemsList[currentTab], "Select Item in Category:", categoriesTab[currentTab].Name, 4);
+                scrollviewID = SNScrollView.CreateScrollView(scrollRect, ref scrollPos, ref scrollItemsList[currentTab], "Select Item in Category:", categoriesTab[currentTab].Name, MAXSHOWITEMS);
 
-                vehicleSettingsID = SNGUI.DrawGuiItemsGroup(ref vehicleSettings);
+                vehicleSettingsID = vehicleSettings.DrawGuiItemsGroup();
                 
                 SNHorizontalSlider.CreateHorizontalSlider(sliders[0].Rect, ref seamothSpeedMultiplier, 1f, 5f, sliders[0].Name, sliders[0].OnChangedEvent);
                 SNHorizontalSlider.CreateHorizontalSlider(sliders[1].Rect, ref exosuitSpeedMultiplier, 1f, 5f, sliders[1].Name, sliders[1].OnChangedEvent);

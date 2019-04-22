@@ -1,8 +1,10 @@
 [SlotExtender]
-Version: 2.4
+Version: 2.5
 
 [Settings]
 MaxSlots: 12
+TextColor: Green
+Information: TextColor possible values: Red, Green, Blue, Yellow, White, Magenta, Cyan, Orange, Lime, Amethyst, Default
 
 [Hotkeys]
 Upgrade: T

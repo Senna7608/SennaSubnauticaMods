@@ -37,7 +37,7 @@ namespace Common.ConfigurationParser
         public static void AddInfoText(string filename, string section, string value)
         {
             Parser parser = new Parser(filename);
-            parser.WriteInfoText(section, value);
+            parser.WriteInfoText(section, "Information: " + value);
         }
 
         public static string GetKeyValue(string filename, string section, string key)

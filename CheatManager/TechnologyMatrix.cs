@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using SMLHelper.V2.Handlers;
 using Common.GUIHelper;
+using static Common.GameHelper;
 
 namespace CheatManager
 {
@@ -31,6 +32,7 @@ namespace CheatManager
         BaseModule,
     };   
 
+    /*
     public class TechTypeData : IComparable<TechTypeData>
     {
         public TechType TechType { get; set; }
@@ -52,6 +54,7 @@ namespace CheatManager
             return Name;
         }
     }
+    */
 
     public class TechnologyMatrix
     {
@@ -126,7 +129,6 @@ namespace CheatManager
                     if (TechTypeExtensions.AsString(techType, false) == pair.Key)
                     {
                         TechnologyMatrix[(int)pair.Value].Add(new TechTypeData(techType, Language.main.Get(TechTypeExtensions.AsString(techType, false))));                        
-                        //Debug.Log($"[CheatManager]:\n '{pair.Key}' found in TechTypeExtensions and added to TechMatrix.");
                     }
                 }
             }
@@ -135,12 +137,8 @@ namespace CheatManager
         
         
         public readonly Dictionary<string, CATEGORY> Known_Modded_TechTypes = new Dictionary<string, CATEGORY>
-        {
-            //{ "SeaMothMk2", CATEGORY.Vehicles },
-            //{ "SeaMothMk3", CATEGORY.Vehicles },
-            //{ "ExosuitMk2", CATEGORY.Vehicles },
-            { "SpeedModule", CATEGORY.Upgrades },
-            //{ "VehiclePowerCore", CATEGORY.Electronics },
+        {            
+            { "SpeedModule", CATEGORY.Upgrades },            
             { "CyclopsThermalChargerMk2", CATEGORY.Upgrades },
             { "CyclopsSolarCharger", CATEGORY.Upgrades },
             { "CyclopsSolarChargerMk2", CATEGORY.Upgrades },
@@ -163,7 +161,11 @@ namespace CheatManager
             { "LaserCannon", CATEGORY.Upgrades },
             { "techpistol", CATEGORY.Tools },
             { "AlienRifle", CATEGORY.Tools },
-            { "AncientSword", CATEGORY.Tools }
+            { "AncientSword", CATEGORY.Tools },
+            { "Crowbar", CATEGORY.Tools },
+            { "CannonArm", CATEGORY.Upgrades },
+            { "CyclopsLaserCannonModule", CATEGORY.Upgrades }
+
         };
 
         public readonly Dictionary<CATEGORY, TechType[]> baseTechMatrix = new Dictionary<CATEGORY, TechType[]>()
@@ -717,11 +719,82 @@ namespace CheatManager
                 CATEGORY.Blueprints,
 
                 new TechType[]
-                {
+                {       
+                    TechType.AdvancedWiringKit,
+                    TechType.Aerogel,
+                    TechType.AirBladder,
+                    TechType.Aquarium,
+                    TechType.AramidFibers,
+                    TechType.BaseBulkhead,
+                    TechType.BaseMapRoom,
+                    TechType.BaseObservatory,
+                    TechType.BasePlanter,
+                    TechType.BaseRoom,
+                    TechType.BaseUpgradeConsole,
+                    TechType.BaseWaterPark,
+                    TechType.BatteryCharger,
+                    TechType.Bench,
+                    TechType.Benzene,
+                    TechType.Bioreactor,                    
+                    TechType.Compass,
+                    TechType.Constructor,
+                    TechType.Cyclops,                    
+                    TechType.Exosuit,
+                    TechType.FarmingTray,
+                    TechType.FiberMesh,
+                    TechType.FiltrationMachine,
+                    TechType.Gravsphere,
+                    TechType.HeatBlade,
+                    TechType.HighCapacityTank,
+                    TechType.HydrochloricAcid,
+                    TechType.Knife,
+                    TechType.LaserCutter,
+                    TechType.LEDLight,                    
+                    TechType.Locker,
+                    TechType.Lubricant,                     
+                    TechType.BaseMoonpool,
+                    TechType.NuclearReactor,
+                    TechType.PictureFrame,
+                    TechType.PlanterBox,
+                    TechType.PlanterPot2,
+                    TechType.PlanterPot3,
+                    TechType.PlanterPot,
+                    TechType.PlanterShelf,
+                    TechType.PlasteelTank,
+                    TechType.Polyaniline,
+                    TechType.PowerCell,
+                    TechType.PowerCellCharger,
+                    TechType.PowerTransmitter,
+                    TechType.PrecursorIonBattery,
+                    TechType.PrecursorIonPowerCell,
+                    TechType.PropulsionCannon,
+                    TechType.RadiationSuit,
+                    TechType.Radio,
+                    TechType.ReinforcedDiveSuit,
+                    TechType.Rebreather,
                     TechType.RocketBaseLadder,
                     TechType.RocketStage1,
                     TechType.RocketStage2,
-                    TechType.RocketStage3
+                    TechType.RocketStage3,
+                    TechType.BaseReinforcement,                    
+                    TechType.Seaglide,
+                    TechType.Seamoth,
+                    TechType.Sign,                    
+                    TechType.Spotlight,                    
+                    TechType.StarshipChair,
+                    TechType.StarshipDesk,
+                    TechType.StasisRifle,
+                    TechType.Stillsuit,
+                    TechType.SwimChargeFins,
+                    TechType.Techlight,
+                    TechType.Terraformer,
+                    TechType.ThermalPlant,
+                    TechType.Thermometer,
+                    TechType.Transfuser,
+                    TechType.Trashcans,                    
+                    TechType.UltraGlideFins,
+                    TechType.VendingMachine,
+                    TechType.Workbench                    
                 }
             }
             #endregion

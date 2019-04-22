@@ -2,6 +2,7 @@
 using UnityEngine;
 using Common.GUIHelper;
 using System;
+using CheatManager.Configuration;
 
 namespace CheatManager
 {
@@ -9,7 +10,7 @@ namespace CheatManager
     {
         public CM_InfoBar Instance { get; private set; }
 
-        private Rect windowRect = new Rect(0, 0, Screen.width - (Screen.width / 4.8f) - 2 , Screen.height / 45);
+        private Rect windowRect = new Rect(0, 0, Screen.width - (Screen.width / Config.ASPECT) - 2 , Screen.height / 45);
         private Rect drawRect;
         internal bool isShow;
         private Int3 currentBatch = new Int3();

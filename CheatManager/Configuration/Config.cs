@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Common;
 using Common.ConfigurationParser;
 using System.IO;
 using System.Reflection;
@@ -11,9 +12,10 @@ namespace CheatManager.Configuration
     public static class Config
     {
         internal static string VERSION = string.Empty;        
-        private const string PROGRAM_NAME = "CheatManager";
+        public const string PROGRAM_NAME = "CheatManager";
         private static readonly string FILENAME = $"{Environment.CurrentDirectory}\\QMods\\{PROGRAM_NAME}\\config.txt";
         internal static int overPowerMultiplier;
+        internal const float ASPECT = 4.8f;
         internal static int hungerAndThirstInterval;
         private static readonly string[] SECTIONS = { "Hotkeys", "Program", "Settings", "ToggleButtons" };
         internal static Dictionary<string, KeyCode> KEYBINDINGS;
@@ -86,7 +88,7 @@ namespace CheatManager.Configuration
 
             if (!File.Exists(FILENAME))
             {
-                UnityEngine.Debug.Log($"[{PROGRAM_NAME}] Warning! Configuration file is missing. Creating a new one.");                
+                SNLogger.Log($"[{PROGRAM_NAME}] Warning! Configuration file is missing. Creating a new one.");                
                 
                 Helper.CreateDefaultConfigFile(FILENAME, PROGRAM_NAME, VERSION, DEFAULT_CONFIG);
                 Helper.AddInfoText(FILENAME, SECTIONS[2], "OverPowerMultiplier and HungerAndThirstInterval possible values: 1 to 10");
@@ -149,7 +151,7 @@ namespace CheatManager.Configuration
                 }
                 catch (ArgumentException)
                 {
-                    UnityEngine.Debug.Log($"[{PROGRAM_NAME}] Warning! ({kvp.Value}) is not a valid KeyCode! Setting default value!");
+                    SNLogger.Log($"[{PROGRAM_NAME}] Warning! ({kvp.Value}) is not a valid KeyCode! Setting default value!");
 
                     for (int i = 0; i < DEFAULT_CONFIG.Count; i++)
                     {

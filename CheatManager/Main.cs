@@ -15,6 +15,7 @@ namespace CheatManager
         public static CheatManager Instance { get; private set; }
         public static CM_Logger CmLogger { get; private set; }
         public static CM_InfoBar CmInfoBar { get; private set; }
+        public static MapRoomOverScan MapRoomInstance { get; internal set; }
 
         internal static bool isConsoleEnabled { get; set; }
         internal static bool isInfoBarEnabled { get; set; }        
@@ -58,10 +59,10 @@ namespace CheatManager
                 if (isConsoleEnabled)
                     CmLogger = new CM_Logger();
 
-                CmConfig.Load();
+                CmConfig.Load();                
             }
         }
-
+        
         /*
         public static void Screen_OnDisplayChanged()
         {
@@ -76,8 +77,7 @@ namespace CheatManager
 
                 if (Instance == null)
                 {
-                    GameObject cheatmanager = new GameObject().AddComponent<CheatManager>().gameObject;
-                    cheatmanager.name = "CheatManager";
+                    GameObject cheatmanager = new GameObject("CheatManager").AddComponent<CheatManager>().gameObject;                    
                     Instance = cheatmanager.GetComponent<CheatManager>();
                 }
             }

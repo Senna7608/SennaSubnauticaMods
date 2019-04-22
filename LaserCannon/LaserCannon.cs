@@ -20,6 +20,9 @@ namespace LaserCannon
                   requiredAnalysis: TechType.BaseUpgradeConsole,
                   groupForPDA: TechGroup.VehicleUpgrades,
                   categoryForPDA: TechCategory.VehicleUpgrades,
+                  equipmentType: EquipmentType.SeamothModule,
+                  quickSlotType: QuickSlotType.Toggleable,
+                  componentsToAdd: null,
                   gamerResourceFileName: null
                   )
         {
@@ -27,9 +30,7 @@ namespace LaserCannon
                
         public override void Patch()
         {
-            base.Patch();
-            CraftDataHandler.SetEquipmentType(TechType, EquipmentType.VehicleModule);
-            CraftDataHandler.SetQuickSlotType(TechType, QuickSlotType.Selectable);            
+            base.Patch();                        
             TechTypeID = TechType;           
             OptionsPanelHandler.RegisterModOptions(Config);
         }

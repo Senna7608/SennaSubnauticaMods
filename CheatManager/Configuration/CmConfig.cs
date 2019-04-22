@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Common;
 
 namespace CheatManager.Configuration
 {
@@ -10,7 +11,7 @@ namespace CheatManager.Configuration
         {
             Instance = this;
             DevConsole.RegisterConsoleCommand(this, "cmconfig", false, false);
-            Debug.Log("[CheatManager] Information: Enter 'cmconfig' command for configuration window.");
+            SNLogger.Log($"[{Config.PROGRAM_NAME}] Information: Enter 'cmconfig' command for configuration window.");
         }
 
         private void OnConsoleCommand_cmconfig(NotificationCenter.Notification n)

@@ -6,46 +6,43 @@ using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using Common;
 using UWE;
-using CyclopsLaserCannonModule.Patch;
 using MoreCyclopsUpgrades.Managers;
 using MoreCyclopsUpgrades.CyclopsUpgrades;
+
+using static Common.GameHelper;
+using SMLHelper.V2.Utility;
 
 namespace CyclopsLaserCannonModule
 {
     public static class Main
     {
-        public static HarmonyInstance hInstance;
+        public static AssetBundle assetBundle;
+        public static Material cannon_material;
+        public static Sprite buttonSprite;
 
-        public static bool isExists_MoreCyclopsUpgrades = false;            
-
-        public static AssetBundle assetBundle;        
+        public static bool isAssetsLoaded;
+        public static UpgradeHandler upgradeHandler;
+        //Used MCU Events
+        public static UpgradeEvent onFinishedUpgrades;
+        //public static UpgradeAllowedEvent isAllowedToAdd;
+        //public static UpgradeAllowedEvent isAllowedToRemove;
+        public static UpgradeEvent onClearUpgrades;
 
         public static Event<string> onConfigurationChanged = new Event<string>();
-
-        public static Event<InventoryItem> MCU_onEquip = new Event<InventoryItem>();
-        public static Event<InventoryItem> MCU_onUnequip = new Event<InventoryItem>();
 
         public static void Load()
         {
             try
             {
-                assetBundle = AssetBundle.LoadFromFile("./QMods/CyclopsLaserCannonModule/Assets/laser_sounds");
-
-                if (assetBundle == null)
-                    SNLogger.Log("[CyclopsLaserCannonModule] AssetBundle is NULL!");
-                else
-                    SNLogger.Log($"[CyclopsLaserCannonModule] AssetBundle loaded, name: {assetBundle.name}");
+                isAssetsLoaded = LoadAssets();
 
                 CannonConfig.InitConfig();
+
                 var laserCannon = new CannonPrefab();
+
                 laserCannon.Patch();
 
-                hInstance = HarmonyInstance.Create("Subnautica.CyclopsLaserCannonModule.mod");              
-                                
-                hInstance.Patch(typeof(CyclopsExternalCams).GetMethod("Start",
-                    BindingFlags.NonPublic |
-                    BindingFlags.Instance),
-                    new HarmonyMethod(typeof(CyclopsExternalCams_Start_Patch), "Postfix"), null);                
+                HarmonyInstance.Create("Subnautica.CyclopsLaserCannonModule.mod").PatchAll(Assembly.GetExecutingAssembly());
 
                 SceneManager.sceneLoaded += new UnityAction<Scene, LoadSceneMode>(OnSceneLoaded);
             }
@@ -54,27 +51,25 @@ namespace CyclopsLaserCannonModule
                 Debug.LogException(ex);
             }
 
-            isExists_MoreCyclopsUpgrades = RefHelp.IsNamespaceExists("MoreCyclopsUpgrades");
-            
-            if (isExists_MoreCyclopsUpgrades)
+            try
             {
                 UpgradeManager.RegisterReusableHandlerCreator(() =>
                 {
-                    return new UpgradeHandler(CannonPrefab.TechTypeID)
+                    upgradeHandler = new UpgradeHandler(CannonPrefab.TechTypeID)
                     {
-                        IsAllowedToAdd = IsAllowedToAdd,
-                        IsAllowedToRemove = IsAllowedToRemove,
+                        MaxCount = 1,
+                        //IsAllowedToAdd = isAllowedToAdd,
+                        //IsAllowedToRemove = isAllowedToRemove,
+                        OnFinishedUpgrades = onFinishedUpgrades,
+                        OnClearUpgrades = onClearUpgrades
                     };
+
+                    return upgradeHandler;
                 });
-                
-                SNLogger.Log("[CyclopsLaserCannonModule] -> MoreCyclopsUpgrades found! trying to work together...");
-
-                MCU_Patcher mcu_patcher = new MCU_Patcher(hInstance);
-
-                if (mcu_patcher.InitPatch())
-                    SNLogger.Log($"[CyclopsLaserCannonModule] -> MCU Cross-MOD patch installed!");
-                else
-                    SNLogger.Log($"[CyclopsLaserCannonModule] -> MCU Cross-MOD patch install failed!");
+            }
+            catch
+            {
+                SNLogger.Log("[CyclopsLaserCannonModule] MCU UpgradeManager initialization failed!");
             }
         }
 
@@ -84,28 +79,29 @@ namespace CyclopsLaserCannonModule
             {
                 Language.main.OnLanguageChanged += CannonConfig.OnLanguageChanged;
             }
-        }        
-
-        public static void OnEquip(string slot, InventoryItem item)
-        {            
-          MCU_onEquip.Trigger(item);
         }
 
-        public static void OnUnequip(string slot, InventoryItem item)
-        {            
-          MCU_onUnequip.Trigger(item);
-        }
-
-        public static bool IsAllowedToAdd(SubRoot cyclops, Pickupable item, bool verbose)
+        private static bool LoadAssets()
         {
-            Debug.Log($"[CyclopsLaserCannonModule] Main: IsAllowedToAdd: {item.GetTechName()}");
-            return true;
-        }
+            try
+            {
+                assetBundle = AssetBundle.LoadFromFile("./QMods/CyclopsLaserCannonModule/Assets/laser_sounds");                
 
-        public static bool IsAllowedToRemove(SubRoot cyclops, Pickupable item, bool verbose)
-        {
-            Debug.Log($"[CyclopsLaserCannonModule] Main: IsAllowedToRemove: {item.GetTechName()}");
-            return true;
+                Texture2D cannon_Button = ImageUtils.LoadTextureFromFile("./QMods/CyclopsLaserCannonModule/Assets/cannon_Button.png");
+
+                buttonSprite = Sprite.Create(cannon_Button, new Rect(0, 0, cannon_Button.width, cannon_Button.height), new Vector2(cannon_Button.width * 0.5f, cannon_Button.height * 0.5f));
+
+                cannon_material = GetResourceMaterial("worldentities/doodads/precursor/precursorteleporter", "precursor_interior_teleporter_02_01", 0);
+                
+                cannon_material.name = "cannon_material";
+
+                return true;
+            }
+            catch
+            {
+                SNLogger.Log("[CyclopsLaserCannon] Warning! Loading assets failed!");
+                return false;
+            }
         }
     }     
 }

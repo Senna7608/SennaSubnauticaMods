@@ -1,5 +1,6 @@
 ﻿using Harmony;
 using Common;
+using UnityEngine;
 
 namespace CheatManager
 {
@@ -50,13 +51,14 @@ namespace CheatManager
         }
 
         [HarmonyPatch(typeof(Seaglide))]
-        [HarmonyPatch("Awake")]
+        [HarmonyPatch("Start")]
         internal class Seaglide_Awake_Patch
         {
             [HarmonyPostfix]
             internal static void Postfix(Seaglide __instance)
             {
                 __instance.gameObject.AddIfNeedComponent<SeaglideOverDrive>();
+                SNLogger.Log($"[CheatManager] Added component [SeaGlideOverDrive] to instance [{__instance.gameObject.GetFullName()}]");
             }
         }
 
@@ -93,5 +95,47 @@ namespace CheatManager
                 }                
             }
         }
+
+        
+        
+        /*
+        [HarmonyPatch(typeof(Pickupable))]
+        [HarmonyPatch("Initialize")]
+        internal class Pickupable_Start_Patch
+        {
+            [HarmonyPostfix]
+            internal static void Postfix(Pickupable __instance)
+            {
+                switch (__instance.name)
+                {
+                    case "Knife(Clone)":
+                    case "HeatBlade(Clone)":
+                    case "Flashlight(Clone)":
+                    case "Scanner(Clone)":
+                    case "AlienRifle(Clone)":
+                    case "Builder(Clone)":
+                    case "Welder(Clone)":
+                    case "LaserCutter(Clone)":
+                    case "StasisRifle(Clone)":
+                    case "RepulsionCannon(Clone)":
+                    case "PropulsionCannon(Clone)":
+                    case "Gravsphere(Clone)":
+                    case "AncientSword(Clone)":
+                    case "Crowbar(Clone)":
+                    case "Transfuser(Clone)":
+                    case "LEDLight(Clone)":
+                    case "DiveReel(Clone)":
+                    case "SeaGlide(Clone)":
+                    case "ExosuitPropulsionArmModule(Clone)":
+                    case "ExosuitTorpedoArmModule(Clone)":
+                    case "ExosuitDrillArmModule(Clone)":
+                    case "CannonArm(Clone)":
+
+                    __instance.gameObject.AddIfNeedComponent<RuntimeObjectManager>();
+                    break;
+                }
+            }
+        }
+        */
     }
 }

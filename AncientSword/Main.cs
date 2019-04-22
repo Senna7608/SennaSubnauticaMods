@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using SMLHelper.V2.Assets;
 using SMLHelper.V2.Handlers;
 using SMLHelper.V2.Crafting;
 using SMLHelper.V2.Utility;
@@ -76,26 +75,6 @@ namespace AncientSword
                 }
                 return true;
             }
-        }
-
-        public static T AddOrGetComponent<T>(this GameObject gameObject) where T : Component
-        {
-            if (gameObject.GetComponent<T>() != null)
-            {
-                return gameObject.GetComponent<T>();
-            }
-            return gameObject.AddComponent<T>();
-        }
-
-        public static bool AddIfNeedComponent<T>(this GameObject gameObject) where T : Component
-        {
-            if (gameObject.GetComponent<T>() == null)
-            {
-                gameObject.AddComponent<T>();
-                return true;
-            }
-            return false;
-        }
+        }        
     }
-
 }

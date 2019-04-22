@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Common
@@ -7,20 +8,13 @@ namespace Common
     {
         public static T AddOrGetComponent<T>(this GameObject gameObject) where T : Component
         {
-            if (!(gameObject.GetComponent<T>() == null))
-            {
-                return gameObject.GetComponent<T>();
-            }
-            return gameObject.AddComponent<T>();
+            return gameObject.GetComponent<T>() ?? gameObject.AddComponent<T>();
         }
 
-        public static Component AddOrGetComponent(this GameObject gameObject, Type component)
+        public static Component AddOrGetComponent(this GameObject gameObject, Component component)
         {
-            if (!(gameObject.GetComponent(component) == null))
-            {
-                return gameObject.GetComponent(component);
-            }
-            return gameObject.AddComponent(component);
+            Type componentType = component.GetType();
+            return gameObject.GetComponent(componentType) ?? gameObject.AddComponent(componentType);
         }
 
         public static bool AddIfNeedComponent<T>(this GameObject gameObject) where T : Component
@@ -30,7 +24,7 @@ namespace Common
                 gameObject.AddComponent<T>();
                 return true;
             }
-            return false;           
+            return false;
         }
 
         public static bool AddIfNeedComponent(this GameObject gameObject, Type component)
@@ -49,3 +43,4 @@ namespace Common
         }        
     }
 }
+

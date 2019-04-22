@@ -1,0 +1,16 @@
+[QuickSlotExtender]
+Version: 1.0
+
+[Settings]
+MaxSlots: 12
+TextColor: Green
+Information: TextColor possible values: Red, Green, Blue, Yellow, White, Magenta, Cyan, Orange, Lime, Amethyst, Default
+
+[Hotkeys]
+Slot_6: 6
+Slot_7: 7
+Slot_8: 8
+Slot_9: 9
+Slot_10: 0
+Slot_11: /
+Slot_12: =

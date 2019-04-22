@@ -42,7 +42,7 @@ namespace Common.GUIHelper
         }
 
         
-        public static GUIStyle GetGuiItemStyle(GuiItem guiItem)
+        public static GUIStyle GetGuiItemStyle(this GuiItem guiItem)
         {
             if (!isInitStyles)
                 isInitStyles = SetGUIStyles();

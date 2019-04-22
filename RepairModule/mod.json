@@ -2,9 +2,12 @@
   "Id": "RepairModule",
   "DisplayName": "RepairModule",
   "Author": "Senna",
-  "Version": "2.2",
+  "Version": "2.3",
+  "Dependencies": [],
+  "LoadBefore": [],
+  "LoadAfter": [],
   "Enable": true,
+  "Game": "Subnautica",
   "AssemblyName": "RepairModule.dll",
-  "EntryMethod": "RepairModule.Main.Load",
-  "Config": { }
+  "EntryMethod": "RepairModule.Main.Load"  
 }

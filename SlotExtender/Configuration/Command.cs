@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Common;
 
 namespace SlotExtender.Configuration
 {
@@ -12,7 +13,7 @@ namespace SlotExtender.Configuration
         {
             Instance = this;           
             DevConsole.RegisterConsoleCommand(this, "seconfig", false, false);
-            Logger.Log(Message);
+            SNLogger.Log($"[{Config.PROGRAM_NAME}] {Message}");
         }
         
         private void OnConsoleCommand_seconfig(NotificationCenter.Notification n)

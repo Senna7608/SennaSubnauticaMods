@@ -25,7 +25,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>D:\SN\QMods\ScannerModule\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\QMods\ScannerModule\</OutputPath>
     <DefineConstants>
     </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -35,8 +35,8 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>..\References\0Harmony.dll</HintPath>
+    <Reference Include="0Harmony-1.2.0.1">
+      <HintPath>..\References\0Harmony-1.2.0.1.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">

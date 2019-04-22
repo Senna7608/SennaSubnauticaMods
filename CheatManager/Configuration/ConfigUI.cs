@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Common;
 using Common.GUIHelper;
-using UWE;
-using System;
 
 namespace CheatManager.Configuration
 {
@@ -47,15 +46,13 @@ namespace CheatManager.Configuration
 
             drawRect = SNWindow.InitWindowRect(windowRect, true);
 
-            List<Rect> itemsRect = SNWindow.SetGridItemsRect(new Rect(drawRect.x, drawRect.y, drawRect.width / 2, drawRect.height),
-                                                1, HotkeyLabels.Count, Screen.height / 45, 10, 10);
+            List<Rect> itemsRect = new Rect(drawRect.x, drawRect.y, drawRect.width / 2, drawRect.height).SetGridItemsRect(1, HotkeyLabels.Count, Screen.height / 45, 10, 10);
 
-            buttonsRect = SNWindow.SetGridItemsRect(new Rect(drawRect.x + drawRect.width / 2, drawRect.y, drawRect.width / 2, drawRect.height),
-                                                  1, HotkeyButtons.Count + 1, Screen.height / 45, 10, 10);
+            buttonsRect = new Rect(drawRect.x + drawRect.width / 2, drawRect.y, drawRect.width / 2, drawRect.height).SetGridItemsRect(1, HotkeyButtons.Count + 1, Screen.height / 45, 10, 10);
 
-            SNGUI.CreateGuiItemsGroup(HotkeyLabels.ToArray(), itemsRect, GuiItemType.TEXTFIELD, ref itemInfo, new GuiItemColor());
+            itemInfo.CreateGuiItemsGroup(HotkeyLabels.ToArray(), itemsRect, GuiItemType.TEXTFIELD, new GuiItemColor());
 
-            SNGUI.CreateGuiItemsGroup(HotkeyButtons.ToArray(), buttonsRect, GuiItemType.NORMALBUTTON, ref buttonInfo, new GuiItemColor(GuiColor.Gray, GuiColor.White, GuiColor.Green), GuiItemState.NORMAL, true, FontStyle.Bold, TextAnchor.MiddleCenter);
+            buttonInfo.CreateGuiItemsGroup(HotkeyButtons.ToArray(), buttonsRect, GuiItemType.NORMALBUTTON, new GuiItemColor(GuiColor.Gray, GuiColor.White, GuiColor.Green), GuiItemState.NORMAL, true, FontStyle.Bold, TextAnchor.MiddleCenter);
         }
 
         public void OnGUI()
@@ -64,9 +61,9 @@ namespace CheatManager.Configuration
 
             GUI.FocusControl("CheatManager.ConfigUI");
 
-            SNGUI.DrawGuiItemsGroup(ref itemInfo);
+            itemInfo.DrawGuiItemsGroup();
 
-            int sBtn = SNGUI.DrawGuiItemsGroup(ref buttonInfo);
+            int sBtn = buttonInfo.DrawGuiItemsGroup();
 
             if (sBtn != -1)
             {
@@ -121,7 +118,7 @@ namespace CheatManager.Configuration
 
             if (keyCount > 0 && isFirst != selected)
             {
-                Debug.Log("[CheatManager] Error! Duplicate keybind found, swapping keys...");
+                SNLogger.Log($"[{Config.PROGRAM_NAME}] Error! Duplicate keybind found, swapping keys...");
                 HotkeyButtons[isFirst] = HotkeyButtons[selected];
                 buttonInfo[isFirst].Name = HotkeyButtons[selected];
             }

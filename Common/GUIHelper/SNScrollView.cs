@@ -23,8 +23,8 @@ namespace Common.GUIHelper
             GUI.Label(new Rect(scrollRect.x + labelSize.x + 5, scrollRect.y + 5, scrollRect.width - labelSize.x, labelSize.y), listName, SNStyles.GetGuiItemStyle(GuiItemType.LABEL, GuiColor.Green, textAnchor: TextAnchor.MiddleLeft));
 
             scrollPos = GUI.BeginScrollView(new Rect(scrollRect.x, scrollRect.y + labelSize.y + 10, scrollRect.width, scrollRect.height), scrollPos, new Rect(scrollItems[0].Rect.x, scrollItems[0].Rect.y, scrollItems[0].Rect.width, scrollItems.Count * (scrollItems[0].Rect.height + 2)));
-           
-            int result = SNGUI.DrawGuiItemsGroup(ref scrollItems);
+
+            int result = scrollItems.DrawGuiItemsGroup();
 
             GUI.EndScrollView();
 

@@ -1,6 +1,4 @@
-﻿//#define DEBUG_CYCLOPS_OVERDRIVE
-
-using UnityEngine;
+﻿using UnityEngine;
 using UWE;
 
 namespace CheatManager
@@ -76,11 +74,7 @@ namespace CheatManager
                 subcontrol.BaseVerticalAccel = def_Flank_BaseVerticalAccel * Main.Instance.cyclopsSpeedMultiplier; ;
                 subcontrol.BaseTurningTorque = def_Flank_BaseTurningTorque * Main.Instance.cyclopsSpeedMultiplier; ;
                 break;
-            }                       
-
-#if DEBUG_CYCLOPS_OVERDRIVE
-                    Main.CmLogger.Log($"[CheatManager]\nSetCyclopsOverDrive()\nMotorMode: {subcontrol.cyclopsMotorMode.cyclopsMotorMode}:\nBaseForwardAccel: {subcontrol.BaseForwardAccel}\nBaseVerticalAccel: {subcontrol.BaseVerticalAccel}\nBaseTurningTorque: {subcontrol.BaseTurningTorque}");
-#endif           
+            }
         }
     }
 }

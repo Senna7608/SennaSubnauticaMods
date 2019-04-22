@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
 using Common;
 using Common.GUIHelper;
 
@@ -65,15 +64,13 @@ namespace SlotExtender.Configuration
             buttonsRect = SNWindow.SetGridItemsRect(new Rect(windowRect.x + windowRect.width / 2, windowRect.y, windowRect.width / 2, windowRect.height),
                                                   1, hotkeyButtons.Count + 1, Screen.height / 45, space, space, false, true);
 
-            SNGUI.CreateGuiItemsGroup(hotkeyLabels.ToArray(), itemsRect, GuiItemType.LABEL,
-                                      ref itemInfo, new GuiItemColor(), fontStyle: FontStyle.Bold, textAnchor: TextAnchor.MiddleLeft);            
+            itemInfo.CreateGuiItemsGroup(hotkeyLabels, itemsRect, GuiItemType.LABEL, new GuiItemColor(normal: GuiColor.White), fontStyle: FontStyle.Bold, textAnchor: TextAnchor.MiddleLeft);
 
-            SNGUI.CreateGuiItemsGroup(hotkeyButtons.ToArray(), buttonsRect, GuiItemType.NORMALBUTTON,
-                                      ref buttonInfo, new GuiItemColor(), fontStyle: FontStyle.Bold, textAnchor: TextAnchor.MiddleCenter);            
+            buttonInfo.CreateGuiItemsGroup(hotkeyButtons, buttonsRect, GuiItemType.NORMALBUTTON, new GuiItemColor(), fontStyle: FontStyle.Bold, textAnchor: TextAnchor.MiddleCenter);
 
-            SNGUI.SetGuiItemsGroupLabel("Functions", itemsRect.GetLast(), ref itemInfo, new GuiItemColor());
+            itemInfo.SetGuiItemsGroupLabel("Functions", itemsRect.GetLast(),  new GuiItemColor());
 
-            SNGUI.SetGuiItemsGroupLabel("Hotkeys", buttonsRect.GetLast(), ref buttonInfo, new GuiItemColor());
+            buttonInfo.SetGuiItemsGroupLabel("Hotkeys", buttonsRect.GetLast(),  new GuiItemColor());
         }
 
         public void OnGUI()
@@ -82,9 +79,9 @@ namespace SlotExtender.Configuration
 
             GUI.FocusControl("SlotExtender.ConfigUI");
 
-            SNGUI.DrawGuiItemsGroup(ref itemInfo);
+            itemInfo.DrawGuiItemsGroup();
 
-            int sBtn = SNGUI.DrawGuiItemsGroup(ref buttonInfo);
+            int sBtn = buttonInfo.DrawGuiItemsGroup();
 
             if (sBtn != -1)
             {
@@ -97,14 +94,14 @@ namespace SlotExtender.Configuration
 
             float y = itemsRect[itemsRect.Count - 2].y + space * 2 + itemsRect[0].height;
 
-            if (GUI.Button(new Rect(itemsRect[0].x, y, itemsRect[0].width, Screen.height / 22.5f), "Save", SNStyles.GetGuiStyle(GuiItemType.NORMALBUTTON)))
+            if (GUI.Button(new Rect(itemsRect[0].x, y, itemsRect[0].width, Screen.height / 22.5f), "Save", SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON)))
             {
                 SaveAndExit();
             }
 
             if (!isVisible)
             {
-                if (GUI.Button(new Rect(buttonsRect[0].x, y, buttonsRect[0].width, Screen.height / 22.5f), "Cancel", SNStyles.GetGuiStyle(GuiItemType.NORMALBUTTON)))
+                if (GUI.Button(new Rect(buttonsRect[0].x, y, buttonsRect[0].width, Screen.height / 22.5f), "Cancel", SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON)))
                 {
                     Destroy(Instance);
                 }
@@ -147,7 +144,7 @@ namespace SlotExtender.Configuration
 
             if (keyCount > 0 && isFirst != selected)
             {
-                Logger.Log("Error! Duplicate keybind found, swapping keys...");
+                SNLogger.Log($"[{Config.PROGRAM_NAME}] Warning! Duplicate keybind found, swapping keys...");
                 hotkeyButtons[isFirst] = hotkeyButtons[selected];
                 buttonInfo[isFirst].Name = hotkeyButtons[selected];
             }

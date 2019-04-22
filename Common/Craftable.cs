@@ -25,7 +25,9 @@ namespace Common
         protected readonly TechType RequiredForUnlock;
         protected readonly TechGroup GroupForPDA;
         protected readonly TechCategory CategoryForPDA;
-
+        protected readonly EquipmentType TypeForEquipment;
+        protected readonly QuickSlotType TypeForQuickslot;
+        protected readonly Type[] ComponentsToAdd;
         internal readonly string GameResourceFileName;        
 
         protected Craftable(
@@ -38,6 +40,9 @@ namespace Common
             TechType requiredAnalysis,
             TechGroup groupForPDA,
             TechCategory categoryForPDA,
+            EquipmentType equipmentType,
+            QuickSlotType quickSlotType,
+            Type[] componentsToAdd,
             string gamerResourceFileName
             )
             : base(nameID, $"{nameID}Prefab")
@@ -51,21 +56,25 @@ namespace Common
             RequiredForUnlock = requiredAnalysis;
             GroupForPDA = groupForPDA;
             CategoryForPDA = categoryForPDA;
+            TypeForEquipment = equipmentType;
+            TypeForQuickslot = quickSlotType;
+            ComponentsToAdd = componentsToAdd;
             GameResourceFileName = gamerResourceFileName;
         }
 
         public virtual void Patch()
         {
-            TechType = TechTypeHandler.AddTechType(NameID, FriendlyName, Description, ImageUtils.LoadSpriteFromFile($"./QMods/{NameID}/Assets/{NameID}.png"), false);
-
+            Atlas.Sprite sprite = ImageUtils.LoadSpriteFromFile($"./QMods/{NameID}/Assets/{NameID}.png");
+            TechType = TechTypeHandler.AddTechType(NameID, FriendlyName, Description, sprite , false);
+            SpriteHandler.RegisterSprite(TechType, sprite);            
             CraftTreeHandler.AddCraftingNode(FabricatorType, TechType, FabricatorTab);
             CraftDataHandler.SetTechData(TechType, GetRecipe());
             CraftDataHandler.AddToGroup(GroupForPDA, CategoryForPDA, TechType);
-
-            PrefabHandler.RegisterPrefab(this);
-
+            CraftDataHandler.SetEquipmentType(TechType, TypeForEquipment);
+            CraftDataHandler.SetQuickSlotType(TechType, TypeForQuickslot);
             KnownTechHandler.SetAnalysisTechEntry(RequiredForUnlock, new TechType[1] { TechType }, $"{FriendlyName} blueprint discovered!");
-            
+
+            PrefabHandler.RegisterPrefab(this);            
         }
 
         protected abstract TechData GetRecipe();
@@ -76,6 +85,14 @@ namespace Common
                 prefab = CraftData.GetPrefabForTechType(PrefabTemplate);
             else
                 prefab = Resources.Load<GameObject>(GameResourceFileName);
+
+            if (ComponentsToAdd != null)
+            {
+                foreach (Type component in ComponentsToAdd)
+                {
+                    prefab.AddIfNeedComponent(component);
+                }
+            }
             
             return UnityEngine.Object.Instantiate(prefab);
         }        

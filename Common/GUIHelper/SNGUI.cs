@@ -86,7 +86,7 @@ namespace Common.GUIHelper
 
     public static class SNGUI
     {
-        public static bool CreateGuiItemsGroup(string[] names, List<Rect> rects, GuiItemType type, ref List<GuiItem> guiItems, GuiItemColor itemColor,
+        public static bool CreateGuiItemsGroup(this List<GuiItem> guiItems, string[] names, List<Rect> rects, GuiItemType type, GuiItemColor itemColor,
                                                GuiItemState state = GuiItemState.NORMAL, bool enabled = true, FontStyle fontStyle = FontStyle.Normal,
                                                TextAnchor textAnchor = TextAnchor.MiddleCenter, Event<object> onChangedEvent = null)
         {
@@ -111,7 +111,32 @@ namespace Common.GUIHelper
             return true;
         }
 
-        public static bool AddGuiItemToGroup(string name, Rect rect, GuiItemType type, ref List<GuiItem> guiItems, GuiItemColor itemColor,
+        public static bool CreateGuiItemsGroup(this List<GuiItem> guiItems, List<string> names, List<Rect> rects, GuiItemType type, GuiItemColor itemColor,
+                                               GuiItemState state = GuiItemState.NORMAL, bool enabled = true, FontStyle fontStyle = FontStyle.Normal,
+                                               TextAnchor textAnchor = TextAnchor.MiddleCenter, Event<object> onChangedEvent = null)
+        {
+            guiItems.Clear();
+
+            for (int i = 0; i < names.Count; i++)
+            {
+                guiItems.Add(new GuiItem()
+                {
+                    Name = names[i],
+                    Type = type,
+                    Enabled = enabled,
+                    Rect = rects[i],
+                    ItemColor = itemColor,
+                    State = state,
+                    FontStyle = fontStyle,
+                    TextAnchor = textAnchor,
+                    OnChangedEvent = onChangedEvent
+                });
+            }
+
+            return true;
+        }
+
+        public static bool AddGuiItemToGroup(this List<GuiItem> guiItems, string name, Rect rect, GuiItemType type, GuiItemColor itemColor,
                                              GuiItemState state = GuiItemState.NORMAL, bool enabled = true, FontStyle fontStyle = FontStyle.Normal,
                                              TextAnchor textAnchor = TextAnchor.MiddleCenter, Event<object> onChangedEvent = null)
         {            
@@ -131,7 +156,7 @@ namespace Common.GUIHelper
             return true;
         }
 
-        public static void SetGuiItemsGroupLabel(string name, Rect rect, ref List<GuiItem> guiItems, GuiItemColor itemColor,
+        public static void SetGuiItemsGroupLabel(this List<GuiItem> guiItems, string name, Rect rect, GuiItemColor itemColor,
                                                  FontStyle fontStyle = FontStyle.Normal, TextAnchor textAnchor = TextAnchor.MiddleLeft)
         {
             guiItems.Add(new GuiItem()
@@ -147,9 +172,9 @@ namespace Common.GUIHelper
         }
 
         //to be called from OnGui
-        public static int DrawGuiItemsGroup(ref List<GuiItem> guiItems)
+        public static int DrawGuiItemsGroup(this List<GuiItem> guiItems)
         {
-            for (int i = 0; i < guiItems.Count; i++)
+            for (int i = 0; i < guiItems.Count; ++i)
             {
                 if (!guiItems[i].Enabled)
                 {
@@ -157,12 +182,28 @@ namespace Common.GUIHelper
                 }
 
                 switch (guiItems[i].Type)
-                {                    
+                {
                     case GuiItemType.NORMALBUTTON:
+                    
+                        if (GUI.Button(guiItems[i].Rect, guiItems[i].Name, SNStyles.GetGuiItemStyle(guiItems[i])))
+                        {
+                            return i;
+                        }
+                        break;
+
                     case GuiItemType.TOGGLEBUTTON:
+
+                        if (GUI.Button(guiItems[i].Rect, guiItems[i].Name, SNStyles.GetGuiItemStyle(guiItems[i])))
+                        {
+                            guiItems[i].State = SetStateInverse(guiItems[i].State);
+                            return i;
+                        }
+                        break;
+
                     case GuiItemType.TAB:
                         if (GUI.Button(guiItems[i].Rect, guiItems[i].Name, SNStyles.GetGuiItemStyle(guiItems[i])))
                         {
+                            SetStateInverseTAB(guiItems, i);
                             return i;
                         }
                         break;
@@ -173,11 +214,24 @@ namespace Common.GUIHelper
 
                     case GuiItemType.TEXTFIELD:
                         GUI.TextField(guiItems[i].Rect, guiItems[i].Name, SNStyles.GetGuiItemStyle(guiItems[i]));
-                        break;
+                        break;                        
                 }
+                
             }
-
+            
             return -1;
+        }
+
+        public static void SetStateInverseTAB(this List<GuiItem> guiItems, int setActiveState)
+        {
+            for (int i = 0; i < guiItems.Count; i++)
+            {
+                if (i == setActiveState)
+                    guiItems[i].State = GuiItemState.PRESSED;
+                else
+                    guiItems[i].State = GuiItemState.NORMAL;
+
+            }            
         }
 
         public static GuiItemState SetStateInverse(GuiItemState state)

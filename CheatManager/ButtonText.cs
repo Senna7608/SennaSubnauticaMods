@@ -33,7 +33,7 @@
         nodamage,
         alwaysday,
         noinfect,
-        overpower,
+        overpower        
     }
 
     internal enum Categories

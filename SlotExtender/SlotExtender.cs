@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using UWE;
 using SlotExtender.Configuration;
+using Common;
+using static Common.GameHelper;
 
 namespace SlotExtender
 {
@@ -15,7 +17,7 @@ namespace SlotExtender
         internal void Awake()
         {
             //get this SlotExtender instance
-            Instance = gameObject.GetComponent<SlotExtender>();
+            Instance = GetComponent<SlotExtender>();
 
             if (Instance.GetComponent<SeaMoth>())
             {
@@ -37,7 +39,7 @@ namespace SlotExtender
             }
             else
             {
-                Logger.Log("Unknown Vehicle type error! Instance destroyed!");
+                SNLogger.Log($"[{Config.PROGRAM_NAME}] Unknown Vehicle type error! Instance destroyed!");
                 Destroy(Instance);
             }            
         }
@@ -51,7 +53,7 @@ namespace SlotExtender
             PdaMain.Open();
             PdaMain.Close();
             //add and start a handler to check the player mode if changed
-            PlayerMain.playerModeChanged.AddHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
+            PlayerMain.playerModeChanged.AddHandler(this, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
             isActive = PlayerMain.GetVehicle() == ThisVehicle ? true : false;
         }        
 
@@ -82,7 +84,10 @@ namespace SlotExtender
             if (!isActive)
                 return; // Slot Extender not active. Exit method.
 
-            if (!PlayerMain.inSeamoth && !PlayerMain.inExosuit)
+            if (Main.isConsoleActive)
+                return; // Input console active. Exit method.
+
+            if (!IsPlayerInVehicle())
                 return; // Player not in any vehicle. Exit method.
 
             if (Input.GetKeyDown(Config.KEYBINDINGS["Upgrade"]))
@@ -232,7 +237,7 @@ namespace SlotExtender
         public void OnDestroy()
         {
             //remove unused handler from memory
-            PlayerMain.playerModeChanged.RemoveHandler(gameObject, OnPlayerModeChanged);            
+            PlayerMain.playerModeChanged.RemoveHandler(this, OnPlayerModeChanged);            
             Destroy(Instance);
         }
     }

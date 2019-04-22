@@ -74,9 +74,9 @@ namespace CheatManager
                     ExecuteCommand("", toggleButtons[toggleButtonID].Name);
                     break;
                 case ToggleCommands.shotgun:
-                    toggleButtons[(int)ToggleCommands.shotgun].State = SNGUI.SetStateInverse(toggleButtons[(int)ToggleCommands.shotgun].State);
+                    //toggleButtons[(int)ToggleCommands.shotgun].State = SNGUI.SetStateInverse(toggleButtons[(int)ToggleCommands.shotgun].State);
                     ExecuteCommand(toggleButtons[(int)ToggleCommands.shotgun].State == GuiItemState.PRESSED ? "shotgun cheat is now True" : "shotgun cheat is now False", toggleButtons[(int)ToggleCommands.shotgun].Name);
-                    break;                    
+                    break;               
             }           
         }                
 

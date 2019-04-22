@@ -32,12 +32,12 @@
     </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>..\References\0Harmony.dll</HintPath>
+    <Reference Include="0Harmony-1.2.0.1">
+      <HintPath>..\References\0Harmony-1.2.0.1.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">
@@ -74,6 +74,7 @@
     <Compile Include="CM_InfoBar.cs" />
     <Compile Include="CM_Logger.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="MapRoomOverScan.cs" />
     <Compile Include="NewCommands\OverPowerConsoleCommand.cs" />
     <Compile Include="NewCommands\NoInfectConsoleCommand.cs" />
     <Compile Include="NewCommands\AlwaysDayConsoleCommand.cs" />
@@ -95,5 +96,6 @@
     </Content>
   </ItemGroup>
   <Import Project="..\Common\Common.projitems" Label="Shared" />
+  <Import Project="..\RuntimeHelper\RuntimeHelper.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

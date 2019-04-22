@@ -48,7 +48,7 @@ namespace Common.GUIHelper
             return windowRect;
         }
 
-        public static List<Rect> SetGridItemsRect(Rect rect, int columns, int rows, int itemHeight, int spaceHorizontal, int spaceVertical, bool alignRightDown = true, bool labeled = false, bool overrideHeight = false)
+        public static List<Rect> SetGridItemsRect(this Rect rect, int columns, int rows, int itemHeight, int spaceHorizontal, int spaceVertical, bool alignRightDown = true, bool labeled = false, bool overrideHeight = false)
         {
             if (columns < 1 || rows < 1)
             {
@@ -211,6 +211,5 @@ namespace Common.GUIHelper
             expandedRect.width += expandSize;
             rects[item] = expandedRect;
         }
-
     }
 }

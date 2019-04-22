@@ -13,12 +13,14 @@ namespace SlotExtender.Configuration
     {
         internal static string VERSION = string.Empty;
         internal static Dictionary<string,KeyCode> KEYBINDINGS;
-        private const string PROGRAM_NAME = "SlotExtender";
+        public const string PROGRAM_NAME = "SlotExtender";
         private static readonly string[] SECTIONS = { "Hotkeys", "Settings" };
-        private static readonly string FILENAME = $"{Environment.CurrentDirectory}\\QMods\\{PROGRAM_NAME}\\config.txt";
+        private static readonly string FILENAME = $"{Environment.CurrentDirectory}/QMods/{PROGRAM_NAME}/config.txt";
         internal static Dictionary<string, string> Section_hotkeys;
-        internal static Dictionary<string, string> SLOTKEYS = new Dictionary<string, string>();
+        public static Dictionary<string, string> SLOTKEYS = new Dictionary<string, string>();
+        public static List<string> SLOTKEYSLIST = new List<string>();
         internal static int MAXSLOTS;
+        public static Color TEXTCOLOR;
 
         private static readonly string[] SECTION_HOTKEYS =
         {
@@ -36,12 +38,14 @@ namespace SlotExtender.Configuration
 
         private static readonly string[] SECTION_SETTINGS =
         {
-            "MaxSlots"
+            "MaxSlots",
+            "TextColor"
         };
 
         private static readonly List<ConfigData> DEFAULT_CONFIG = new List<ConfigData>
         {
             new ConfigData(SECTIONS[1], SECTION_SETTINGS[0], 6.ToString()),
+            new ConfigData(SECTIONS[1], SECTION_SETTINGS[1], COLORS.Green.ToString()),
             new ConfigData(SECTIONS[0], SECTION_HOTKEYS[0], InputHelper.GetKeyCodeAsInputName(KeyCode.T)),
             new ConfigData(SECTIONS[0], SECTION_HOTKEYS[1], InputHelper.GetKeyCodeAsInputName(KeyCode.R)),
             new ConfigData(SECTIONS[0], SECTION_HOTKEYS[2], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha6)),
@@ -56,6 +60,7 @@ namespace SlotExtender.Configuration
         internal static void InitSLOTKEYS()
         {
             SLOTKEYS.Clear();
+            SLOTKEYSLIST.Clear();
 
             SLOTKEYS.Add("Slot1", GameInput.GetBindingName(GameInput.Button.Slot1, GameInput.BindingSet.Primary));
             SLOTKEYS.Add("Slot2", GameInput.GetBindingName(GameInput.Button.Slot2, GameInput.BindingSet.Primary));
@@ -69,40 +74,49 @@ namespace SlotExtender.Configuration
             SLOTKEYS.Add("Slot10", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_HOTKEYS[6]]));
             SLOTKEYS.Add("Slot11", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_HOTKEYS[7]]));
             SLOTKEYS.Add("Slot12", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_HOTKEYS[8]]));
+
+            foreach (KeyValuePair<string, string> kvp in SLOTKEYS)
+            {
+                SLOTKEYSLIST.Add(kvp.Value);
+            }
         }
                
         internal static void LoadConfig()
         {
             if (!File.Exists(FILENAME))
             {
-                Logger.Log($"Warning! Configuration file is missing. Creating a new one.");
+                SNLogger.Log($"[{PROGRAM_NAME}] Warning! Configuration file is missing. Creating a new one.");
 
                 VERSION = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
                 
                 Helper.CreateDefaultConfigFile(FILENAME, PROGRAM_NAME, VERSION, DEFAULT_CONFIG);
+                Helper.AddInfoText(FILENAME, SECTIONS[1], "TextColor possible values: Red, Green, Blue, Yellow, White, Magenta, Cyan, Orange, Lime, Amethyst, Default");
             }            
 
             Section_hotkeys = Helper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[0], SECTION_HOTKEYS);
 
             int.TryParse(Helper.GetKeyValue(FILENAME, SECTIONS[1], SECTION_SETTINGS[0]), out int result);
+            MAXSLOTS = result < 5 || result > 12 ? 12 : result;
 
-            MAXSLOTS = result < 5 || result > 12 ? 12 : result;                   
+            TEXTCOLOR = Modules.GetColor(Helper.GetKeyValue(FILENAME, SECTIONS[1], SECTION_SETTINGS[1]));
 
-            Logger.Log($"Configuration loaded.");
+            SNLogger.Log($"[{PROGRAM_NAME}] Configuration loaded.");
         }
         
         internal static void InitConfig()
         {
             SetKeyBindings();
 
-            Logger.Log($"Configuration initialized.");
+            SNLogger.Log($"[{PROGRAM_NAME}] Configuration initialized.");
         }
 
         internal static void WriteConfig()
         {
             Helper.SetAllKeyValuesInSection(FILENAME, SECTIONS[0], Section_hotkeys);
             Helper.SetKeyValue(FILENAME, SECTIONS[1], SECTION_SETTINGS[0], MAXSLOTS.ToString());
-            Logger.Log($"Configuration saved.");            
+            Helper.SetKeyValue(FILENAME, SECTIONS[1], SECTION_SETTINGS[1], Modules.GetColorName(TEXTCOLOR));
+
+            SNLogger.Log($"[{PROGRAM_NAME}] Configuration saved.");            
         }
 
         internal static void SyncConfig()
@@ -129,7 +143,7 @@ namespace SlotExtender.Configuration
                 }
                 catch (ArgumentException)
                 {
-                    Logger.Log($"Warning! ({kvp.Value}) is not a valid KeyCode! Setting default value!");
+                    SNLogger.Log($"[{PROGRAM_NAME}] Warning! ({kvp.Value}) is not a valid KeyCode! Setting default value!");
 
                     for (int i = 0; i < DEFAULT_CONFIG.Count; i++)
                     {

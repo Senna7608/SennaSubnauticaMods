@@ -8,6 +8,7 @@ namespace RepairModule
 {
     public static class Main
     {
+        public const string PROGRAM_NAME = "[RepairModule]";
         public static void Load()
         {
             try
@@ -48,7 +49,7 @@ namespace RepairModule
                 }
                 else
                 {
-                    Debug.Log("[RepairModule] Error! Unknown Vehicle Type!");
+                    SNLogger.Log($"{Main.PROGRAM_NAME} Error! Unknown Vehicle Type!");
                 }
             }
         }

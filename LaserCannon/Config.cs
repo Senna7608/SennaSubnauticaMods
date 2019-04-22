@@ -13,7 +13,7 @@ namespace LaserCannon
         internal static string VERSION = string.Empty;
         private const string PROGRAM_NAME = "LaserCannon";        
 
-        internal static readonly string FILENAME = Environment.CurrentDirectory + "\\QMods\\LaserCannon\\config.txt";
+        internal static readonly string FILENAME = Environment.CurrentDirectory + "/QMods/LaserCannon/config.txt";
 
         internal static Dictionary<string, string> program_settings;
         internal static Dictionary<string, string> language_settings;
@@ -170,7 +170,7 @@ namespace LaserCannon
 
             if (!File.Exists(FILENAME))
             {
-                UnityEngine.Debug.Log($"[{PROGRAM_NAME}] Warning! Configuration file is missing. Creating a new one.");
+                SNLogger.Log($"[{Config.PROGRAM_NAME}] Warning! Configuration file is missing. Creating a new one.");
 
                 Helper.CreateDefaultConfigFile(FILENAME, PROGRAM_NAME, VERSION, DEFAULT_CONFIG);
 

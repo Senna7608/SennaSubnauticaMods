@@ -27,21 +27,13 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>D:\SN\QMods\SlotExtender\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\QMods\SlotExtender\</OutputPath>
     <DefineConstants>
     </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Beta|AnyCPU'">
-    <OutputPath>bin\Beta\</OutputPath>
-    <Optimize>true</Optimize>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <DefineConstants>
-    </DefineConstants>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup>
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
@@ -53,8 +45,8 @@
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>..\References\0Harmony.dll</HintPath>
+    <Reference Include="0Harmony-1.2.0.1">
+      <HintPath>..\References\0Harmony-1.2.0.1.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">
@@ -89,7 +81,8 @@
     <Compile Include="Configuration\Config.cs" />
     <Compile Include="Configuration\ConfigUI.cs" />
     <Compile Include="Initialize_uGUI.cs" />
-    <Compile Include="Logger.cs" />
+    <Compile Include="InputFieldListener.cs" />
+    <Compile Include="Patchers\DevConsole_Patcher.cs" />
     <Compile Include="Patchers\MQS_Patcher.cs" />
     <Compile Include="Patchers\uGUI_Equipment_Patcher.cs" />
     <Compile Include="Patchers\Equipment_Patcher.cs" />

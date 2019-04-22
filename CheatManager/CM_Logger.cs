@@ -1,6 +1,6 @@
 ﻿#define DEBUG_GAMELOG
 #define AUTOSCROLL
-#define MAXMESSAGE_INFINITY
+//#define MAXMESSAGE_INFINITY
 
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,13 +17,14 @@ namespace CheatManager
         private static GUIStyle logStyle;
         private bool setStyle = false;
 
-        private static Rect windowRect = new Rect(Screen.width - (Screen.width / 4.8f), Screen.height - (Screen.height / 4), Screen.width / 4.8f, Screen.height / 4);
+        private static Rect windowRect = new Rect(Screen.width - (Screen.width / Config.ASPECT), Screen.height - (Screen.height / 4), Screen.width / Config.ASPECT, Screen.height / 4);
         private static Rect buttonRect = new Rect(windowRect.x + 5, windowRect.y + windowRect.height - 27, windowRect.width - 10, 22);
         private Rect drawRect, scrollRect;
         private float scrollWidth;
         private Vector2 scrollPos = Vector2.zero;
         private float contentHeight = 0;
         private float drawingPos;
+
         private List<LOG> logMessage = new List<LOG>();
         private int messageCount = 0;
 
@@ -82,7 +83,7 @@ namespace CheatManager
 
             drawRect = SNWindow.InitWindowRect(windowRect);
             scrollRect = new Rect(drawRect.x, drawRect.y + 5, drawRect.width - 5, drawRect.height - 37);
-            scrollWidth = scrollRect.width - 40;
+            scrollWidth = scrollRect.width - 42;
 
             Application.logMessageReceived += HandleLog;            
         }         
@@ -102,33 +103,39 @@ namespace CheatManager
             }
 
             if (!setStyle)
-                logStyle = SNStyles.GetGuiItemStyle(GuiItemType.LABEL, GuiColor.Green, TextAnchor.MiddleLeft, wordWrap: true);
+            {
+                logStyle = SNStyles.GetGuiItemStyle(GuiItemType.LABEL, GuiColor.Green, TextAnchor.MiddleLeft, wordWrap: true);                
+            }
 
             SNWindow.CreateWindow(windowRect, $"CheatManager Console (Press {Config.KEYBINDINGS["ToggleConsole"]} to toggle)", true, true);            
 
             scrollPos = GUI.BeginScrollView(scrollRect, scrollPos, new Rect(scrollRect.x, scrollRect.y, scrollWidth, drawingPos - scrollRect.y));
-            
-            for (int i = 0; i < logMessage.Count; i++)
-            {
+
+            for (int i = 0; i < logMessage.Count; i++)            
+            {               
                 if (i == 0)
                 {
                     drawingPos = scrollRect.y;
                 }
+                
+                contentHeight = logStyle.CalcHeight(new GUIContent(logMessage[i].message), scrollWidth);                
 
-                contentHeight = logStyle.CalcHeight(new GUIContent(logMessage[i].message), scrollWidth);
-
-                logStyle.normal.textColor = SNStyles.GetGuiColor(logTypeColors[logMessage[i].type]);
+                logStyle.normal.textColor = SNStyles.GetGuiColor(logTypeColors[logMessage[i].type]);                
 
                 GUI.Label(new Rect(scrollRect.x + 5, drawingPos, 15, 21), "> ", logStyle);
-                GUI.Label(new Rect(scrollRect.x + 20, drawingPos, scrollWidth, contentHeight), logMessage[i].message, logStyle);
+
+                GUI.Label(new Rect(scrollRect.x + 20, drawingPos, scrollWidth, contentHeight), logMessage[i].message, logStyle);                
 
                 drawingPos += contentHeight + 1;
 
-                if (logMessage[i].stackTrace != "")
+                if (logMessage[i].stackTrace != "")                
                 {
                     contentHeight = logStyle.CalcHeight(new GUIContent(logMessage[i].stackTrace), scrollWidth);
+                    
                     logStyle.normal.textColor = SNStyles.GetGuiColor(logTypeColors[logMessage[i].type]);
+                    
                     GUI.Label(new Rect(scrollRect.x + 20, drawingPos, scrollRect.width, contentHeight), logMessage[i].stackTrace, logStyle);
+                    
                     drawingPos += contentHeight + 1;
                 }
             }
@@ -140,7 +147,7 @@ namespace CheatManager
                 messageCount = logMessage.Count;
             }
 #endif
-            GUI.EndScrollView();            
+            GUI.EndScrollView();
 
             /*
             if (Event.current.Equals(Event.KeyboardEvent("return")) && inputField != "")
@@ -172,7 +179,7 @@ namespace CheatManager
             
             inputField = GUI.TextField(new Rect(scrollRect.x + 5, scrollRect.y + scrollRect.height + 5, 300, 22), inputField);
             */
-
+            
             if (GUI.Button(buttonRect, "Clear Window"))
             {
                 logMessage.Clear();
@@ -190,48 +197,48 @@ namespace CheatManager
 
         private void Write(string message)
         {
-            logMessage.Add(new LOG()
+            logMessage.Add(new LOG()            
             {
                 message = message,
                 stackTrace = "",
                 type = LogType.Log,
             });
-            
-            if (logMessage.Count == MAXLOG)
+
+            if (logMessage.Count == MAXLOG)           
             {
-                logMessage.RemoveAt(0);
+                logMessage.RemoveAt(0);                
                 messageCount--;
             }
         }
 
         private void Write(string message, LogType type)
         {
-            logMessage.Add(new LOG()
+            logMessage.Add(new LOG()            
             {
                 message = message,
                 stackTrace = "",
                 type = type,
             });
 
-            if (logMessage.Count == MAXLOG)
+            if (logMessage.Count == MAXLOG)            
             {
-                logMessage.RemoveAt(0);
+                logMessage.RemoveAt(0);                
                 messageCount--;
             }
         }        
 
         private void Write(string message, LogType type, params object[] arg)
         {
-            logMessage.Add(new LOG()
+            logMessage.Add(new LOG()            
             {
                 message = string.Format(message, arg),
                 stackTrace = "",
                 type = type,
             });
 
-            if (logMessage.Count == MAXLOG)
+            if (logMessage.Count == MAXLOG)            
             {
-                logMessage.RemoveAt(0);
+                logMessage.RemoveAt(0);                
                 messageCount--;
             }
         }
@@ -245,16 +252,16 @@ namespace CheatManager
                 stacktrace = temp;
             }
 
-            logMessage.Add(new LOG()
+            logMessage.Add(new LOG()            
             {
                 message = message,
                 stackTrace = stacktrace,
                 type = type,
             });
 
-            if (logMessage.Count == MAXLOG)
+            if (logMessage.Count == MAXLOG)            
             {
-                logMessage.RemoveAt(0);
+                logMessage.RemoveAt(0);                
                 messageCount--;
             }
 

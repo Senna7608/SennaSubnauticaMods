@@ -69,5 +69,32 @@ namespace Common
 
             return false;
         }
+
+        public static MethodInfo GetAssemblyClassPrivateMethod(string className, string methodName)
+        {
+            try
+            {
+                Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+                for (int i = 0; i < assemblies.Length; i++)
+                {
+                    Type[] types = assemblies[i].GetTypes();
+
+                    for (int j = 0; j < types.Length; j++)
+                    {
+                        if (types[j].FullName == className)
+                        {
+                            return types[j].GetMethod(methodName, BindingFlags.Instance | BindingFlags.NonPublic);
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                return null;
+            }
+
+            return null;
+        }
     }
 }

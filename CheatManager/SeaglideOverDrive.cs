@@ -5,23 +5,20 @@ namespace CheatManager
 {
     public class SeaglideOverDrive : MonoBehaviour
     {
-        public static SeaglideOverDrive Instance { get; private set; }       
-              
+        public SeaglideOverDrive Instance { get; private set; }
+
         public void Awake()
         {
-            if (gameObject.GetComponent<Seaglide>() == null)
-            {
-                Destroy(this);
-            }
-            else
-            {
+            if (Instance == null)
                 Instance = this;
-            }
+            else
+                Destroy(this);
         }
 
         public void Start()
         { 
-            Player.main.playerMotorModeChanged.AddHandler(this, new Event<Player.MotorMode>.HandleFunction(OnPlayerMotorModeChanged));            
+            Player.main.playerMotorModeChanged.AddHandler(this, new Event<Player.MotorMode>.HandleFunction(OnPlayerMotorModeChanged));
+            Main.Instance.isSeaglideFast.changedEvent.AddHandler(this, new Event<Utils.MonitoredValue<bool>>.HandleFunction(IsSeaglideFast));
         }
 
         public void OnDestroy()
@@ -31,13 +28,18 @@ namespace CheatManager
         }
 
         private void OnPlayerMotorModeChanged(Player.MotorMode newMotorMode)
-        {           
-            SetSeaglideSpeed();            
+        {
+            SetSeaglideSpeed(newMotorMode);
         }
 
-        public void SetSeaglideSpeed()
+        private void IsSeaglideFast(Utils.MonitoredValue<bool> SeaglideFastSpeedEnable)
+        {
+            SetSeaglideSpeed(Player.main.motorMode);
+        }
+
+        private void SetSeaglideSpeed(Player.MotorMode activeMotorMode)
         {         
-            if (Main.Instance.isSeaglideFast.value && Player.main.motorMode == Player.MotorMode.Seaglide && Player.main.IsUnderwater())
+            if (Main.Instance.isSeaglideFast.value && activeMotorMode == Player.MotorMode.Seaglide && Player.main.IsUnderwater())
             {
                 Player.main.playerController.underWaterController.acceleration = 60f;
                 Player.main.playerController.underWaterController.verticalMaxSpeed = 75f;
