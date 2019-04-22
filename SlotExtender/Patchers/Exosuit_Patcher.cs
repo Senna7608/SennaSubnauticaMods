@@ -18,8 +18,8 @@ namespace SlotExtender.Patchers
     }    
 
     [HarmonyPatch(typeof(Exosuit))]
-    [HarmonyPatch("Awake")]
-    internal class Exosuit_Awake_Patch
+    [HarmonyPatch("Start")]
+    internal class Exosuit_Start_Patch
     {
         [HarmonyPostfix]
         internal static void Postfix(Exosuit __instance)

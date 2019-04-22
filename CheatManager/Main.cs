@@ -14,8 +14,7 @@ namespace CheatManager
     {
         public static CheatManager Instance { get; private set; }
         public static CM_Logger CmLogger { get; private set; }
-        public static CM_InfoBar CmInfoBar { get; private set; }
-        public static MapRoomOverScan MapRoomInstance { get; internal set; }
+        public static CM_InfoBar CmInfoBar { get; private set; }        
 
         internal static bool isConsoleEnabled { get; set; }
         internal static bool isInfoBarEnabled { get; set; }        

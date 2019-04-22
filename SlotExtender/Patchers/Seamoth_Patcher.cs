@@ -18,8 +18,8 @@ namespace SlotExtender.Patchers
     }    
 
     [HarmonyPatch(typeof(SeaMoth))]
-    [HarmonyPatch("Awake")]
-    internal class SeaMoth_Awake_Patch
+    [HarmonyPatch("Start")]
+    internal class SeaMoth_Start_Patch
     {
         [HarmonyPostfix]
         internal static void Postfix(SeaMoth __instance)

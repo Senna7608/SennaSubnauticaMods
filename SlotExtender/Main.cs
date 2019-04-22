@@ -46,8 +46,8 @@ namespace SlotExtender
                     BindingFlags.GetProperty).GetGetMethod(true),
                     new HarmonyMethod(typeof(Seamoth_slotIDs_Patch), "Prefix"),  null);
 
-                hInstance.Patch(typeof(SeaMoth).GetMethod("Awake"),  null,
-                    new HarmonyMethod(typeof(SeaMoth_Awake_Patch), "Postfix"));
+                hInstance.Patch(typeof(SeaMoth).GetMethod("Start"),  null,
+                    new HarmonyMethod(typeof(SeaMoth_Start_Patch), "Postfix"));
 
                 hInstance.Patch(typeof(Exosuit).GetProperty("slotIDs",
                     BindingFlags.Instance |
@@ -55,8 +55,8 @@ namespace SlotExtender
                     BindingFlags.GetProperty).GetGetMethod(true),
                     new HarmonyMethod(typeof(Exosuit_slotIDs_Patch), "Prefix"), null);
 
-                hInstance.Patch(typeof(Exosuit).GetMethod("Awake"), null,
-                    new HarmonyMethod(typeof(Exosuit_Awake_Patch), "Postfix"));
+                hInstance.Patch(typeof(Exosuit).GetMethod("Start"), null,
+                    new HarmonyMethod(typeof(Exosuit_Start_Patch), "Postfix"));
                                
                 hInstance.Patch(typeof(uGUI_Equipment).GetMethod("Awake",
                     BindingFlags.NonPublic |
