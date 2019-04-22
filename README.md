@@ -1,4 +1,4 @@
-# CheatManager
+# Cheat Manager
 - This mod able to handling the Subnautica built-in console commands on a IMGUI window.
 - This mod include a many new self-made cheat features.
 - This mod include an a debug console window.
@@ -20,7 +20,7 @@
 # Ancient Sword
 - Another weapon mod. The unusable sword in stasis now usable item. (mod using only script for solution)
 
-# QuickSlotExtender
+# Quick Slot Extender
 - This mod is a different solution for quick slots extending than RandyKnapp's MoreQuickslots.
 - This mod has capable of colored numbers, configuration UI...
 - This mod is not publicated on the Nexus.
@@ -29,6 +29,6 @@
 - This mod is the first weapon mod for the cyclops.
 - This mod is using the services of PrimeSonic's More Cyclops Upgrades mod.
 
-# CannonArm
+# Cannon Arm
 - This mod idea: add the new Cannon arm for the Exosuit.
 - This mod is in the very early stage and not working.
