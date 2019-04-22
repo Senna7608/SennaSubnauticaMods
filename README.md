@@ -22,7 +22,7 @@
 
 # Quick Slot Extender
 - This mod is a different solution for quick slots extending than RandyKnapp's MoreQuickslots.
-- This mod has capable of colored numbers, configuration UI...
+- This mod has capable of colored numbers, configuration UI, SlotExtender compatibility and a costructor patch method.
 - This mod is not publicated on the Nexus.
 
 # Cyclops Laser Cannon
