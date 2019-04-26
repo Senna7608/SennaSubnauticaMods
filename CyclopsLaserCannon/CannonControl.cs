@@ -3,9 +3,6 @@ using UnityEngine;
 using UWE;
 using static Common.Modules;
 using static Common.GameHelper;
-using MoreCyclopsUpgrades.CyclopsUpgrades;
-using MoreCyclopsUpgrades.Managers;
-using Common;
 
 namespace CyclopsLaserCannonModule
 {
@@ -33,15 +30,17 @@ namespace CyclopsLaserCannonModule
         private GameObject targetGameobject;        
         private Vector3 targetPosition;                
         private float idleTimer = 3f;
-        private UpgradeHandler upgradeHandler;
 
         public void Start()
         {
-            UpgradeManager.UpgradeManagerInitializing += RegisterUpgrade;
-
             Instance = this;
 
             Main.onConfigurationChanged.AddHandler(this, new Event<string>.HandleFunction(OnConfigurationChanged));
+            Main.onFinishedUpgrades += OnFinishedUpgrades;
+
+            //Main.isAllowedToAdd += IsAllowedToAdd;
+            ///Main.isAllowedToRemove += IsAllowedToRemove;
+            Main.onClearUpgrades += OnClearUpgrades;           
 
             This_Cyclops_Root = transform.parent.gameObject;  
                                     
@@ -68,36 +67,13 @@ namespace CyclopsLaserCannonModule
             Player.main.currentSubChangedEvent.AddHandler(this, new Event<SubRoot>.HandleFunction(OnSubRootChanged));            
         }        
 
-        private void RegisterUpgrade()
-        {            
-            if (upgradeHandler == null)
-            {
-                SNLogger.Log($"[CyclopsLaserCannonModule] Prevented duplicate registration for CannonControl {GetInstanceID()}");
-                return; // already registered
-            }
-
-            SNLogger.Log($"[CyclopsLaserCannonModule] Registering OneTimeUseeHandlerCreator for CannonControl {GetInstanceID()}");
-            UpgradeManager.RegisterOneTimeUseHandlerCreator(() =>
-            {
-                SNLogger.Log($"[CyclopsLaserCannonModule] Upgrade registered for CannonControl {GetInstanceID()}");
-                upgradeHandler = new UpgradeHandler(CannonPrefab.TechTypeID)
-                {
-                    MaxCount = 1,
-                    OnUpgradeCounted = EnableCannonOnUpgradeCounted,
-                    OnClearUpgrades = DisableCannonOnClearUpgrades,                    
-                };
-
-                return upgradeHandler;
-            });
-        }
-
         public void OnDestroy()
         {           
             Player.main.playerModeChanged.RemoveHandler(this, OnPlayerModeChanged);
-            Player.main.currentSubChangedEvent.RemoveHandler(this, OnSubRootChanged);
+            Player.main.currentSubChangedEvent.RemoveHandler(this, OnSubRootChanged);                       
+                        
+            Main.onFinishedUpgrades -= OnFinishedUpgrades;            
 
-            upgradeHandler.OnUpgradeCounted = null;
-            upgradeHandler.OnClearUpgrades = null;
             Destroy(cannon_base_right);
             Destroy(cannon_base_left);
             Destroy(camera_instance);

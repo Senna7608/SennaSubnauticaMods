@@ -6,6 +6,9 @@ using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using Common;
 using UWE;
+using MoreCyclopsUpgrades.Managers;
+using MoreCyclopsUpgrades.CyclopsUpgrades;
+
 using static Common.GameHelper;
 using SMLHelper.V2.Utility;
 
@@ -18,6 +21,12 @@ namespace CyclopsLaserCannonModule
         public static Sprite buttonSprite;
 
         public static bool isAssetsLoaded;
+        public static UpgradeHandler upgradeHandler;
+        //Used MCU Events
+        public static UpgradeEvent onFinishedUpgrades;
+        //public static UpgradeAllowedEvent isAllowedToAdd;
+        //public static UpgradeAllowedEvent isAllowedToRemove;
+        public static UpgradeEvent onClearUpgrades;
 
         public static Event<string> onConfigurationChanged = new Event<string>();
 
@@ -40,6 +49,27 @@ namespace CyclopsLaserCannonModule
             catch (Exception ex)
             {
                 Debug.LogException(ex);
+            }
+
+            try
+            {
+                UpgradeManager.RegisterReusableHandlerCreator(() =>
+                {
+                    upgradeHandler = new UpgradeHandler(CannonPrefab.TechTypeID)
+                    {
+                        MaxCount = 1,
+                        //IsAllowedToAdd = isAllowedToAdd,
+                        //IsAllowedToRemove = isAllowedToRemove,
+                        OnFinishedUpgrades = onFinishedUpgrades,
+                        OnClearUpgrades = onClearUpgrades
+                    };
+
+                    return upgradeHandler;
+                });
+            }
+            catch
+            {
+                SNLogger.Log("[CyclopsLaserCannonModule] MCU UpgradeManager initialization failed!");
             }
         }
 

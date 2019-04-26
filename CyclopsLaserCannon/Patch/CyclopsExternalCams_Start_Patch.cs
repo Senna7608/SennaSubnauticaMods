@@ -7,15 +7,19 @@ namespace CyclopsLaserCannonModule.Patch
     [HarmonyPatch("Start")]
     public class CyclopsExternalCams_Start_Patch
     {
+        private static bool isPatched = false;
+
         [HarmonyPostfix]
         public static void Postfix(CyclopsExternalCams __instance)
         {
-            if (__instance.gameObject.GetComponent<CannonControl>() == null)
-            {
-                __instance.gameObject.AddComponent<CannonControl>();
+            if (isPatched)
+                return;
 
-                SNLogger.Log($"[CyclopsLaserCannonModule] CyclopsExternalCams patched on CyclopsExternalCams {__instance.gameObject.GetInstanceID()}. CannonControl component added.");
-            }
+            __instance.gameObject.AddOrGetComponent<CannonControl>();           
+
+            SNLogger.Log("[CyclopsLaserCannonModule] CyclopsExternalCams patched. CannonControl component added.");
+
+            isPatched = true;
         }
     }    
 }
