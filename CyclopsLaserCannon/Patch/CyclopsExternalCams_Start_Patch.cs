@@ -1,5 +1,6 @@
 ﻿using Common;
 using Harmony;
+using UnityEngine;
 
 namespace CyclopsLaserCannonModule.Patch
 {
@@ -7,19 +8,21 @@ namespace CyclopsLaserCannonModule.Patch
     [HarmonyPatch("Start")]
     public class CyclopsExternalCams_Start_Patch
     {
-        private static bool isPatched = false;
-
         [HarmonyPostfix]
         public static void Postfix(CyclopsExternalCams __instance)
         {
-            if (isPatched)
-                return;
+            lock (__instance)
+            {
+                GameObject CyclopsRoot = __instance.transform.parent.gameObject;
 
-            __instance.gameObject.AddOrGetComponent<CannonControl>();           
-
-            SNLogger.Log("[CyclopsLaserCannonModule] CyclopsExternalCams patched. CannonControl component added.");
-
-            isPatched = true;
+                if (CyclopsRoot.name.Equals("__LIGHTMAPPED_PREFAB__"))
+                {
+                    SNLogger.Log($"[CyclopsLaserCannonModule] Cyclops root object name: {CyclopsRoot.name}");
+                    __instance.gameObject.AddIfNeedComponent<CannonControl>();
+                    SNLogger.Log($"[CyclopsLaserCannonModule] CyclopsExternalCams patched on CyclopsExternalCams {__instance.gameObject.GetInstanceID()}. CannonControl component added.");
+                }
+            }
+            
         }
     }    
 }

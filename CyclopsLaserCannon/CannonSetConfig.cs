@@ -10,22 +10,33 @@ namespace CyclopsLaserCannonModule
         private float laserDamage;
         private float powerConsumption;
 
-        public void ShootOnlyHostile()
+        private void SetOnlyHostile()
         {
             isOnlyHostile = bool.Parse(CannonConfig.program_settings["OnlyHostile"].ToString());
         }
 
-        public void SetLaserStrength()
+        private void SetLaserStrength()
         {
-            laserDamage = float.Parse(CannonConfig.program_settings["Damage"]);
+            float.TryParse(CannonConfig.program_settings["Damage"], out float damage);
+            laserDamage = Mathf.Clamp(damage, 1f, 100f);
             powerConsumption = 1 + (laserDamage * 0.05f);
         }
 
-        public void SetWarningMessage()
+        private void SetWarningMessage()
         {
             lowPower_title = CannonConfig.language_settings["LowPower_Title"];
             lowPower_message = CannonConfig.language_settings["LowPower_Message"];
         }
-        
+
+        private void SetLaserSFXVolume()
+        {
+            float.TryParse(CannonConfig.program_settings["SFX_Volume"], out float volume);
+            volume = volume / 100f;
+
+            Debug.Log($"[CyclopsLaserCannonModule] Volume before: {audioSource.volume}");
+            audioSource.volume = Mathf.Clamp(volume, 0.05f, 1f);
+            Debug.Log($"[CyclopsLaserCannonModule] Volume after: {audioSource.volume}");
+        }
+
     }
 }

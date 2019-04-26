@@ -1,4 +1,9 @@
-﻿namespace CyclopsLaserCannonModule
+﻿using System;
+using Common;
+
+using UnityEngine;
+
+namespace CyclopsLaserCannonModule
 {
     public partial class CannonControl
     {        
@@ -15,33 +20,30 @@
             Button_Cannon.SetActive(value);
         }
 
-        private void EnableCannon()
+        private void EnableCannonOnUpgradeCounted(SubRoot cyclops, Equipment modules, string slot)
         {
-            isModuleInserted = true;
-            LaserCannonSetActive(true);            
-        }
+            if (cyclops != subroot)
+                return;
 
-        private void DisableCannon()
-        {
-            isModuleInserted = false;
-            LaserCannonSetActive(false);            
-        }
+            TechType techtypeInSlot = modules.GetItemInSlot(slot).item.GetTechType();
 
-        private void OnClearUpgrades(SubRoot cyclops)
-        {
-            if (cyclops == subroot)
+            if (techtypeInSlot == CannonPrefab.TechTypeID)
             {
-                DisableCannon();
-            }
+                isModuleInserted = true;
+                LaserCannonSetActive(isModuleInserted);
+                SNLogger.Log($"[CyclopsLaserCannonModule] EnableCannonOnUpgradeCounted() triggered");
+            }            
         }
 
-        private void OnFinishedUpgrades(SubRoot cyclops)
+        private void DisableCannonOnClearUpgrades(SubRoot cyclops)
         {
-            if (cyclops == subroot && Main.upgradeHandler.techType == CannonPrefab.TechTypeID)
-            {                
-                EnableCannon();                              
-            }
-        }
+            if (cyclops != subroot)
+                return;
+
+            isModuleInserted = false;
+            LaserCannonSetActive(isModuleInserted);
+            SNLogger.Log($"[CyclopsLaserCannonModule] DisableCannonOnClearUpgrades() triggered");
+        }        
 
         private void OnConfigurationChanged(string configToChange)
         {
@@ -51,10 +53,13 @@
                     SetLaserStrength();
                     break;
                 case "OnlyHostile":
-                    ShootOnlyHostile();
+                    SetOnlyHostile();
+                    break;
+                case "SFX_Volume":
+                    SetLaserSFXVolume();
                     break;
             }            
-        }
+        }        
 
         private void OnPlayerModeChanged(Player.Mode newMode)
         {
@@ -74,32 +79,6 @@
             {
                 isActive = false;
             }            
-        }
-        
-        /*
-        private bool IsAllowedToAdd(SubRoot subRoot, Pickupable pickupable, bool verbose)
-        {
-            if (isModuleInserted && pickupable.GetTechType() == CannonPrefab.TechTypeID)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
-
-        private bool IsAllowedToRemove(SubRoot subRoot, Pickupable pickupable, bool verbose)
-        {
-            if (isModuleInserted && pickupable.GetTechType() == CannonPrefab.TechTypeID)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        */
+        }           
     }
 }

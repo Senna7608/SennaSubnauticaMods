@@ -3,13 +3,16 @@ using UnityEngine;
 using UWE;
 using static Common.Modules;
 using static Common.GameHelper;
+using MoreCyclopsUpgrades.Monobehaviors;
+using MoreCyclopsUpgrades.Managers;
+using Common;
 
 namespace CyclopsLaserCannonModule
 {
     public partial class CannonControl : MonoBehaviour
     {
-        public CannonControl Instance { get; private set; }
-        
+        public CannonControl Instance { get; private set; }           
+
         public PowerRelay powerRelay;
         public SubRoot subroot;
         public SubControl subcontrol;
@@ -29,22 +32,21 @@ namespace CyclopsLaserCannonModule
         private Vector3[] left_left_beamPositions = new Vector3[2];
         private GameObject targetGameobject;        
         private Vector3 targetPosition;                
-        private float idleTimer = 3f;
+        private float idleTimer = 3f;        
 
         public void Start()
         {
-            Instance = this;
+            SNLogger.Log($"[CyclopsLaserCannonModule] Start method run! instance: {GetInstanceID()}");
+            Main.onClearUpgrades += DisableCannonOnClearUpgrades;
+            Main.onUpgradeCounted += EnableCannonOnUpgradeCounted;
 
-            Main.onConfigurationChanged.AddHandler(this, new Event<string>.HandleFunction(OnConfigurationChanged));
-            Main.onFinishedUpgrades += OnFinishedUpgrades;
+            Instance = this;            
 
-            //Main.isAllowedToAdd += IsAllowedToAdd;
-            ///Main.isAllowedToRemove += IsAllowedToRemove;
-            Main.onClearUpgrades += OnClearUpgrades;           
+            Main.onConfigurationChanged.AddHandler(this, new Event<string>.HandleFunction(OnConfigurationChanged));             
 
-            This_Cyclops_Root = transform.parent.gameObject;  
-                                    
+            This_Cyclops_Root = transform.parent.gameObject;
             subroot = gameObject.GetComponentInParent<SubRoot>();
+                        
             liveMixin = gameObject.GetComponentInParent<LiveMixin>();
             subcontrol = subroot.GetComponentInParent<SubControl>();            
             powerRelay = subcontrol.powerRelay;            
@@ -59,8 +61,9 @@ namespace CyclopsLaserCannonModule
             GameObject laser_sound = Instantiate(Main.assetBundle.LoadAsset<GameObject>("turret_sound"), CannonCamPosition.transform);
             audioSource = laser_sound.GetComponent<AudioSource>();           
             
-            ShootOnlyHostile();
+            SetOnlyHostile();
             SetLaserStrength();
+            SetLaserSFXVolume();
             SetWarningMessage();                        
             
             Player.main.playerModeChanged.AddHandler(this, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
@@ -68,11 +71,13 @@ namespace CyclopsLaserCannonModule
         }        
 
         public void OnDestroy()
-        {           
+        {
+            SNLogger.Log($"[CyclopsLaserCannonModule] OnDestroy() run! {GetInstanceID()}");
+
             Player.main.playerModeChanged.RemoveHandler(this, OnPlayerModeChanged);
-            Player.main.currentSubChangedEvent.RemoveHandler(this, OnSubRootChanged);                       
-                        
-            Main.onFinishedUpgrades -= OnFinishedUpgrades;            
+            Player.main.currentSubChangedEvent.RemoveHandler(this, OnSubRootChanged);
+            Main.onClearUpgrades -= DisableCannonOnClearUpgrades;
+            Main.onUpgradeCounted -= EnableCannonOnUpgradeCounted;
 
             Destroy(cannon_base_right);
             Destroy(cannon_base_left);
