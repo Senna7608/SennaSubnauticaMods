@@ -3,8 +3,6 @@ using UnityEngine;
 using UWE;
 using static Common.Modules;
 using static Common.GameHelper;
-using MoreCyclopsUpgrades.Monobehaviors;
-using MoreCyclopsUpgrades.Managers;
 using Common;
 
 namespace CyclopsLaserCannonModule
