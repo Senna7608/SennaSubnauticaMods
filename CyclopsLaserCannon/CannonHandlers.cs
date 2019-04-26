@@ -15,32 +15,16 @@
             Button_Cannon.SetActive(value);
         }
 
-        private void EnableCannon()
+        private void EnableCannonOnUpgradeCounted(SubRoot cyclops, Equipment modules, string slot)
         {
-            isModuleInserted = true;
-            LaserCannonSetActive(true);            
+            isModuleInserted = upgradeHandler.Count > 0;
+            LaserCannonSetActive(isModuleInserted);
         }
 
-        private void DisableCannon()
+        private void DisableCannonOnClearUpgrades(SubRoot cyclops)
         {
             isModuleInserted = false;
             LaserCannonSetActive(false);            
-        }
-
-        private void OnClearUpgrades(SubRoot cyclops)
-        {
-            if (cyclops == subroot)
-            {
-                DisableCannon();
-            }
-        }
-
-        private void OnFinishedUpgrades(SubRoot cyclops)
-        {
-            if (cyclops == subroot && Main.upgradeHandler.techType == CannonPrefab.TechTypeID)
-            {                
-                EnableCannon();                              
-            }
         }
 
         private void OnConfigurationChanged(string configToChange)
@@ -75,31 +59,5 @@
                 isActive = false;
             }            
         }
-        
-        /*
-        private bool IsAllowedToAdd(SubRoot subRoot, Pickupable pickupable, bool verbose)
-        {
-            if (isModuleInserted && pickupable.GetTechType() == CannonPrefab.TechTypeID)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
-
-        private bool IsAllowedToRemove(SubRoot subRoot, Pickupable pickupable, bool verbose)
-        {
-            if (isModuleInserted && pickupable.GetTechType() == CannonPrefab.TechTypeID)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        */
     }
 }
