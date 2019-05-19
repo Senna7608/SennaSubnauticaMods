@@ -9,13 +9,15 @@ using Common;
 
 namespace QuickSlotExtender.Configuration
 {
-    internal static class Config
+    internal static class QSEConfig
     {
         public const string PROGRAM_NAME = "QuickSlotExtender";
-        internal static string VERSION = string.Empty;
+        internal static string PROGRAM_VERSION = string.Empty;
+        internal static string CONFIG_VERSION = string.Empty;
+
         internal static Dictionary<string,KeyCode> KEYBINDINGS;        
         private static readonly string[] SECTIONS = { "Hotkeys", "Settings" };
-        private static readonly string FILENAME = $"{Environment.CurrentDirectory}\\QMods\\{PROGRAM_NAME}\\config.txt";
+        private static readonly string FILENAME = $"{Environment.CurrentDirectory}/QMods/{PROGRAM_NAME}/config.txt";
         internal static Dictionary<string, string> Section_hotkeys;
         internal static Dictionary<string, string> SLOTKEYS = new Dictionary<string, string>();
         internal static List<string> SLOTKEYSLIST = new List<string>();
@@ -78,15 +80,24 @@ namespace QuickSlotExtender.Configuration
                
         internal static void LoadConfig()
         {
+            PROGRAM_VERSION = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
+
             if (!File.Exists(FILENAME))
             {
-                SNLogger.Log($"[{PROGRAM_NAME}] Warning! Configuration file is missing. Creating a new one.");
+                CreateDefaultConfigFile();
+            }
+            else
+            {
+                CONFIG_VERSION = Helper.GetKeyValue(FILENAME, PROGRAM_NAME, "Version");
 
-                VERSION = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
-                
-                Helper.CreateDefaultConfigFile(FILENAME, PROGRAM_NAME, VERSION, DEFAULT_CONFIG);
-
-                Helper.AddInfoText(FILENAME, SECTIONS[1], "TextColor possible values: " + string.Join(", ", Modules.Colors.ColorNames));
+                if (CONFIG_VERSION.Equals(PROGRAM_VERSION))
+                {
+                    SNLogger.Log($"[{PROGRAM_NAME}] Configuration version match with program version.");
+                }
+                else
+                {
+                    CreateDefaultConfigFile();
+                }
             }
 
             Section_hotkeys = Helper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[0], SECTION_HOTKEYS);
@@ -99,17 +110,34 @@ namespace QuickSlotExtender.Configuration
             SNLogger.Log($"[{PROGRAM_NAME}] Configuration loaded.");
         }
 
+        internal static void CreateDefaultConfigFile()
+        {
+            SNLogger.Log($"[{PROGRAM_NAME}] Warning! Configuration file is missing or wrong version. Creating a new one.");
+
+            try
+            {
+                Helper.CreateDefaultConfigFile(FILENAME, PROGRAM_NAME, PROGRAM_VERSION, DEFAULT_CONFIG);
+                Helper.AddInfoText(FILENAME, SECTIONS[1], "TextColor possible values: Red, Green, Blue, Yellow, White, Magenta, Cyan, Orange, Lime, Amethyst, Default");
+            }
+            catch
+            {
+                SNLogger.Log($"[{PROGRAM_NAME}] Error! Creating new configuration file has failed!");
+            }
+        }
+
         internal static void InitConfig()
         {
             SetKeyBindings();
-            InitSLOTKEYS();
+            
             SNLogger.Log($"[{PROGRAM_NAME}] Configuration initialized.");
         }
 
         internal static void WriteConfig()
         {
             if (Helper.SetAllKeyValuesInSection(FILENAME, SECTIONS[0], Section_hotkeys))
-                SNLogger.Log($"[{PROGRAM_NAME}] Configuration saved.");            
+            {
+                SNLogger.Log($"[{PROGRAM_NAME}] Configuration saved.");
+            }
         }
 
         internal static void SyncConfig()

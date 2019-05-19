@@ -13,16 +13,17 @@ namespace SlotExtender
     public static class Main
     {        
         public static HarmonyInstance hInstance;
-        public static SEConfig sEConfig;
+        public static SECommand sEConfig;
 
         internal static InputFieldListener ListenerInstance { get; set; }
         public static bool isConsoleActive;
+        public static bool isKeyBindigsUpdate = false;
 
         public static void Load()
         {
             try
             {
-                Config.LoadConfig();
+                SEConfig.LoadConfig();
                 SlotHelper.InitSlotIDs();
 
                 hInstance = HarmonyInstance.Create("Subnautica.SlotExtender.mod");
@@ -64,6 +65,7 @@ namespace SlotExtender
                     BindingFlags.SetField),
                     new HarmonyMethod(typeof(uGUI_Equipment_Awake_Patch), "Prefix"),
                     new HarmonyMethod(typeof(uGUI_Equipment_Awake_Patch), "Postfix"));                
+
                 //end manual patch 
 
                 SceneManager.sceneLoaded += new UnityAction<Scene, LoadSceneMode>(OnSceneLoaded);                
@@ -76,14 +78,14 @@ namespace SlotExtender
             //check MoreQuickSlots namespace is exists
             if (RefHelp.IsNamespaceExists("MoreQuickSlots"))
             {
-                SNLogger.Log($"[{Config.PROGRAM_NAME}] -> MoreQuickSlots namespace is exist! Trying to install a Cross-MOD patch...");
+                SNLogger.Log($"[{SEConfig.PROGRAM_NAME}] -> MoreQuickSlots namespace is exist! Trying to install a Cross-MOD patch...");
                 //if yes construct a Harmony patch
                 MQS_Patcher mqs_patcher = new MQS_Patcher(hInstance);
 
                 if (mqs_patcher.InitPatch())
-                    SNLogger.Log($"[{Config.PROGRAM_NAME}] -> MoreQuickSlots Cross-MOD patch installed!");
+                    SNLogger.Log($"[{SEConfig.PROGRAM_NAME}] -> MoreQuickSlots Cross-MOD patch installed!");
                 else
-                    SNLogger.Log($"[{Config.PROGRAM_NAME}] -> MoreQuickSlots Cross-MOD patch install failed!");
+                    SNLogger.Log($"[{SEConfig.PROGRAM_NAME}] -> MoreQuickSlots Cross-MOD patch install failed!");
             }            
         }
 
@@ -92,11 +94,11 @@ namespace SlotExtender
             if (scene.name == "StartScreen")
             {
                 //enabling game console
-                UnityHelper.EnableConsole();
+                GameHelper.EnableConsole();
                 //loading config from file
-                Config.InitConfig();
+                SEConfig.InitConfig();
                 //add console commad for configuration window
-                sEConfig = new SEConfig();
+                sEConfig = new SECommand();
                 //add an action if changed controls
                 GameInput.OnBindingsChanged += GameInput_OnBindingsChanged;                
             }
@@ -109,27 +111,32 @@ namespace SlotExtender
 
         internal static void GameInput_OnBindingsChanged()
         {
+            isKeyBindigsUpdate = true;
+
             //input changed, refreshing key bindings
-            Config.InitSLOTKEYS();            
+            SEConfig.InitSLOTKEYS();            
             
-            if (Initialize_uGUI.Instance != null)
+            if (Initialize_uGUI.Instance.IsNotNull())
             {
                 Initialize_uGUI.Instance.RefreshText();
-            }            
+            }
+
+            isKeyBindigsUpdate = false;
         }
 
         internal static InputFieldListener InitializeListener()
         {
-            if (ListenerInstance == null)
+            if (ListenerInstance.IsNull())
             {
                 ListenerInstance = UnityEngine.Object.FindObjectOfType(typeof(InputFieldListener)) as InputFieldListener;
 
-                if (ListenerInstance == null)
+                if (ListenerInstance.IsNull())
                 {
                     GameObject inputFieldListener = new GameObject("InputFieldListener");
-                    ListenerInstance = inputFieldListener.AddOrGetComponent<InputFieldListener>();                    
+                    ListenerInstance = inputFieldListener.GetOrAddComponent<InputFieldListener>();                    
                 }
             }
+
             return ListenerInstance;
         }
     }    

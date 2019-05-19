@@ -4,14 +4,13 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
 using QuickSlotExtender.Configuration;
-using Common;
 using UWE;
 
 namespace QuickSlotExtender
 {
-    public class QSHandler : MonoBehaviour
+    public class QSEHandler : MonoBehaviour
     {
-        public QSHandler Instance { get; private set; }        
+        public QSEHandler Instance { get; private set; }        
         public uGUI_QuickSlots quickSlots { get; private set; }
         public uGUI_ItemIcon[] icons { get; private set; }
         private bool islabelsAdded = false;
@@ -24,7 +23,7 @@ namespace QuickSlotExtender
 
         public void Awake()
         {
-            Instance = gameObject.GetComponent<QSHandler>();
+            Instance = gameObject.GetComponent<QSEHandler>();
             quickSlots = gameObject.GetComponent<uGUI_QuickSlots>();
 
             if (Main.isExists_SlotExdener)
@@ -41,7 +40,7 @@ namespace QuickSlotExtender
 
             try
             {
-                slotextender_SLOTKEYSLIST = Main.GetAssemblyClassPublicField("SlotExtender.Configuration.Config", "SLOTKEYSLIST", BindingFlags.Static);                               
+                slotextender_SLOTKEYSLIST = Main.GetAssemblyClassPublicField("SlotExtender.Configuration.SEConfig", "SLOTKEYSLIST", BindingFlags.Static);                               
 
                 foreach (string item in (List<string>)slotextender_SLOTKEYSLIST)
                 {
@@ -88,37 +87,37 @@ namespace QuickSlotExtender
             if (Player.main.isPiloting)
                 return;
 
-            if (Input.GetKeyDown(KeyCode.Alpha6))
+            if (Input.GetKeyDown(QSEConfig.KEYBINDINGS["Slot_6"]))
             {
                 Inventory.main.quickSlots.SlotKeyDown(5);
                 return;
             }
-            else if (Input.GetKeyDown(KeyCode.Alpha7))
+            else if (Input.GetKeyDown(QSEConfig.KEYBINDINGS["Slot_7"]))
             {
                 Inventory.main.quickSlots.SlotKeyDown(6);
                 return;
             }
-            else if (Input.GetKeyDown(KeyCode.Alpha8))
+            else if (Input.GetKeyDown(QSEConfig.KEYBINDINGS["Slot_8"]))
             {
                 Inventory.main.quickSlots.SlotKeyDown(7);
                 return;
             }
-            else if (Input.GetKeyDown(KeyCode.Alpha9))
+            else if (Input.GetKeyDown(QSEConfig.KEYBINDINGS["Slot_9"]))
             {
                 Inventory.main.quickSlots.SlotKeyDown(8);
                 return;
             }
-            else if (Input.GetKeyDown(KeyCode.Alpha0))
+            else if (Input.GetKeyDown(QSEConfig.KEYBINDINGS["Slot_10"]))
             {
                 Inventory.main.quickSlots.SlotKeyDown(9);
                 return;
             }
-            else if (Input.GetKeyDown(KeyCode.I))
+            else if (Input.GetKeyDown(QSEConfig.KEYBINDINGS["Slot_11"]))
             {
                 Inventory.main.quickSlots.SlotKeyDown(10);
                 return;
             }
-            else if (Input.GetKeyDown(KeyCode.O))
+            else if (Input.GetKeyDown(QSEConfig.KEYBINDINGS["Slot_12"]))
             {
                 Inventory.main.quickSlots.SlotKeyDown(11);
                 return;
@@ -169,19 +168,19 @@ namespace QuickSlotExtender
                     }
                     else
                     {
-                        AddTextToSlot(icons[i].transform, Config.SLOTKEYSLIST[i - 2], i);
+                        AddTextToSlot(icons[i].transform, QSEConfig.SLOTKEYSLIST[i - 2], i);
                     }
                 }
                 else
                 {
-                    AddTextToSlot(icons[i].transform, Config.SLOTKEYSLIST[i], i);
+                    AddTextToSlot(icons[i].transform, QSEConfig.SLOTKEYSLIST[i], i);
                 }
             }
 
             islabelsAdded = true;
-        }              
-       
-        //based on RandyKnapp's MoreQuickSlots Subnautica mod: "CreateNewText()" method
+        }
+
+        //based on RandyKnapp's Subnautica mod: MoreQuickSlots -> "CreateNewText()" method
         //found on GitHub:https://github.com/RandyKnapp/SubnauticaModSystem
 
         private Text AddTextToSlot(Transform parent, string buttonText, int slotNum)
@@ -195,7 +194,7 @@ namespace QuickSlotExtender
             text.enabled = true;
             text.text = buttonText;
             text.fontSize = 17;
-            text.color = Config.TEXTCOLOR;
+            text.color = QSEConfig.TEXTCOLOR;
             RectTransformExtensions.SetParams(text.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), parent);
             text.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 100);
             text.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 100);
@@ -205,7 +204,5 @@ namespace QuickSlotExtender
 
             return text;
         }
-
-
     }
 }

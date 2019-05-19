@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using static Common.GameHelper;
 
 namespace CyclopsLaserCannonModule
 {
@@ -18,7 +17,7 @@ namespace CyclopsLaserCannonModule
         private Image Crosshair;
         private Text Title;
         private Transform SNCameraRoot_Parent;
-        public Text PowerText, DepthText;       
+        public Text PowerText, DepthText, LowPowerText;       
 
         private void Start()
         {  
@@ -28,7 +27,13 @@ namespace CyclopsLaserCannonModule
             Crosshair.color = Color.red;
 
             Title = gameObject.FindChild("Title").FindChild("TitleText").GetComponent<Text>();
-            Title.text = CannonConfig.language_settings["Item_Name"];            
+            Title.text = CannonConfig.language_settings["Item_Name"];
+
+            LowPowerText.text = $"{CannonConfig.language_settings["LowPower_Title"]}\n{CannonConfig.language_settings["LowPower_Message"]}";
+            LowPowerText.color = Color.red;
+            LowPowerText.fontStyle = FontStyle.Bold;
+            LowPowerText.horizontalOverflow = HorizontalWrapMode.Overflow;
+            LowPowerText.verticalOverflow = VerticalWrapMode.Overflow;
 
             startRot = control_instance.CannonCamPosition.transform.localRotation.eulerAngles;
         }
@@ -55,8 +60,7 @@ namespace CyclopsLaserCannonModule
             SNCameraRoot.main.transform.localPosition = Vector3.zero;
             SNCameraRoot.main.transform.localRotation = Quaternion.identity;
             MainCameraControl.main.enabled = true;
-            Player.main.SetHeadVisible(false);
-            SetInteractColor(Color.white);
+            Player.main.SetHeadVisible(false);            
         }
 
         public bool HandleInput()
@@ -98,6 +102,15 @@ namespace CyclopsLaserCannonModule
             SetDirection(rotAngle.y);
             SetPowerText();
             SetDepthText();
+            
+            if(control_instance.isLowPower)
+            {
+                LowPowerText.gameObject.SetActive(true);
+            }
+            else
+            {
+                LowPowerText.gameObject.SetActive(false);
+            }            
         }       
 
         public void SetDirection(float angle)

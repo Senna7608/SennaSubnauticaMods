@@ -12,6 +12,7 @@ namespace CyclopsLaserCannonModule
         public GameObject CannonCamPosition;
         public GameObject PowerText;
         public GameObject DepthText;
+        
         public GameObject Button_Cannon;
         public GameObject Cannon_Camera;        
 
@@ -41,7 +42,7 @@ namespace CyclopsLaserCannonModule
             Button_Cannon.name = "Button_Cannon";
             Button_Cannon.transform.localPosition = new Vector3(-300f, 432f, 0);
 
-            CannonButton button_instance = Button_Cannon.AddOrGetComponent<CannonButton>();
+            CannonButton button_instance = Button_Cannon.GetOrAddComponent<CannonButton>();
             button_instance.control_instance = this;            
         }
 
@@ -61,6 +62,7 @@ namespace CyclopsLaserCannonModule
 
             Destroy(Cannon_Camera.FindChild("FrameLeft"));
             Destroy(Cannon_Camera.FindChild("FrameRight"));
+            Destroy(Cannon_Camera.FindChild("Fader"));
 
             Cannon_Camera.name = "Cannon_Camera";
 
@@ -74,6 +76,7 @@ namespace CyclopsLaserCannonModule
             GameObject PowerIconCopy = Instantiate(PowerIcon, Cannon_Camera.transform, false);
             GameObject PowerTextCopy = Instantiate(PowerText, Cannon_Camera.transform, false);
             GameObject DepthTextCopy = Instantiate(DepthText, Cannon_Camera.transform, false);
+            GameObject LowPowerText = Instantiate(DepthText, Cannon_Camera.transform, false);
 
             PowerIconCopy.transform.localPosition = new Vector3(60f, 400f, 0f);
             PowerIconCopy.transform.localScale = new Vector3(0.60f, 0.60f, 0.60f);
@@ -84,11 +87,16 @@ namespace CyclopsLaserCannonModule
             DepthTextCopy.transform.localPosition = new Vector3(-40f, 400f, 0.00f);
             DepthTextCopy.transform.localScale = new Vector3(0.30f, 0.30f, 0.30f);
 
-            camera_instance = Cannon_Camera.AddOrGetComponent<CannonCamera>();
+            LowPowerText.transform.localPosition = new Vector3(2f, 220f, 0.00f);
+            LowPowerText.transform.localScale = new Vector3(0.40f, 0.40f, 0.40f);
+
+            LowPowerText.name = "LowPowerText";
+            camera_instance = Cannon_Camera.GetOrAddComponent<CannonCamera>();
             camera_instance.control_instance = this;
 
             camera_instance.PowerText = PowerTextCopy.GetComponent<Text>();
             camera_instance.DepthText = DepthTextCopy.GetComponent<Text>();
+            camera_instance.LowPowerText = LowPowerText.GetComponent<Text>();
         }
 
 
@@ -108,7 +116,8 @@ namespace CyclopsLaserCannonModule
            
             GameObject cannon_pylon_right = Instantiate(CraftData.GetPrefabForTechType(TechType.PowerTransmitter), Vector3.zero, Quaternion.identity, cannon_base_right.transform);
 
-            GameObject laserBeam = Instantiate(cannon_pylon_right.GetComponent<PowerFX>().vfxPrefab, cannon_base_right.transform, false);
+            GameObject laserBeam = Instantiate(cannon_pylon_right.GetComponent<PowerFX>().vfxPrefab, null, false);
+            laserBeam.SetActive(false);
 
             LineRenderer lineRenderer = laserBeam.GetComponent<LineRenderer>();
             lineRenderer.startWidth = 0.2f;
@@ -171,6 +180,7 @@ namespace CyclopsLaserCannonModule
             GameObject cannon_pylon_left = Instantiate(CraftData.GetPrefabForTechType(TechType.PowerTransmitter), Vector3.zero, Quaternion.identity, cannon_base_left.transform);
 
             GameObject laserBeam = Instantiate(cannon_pylon_left.GetComponent<PowerFX>().vfxPrefab, cannon_base_left.transform, false);
+            laserBeam.SetActive(false);
 
             LineRenderer lineRenderer = laserBeam.GetComponent<LineRenderer>();
             lineRenderer.startWidth = 0.2f;

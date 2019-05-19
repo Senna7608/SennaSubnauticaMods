@@ -48,7 +48,7 @@ namespace LaserCannon
         {            
             if (techType == LaserCannon.TechTypeID && added)
             {
-                var control = __instance.gameObject.AddOrGetComponent<LaserCannon_Seamoth>();
+                var control = __instance.gameObject.GetOrAddComponent<LaserCannon_Seamoth>();
                 control.moduleSlotID = slotID;
                 Main.Instance = control;               
             }                                  

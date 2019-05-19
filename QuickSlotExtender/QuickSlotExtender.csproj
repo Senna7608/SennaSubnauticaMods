@@ -59,10 +59,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\Command.cs" />
-    <Compile Include="Configuration\Config.cs" />
-    <Compile Include="Configuration\ConfigUI.cs" />
-    <Compile Include="QSHandler.cs" />
+    <Compile Include="Configuration\QSECommand.cs" />
+    <Compile Include="Configuration\QSEConfig.cs" />
+    <Compile Include="Configuration\QSEConfigUI.cs" />
+    <Compile Include="QSEHandler.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Patchers\Patchers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -71,11 +71,6 @@
     <None Include="mod.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="config.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="..\Common\Common.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -9,9 +9,10 @@ using Common.ConfigurationParser;
 namespace CyclopsLaserCannonModule
 {
     internal static class CannonConfig
-    {
-        internal static string VERSION = string.Empty;
-        private const string PROGRAM_NAME = "CyclopsLaserCannonModule";        
+    {        
+        private const string PROGRAM_NAME = "CyclopsLaserCannonModule";
+        internal static string PROGRAM_VERSION = string.Empty;
+        internal static string CONFIG_VERSION = string.Empty;
 
         private static readonly string FILENAME = $"{Environment.CurrentDirectory}/QMods/{PROGRAM_NAME}/config.txt";
 
@@ -84,12 +85,13 @@ namespace CyclopsLaserCannonModule
             "Option_SFXvolume"
         };
 
+
         private static readonly List<ConfigData> DEFAULT_CONFIG = new List<ConfigData>
         {
             new ConfigData(SECTIONS[0], SECTION_PROGRAM[0], false.ToString()),            
             new ConfigData(SECTIONS[0], SECTION_PROGRAM[1], 50.ToString()),
             new ConfigData(SECTIONS[0], SECTION_PROGRAM[2], Languages[6]),
-            new ConfigData(SECTIONS[0], SECTION_PROGRAM[3], 100.ToString()),
+            new ConfigData(SECTIONS[0], SECTION_PROGRAM[3], 10.ToString()),
 
             new ConfigData(SECTIONS[1], SECTION_LANGUAGE[0], "Cyclops Laser Cannon"),
             new ConfigData(SECTIONS[1], SECTION_LANGUAGE[1], "This Cannon using Precursor technology. Combined with Cyclops control system."),
@@ -124,13 +126,37 @@ namespace CyclopsLaserCannonModule
 
         internal static void InitConfig()
         {
-            VERSION = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;            
+            PROGRAM_VERSION = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
 
             if (!File.Exists(FILENAME))
             {
-                SNLogger.Log($"[{PROGRAM_NAME}] Warning! Configuration file is missing. Creating a new one.");
+                CreateDefaultConfigFile();
+            }
+            else
+            {
+                CONFIG_VERSION = Helper.GetKeyValue(FILENAME, PROGRAM_NAME, "Version");
+            }
 
-                Helper.CreateDefaultConfigFile(FILENAME, PROGRAM_NAME, VERSION, DEFAULT_CONFIG);
+            if (CONFIG_VERSION.Equals(PROGRAM_VERSION))
+            {
+                SNLogger.Log($"[{PROGRAM_NAME}] Configuration version match with program version.");
+            }
+            else
+            {
+                CreateDefaultConfigFile();
+            }
+
+            ReadConfig();
+            ReadLanguageText();           
+        }
+
+        internal static void CreateDefaultConfigFile()
+        {
+            SNLogger.Log($"[{PROGRAM_NAME}] Warning! Configuration file is missing or wrong version. Creating a new one.");
+
+            try
+            {
+                Helper.CreateDefaultConfigFile(FILENAME, PROGRAM_NAME, PROGRAM_VERSION, DEFAULT_CONFIG);
 
                 var configParser = new Parser(FILENAME);
 
@@ -145,9 +171,10 @@ namespace CyclopsLaserCannonModule
                     }
                 }
             }
-
-            ReadConfig();
-            ReadLanguageText();           
+            catch
+            {
+                SNLogger.Log($"[{PROGRAM_NAME}] Error! Creating new configuration file has failed!");
+            }
         }
 
         internal static void OnLanguageChanged()

@@ -1,4 +1,5 @@
-﻿using Harmony;
+﻿using Common;
+using Harmony;
 
 namespace SlotExtender.Patchers
 {
@@ -9,7 +10,7 @@ namespace SlotExtender.Patchers
         [HarmonyPrefix]
         internal static void Prefix(DevConsole __instance, bool value)
         {
-            if (Main.ListenerInstance != null)
+            if (Main.ListenerInstance.IsNotNull())
             {
                 Main.ListenerInstance.onConsoleInputFieldActive.Update(value);
             }

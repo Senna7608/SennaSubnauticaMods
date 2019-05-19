@@ -26,7 +26,7 @@ namespace CheatManager
             try
             {               
                 HarmonyInstance.Create("Subnautica.CheatManager.mod").PatchAll(Assembly.GetExecutingAssembly());
-                UnityHelper.EnableConsole();
+                GameHelper.EnableConsole();
                 SceneManager.sceneLoaded += new UnityAction<Scene, LoadSceneMode>(OnSceneLoaded);
 
                 Config.InitConfig();                
@@ -70,16 +70,17 @@ namespace CheatManager
         */
         public static CheatManager Init()
         {
-            if (Instance == null)
+            if (Instance.IsNull())
             {
                 Instance = UnityEngine.Object.FindObjectOfType(typeof(CheatManager)) as CheatManager;
 
-                if (Instance == null)
+                if (Instance.IsNull())
                 {
-                    GameObject cheatmanager = new GameObject("CheatManager").AddComponent<CheatManager>().gameObject;                    
-                    Instance = cheatmanager.GetComponent<CheatManager>();
-                }
+                    GameObject cheatmanager = new GameObject("CheatManager");
+                    Instance = cheatmanager.GetOrAddComponent<CheatManager>();
+                }                    
             }
+
             return Instance;
         }
     }  

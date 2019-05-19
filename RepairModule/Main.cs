@@ -35,7 +35,7 @@ namespace RepairModule
         {
             if (techType == RepairModule.TechTypeID && added)
             {
-                var control = __instance.gameObject.AddOrGetComponent<RepairModuleControl>();
+                var control = __instance.gameObject.GetOrAddComponent<RepairModuleControl>();
 
                 if (__instance.GetType() == typeof(SeaMoth))
                 {

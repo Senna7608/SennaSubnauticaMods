@@ -1,6 +1,7 @@
 ﻿using Harmony;
 using Common;
 using SlotExtender.Configuration;
+using UnityEngine;
 
 namespace SlotExtender.Patchers
 {    
@@ -10,8 +11,7 @@ namespace SlotExtender.Patchers
     {
         [HarmonyPrefix]
         internal static bool Prefix(ref string[] __result)
-        {
-            //__result = SlotHelper.ExpandedSeamothSlotIDs;
+        {            
             __result = SlotHelper.SessionSeamothSlotIDs;
             return false;
         }
@@ -25,7 +25,7 @@ namespace SlotExtender.Patchers
         internal static void Postfix(SeaMoth __instance)
         {
             __instance.gameObject.AddIfNeedComponent<SlotExtender>();
-            SNLogger.Log($"[{Config.PROGRAM_NAME}] Added component to instance: {__instance.name} ID: {__instance.GetInstanceID()}");
+            SNLogger.Log($"[{SEConfig.PROGRAM_NAME}] Added component to instance: {__instance.name} ID: {__instance.GetInstanceID()}");
         }
     }
 }

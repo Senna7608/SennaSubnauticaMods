@@ -1,46 +1,75 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Common
 {
     public static class UnityHelper
     {
-        public static T AddOrGetComponent<T>(this GameObject gameObject) where T : Component
+        public static T GetOrAddComponent<T>(this GameObject gameObject) where T : Component
         {
             return gameObject.GetComponent<T>() ?? gameObject.AddComponent<T>();
         }
 
-        public static Component AddOrGetComponent(this GameObject gameObject, Component component)
+        public static Component GetOrAddComponent(this GameObject gameObject, Component component)
         {
             Type componentType = component.GetType();
             return gameObject.GetComponent(componentType) ?? gameObject.AddComponent(componentType);
         }
 
-        public static bool AddIfNeedComponent<T>(this GameObject gameObject) where T : Component
+        public static void AddIfNeedComponent<T>(this GameObject gameObject) where T : Component
         {
-            if (gameObject.GetComponent<T>() == null)
+            if (gameObject.GetComponent<T>().IsNull())
             {
-                gameObject.AddComponent<T>();
-                return true;
-            }
-            return false;
+                gameObject.AddComponent<T>();                
+            }            
         }
 
-        public static bool AddIfNeedComponent(this GameObject gameObject, Type component)
+        public static void AddIfNeedComponent(this GameObject gameObject, Type component)
         {
-            if (gameObject.GetComponent(component) == null)
+            if (gameObject.GetComponent(component).IsNull())
             {
-                gameObject.AddComponent(component);
-                return true;
-            }
-            return false;
-        }
-
-        public static void EnableConsole()
-        {
-            DevConsole.disableConsole = false;
+                gameObject.AddComponent(component);                
+            }            
         }        
+
+        public static bool IsRoot(this Transform transform)
+        {
+            return transform.parent == null ? true : false;
+        }
+
+        public static bool IsRoot(this GameObject gameObject)
+        {
+            return gameObject.transform.parent == null ? true : false;
+        }        
+
+        public static void CleanObject(this GameObject gameObject)
+        {
+            foreach (Component component in gameObject.GetComponents<Component>())
+            {
+                Type componentType = component.GetType();
+
+                if (componentType == typeof(Transform))
+                    continue;
+                if (componentType == typeof(Renderer))
+                    continue;
+                if (componentType == typeof(Mesh))
+                    continue;
+                if (componentType == typeof(Shader))
+                    continue;
+
+                UnityEngine.Object.Destroy(component);
+            }
+        }
+        
+        public static bool IsNotNull(this UnityEngine.Object ueObject)
+        {
+            return ueObject == null ? false : true;
+        }        
+
+        public static bool IsNull(this UnityEngine.Object ueObject)
+        {
+            return ueObject == null ? true : false;
+        }
     }
 }
 

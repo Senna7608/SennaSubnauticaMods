@@ -14,8 +14,7 @@ namespace CheatManager
     public class CM_Logger : MonoBehaviour
     {
         public CM_Logger Instance { get; private set; }
-        private static GUIStyle logStyle;
-        private bool setStyle = false;
+        private static GUIStyle logStyle;        
 
         private static Rect windowRect = new Rect(Screen.width - (Screen.width / Config.ASPECT), Screen.height - (Screen.height / 4), Screen.width / Config.ASPECT, Screen.height / 4);
         private static Rect buttonRect = new Rect(windowRect.x + 5, windowRect.y + windowRect.height - 27, windowRect.width - 10, 22);
@@ -28,18 +27,13 @@ namespace CheatManager
         private List<LOG> logMessage = new List<LOG>();
         private int messageCount = 0;
 
-        private bool show = false;
-        //private string inputField = string.Empty;
+        private bool show = false;        
 
 #if MAXMESSAGE_INFINITY
         private static readonly int MAXLOG = int.MaxValue;
 #else
         private readonly int MAXLOG = 100; 
-#endif
-        //private static List<string> history = new List<string>();
-
-        //private static int historyIndex = 0;
-        
+#endif         
         private struct LOG
         {
             public string message;
@@ -101,11 +95,8 @@ namespace CheatManager
             {
                 return;
             }
-
-            if (!setStyle)
-            {
-                logStyle = SNStyles.GetGuiItemStyle(GuiItemType.LABEL, GuiColor.Green, TextAnchor.MiddleLeft, wordWrap: true);                
-            }
+                        
+            logStyle = SNStyles.GetGuiItemStyle(GuiItemType.LABEL, GuiColor.Green, TextAnchor.MiddleLeft, wordWrap: true);            
 
             SNWindow.CreateWindow(windowRect, $"CheatManager Console (Press {Config.KEYBINDINGS["ToggleConsole"]} to toggle)", true, true);            
 
@@ -148,38 +139,7 @@ namespace CheatManager
             }
 #endif
             GUI.EndScrollView();
-
-            /*
-            if (Event.current.Equals(Event.KeyboardEvent("return")) && inputField != "")
-            {
-                history.Add(inputField);
-                historyIndex = history.Count;
-                Log(inputField);                
-                DevConsole.SendConsoleCommand(inputField);
-                inputField = "";
-            }
-            
-            if (Event.current.Equals(Event.KeyboardEvent("up")))
-            {
-                if (history.Count > 0 && historyIndex >= 1)
-                {
-                    historyIndex--;
-                    inputField = history[historyIndex];
-                }
-            }
-
-            if (Event.current.Equals(Event.KeyboardEvent("down")))
-            {
-                if (history.Count > 0 && historyIndex < history.Count - 1)
-                {
-                    historyIndex++;
-                    inputField = history[historyIndex];
-                }
-            }
-            
-            inputField = GUI.TextField(new Rect(scrollRect.x + 5, scrollRect.y + scrollRect.height + 5, 300, 22), inputField);
-            */
-            
+                        
             if (GUI.Button(buttonRect, "Clear Window"))
             {
                 logMessage.Clear();
@@ -273,9 +233,6 @@ namespace CheatManager
 
         public void Log(string message, LogType type, params object[] arg) => Instance.Write(message, type, arg);
 
-        public void HandleLog(string message, string stacktrace, LogType type)
-        {
-            Instance.Write(message, stacktrace, type);           
-        }
+        public void HandleLog(string message, string stacktrace, LogType type) => Instance.Write(message, stacktrace, type);
     }
 }

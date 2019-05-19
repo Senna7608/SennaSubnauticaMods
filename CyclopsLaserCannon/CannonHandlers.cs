@@ -1,9 +1,4 @@
-﻿using System;
-using Common;
-
-using UnityEngine;
-
-namespace CyclopsLaserCannonModule
+﻿namespace CyclopsLaserCannonModule
 {
     public partial class CannonControl
     {        
@@ -11,7 +6,7 @@ namespace CyclopsLaserCannonModule
         private bool isShoot = false;
         private bool isModuleInserted = false;
         public bool isPiloting = false;
-        private bool isLowPower = false;
+        public bool isLowPower = false;
 
         private void LaserCannonSetActive(bool value)
         {
@@ -24,15 +19,9 @@ namespace CyclopsLaserCannonModule
         {
             if (cyclops != subroot)
                 return;
-
-            TechType techtypeInSlot = modules.GetItemInSlot(slot).item.GetTechType();
-
-            if (techtypeInSlot == CannonPrefab.TechTypeID)
-            {
-                isModuleInserted = true;
-                LaserCannonSetActive(isModuleInserted);
-                SNLogger.Log($"[CyclopsLaserCannonModule] EnableCannonOnUpgradeCounted() triggered");
-            }            
+            
+            isModuleInserted = true;
+            LaserCannonSetActive(isModuleInserted);                      
         }
 
         private void DisableCannonOnClearUpgrades(SubRoot cyclops)
@@ -41,8 +30,7 @@ namespace CyclopsLaserCannonModule
                 return;
 
             isModuleInserted = false;
-            LaserCannonSetActive(isModuleInserted);
-            SNLogger.Log($"[CyclopsLaserCannonModule] DisableCannonOnClearUpgrades() triggered");
+            LaserCannonSetActive(isModuleInserted);            
         }        
 
         private void OnConfigurationChanged(string configToChange)

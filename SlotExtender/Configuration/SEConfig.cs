@@ -9,11 +9,13 @@ using Common;
 
 namespace SlotExtender.Configuration
 {
-    internal static class Config
+    internal static class SEConfig
     {
-        internal static string VERSION = string.Empty;
-        internal static Dictionary<string,KeyCode> KEYBINDINGS;
         public const string PROGRAM_NAME = "SlotExtender";
+        internal static string PROGRAM_VERSION = string.Empty;
+        internal static string CONFIG_VERSION = string.Empty;
+
+        internal static Dictionary<string, KeyCode> KEYBINDINGS;        
         private static readonly string[] SECTIONS = { "Hotkeys", "Settings" };
         private static readonly string FILENAME = $"{Environment.CurrentDirectory}/QMods/{PROGRAM_NAME}/config.txt";
         internal static Dictionary<string, string> Section_hotkeys;
@@ -44,7 +46,7 @@ namespace SlotExtender.Configuration
 
         private static readonly List<ConfigData> DEFAULT_CONFIG = new List<ConfigData>
         {
-            new ConfigData(SECTIONS[1], SECTION_SETTINGS[0], 6.ToString()),
+            new ConfigData(SECTIONS[1], SECTION_SETTINGS[0], 12.ToString()),
             new ConfigData(SECTIONS[1], SECTION_SETTINGS[1], COLORS.Green.ToString()),
             new ConfigData(SECTIONS[0], SECTION_HOTKEYS[0], InputHelper.GetKeyCodeAsInputName(KeyCode.T)),
             new ConfigData(SECTIONS[0], SECTION_HOTKEYS[1], InputHelper.GetKeyCodeAsInputName(KeyCode.R)),
@@ -53,9 +55,9 @@ namespace SlotExtender.Configuration
             new ConfigData(SECTIONS[0], SECTION_HOTKEYS[4], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha8)),
             new ConfigData(SECTIONS[0], SECTION_HOTKEYS[5], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha9)),
             new ConfigData(SECTIONS[0], SECTION_HOTKEYS[6], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha0)),
-            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[7], InputHelper.GetKeyCodeAsInputName(KeyCode.O)),
-            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[8], InputHelper.GetKeyCodeAsInputName(KeyCode.P))
-        };        
+            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[7], InputHelper.GetKeyCodeAsInputName(KeyCode.Slash)),
+            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[8], InputHelper.GetKeyCodeAsInputName(KeyCode.Equals))
+        };
 
         internal static void InitSLOTKEYS()
         {
@@ -80,18 +82,28 @@ namespace SlotExtender.Configuration
                 SLOTKEYSLIST.Add(kvp.Value);
             }
         }
-               
+
         internal static void LoadConfig()
         {
+            PROGRAM_VERSION = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
+
             if (!File.Exists(FILENAME))
             {
-                SNLogger.Log($"[{PROGRAM_NAME}] Warning! Configuration file is missing. Creating a new one.");
+                CreateDefaultConfigFile();
+            }
+            else
+            {
+                CONFIG_VERSION = Helper.GetKeyValue(FILENAME, PROGRAM_NAME, "Version");
 
-                VERSION = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
-                
-                Helper.CreateDefaultConfigFile(FILENAME, PROGRAM_NAME, VERSION, DEFAULT_CONFIG);
-                Helper.AddInfoText(FILENAME, SECTIONS[1], "TextColor possible values: Red, Green, Blue, Yellow, White, Magenta, Cyan, Orange, Lime, Amethyst, Default");
-            }            
+                if (CONFIG_VERSION.Equals(PROGRAM_VERSION))
+                {
+                    SNLogger.Log($"[{PROGRAM_NAME}] Configuration file version match with program version.");
+                }
+                else
+                {
+                    CreateDefaultConfigFile();
+                }
+            }
 
             Section_hotkeys = Helper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[0], SECTION_HOTKEYS);
 
@@ -102,10 +114,25 @@ namespace SlotExtender.Configuration
 
             SNLogger.Log($"[{PROGRAM_NAME}] Configuration loaded.");
         }
-        
+
+        internal static void CreateDefaultConfigFile()
+        {
+            SNLogger.Log($"[{PROGRAM_NAME}] Warning! Configuration file is missing or wrong version. Creating a new one.");
+
+            try
+            {
+                Helper.CreateDefaultConfigFile(FILENAME, PROGRAM_NAME, PROGRAM_VERSION, DEFAULT_CONFIG);
+                Helper.AddInfoText(FILENAME, SECTIONS[1], "TextColor possible values: Red, Green, Blue, Yellow, White, Magenta, Cyan, Orange, Lime, Amethyst, Default");
+            }
+            catch
+            {
+                SNLogger.Log($"[{PROGRAM_NAME}] Error! Creating new configuration file has failed!");
+            }
+        }
+
         internal static void InitConfig()
         {
-            SetKeyBindings();
+            SetKeyBindings();            
 
             SNLogger.Log($"[{PROGRAM_NAME}] Configuration initialized.");
         }

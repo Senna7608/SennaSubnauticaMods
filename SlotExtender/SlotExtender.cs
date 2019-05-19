@@ -39,7 +39,7 @@ namespace SlotExtender
             }
             else
             {
-                SNLogger.Log($"[{Config.PROGRAM_NAME}] Unknown Vehicle type error! Instance destroyed!");
+                SNLogger.Log($"[{SEConfig.PROGRAM_NAME}] Unknown Vehicle type error! Instance destroyed!");
                 Destroy(Instance);
             }            
         }
@@ -87,10 +87,13 @@ namespace SlotExtender
             if (Main.isConsoleActive)
                 return; // Input console active. Exit method.
 
+            if (Main.isKeyBindigsUpdate)
+                return; // Keybindings changed and updating in progress. Exit method.
+
             if (!IsPlayerInVehicle())
                 return; // Player not in any vehicle. Exit method.
 
-            if (Input.GetKeyDown(Config.KEYBINDINGS["Upgrade"]))
+            if (Input.GetKeyDown(SEConfig.KEYBINDINGS["Upgrade"]))
             {
                 if (PdaMain.isOpen)
                 {
@@ -103,7 +106,7 @@ namespace SlotExtender
                     return;
                 }
             }
-            else if (Input.GetKeyDown(Config.KEYBINDINGS["Storage"]))
+            else if (Input.GetKeyDown(SEConfig.KEYBINDINGS["Storage"]))
             {
                 if (ThisVehicle.GetType() != typeof(Exosuit))
                     return;
@@ -186,53 +189,42 @@ namespace SlotExtender
                     return;
                 }
             }
-            else if (Input.GetKeyDown(Config.KEYBINDINGS["Slot_6"]))
+            else if (Input.GetKeyDown(SEConfig.KEYBINDINGS["Slot_6"]))
             {
                 ThisVehicle.SendMessage("SlotKeyDown", 5);
                 return;
             }
-            else if (Input.GetKeyDown(Config.KEYBINDINGS["Slot_7"]))
+            else if (Input.GetKeyDown(SEConfig.KEYBINDINGS["Slot_7"]))
             {
                 ThisVehicle.SendMessage("SlotKeyDown", 6);
                 return;
             }
-            else if (Input.GetKeyDown(Config.KEYBINDINGS["Slot_8"]))
+            else if (Input.GetKeyDown(SEConfig.KEYBINDINGS["Slot_8"]))
             {
                 ThisVehicle.SendMessage("SlotKeyDown", 7);
                 return;
             }
-            else if (Input.GetKeyDown(Config.KEYBINDINGS["Slot_9"]))
+            else if (Input.GetKeyDown(SEConfig.KEYBINDINGS["Slot_9"]))
             {
                 ThisVehicle.SendMessage("SlotKeyDown", 8);
                 return;
             }
-            else if (Input.GetKeyDown(Config.KEYBINDINGS["Slot_10"]))
+            else if (Input.GetKeyDown(SEConfig.KEYBINDINGS["Slot_10"]))
             {
                 ThisVehicle.SendMessage("SlotKeyDown", 9);
                 return;
             }
-            else if (Input.GetKeyDown(Config.KEYBINDINGS["Slot_11"]))
+            else if (Input.GetKeyDown(SEConfig.KEYBINDINGS["Slot_11"]))
             {
                 ThisVehicle.SendMessage("SlotKeyDown", 10);
                 return;
             }
-            else if (Input.GetKeyDown(Config.KEYBINDINGS["Slot_12"]))
+            else if (Input.GetKeyDown(SEConfig.KEYBINDINGS["Slot_12"]))
             {
                 ThisVehicle.SendMessage("SlotKeyDown", 11);
                 return;
             }
         }        
-
-        internal bool IsExtendedSeamothSlot(string slotName)
-        {
-            foreach (string slot in SlotHelper.NewSeamothSlotIDs)
-            {
-                if (slotName == slot)
-                    return true;
-            }            
-
-            return false;
-        }
 
         public void OnDestroy()
         {

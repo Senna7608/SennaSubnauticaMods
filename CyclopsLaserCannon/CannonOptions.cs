@@ -15,7 +15,7 @@ namespace CyclopsLaserCannonModule
         {
             AddToggleOption(CannonConfig.SECTION_PROGRAM[0], CannonConfig.language_settings["Option_OnlyHostile"], bool.Parse(CannonConfig.program_settings["OnlyHostile"]));           
             AddSliderOption(CannonConfig.SECTION_PROGRAM[1], CannonConfig.language_settings["Option_Damage"], 1f, 100f, float.Parse(CannonConfig.program_settings["Damage"]));
-            AddSliderOption(CannonConfig.SECTION_PROGRAM[3], CannonConfig.language_settings["Option_SFXvolume"], 1f, 100f, float.Parse(CannonConfig.program_settings["SFX_Volume"]));
+            AddSliderOption(CannonConfig.SECTION_PROGRAM[3], CannonConfig.language_settings["Option_SFXvolume"], 1f, 10f, float.Parse(CannonConfig.program_settings["SFX_Volume"]));
         }
         
         private void HostileOnly(object sender, ToggleChangedEventArgs args)

@@ -33,7 +33,7 @@ namespace AncientSword
             colliderGO.transform.localScale = new Vector3(1f, 1f, 1f);
             colliderGO.transform.localRotation = Quaternion.Euler(7f, 358f, 355f);
 
-            BoxCollider boxCollider = colliderGO.AddOrGetComponent<BoxCollider>();
+            BoxCollider boxCollider = colliderGO.GetOrAddComponent<BoxCollider>();
             boxCollider.size = new Vector3(0.13f, 0.83f, 0.05f);
             boxCollider.center = new Vector3(0f, 0.12f, 0f);            
 
@@ -43,24 +43,24 @@ namespace AncientSword
             Object.DestroyImmediate(gameObject.GetComponent<CapsuleCollider>());
             Object.DestroyImmediate(gameObject.GetComponent<EntityTag>());            
 
-            gameObject.AddOrGetComponent<PrefabIdentifier>().ClassId = ClassID;
-            gameObject.AddOrGetComponent<TechTag>().type = TechType;            
-            gameObject.AddOrGetComponent<Pickupable>().isPickupable = true;            
-            gameObject.AddOrGetComponent<LargeWorldEntity>().cellLevel = LargeWorldEntity.CellLevel.Near;
+            gameObject.GetOrAddComponent<PrefabIdentifier>().ClassId = ClassID;
+            gameObject.GetOrAddComponent<TechTag>().type = TechType;            
+            gameObject.GetOrAddComponent<Pickupable>().isPickupable = true;            
+            gameObject.GetOrAddComponent<LargeWorldEntity>().cellLevel = LargeWorldEntity.CellLevel.Near;
 
             gameObject.AddIfNeedComponent<VFXSurface>();
             gameObject.AddIfNeedComponent<EcoTarget>();
             gameObject.AddIfNeedComponent<FMOD_CustomEmitter>();
             gameObject.AddIfNeedComponent<StudioEventEmitter>();
 
-            SkyApplier skyApplier = gameObject.AddOrGetComponent<SkyApplier>();
+            SkyApplier skyApplier = gameObject.GetOrAddComponent<SkyApplier>();
             skyApplier.renderers = gameObject.GetComponentsInChildren<MeshRenderer>();
             skyApplier.anchorSky = Skies.Auto;
             
-            Rigidbody rigidbody = gameObject.AddOrGetComponent<Rigidbody>();                     
+            Rigidbody rigidbody = gameObject.GetOrAddComponent<Rigidbody>();                     
             rigidbody.useGravity = false;                    
 
-            WorldForces worldForces = gameObject.AddOrGetComponent<WorldForces>();
+            WorldForces worldForces = gameObject.GetOrAddComponent<WorldForces>();
             worldForces.underwaterGravity = 1f;
             worldForces.handleGravity = true;
             worldForces.aboveWaterDrag = 1f;
@@ -68,14 +68,14 @@ namespace AncientSword
             worldForces.handleDrag = true;
             worldForces.useRigidbody = rigidbody;           
 
-            VFXFabricating vfxFabricating = modelGO.AddOrGetComponent<VFXFabricating>();
+            VFXFabricating vfxFabricating = modelGO.GetOrAddComponent<VFXFabricating>();
             vfxFabricating.localMinY = -0.4f;
             vfxFabricating.localMaxY = 0.2f; 
             vfxFabricating.posOffset = new Vector3(-0.054f, 0f, -0.06f);
             vfxFabricating.eulerOffset = new Vector3(0f, 0f, 90f);
             vfxFabricating.scaleFactor = 1f;
 
-            AncientSword component = gameObject.AddOrGetComponent<AncientSword>();
+            AncientSword component = gameObject.GetOrAddComponent<AncientSword>();
 
             Knife knife = Resources.Load<GameObject>("WorldEntities/Tools/Knife").GetComponent<Knife>();
             

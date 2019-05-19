@@ -2,7 +2,7 @@
   "Id": "CyclopsLaserCannonModule",
   "DisplayName": "CyclopsLaserCannonModule",
   "Author": "Senna",
-  "Version": "1.0",
+  "Version": "1.2",
   "Dependencies": [],
   "LoadBefore": ["MoreCyclopsUpgrades"],
   "LoadAfter": [],

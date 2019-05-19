@@ -11,22 +11,21 @@ namespace QuickSlotExtender
 {
     public static class Main
     {        
-        private static QSEConfig qsEConfig;
+        private static QSECommand qseCommand;
         public static bool isExists_SlotExdener = false;
-        public static QSHandler Instance { get; internal set; }
-        
+        public static QSEHandler Instance { get; internal set; }        
 
         public static void Load()
         {
             isExists_SlotExdener = RefHelp.IsNamespaceExists("SlotExtender");
 
             if (isExists_SlotExdener)
-                SNLogger.Log($"[{Config.PROGRAM_NAME}] SlotExtender found! trying to work together..");
+                SNLogger.Log($"[{QSEConfig.PROGRAM_NAME}] SlotExtender found! trying to work together..");
 
             try
             {
                 HarmonyInstance.Create("Subnautica.QuickSlotExtender.mod").PatchAll(Assembly.GetExecutingAssembly());
-                SNLogger.Log($"[{Config.PROGRAM_NAME}] Patches installed");
+                SNLogger.Log($"[{QSEConfig.PROGRAM_NAME}] Patches installed");
                 SceneManager.sceneLoaded += new UnityAction<Scene, LoadSceneMode>(OnSceneLoaded);
             }
             catch (Exception ex)
@@ -40,12 +39,12 @@ namespace QuickSlotExtender
             if (scene.name == "StartScreen")
             {
                 //enabling game console
-                UnityHelper.EnableConsole();
+                GameHelper.EnableConsole();
                 //loading config from file
-                Config.LoadConfig();
-                Config.InitConfig();
+                QSEConfig.LoadConfig();
+                QSEConfig.InitConfig();
                 //add console commad for configuration window
-                qsEConfig = new QSEConfig();
+                qseCommand = new QSECommand();
                 //add an action if changed controls
                 GameInput.OnBindingsChanged += GameInput_OnBindingsChanged;
             }
@@ -54,10 +53,12 @@ namespace QuickSlotExtender
         internal static void GameInput_OnBindingsChanged()
         {            
             //input changed, refreshing key bindings
-            Config.InitSLOTKEYS();
+            QSEConfig.InitSLOTKEYS();
 
-            if (Instance != null)
+            if (Instance.IsNotNull())
+            {
                 Instance.ReadSlotExtenderConfig();
+            }
         }
 
         public static object GetAssemblyClassPublicField(string className, string fieldName, BindingFlags bindingFlags = BindingFlags.Default)

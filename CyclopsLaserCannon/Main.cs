@@ -23,7 +23,7 @@ namespace CyclopsLaserCannonModule
 
         public static Event<string> onConfigurationChanged = new Event<string>();
 
-        //MCU upgrade handler       
+        //MCU upgrade events      
         public static UpgradeEvent onClearUpgrades;
         public static UpgradeEventSlotBound onUpgradeCounted;
 

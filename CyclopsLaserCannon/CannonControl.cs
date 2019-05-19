@@ -4,6 +4,7 @@ using UWE;
 using static Common.Modules;
 using static Common.GameHelper;
 using Common;
+using System.Collections;
 
 namespace CyclopsLaserCannonModule
 {
@@ -14,8 +15,7 @@ namespace CyclopsLaserCannonModule
         public PowerRelay powerRelay;
         public SubRoot subroot;
         public SubControl subcontrol;
-        public CannonCamera camera_instance;
-        public LiveMixin liveMixin;
+        public CannonCamera camera_instance;        
 
         private AudioSource audioSource;
         private readonly TechType laserCannon = CannonPrefab.TechTypeID;        
@@ -29,12 +29,10 @@ namespace CyclopsLaserCannonModule
         private Vector3[] left_right_beamPositions = new Vector3[2];
         private Vector3[] left_left_beamPositions = new Vector3[2];
         private GameObject targetGameobject;        
-        private Vector3 targetPosition;                
-        private float idleTimer = 3f;        
+        private Vector3 targetPosition;               
 
         public void Start()
-        {
-            SNLogger.Log($"[CyclopsLaserCannonModule] Start method run! instance: {GetInstanceID()}");
+        {            
             Main.onClearUpgrades += DisableCannonOnClearUpgrades;
             Main.onUpgradeCounted += EnableCannonOnUpgradeCounted;
 
@@ -43,9 +41,7 @@ namespace CyclopsLaserCannonModule
             Main.onConfigurationChanged.AddHandler(this, new Event<string>.HandleFunction(OnConfigurationChanged));             
 
             This_Cyclops_Root = transform.parent.gameObject;
-            subroot = gameObject.GetComponentInParent<SubRoot>();
-                        
-            liveMixin = gameObject.GetComponentInParent<LiveMixin>();
+            subroot = gameObject.GetComponentInParent<SubRoot>();            
             subcontrol = subroot.GetComponentInParent<SubControl>();            
             powerRelay = subcontrol.powerRelay;            
 
@@ -70,19 +66,17 @@ namespace CyclopsLaserCannonModule
 
         public void OnDestroy()
         {
-            SNLogger.Log($"[CyclopsLaserCannonModule] OnDestroy() run! {GetInstanceID()}");
-
             Player.main.playerModeChanged.RemoveHandler(this, OnPlayerModeChanged);
             Player.main.currentSubChangedEvent.RemoveHandler(this, OnSubRootChanged);
+
             Main.onClearUpgrades -= DisableCannonOnClearUpgrades;
             Main.onUpgradeCounted -= EnableCannonOnUpgradeCounted;
 
             Destroy(cannon_base_right);
-            Destroy(cannon_base_left);
-            Destroy(camera_instance);
+            Destroy(cannon_base_left);            
             Destroy(Button_Cannon);
-            Destroy(CannonCamPosition);
-            SetInteractColor(Colors.White);
+            Destroy(Cannon_Camera);
+            Destroy(CannonCamPosition);            
             Destroy(Instance);
         }        
 
@@ -179,32 +173,27 @@ namespace CyclopsLaserCannonModule
             else
                 CalculateBeamVectors(maxLaserDistance);
         }
+
         
+
         public void Update()
         {
             if (powerRelay.GetPower() < powerRelay.GetMaxPower() * 0.2f)
-            {
-                if (idleTimer > 0f)
-                {
-                    isShoot = false;
-                    isLowPower = true;
-                    idleTimer = Mathf.Max(0f, idleTimer - Time.deltaTime);
-                    SetInteractColor(Color.red);
-                    HandReticle.main.SetInteractText(lowPower_title, lowPower_message, false, false, HandReticle.Hand.None);                    
-                }                
+            {               
+                isLowPower = true;
+                isShoot = false;
             }
             else
             {
                 isLowPower = false;
-                idleTimer = 3;
             }
 
             if (isModuleInserted && isActive && !isLowPower && isPiloting && camera_instance.usingCamera)
             {
                 if (GameInput.GetButtonDown(GameInput.Button.LeftHand) && Time.time > nextFire)
-                {
+                {                    
                     nextFire = Time.time + fireRate;
-                    isShoot = true;                    
+                    isShoot = true;
                     audioSource.Play();
                     powerRelay.ConsumeEnergy(powerConsumption, out float num);                    
                 }
@@ -213,6 +202,14 @@ namespace CyclopsLaserCannonModule
                     isShoot = false;                    
                 }                
             }
+        }
+
+        private void SetLaserState(bool value)
+        {
+            cannon_right_tube_right.SetActive(value);
+            cannon_right_tube_left.SetActive(value);
+            cannon_left_tube_right.SetActive(value);
+            cannon_left_tube_left.SetActive(value);
         }
 
         public void LateUpdate()
@@ -231,19 +228,13 @@ namespace CyclopsLaserCannonModule
                     right_right.SetPositions(right_right_beamPositions);
                     right_left.SetPositions(right_left_beamPositions);
                     left_right.SetPositions(left_right_beamPositions);
-                    left_left.SetPositions(left_left_beamPositions);                   
+                    left_left.SetPositions(left_left_beamPositions);
 
-                    cannon_right_tube_right.SetActive(true);
-                    cannon_right_tube_left.SetActive(true);
-                    cannon_left_tube_right.SetActive(true);
-                    cannon_left_tube_left.SetActive(true);                    
+                    SetLaserState(true);               
                 }
                 else
-                {                    
-                    cannon_right_tube_right.SetActive(false);
-                    cannon_right_tube_left.SetActive(false);
-                    cannon_left_tube_right.SetActive(false);
-                    cannon_left_tube_left.SetActive(false);
+                {
+                    SetLaserState(false);
                 }
             }            
         }        

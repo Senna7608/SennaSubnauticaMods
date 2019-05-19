@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B85E6D34-ABED-4E6F-9A66-D84F423225BE}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>RuntimeHelper</RootNamespace>
+    <AssemblyName>RuntimeHelper</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\QMods\RuntimeHelper\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\QMods\RuntimeHelper\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\Subnautica_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp-firstpass">
+      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\Subnautica_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SMLHelper">
+      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\QMods\Modding Helper\SMLHelper.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="UnityEngine">
+      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\Subnautica_Data\Managed\UnityEngine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\Subnautica_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Command\RuntimeHelperCommand.cs" />
+    <Compile Include="Components\ComponentHelper.cs" />
+    <Compile Include="Components\TransformsHelper.cs" />
+    <Compile Include="Configuration\RuntimeHelper_Config.cs" />
+    <Compile Include="EditModeStrings.cs" />
+    <Compile Include="FileHelper\OpenFileName.cs" />
+    <Compile Include="FileHelper\UnityFileDialog.cs" />
+    <Compile Include="GUI\ComponentWindow.cs" />
+    <Compile Include="GUI\EditWindow.cs" />
+    <Compile Include="GUI\GuiHelper.cs" />
+    <Compile Include="GUI\ObjectWindow.cs" />
+    <Compile Include="GUI\RendererWindow.cs" />
+    <Compile Include="Handlers.cs" />
+    <Compile Include="GUI\OutputWindow.cs" />
+    <Compile Include="Logger\RHLogger.cs" />
+    <Compile Include="Main.cs" />
+    <Compile Include="Objects\ObjectHelper.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Renderers\RendererHelper.cs" />
+    <Compile Include="Renderers\ShaderHelper.cs" />
+    <Compile Include="RuntimeHelper.cs" />
+    <Compile Include="SceneHelper\SceneHelper.cs" />
+    <Compile Include="Structs.cs" />
+    <Compile Include="TechTypeHelper.cs" />
+    <Compile Include="Visuals\ColliderHelper.cs" />
+    <Compile Include="Visuals\ContainerHelper.cs" />
+    <Compile Include="Visuals\DrawColliderBounds.cs" />
+    <Compile Include="Visuals\DrawObjectBounds.cs" />
+    <Compile Include="Visuals\PointerHelper.cs" />
+    <Compile Include="Visuals\LineHelper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="mod.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Assets\" />
+  </ItemGroup>
+  <Import Project="..\Common\Common.projitems" Label="Shared" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

@@ -13,7 +13,7 @@ namespace CheatManager.Configuration
     {
         internal static string VERSION = string.Empty;        
         public const string PROGRAM_NAME = "CheatManager";
-        private static readonly string FILENAME = $"{Environment.CurrentDirectory}\\QMods\\{PROGRAM_NAME}\\config.txt";
+        private static readonly string FILENAME = $"{Environment.CurrentDirectory}/QMods/{PROGRAM_NAME}/config.txt";
         internal static int overPowerMultiplier;
         internal const float ASPECT = 4.8f;
         internal static int hungerAndThirstInterval;

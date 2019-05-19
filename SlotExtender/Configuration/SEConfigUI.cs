@@ -6,9 +6,9 @@ using Common.GUIHelper;
 
 namespace SlotExtender.Configuration
 {
-    internal class ConfigUI : MonoBehaviour
+    internal class SEConfigUI : MonoBehaviour
     {
-        internal ConfigUI Instance { get; private set; }
+        internal SEConfigUI Instance { get; private set; }
         
         private Rect windowRect;
         private List<Rect> buttonsRect;
@@ -36,7 +36,7 @@ namespace SlotExtender.Configuration
         };
 
         private static bool isVisible = false;
-        private static int dropdownSelection = Config.MAXSLOTS - 5;
+        private static int dropdownSelection = SEConfig.MAXSLOTS - 5;
 
 
         public void Awake()
@@ -48,7 +48,7 @@ namespace SlotExtender.Configuration
        
         private void InitItems()
         {
-            foreach (KeyValuePair<string, string> key in Config.Section_hotkeys)
+            foreach (KeyValuePair<string, string> key in SEConfig.Section_hotkeys)
             {
                 hotkeyLabels.Add(key.Key);
                 hotkeyButtons.Add(key.Value);
@@ -144,7 +144,7 @@ namespace SlotExtender.Configuration
 
             if (keyCount > 0 && isFirst != selected)
             {
-                SNLogger.Log($"[{Config.PROGRAM_NAME}] Warning! Duplicate keybind found, swapping keys...");
+                SNLogger.Log($"[{SEConfig.PROGRAM_NAME}] Warning! Duplicate keybind found, swapping keys...");
                 hotkeyButtons[isFirst] = hotkeyButtons[selected];
                 buttonInfo[isFirst].Name = hotkeyButtons[selected];
             }
@@ -168,34 +168,33 @@ namespace SlotExtender.Configuration
         {            
             for (int i = 0; i < hotkeyButtons.Count; i++)
             {
-                Config.Section_hotkeys[hotkeyLabels[i]] = hotkeyButtons[i];
+                SEConfig.Section_hotkeys[hotkeyLabels[i]] = hotkeyButtons[i];
             }
 
             int.TryParse(dropDownContent[dropdownSelection].text, out int result);
 
-            if (result != Config.MAXSLOTS)
+            if (result != SEConfig.MAXSLOTS)
             {
                 ErrorMessage.AddMessage("SlotExtender Warning!\nMaxSlots changed!\nPlease restart the game!");
-                Config.MAXSLOTS = result;
+                SEConfig.MAXSLOTS = result;
             }
 
-            Config.WriteConfig();
-            Config.SetKeyBindings();
+            SEConfig.WriteConfig();
+            SEConfig.SetKeyBindings();
             Main.GameInput_OnBindingsChanged();
             Destroy(Instance);
         }
 
-        public ConfigUI()
+        public SEConfigUI()
         {
-            if (Instance == null)
+            if (Instance.IsNull())
             {
-                Instance = FindObjectOfType(typeof(ConfigUI)) as ConfigUI;
+                Instance = FindObjectOfType(typeof(SEConfigUI)) as SEConfigUI;
 
-                if (Instance == null)
+                if (Instance.IsNull())
                 {
-                    GameObject go = new GameObject().AddComponent<ConfigUI>().gameObject;
-                    go.name = "SlotExtender.ConfigUI";
-                    Instance = go.GetComponent<ConfigUI>();
+                    GameObject se_configUI = new GameObject("SEConfigUI");
+                    Instance = se_configUI.GetOrAddComponent<SEConfigUI>();                    
                 }
             }
             else

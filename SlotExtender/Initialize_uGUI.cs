@@ -10,7 +10,8 @@ namespace SlotExtender
     {
         internal static Initialize_uGUI Instance { get; private set; }
 
-        private Dictionary<string, Text> SlotText = new Dictionary<string, Text>();
+        private Dictionary<string, Text> Seamoth_SlotText = new Dictionary<string, Text>();
+        private Dictionary<string, Text> Exosuit_SlotText = new Dictionary<string, Text>();
 
         private bool isPatched = false;
         private uGUI_EquipmentSlot temp_slot;
@@ -46,7 +47,8 @@ namespace SlotExtender
 
         public void Awake()
         {
-            Instance = gameObject.GetComponent<Initialize_uGUI>();            
+            Instance = gameObject.GetComponent<Initialize_uGUI>();
+            RefreshText();
         }
 
         public void OnDestroy()
@@ -90,20 +92,35 @@ namespace SlotExtender
                 }
 
                 foreach (KeyValuePair<string, uGUI_EquipmentSlot> item in allSlots)
-                {                    
-                    if (item.Value.name.StartsWith("SeamothModule"))
+                {
+                    try
                     {
-                        int.TryParse(item.Key.Substring(13), out int slotNum);
-                        item.Value.rectTransform.anchoredPosition = slotPos[slotNum - 1];                        
-                        Text text = AddTextToSlotIcon(item.Value.transform, Config.SLOTKEYS[$"Slot{slotNum}"], slotNum);
-                        SlotText.Add(text.gameObject.name, text);
+                        if (item.Value.name.StartsWith("SeamothModule"))
+                        {
+                            int.TryParse(item.Key.Substring(13), out int slotNum);
+                            item.Value.rectTransform.anchoredPosition = slotPos[slotNum - 1];
+                            Text text = AddTextToSlotIcon(item.Value.transform, SEConfig.SLOTKEYS[$"Slot{slotNum}"], slotNum);
+                            Seamoth_SlotText.Add(text.gameObject.name, text);
+                        }
                     }
-                    
-                    if (item.Value.name.StartsWith("ExosuitModule"))
+                    catch
                     {
-                        int.TryParse(item.Key.Substring(13), out int slotNum);
-                        item.Value.rectTransform.anchoredPosition = slotPos[slotNum - 1];
-                        AddTextToSlotIcon(item.Value.transform, Config.SLOTKEYS[$"Slot{slotNum}"], slotNum);                     
+                        SNLogger.Log($"[{SEConfig.PROGRAM_NAME}] Seamoth: Add text to slot error!");
+                    }
+
+                    try
+                    {
+                        if (item.Value.name.StartsWith("ExosuitModule"))
+                        {
+                            int.TryParse(item.Key.Substring(13), out int slotNum);
+                            item.Value.rectTransform.anchoredPosition = slotPos[slotNum - 1];
+                            Text text = AddTextToSlotIcon(item.Value.transform, SEConfig.SLOTKEYS[$"Slot{slotNum}"], slotNum);
+                            Exosuit_SlotText.Add(text.gameObject.name, text);
+                        }
+                    }
+                    catch
+                    {
+                        SNLogger.Log($"[{SEConfig.PROGRAM_NAME}] Exosuit: Add text to slot error!");
                     }
 
                     if (item.Value.name == "ExosuitArmLeft")
@@ -117,7 +134,7 @@ namespace SlotExtender
                     }                    
                 }
 
-                SNLogger.Log($"[{Config.PROGRAM_NAME}] uGUI_EquipmentSlots Patched!");
+                SNLogger.Log($"[{SEConfig.PROGRAM_NAME}] uGUI_EquipmentSlots Patched!");
                 isPatched = true;
             }
         }
@@ -125,13 +142,21 @@ namespace SlotExtender
         
         internal void RefreshText()
         {
-            foreach (KeyValuePair<string, string> kvp in Config.SLOTKEYS)
+            foreach (KeyValuePair<string, string> kvp in SEConfig.SLOTKEYS)
             {
-                SlotText[kvp.Key].text = kvp.Value;
+                try
+                {
+                    Seamoth_SlotText[kvp.Key].text = kvp.Value;
+                    Exosuit_SlotText[kvp.Key].text = kvp.Value;
+                }
+                catch
+                {                    
+                    return;
+                }                
             }
-        }        
+        }
 
-        //based on RandyKnapp's MoreQuickSlots Subnautica mod: "CreateNewText()" method
+        //based on RandyKnapp's Subnautica mod: MoreQuickSlots -> "CreateNewText()" method
         //found on GitHub:https://github.com/RandyKnapp/SubnauticaModSystem
 
         private Text AddTextToSlotIcon(Transform parent, string slotKey, int slotNum)
@@ -145,7 +170,7 @@ namespace SlotExtender
             text.enabled = true;
             text.text = slotKey;
             text.fontSize = 17;
-            text.color = Config.TEXTCOLOR;
+            text.color = SEConfig.TEXTCOLOR;
             RectTransformExtensions.SetParams(text.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), parent);
             text.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 100);
             text.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 100);            

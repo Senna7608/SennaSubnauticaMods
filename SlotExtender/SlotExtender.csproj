@@ -77,9 +77,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\Command.cs" />
-    <Compile Include="Configuration\Config.cs" />
-    <Compile Include="Configuration\ConfigUI.cs" />
+    <Compile Include="Configuration\SECommand.cs" />
+    <Compile Include="Configuration\SEConfig.cs" />
+    <Compile Include="Configuration\SEConfigUI.cs" />
     <Compile Include="Initialize_uGUI.cs" />
     <Compile Include="InputFieldListener.cs" />
     <Compile Include="Patchers\DevConsole_Patcher.cs" />
@@ -97,11 +97,6 @@
     <None Include="mod.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="config.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="..\Common\Common.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

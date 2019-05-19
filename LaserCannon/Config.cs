@@ -10,10 +10,12 @@ namespace LaserCannon
 {
     internal static class Config
     {
-        internal static string VERSION = string.Empty;
+        internal static string PROGRAM_VERSION = string.Empty;
+        internal static string FILE_VERSION = string.Empty;
+
         private const string PROGRAM_NAME = "LaserCannon";        
 
-        internal static readonly string FILENAME = Environment.CurrentDirectory + "/QMods/LaserCannon/config.txt";
+        internal static readonly string FILENAME = $"{Environment.CurrentDirectory}/QMods/{PROGRAM_NAME}/config.txt";
 
         internal static Dictionary<string, string> program_settings;
         internal static Dictionary<string, string> language_settings;
@@ -166,13 +168,38 @@ namespace LaserCannon
 
         internal static void InitConfig()
         {
-            VERSION = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;            
+            PROGRAM_VERSION = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
 
             if (!File.Exists(FILENAME))
             {
-                SNLogger.Log($"[{Config.PROGRAM_NAME}] Warning! Configuration file is missing. Creating a new one.");
+                CreateDefaultConfigFile();
+            }
+            else
+            {
+               FILE_VERSION  = Helper.GetKeyValue(FILENAME, PROGRAM_NAME, "Version");
+            }
 
-                Helper.CreateDefaultConfigFile(FILENAME, PROGRAM_NAME, VERSION, DEFAULT_CONFIG);
+            if (FILE_VERSION.Equals(PROGRAM_VERSION))
+            {
+                SNLogger.Log($"[{PROGRAM_NAME}] Configuration file version match with program version.");
+            }
+            else
+            {
+                CreateDefaultConfigFile();
+            }
+
+            ReadConfig();
+            ReadLanguageText();
+            InitColorNames();
+        }
+
+        internal static void CreateDefaultConfigFile()
+        {
+            SNLogger.Log($"[{PROGRAM_NAME}] Warning! Configuration file is missing or wrong version. Creating a new one.");
+
+            try
+            {
+                Helper.CreateDefaultConfigFile(FILENAME, PROGRAM_NAME, PROGRAM_VERSION, DEFAULT_CONFIG);
 
                 var configParser = new Parser(FILENAME);
 
@@ -187,10 +214,10 @@ namespace LaserCannon
                     }
                 }
             }
-
-            ReadConfig();
-            ReadLanguageText();
-            InitColorNames();
+            catch
+            {
+                SNLogger.Log($"[{PROGRAM_NAME}] Error! Creating new configuration file has failed!");
+            }
         }
 
         internal static void OnLanguageChanged()

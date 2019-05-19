@@ -94,7 +94,7 @@ namespace Common
                 }
             }
             
-            return UnityEngine.Object.Instantiate(prefab);
+            return prefab;
         }        
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using Harmony;
+using UnityEngine;
 
 namespace SlotExtender.Patchers
 {
@@ -22,17 +23,28 @@ namespace SlotExtender.Patchers
         [HarmonyPrefix]
         internal static bool Prefix(Equipment __instance, string slot, Pickupable pickupable, bool verbose, ref bool __result)
         {
-            bool notAllowedInExtendedSlots = pickupable.GetTechType() == TechType.VehicleStorageModule ||
-                                             pickupable.GetTechType() == TechType.SeamothTorpedoModule;
+            TechType techTypeInSlot = pickupable.GetTechType();
 
-            if (notAllowedInExtendedSlots && __instance.owner.GetComponent<SlotExtender>().Instance.IsExtendedSeamothSlot(slot))
+            if (SlotHelper.IsExtendedSeamothSlot(slot))
             {
-                // Do not allow storage and torpedo modules in extended slots in Seamoth
-                __result = false;
-                ErrorMessage.AddMessage("Slot Extender:\nStorage module not allowed for this slot!");
-                return false;
-            }            
-            else if (pickupable.GetTechType() == TechType.VehicleStorageModule && __instance.owner.name.Equals("Exosuit(Clone)"))
+                switch (techTypeInSlot)
+                {
+                    case TechType.VehicleStorageModule:
+                        // Do not allow storage modules in extended slots in Seamoth
+                        __result = false;
+                        ErrorMessage.AddMessage("Slot Extender:\nStorage module not allowed for this slot!");
+                        return false;
+                        
+                    case TechType.SeamothTorpedoModule:
+                        // Do not allow torpedo modules in extended slots in Seamoth
+                        __result = false;
+                        ErrorMessage.AddMessage("Slot Extender:\nTorpedo module not allowed for this slot!");
+                        return false;
+                }
+
+                return true;
+            }                      
+            else if (techTypeInSlot == TechType.VehicleStorageModule && __instance.owner.name.Equals("Exosuit(Clone)"))
             {                
                 // Do not allow more than four storage modules in Exosuit slots                               
                 if (__instance.GetCount(TechType.VehicleStorageModule) >= 4)
@@ -42,6 +54,7 @@ namespace SlotExtender.Patchers
                     return false;
                 }
             }
+
             return true;            
         }        
     }   

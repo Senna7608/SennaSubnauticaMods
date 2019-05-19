@@ -1,8 +1,8 @@
 ﻿{
   "Id": "SlotExtender",
   "DisplayName": "SlotExtender",
-  "Author": "Senna7608, PrimeSonic",
-  "Version": "2.5",
+  "Author": "Senna, PrimeSonic",
+  "Version": "2.5.1",
   "Dependencies": [],
   "LoadBefore": [],
   "LoadAfter": [],

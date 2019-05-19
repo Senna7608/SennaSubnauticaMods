@@ -40,11 +40,11 @@ namespace QuickSlotExtender.Patchers
                         
             __instance.GetType().GetField("slotNames", BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.GetField | BindingFlags.SetField).SetValue(__instance, ExpandedQuickSlotNames);
             
-            slotCount = Config.MAXSLOTS;           
+            slotCount = QSEConfig.MAXSLOTS;           
 
             isPatched = true;
 
-            SNLogger.Log($"[{Config.PROGRAM_NAME}] QuickSlots Constructor patched!");
+            SNLogger.Log($"[{QSEConfig.PROGRAM_NAME}] QuickSlots Constructor patched!");
         }
     }
 
@@ -56,7 +56,7 @@ namespace QuickSlotExtender.Patchers
         [HarmonyPostfix]
         internal static void Postfix(uGUI_QuickSlots __instance)
         {
-            Main.Instance = __instance.gameObject.AddOrGetComponent<QSHandler>();
+            Main.Instance = __instance.gameObject.GetOrAddComponent<QSEHandler>();
             Main.Instance.AddQuickSlotText(__instance);
         }
     }    

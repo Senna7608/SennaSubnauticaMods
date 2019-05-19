@@ -44,7 +44,7 @@ namespace SlotExtender.Patchers
         {
             List<string> slotkeys = new List<string>();
             
-            foreach (KeyValuePair<string, string> kvp in Config.SLOTKEYS)
+            foreach (KeyValuePair<string, string> kvp in SEConfig.SLOTKEYS)
             {
                 slotkeys.Add(kvp.Value);
             }

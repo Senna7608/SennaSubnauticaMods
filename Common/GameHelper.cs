@@ -6,6 +6,11 @@ namespace Common
 {
     public static class GameHelper
     {
+        public static void EnableConsole()
+        {
+            DevConsole.disableConsole = false;
+        }
+
         public static void ExecuteCommand(object message, object command)
         {
             if (message != null)
@@ -109,26 +114,7 @@ namespace Common
                 return Name;
             }
         }
-
-        public static void CleanObject(this GameObject gameObject)
-        {
-            foreach (Component component in gameObject.GetComponents<Component>())
-            {
-                Type componentType = component.GetType();
-
-                if (componentType == typeof(Transform))
-                    continue;
-                if (componentType == typeof(Renderer))
-                    continue;
-                if (componentType == typeof(Mesh))
-                    continue;
-                if (componentType == typeof(Shader))
-                    continue;                
-
-                UnityEngine.Object.Destroy(component);
-            }
-        }
-
+        
         public static Material GetResourceMaterial(string gameObjectPath, string meshName, int materialIndex)
         {
             GameObject gameObject = Resources.Load<GameObject>(gameObjectPath);            
@@ -214,7 +200,7 @@ namespace Common
             return null;
         }
 
-        public static Texture2D CreateTextureFromNonReadableShaderTexture(Texture2D texture)
+        private static Texture2D CreateTextureFromNonReadableShaderTexture(Texture2D texture)
         {            
             RenderTexture tmp = RenderTexture.GetTemporary(texture.width, texture.height, 32, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear);                        
             

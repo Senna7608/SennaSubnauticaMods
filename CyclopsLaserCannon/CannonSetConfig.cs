@@ -31,11 +31,8 @@ namespace CyclopsLaserCannonModule
         private void SetLaserSFXVolume()
         {
             float.TryParse(CannonConfig.program_settings["SFX_Volume"], out float volume);
-            volume = volume / 100f;
-
-            Debug.Log($"[CyclopsLaserCannonModule] Volume before: {audioSource.volume}");
-            audioSource.volume = Mathf.Clamp(volume, 0.05f, 1f);
-            Debug.Log($"[CyclopsLaserCannonModule] Volume after: {audioSource.volume}");
+            volume = volume / 100f;            
+            audioSource.volume = Mathf.Clamp(volume, 0.01f, 0.1f);            
         }
 
     }

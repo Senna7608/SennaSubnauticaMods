@@ -81,8 +81,7 @@ namespace Common.GUIHelper
         public TextAnchor TextAnchor { get; set; }
         public GuiItemState State { get; set; }
         public Event<object> OnChangedEvent { get; set; }
-
-}
+    }
 
     public static class SNGUI
     {
@@ -104,7 +103,7 @@ namespace Common.GUIHelper
                     State = state,
                     FontStyle = fontStyle,
                     TextAnchor = textAnchor,
-                    OnChangedEvent = onChangedEvent
+                    OnChangedEvent = onChangedEvent        
                 });
             }
 

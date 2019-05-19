@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using SlotExtender.Configuration;
 using Common;
+using UnityEngine;
 
 namespace SlotExtender
 {
@@ -52,7 +53,7 @@ namespace SlotExtender
         {
             get
             {
-                for (int i = 4; i < Config.MAXSLOTS; i++)
+                for (int i = 4; i < SEConfig.MAXSLOTS; i++)
                 {
                     yield return ExpandedSeamothSlotIDs[i];
                 }
@@ -63,7 +64,7 @@ namespace SlotExtender
         {
             get
             {
-                for (int i = 6; i < Config.MAXSLOTS + 2; i++)
+                for (int i = 6; i < SEConfig.MAXSLOTS + 2; i++)
                 {
                     yield return ExpandedExosuitSlotIDs[i];
                 }
@@ -72,15 +73,15 @@ namespace SlotExtender
         
         internal static void InitSlotIDs()
         {
-            SessionSeamothSlotIDs = (string[])Array.CreateInstance(typeof(string), Config.MAXSLOTS);
-            SessionExosuitSlotIDs = (string[])Array.CreateInstance(typeof(string), Config.MAXSLOTS + 2);
+            SessionSeamothSlotIDs = (string[])Array.CreateInstance(typeof(string), SEConfig.MAXSLOTS);
+            SessionExosuitSlotIDs = (string[])Array.CreateInstance(typeof(string), SEConfig.MAXSLOTS + 2);
 
-            for (int i = 0; i < Config.MAXSLOTS; i++)
+            for (int i = 0; i < SEConfig.MAXSLOTS; i++)
             {
                 SessionSeamothSlotIDs[i] = ExpandedSeamothSlotIDs[i];               
             }
 
-            for (int i = 0; i < Config.MAXSLOTS + 2; i++)
+            for (int i = 0; i < SEConfig.MAXSLOTS + 2; i++)
             {                
                 SessionExosuitSlotIDs[i] = ExpandedExosuitSlotIDs[i];
             }
@@ -91,14 +92,29 @@ namespace SlotExtender
             if (!SlotMappingExpanded)
             {
                 foreach (string slotID in NewSeamothSlotIDs)
-                    Equipment.slotMapping.Add(slotID, EquipmentType.SeamothModule);
+                {
+                    Equipment.slotMapping.Add(slotID, EquipmentType.SeamothModule);                    
+                }
 
                 foreach (string slotID in NewExosuitSlotIDs)
-                    Equipment.slotMapping.Add(slotID, EquipmentType.ExosuitModule);
+                {
+                    Equipment.slotMapping.Add(slotID, EquipmentType.ExosuitModule);                    
+                }
 
-                SNLogger.Log($"[{Config.PROGRAM_NAME}] Equipment slot mapping Patched!");
+                SNLogger.Log($"[{SEConfig.PROGRAM_NAME}] Equipment slot mapping Patched!");
                 SlotMappingExpanded = true;
             }
+        }
+
+        internal static bool IsExtendedSeamothSlot(string slotName)
+        {
+            foreach (string slot in NewSeamothSlotIDs)
+            {
+                if (slotName.Equals(slot))
+                    return true;
+            }
+
+            return false;
         }
     }
 }

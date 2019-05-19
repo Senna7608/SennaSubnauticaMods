@@ -23,7 +23,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)GUIHelper\SNGUI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GUIHelper\SNWindow.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)InputHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ResourceDB.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SNLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modules.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RefHelp.cs" />

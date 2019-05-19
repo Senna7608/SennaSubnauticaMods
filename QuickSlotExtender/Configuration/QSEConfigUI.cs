@@ -6,9 +6,9 @@ using Common;
 
 namespace QuickSlotExtender.Configuration
 {
-    internal class ConfigUI : MonoBehaviour
+    internal class QSEConfigUI : MonoBehaviour
     {
-        internal ConfigUI Instance { get; private set; }
+        internal QSEConfigUI Instance { get; private set; }
 
         private Rect windowRect, drawrect;
         List<Rect> buttonRects;
@@ -32,7 +32,7 @@ namespace QuickSlotExtender.Configuration
        
         private void InitItems()
         {
-            foreach (KeyValuePair<string, string> key in Config.Section_hotkeys)
+            foreach (KeyValuePair<string, string> key in QSEConfig.Section_hotkeys)
             {
                 labels.Add(key.Key);
                 buttons.Add(key.Value);
@@ -112,7 +112,7 @@ namespace QuickSlotExtender.Configuration
 
             if (keyCount > 0 && isFirst != selected)
             {
-                SNLogger.Log($"[{Config.PROGRAM_NAME}] Error! Duplicate keybind found, swapping keys...");
+                SNLogger.Log($"[{QSEConfig.PROGRAM_NAME}] Error! Duplicate keybind found, swapping keys...");
                 buttons[isFirst] = buttons[selected];
                 buttonInfo[isFirst].Name = buttons[selected];
             }
@@ -136,28 +136,31 @@ namespace QuickSlotExtender.Configuration
         {            
             for (int i = 0; i < labels.Count; i++)
             {
-                Config.Section_hotkeys[labels[i]] = buttons[i];
+                QSEConfig.Section_hotkeys[labels[i]] = buttons[i];
             }
 
-            Config.WriteConfig();
-            Config.SetKeyBindings();
+            QSEConfig.WriteConfig();
+            QSEConfig.SetKeyBindings();
             Main.GameInput_OnBindingsChanged();
             Destroy(Instance);
         }
 
-        public ConfigUI()
+        public QSEConfigUI()
         {
-            if (Instance == null)
+            if (Instance.IsNull())
             {
-                Instance = FindObjectOfType(typeof(ConfigUI)) as ConfigUI;
+                Instance = FindObjectOfType(typeof(QSEConfigUI)) as QSEConfigUI;
 
-                if (Instance == null)
+                if (Instance.IsNull())
                 {
-                    GameObject go = new GameObject().AddComponent<ConfigUI>().gameObject;
-                    go.name = "QuickSlotExtender.ConfigUI";
-                    Instance = go.GetComponent<ConfigUI>();
+                    GameObject qse_configUI = new GameObject("QSEConfigUI");
+                    Instance = qse_configUI.GetOrAddComponent<QSEConfigUI>();                    
                 }
-            }            
+            }
+            else
+            {
+                Instance.Awake();
+            }
         }
     }    
 }

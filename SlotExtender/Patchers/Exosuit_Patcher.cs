@@ -25,7 +25,7 @@ namespace SlotExtender.Patchers
         internal static void Postfix(Exosuit __instance)
         {            
             __instance.gameObject.AddIfNeedComponent<SlotExtender>();
-            SNLogger.Log($"[{Config.PROGRAM_NAME}] Added component to instance: {__instance.name} ID: {__instance.GetInstanceID()}");           
+            SNLogger.Log($"[{SEConfig.PROGRAM_NAME}] Added component to instance: {__instance.name} ID: {__instance.GetInstanceID()}");           
         }
     }
 }

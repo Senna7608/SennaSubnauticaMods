@@ -3,6 +3,7 @@ using UnityEngine;
 using UWE;
 using static Common.Modules;
 using static Common.GameHelper;
+using UnityEngine.Rendering;
 
 namespace LaserCannon
 {
@@ -18,18 +19,21 @@ namespace LaserCannon
 
         private FMODAsset shootSound;
         private FMOD_CustomLoopingEmitter loopingEmitter;
-        private GameObject laserBeam;
-        private LineRenderer lineRenderer;
-       
+
+        private GameObject laserRight, laserLeft;
+        private LineRenderer rightBeam, leftBeam;
+        private Vector3[] right_beamPositions = new Vector3[2];
+        private Vector3[] left_beamPositions = new Vector3[2];
+
         private float powerConsumption = 1f;
         private float laserDamage = 1f;
         private const float maxLaserDistance = 70f;
         private float idleTimer = 3f;        
         
         private float targetDist;
-        private Vector3[] beamPositions = new Vector3[3];
-        private GameObject targetGameobject;
-        private Color beamcolor = Colors.Default;
+        private Vector3 targetPosition;
+
+        private GameObject targetGameobject;        
 
         private bool isToggle;
         private bool isShoot;
@@ -41,7 +45,7 @@ namespace LaserCannon
         private string lowPower_title;
         private string lowPower_message;
 
-        public void Awake()
+        public void Start()
         {
             Instance = gameObject.GetComponent<LaserCannon_Seamoth>();
             thisSeamoth = Instance.GetComponent<SeaMoth>();
@@ -51,34 +55,48 @@ namespace LaserCannon
 
             isPlayerInThisVehicle = playerMain.GetVehicle() == thisSeamoth ? true : false;
 
-            var repulsionCannonPrefab = Resources.Load<GameObject>("WorldEntities/Tools/RepulsionCannon").GetComponent<RepulsionCannon>();
-            //RepulsionCannon repulsionCannonPrefab = CraftData.InstantiateFromPrefab(TechType.RepulsionCannon, false).GetComponent<RepulsionCannon>();
-            shootSound = Instantiate(repulsionCannonPrefab.shootSound, thisSeamoth.transform);
-            //Destroy(repulsionCannonPrefab);
+            GameObject repulsionCannonPrefab = Resources.Load<GameObject>("WorldEntities/Tools/RepulsionCannon");
+            repulsionCannonPrefab.SetActive(false);
+
+            shootSound = Instantiate(repulsionCannonPrefab.GetComponent<RepulsionCannon>().shootSound, thisSeamoth.transform, false);
+            Destroy(repulsionCannonPrefab);
 
             loopingEmitter = gameObject.AddComponent<FMOD_CustomLoopingEmitter>();
             loopingEmitter.asset = shootSound;
 
-            var powerRelayPrefab = Resources.Load<GameObject>("Submarine/Build/PowerTransmitter").GetComponent<PowerFX>();
-            //PowerFX powerRelayPrefab = CraftData.InstantiateFromPrefab(TechType.PowerTransmitter, false).GetComponent<PowerFX>();
-            laserBeam = Instantiate(powerRelayPrefab.vfxPrefab, thisSeamoth.transform);
-            laserBeam.SetActive(false);
-            //Destroy(powerRelayPrefab);
-
-            lineRenderer = laserBeam.GetComponent<LineRenderer>();
-            lineRenderer.startWidth = 0.4f;
-            lineRenderer.endWidth = 0.4f;
-            lineRenderer.receiveShadows = false;
-            lineRenderer.loop = false;
+            GameObject powerTransmitterPrefab = Resources.Load<GameObject>("Submarine/Build/PowerTransmitter");
             
+            GameObject laserBeam = Instantiate(powerTransmitterPrefab.GetComponent<PowerFX>().vfxPrefab, null, false);
+            laserBeam.SetActive(false);
+
+            LineRenderer lineRenderer = laserBeam.GetComponent<LineRenderer>();
+            lineRenderer.startWidth = 0.2f;
+            lineRenderer.endWidth = 0.2f;
+            lineRenderer.positionCount = 2;
+            lineRenderer.receiveShadows = false;
+            lineRenderer.loop = false;           
+
+            laserRight = Instantiate(laserBeam, thisSeamoth.torpedoTubeRight, false);
+            laserRight.name = "laserRight";
+            laserRight.transform.localPosition = Vector3.zero;
+            laserRight.transform.localRotation = Quaternion.identity;
+            rightBeam = laserRight.GetComponent<LineRenderer>();                      
+
+            laserLeft = Instantiate(laserBeam, thisSeamoth.torpedoTubeLeft, false);
+            laserLeft.name = "laserLeft";
+            laserLeft.transform.localPosition = Vector3.zero;
+            laserLeft.transform.localRotation = Quaternion.identity;
+            leftBeam = laserLeft.GetComponent<LineRenderer>();            
+
+            Destroy(laserBeam);
+            Destroy(powerTransmitterPrefab);
+            
+
             SetBeamColor();
             ShootOnlyHostile();
             SetLaserStrength();
             SetWarningMessage();            
-        }
-
-        public void Start()
-        {
+       
             thisSeamoth.onToggle += OnToggle;
             thisSeamoth.modules.onAddItem += OnAddItem;
             thisSeamoth.modules.onRemoveItem += OnRemoveItem;
@@ -117,7 +135,8 @@ namespace LaserCannon
 
         public void SetBeamColor()
         {
-            beamcolor = Colors.ColorArray[Config.beamColor];            
+            rightBeam.material.color = Colors.ColorArray[Config.beamColor];
+            leftBeam.material.color = Colors.ColorArray[Config.beamColor];            
         }
 
         public void ShootOnlyHostile()
@@ -178,6 +197,14 @@ namespace LaserCannon
             }
         }
 
+        private void SetLaserState(bool value)
+        {
+            laserRight.SetActive(value);
+            laserLeft.SetActive(value);
+        }
+
+
+
         public void OnEnable()
         {            
             isActive = isPlayerInThisVehicle && playerMain.isPiloting && isToggle && moduleSlotID > -1;
@@ -185,7 +212,7 @@ namespace LaserCannon
 
         public void OnDisable()
         {
-            laserBeam.SetActive(false);
+            SetLaserState(false);
             loopingEmitter.Stop();
             isActive = false;
             isShoot = false;
@@ -193,7 +220,7 @@ namespace LaserCannon
             SetInteractColor(Colors.White);
         }
 
-        private void AddDamage(GameObject gameObject)
+        private void AddDamageToTarget(GameObject gameObject)
         {
             Vector3 position = gameObject.transform.position;           
 
@@ -208,45 +235,80 @@ namespace LaserCannon
                 {                 
                     if (liveMixin.IsAlive())
                     {                        
-                        liveMixin.TakeDamage(laserDamage, position, DamageType.Explosive, null);
-                        WorldForces.AddExplosion(position, DayNightCycle.main.timePassed, 5f, 4f);
+                        liveMixin.TakeDamage(laserDamage, position, DamageType.Normal, null);                        
                     }                        
                 }
                 else
                 {
                     if (gameObject.GetComponent<BreakableResource>() != null)
                     {
-                        gameObject.SendMessage("BreakIntoResources", null, SendMessageOptions.DontRequireReceiver);
-                        WorldForces.AddExplosion(position, DayNightCycle.main.timePassed, 5f, 4f);
+                        gameObject.SendMessage("BreakIntoResources", null, SendMessageOptions.DontRequireReceiver);                        
                     }                    
                 }
             }
         }
 
-        private Vector3 CalculateLaserBeam()
+        private void AddForceToTarget()
         {
-            Targeting.GetTarget(thisSeamoth.gameObject, maxLaserDistance, out targetGameobject, out targetDist);
-            
-            if (targetDist == 0f)
+            Rigidbody rb = targetGameobject.GetComponent<Rigidbody>();
+
+            if (rb != null)
             {
-                return MainCamera.camera.transform.position + maxLaserDistance * MainCamera.camera.transform.forward;
+                rb.AddForce(targetPosition.normalized * 20f, ForceMode.Impulse);
             }
             else
             {
-                if (isOnlyHostile)
-                {
-                    Targeting.GetRoot(targetGameobject, out TechType targetTechType, out GameObject examinedGameObject);
+                rb = targetGameobject.GetComponentInChildren<Rigidbody>();
 
-                    if (!validTargets.Contains(targetTechType))
-                    {
-                        return MainCamera.camera.transform.position + targetDist * MainCamera.camera.transform.forward;
-                    }
+                if (rb != null)
+                {
+                    rb.AddForce(targetPosition.normalized * 20f, ForceMode.Impulse);
                 }
-                
-                AddDamage(targetGameobject);
-                return MainCamera.camera.transform.position + targetDist * MainCamera.camera.transform.forward;                
             }
         }
+
+        private void SetBeamTarget()
+        {
+            if (Targeting.GetTarget(thisSeamoth.gameObject, maxLaserDistance, out targetGameobject, out targetDist))
+            {
+                lock (targetGameobject)
+                {
+                    if (isOnlyHostile)
+                    {
+                        Targeting.GetRoot(targetGameobject, out TechType targetTechType, out GameObject examinedGameObject);
+
+                        if (!validTargets.Contains(targetTechType))
+                        {
+                            CalculateBeamVectors(targetDist);
+                            return;
+                        }
+                    }
+
+                    CalculateBeamVectors(targetDist);
+
+                    AddDamageToTarget(targetGameobject);
+
+                    AddForceToTarget();
+                }
+            }
+            else
+                CalculateBeamVectors(maxLaserDistance);
+        }
+
+
+        private void CalculateBeamVectors(float targetDistance)
+        {
+            Transform aimTransform = Player.main.camRoot.GetAimingTransform();
+
+            targetPosition = aimTransform.position + targetDistance * aimTransform.forward;
+
+            right_beamPositions[0] = laserRight.transform.position;
+            right_beamPositions[1] = targetPosition;
+
+            left_beamPositions[0] = laserLeft.transform.position;
+            left_beamPositions[1] = targetPosition;            
+        }
+                
                 
         public void Update()
         {
@@ -283,7 +345,7 @@ namespace LaserCannon
                     if (GameInput.GetButtonUp(GameInput.Button.LeftHand))
                     {
                         isShoot = false;
-                        laserBeam.SetActive(false);
+                        SetLaserState(false);
                     }
                     if (isShoot)
                     {
@@ -294,25 +356,25 @@ namespace LaserCannon
         }
 
         public void LateUpdate()
-        {
+        {            
             if (isActive)
             {
                 if (isShoot && isRepeat)
-                {                    
-                    beamPositions[0] = thisSeamoth.torpedoTubeLeft.transform.position;
-                    beamPositions[1] = CalculateLaserBeam();
-                    beamPositions[2] = thisSeamoth.torpedoTubeRight.transform.position;                    
-                    lineRenderer.positionCount = beamPositions.Length;                    
-                    lineRenderer.SetPositions(beamPositions);
-                    lineRenderer.material.color = Color.Lerp(beamcolor, Color.clear, 0.1f);
-                    laserBeam.SetActive(true);                    
+                {
+                    SetBeamTarget();
+
+                    rightBeam.SetPositions(right_beamPositions);                    
+                    leftBeam.SetPositions(left_beamPositions);                    
+
+                    SetLaserState(true);
+
                     loopingEmitter.Play();                                       
                     energyMixin.ConsumeEnergy(powerConsumption * Time.deltaTime);                    
                 }
                 else
                 {
                     loopingEmitter.Stop();
-                    laserBeam.SetActive(false);
+                    SetLaserState(false);
                 }
             }           
         }
