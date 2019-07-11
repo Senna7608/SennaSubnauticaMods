@@ -8,8 +8,8 @@ using Common;
 using UWE;
 using static Common.GameHelper;
 using SMLHelper.V2.Utility;
-using MoreCyclopsUpgrades.CyclopsUpgrades;
-using MoreCyclopsUpgrades.Managers;
+using MoreCyclopsUpgrades.API;
+using MoreCyclopsUpgrades.API.Upgrades;
 
 namespace CyclopsLaserCannonModule
 {
@@ -22,11 +22,6 @@ namespace CyclopsLaserCannonModule
         public static bool isAssetsLoaded;
 
         public static Event<string> onConfigurationChanged = new Event<string>();
-
-        //MCU upgrade events      
-        public static UpgradeEvent onClearUpgrades;
-        public static UpgradeEventSlotBound onUpgradeCounted;
-
 
         public static void Load()
         {
@@ -44,7 +39,7 @@ namespace CyclopsLaserCannonModule
 
                 SceneManager.sceneLoaded += new UnityAction<Scene, LoadSceneMode>(OnSceneLoaded);
 
-                UpgradeManager.UpgradeManagerInitializing += RegisterUpgrade;
+                RegisterUpgrade();
             }
             catch (Exception ex)
             {
@@ -86,14 +81,13 @@ namespace CyclopsLaserCannonModule
 
         private static void RegisterUpgrade()
         {
-            UpgradeManager.RegisterOneTimeUseHandlerCreator(() =>
+            MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
             {
                 SNLogger.Log($"[CyclopsLaserCannonModule] Upgrade registered for CannonControl");
-                return new UpgradeHandler(CannonPrefab.TechTypeID)
+                return new UpgradeHandler(CannonPrefab.TechTypeID, cyclops)
                 {
                     MaxCount = 1,
-                    OnUpgradeCounted = onUpgradeCounted,
-                    OnClearUpgrades = onClearUpgrades,
+                    // The OnFinishedUpgrades event is added in the CannonControl Start method
                 };                
             });
         }

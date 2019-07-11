@@ -15,24 +15,6 @@
             Button_Cannon.SetActive(value);
         }
 
-        private void EnableCannonOnUpgradeCounted(SubRoot cyclops, Equipment modules, string slot)
-        {
-            if (cyclops != subroot)
-                return;
-            
-            isModuleInserted = true;
-            LaserCannonSetActive(isModuleInserted);                      
-        }
-
-        private void DisableCannonOnClearUpgrades(SubRoot cyclops)
-        {
-            if (cyclops != subroot)
-                return;
-
-            isModuleInserted = false;
-            LaserCannonSetActive(isModuleInserted);            
-        }        
-
         private void OnConfigurationChanged(string configToChange)
         {
             switch (configToChange)

@@ -5,6 +5,8 @@ using static Common.Modules;
 using static Common.GameHelper;
 using Common;
 using System.Collections;
+using MoreCyclopsUpgrades.API.Upgrades;
+using MoreCyclopsUpgrades.API;
 
 namespace CyclopsLaserCannonModule
 {
@@ -29,13 +31,11 @@ namespace CyclopsLaserCannonModule
         private Vector3[] left_right_beamPositions = new Vector3[2];
         private Vector3[] left_left_beamPositions = new Vector3[2];
         private GameObject targetGameobject;        
-        private Vector3 targetPosition;               
+        private Vector3 targetPosition;
+        private UpgradeHandler upgradeHandler;
 
         public void Start()
-        {            
-            Main.onClearUpgrades += DisableCannonOnClearUpgrades;
-            Main.onUpgradeCounted += EnableCannonOnUpgradeCounted;
-
+        {
             Instance = this;            
 
             Main.onConfigurationChanged.AddHandler(this, new Event<string>.HandleFunction(OnConfigurationChanged));             
@@ -62,15 +62,19 @@ namespace CyclopsLaserCannonModule
             
             Player.main.playerModeChanged.AddHandler(this, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
             Player.main.currentSubChangedEvent.AddHandler(this, new Event<SubRoot>.HandleFunction(OnSubRootChanged));            
+
+            upgradeHandler = MCUServices.Find.CyclopsUpgradeHandler(subroot, CannonPrefab.TechTypeID);
+            upgradeHandler.OnFinishedUpgrades = () => 
+            {
+                isModuleInserted = upgradeHandler.HasUpgrade;
+                LaserCannonSetActive(isModuleInserted);
+            };
         }        
 
         public void OnDestroy()
         {
             Player.main.playerModeChanged.RemoveHandler(this, OnPlayerModeChanged);
             Player.main.currentSubChangedEvent.RemoveHandler(this, OnSubRootChanged);
-
-            Main.onClearUpgrades -= DisableCannonOnClearUpgrades;
-            Main.onUpgradeCounted -= EnableCannonOnUpgradeCounted;
 
             Destroy(cannon_base_right);
             Destroy(cannon_base_left);            
