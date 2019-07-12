@@ -69,6 +69,9 @@ namespace CyclopsLaserCannonModule
                 isModuleInserted = upgradeHandler.HasUpgrade;
                 LaserCannonSetActive(isModuleInserted);
             };
+
+            isModuleInserted = upgradeHandler.HasUpgrade;
+            LaserCannonSetActive(isModuleInserted);
         }        
 
         public void OnDestroy()
