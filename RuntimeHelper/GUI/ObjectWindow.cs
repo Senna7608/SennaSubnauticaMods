@@ -53,7 +53,7 @@ namespace RuntimeHelper
             GameObject newChild = new GameObject($"newChild_{addedChildObjectCount}");
 
             newChild.transform.SetParent(selectedObject.transform, false);
-            newChild.transform.SetAllToZero();            
+            newChild.transform.SetLocalsToZero();            
             addedChildObjectCount++;
             RefreshTransformsList();
             OnObjectChange(newChild);
@@ -81,7 +81,7 @@ namespace RuntimeHelper
             }           
 
             newChild.transform.SetParent(selectedObject.transform, false);
-            newChild.transform.SetAllToZero();
+            newChild.transform.SetLocalsToZero();
             string objectName = newChild.name;
             newChild.name = "newChild_" + objectName;
 

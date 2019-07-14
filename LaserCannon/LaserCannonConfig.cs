@@ -8,12 +8,11 @@ using System.Reflection;
 
 namespace LaserCannon
 {
-    internal static class Config
+    internal static class LaserCannonConfig
     {
+        public const string PROGRAM_NAME = "LaserCannon";
         internal static string PROGRAM_VERSION = string.Empty;
-        internal static string FILE_VERSION = string.Empty;
-
-        private const string PROGRAM_NAME = "LaserCannon";        
+        internal static string CONFIG_VERSION = string.Empty;                
 
         internal static readonly string FILENAME = $"{Environment.CurrentDirectory}/QMods/{PROGRAM_NAME}/config.txt";
 
@@ -166,7 +165,7 @@ namespace LaserCannon
             new ConfigData(SECTIONS[3], SECTION_LANGUAGE[18], "Lézerágyú letiltva!"),
         };
 
-        internal static void InitConfig()
+        internal static void LoadConfig()
         {
             PROGRAM_VERSION = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
 
@@ -176,26 +175,24 @@ namespace LaserCannon
             }
             else
             {
-               FILE_VERSION  = Helper.GetKeyValue(FILENAME, PROGRAM_NAME, "Version");
+                CONFIG_VERSION = Helper.GetKeyValue(FILENAME, PROGRAM_NAME, "Version");
+
+                if (CONFIG_VERSION.Equals(PROGRAM_VERSION))
+                {
+                    SNLogger.Log($"[{PROGRAM_NAME}] Configuration file version match with program version.");
+                }
+                else
+                {
+                    CreateDefaultConfigFile();
+                }
             }
 
-            if (FILE_VERSION.Equals(PROGRAM_VERSION))
-            {
-                SNLogger.Log($"[{PROGRAM_NAME}] Configuration file version match with program version.");
-            }
-            else
-            {
-                CreateDefaultConfigFile();
-            }
-
-            ReadConfig();
-            ReadLanguageText();
-            InitColorNames();
+            ReadConfig();            
         }
 
         internal static void CreateDefaultConfigFile()
         {
-            SNLogger.Log($"[{PROGRAM_NAME}] Warning! Configuration file is missing or wrong version. Creating a new one.");
+            SNLogger.Log($"[{PROGRAM_NAME}] Warning! Configuration file is missing or wrong version. Trying to create a new one.");
 
             try
             {
@@ -213,10 +210,12 @@ namespace LaserCannon
                         configParser.SetKeyValueInSection(language, item, "");
                     }
                 }
+
+                SNLogger.Log($"[{PROGRAM_NAME}] The new configuration file was successfully created.");
             }
             catch
             {
-                SNLogger.Log($"[{PROGRAM_NAME}] Error! Creating new configuration file has failed!");
+                SNLogger.Log($"[{PROGRAM_NAME}] An error occured while creating the new configuration file!");
             }
         }
 
@@ -224,21 +223,9 @@ namespace LaserCannon
         {            
             program_settings["Language"] = Language.main.GetCurrentLanguage();
             WriteConfig();
-            ReadConfig();
-            ReadLanguageText();
-            InitColorNames();
+            ReadConfig();            
         }
-
-        internal static void ReadConfig()
-        {
-            program_settings = Helper.GetAllKeyValuesFromSection(FILENAME, "Program", SECTION_PROGRAM);
-           
-            for (int i = 0; i < Modules.Colors.ColorNames.Length; i++)
-            {
-                if (Modules.Colors.ColorNames[i].Equals(program_settings["BeamColor"]))
-                    beamColor = i;
-            }
-        }
+               
 
         internal static void WriteConfig()
         {
@@ -246,21 +233,37 @@ namespace LaserCannon
             {
                 Helper.SetKeyValue(FILENAME, "Program", item.Key, item.Value);
             }
+
+            SNLogger.Log($"[{PROGRAM_NAME}] Configuration saved.");
         }        
 
-        internal static void ReadLanguageText()
-        {            
-            language_settings = Helper.GetAllKeyValuesFromSection(FILENAME, program_settings["Language"], SECTION_LANGUAGE);
-        }
-
-        internal static void InitColorNames()
+        internal static void ReadConfig()
         {
-            colorNames.Clear();
+            try
+            {
+                program_settings = Helper.GetAllKeyValuesFromSection(FILENAME, "Program", SECTION_PROGRAM);
 
-            foreach (KeyValuePair<string, string> item in language_settings)
-            {                
-                if (item.Key.StartsWith("Option_Color_"))
-                    colorNames.Add(item.Value.ToString());
+                for (int i = 0; i < Modules.Colors.ColorNames.Length; i++)
+                {
+                    if (Modules.Colors.ColorNames[i].Equals(program_settings["BeamColor"]))
+                        beamColor = i;
+                }
+
+                language_settings = Helper.GetAllKeyValuesFromSection(FILENAME, program_settings["Language"], SECTION_LANGUAGE);
+
+                colorNames.Clear();
+
+                foreach (KeyValuePair<string, string> item in language_settings)
+                {
+                    if (item.Key.StartsWith("Option_Color_"))
+                        colorNames.Add(item.Value.ToString());
+                }
+
+                SNLogger.Log($"[{PROGRAM_NAME}] Configuration loaded.");
+            }
+            catch
+            {
+                SNLogger.Log($"[{PROGRAM_NAME}] An error occurred while loading the configuration file!");
             }
         }          
     }

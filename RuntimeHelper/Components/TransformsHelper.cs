@@ -61,40 +61,61 @@ namespace RuntimeHelper.Components
 
         }
 
+        public static void SetPositionToZero(this Transform transform)
+        {
+            transform.position = Vector3.zero;
+        }
+
         public static void SetLocalPositionToZero(this Transform transform)
         {
             transform.localPosition = Vector3.zero;
+        }
+
+        public static void SetRotationToZero(this Transform transform)
+        {
+            transform.rotation = Quaternion.Euler(Vector3.zero);
         }
 
         public static void SetLocalRotationToZero(this Transform transform)
         {
             transform.localRotation = Quaternion.Euler(Vector3.zero);
         }
-
+                
         public static void SetLocalScaleToOne(this Transform transform)
         {
             transform.localScale = Vector3.one;
-        }        
+        }
 
-        public static void SetAllToZero(this Transform transform)
+        public static void SetWorldToZero(this Transform transform)
+        {
+            transform.position = Vector3.zero;
+            transform.localScale = Vector3.one;
+            transform.rotation = Quaternion.Euler(Vector3.zero);
+        }
+
+        public static void SetLocalsToZero(this Transform transform)
         {
             transform.localPosition = Vector3.zero;
             transform.localScale = Vector3.one;
             transform.localRotation = Quaternion.Euler(Vector3.zero);
         }        
 
-        public static void GetTransformLocals(this Transform source, ref TransformInfo transformInfo)
+        public static void GetTransformInfo(this Transform source, ref TransformInfo transformInfo)
         {
+            transformInfo.Position = source.position;
+            transformInfo.Rotation = source.rotation;
             transformInfo.LocalPosition = source.localPosition;
             transformInfo.LocalRotation = source.localRotation;
-            transformInfo.LocalScale = source.localScale;
+            transformInfo.Scale = source.localScale;
         }
 
-        public static void SetTransformLocals(this Transform destination, ref TransformInfo transformInfo)
+        public static void SetTransformInfo(this Transform destination, ref TransformInfo transformInfo)
         {
+            destination.position = transformInfo.Position;
+            destination.rotation = transformInfo.Rotation;
             destination.localPosition = transformInfo.LocalPosition;
             destination.localRotation = transformInfo.LocalRotation;
-            destination.localScale = transformInfo.LocalScale;
+            destination.localScale = transformInfo.Scale;
         }        
     }
 }

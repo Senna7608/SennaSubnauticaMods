@@ -12,14 +12,14 @@ namespace QuickSlotExtender
     public static class Main
     {        
         private static QSECommand qseCommand;
-        public static bool isExists_SlotExdener = false;
+        public static bool isExists_SlotExtender = false;
         public static QSEHandler Instance { get; internal set; }        
 
         public static void Load()
         {
-            isExists_SlotExdener = RefHelp.IsNamespaceExists("SlotExtender");
+            isExists_SlotExtender = RefHelp.IsNamespaceExists("SlotExtender");
 
-            if (isExists_SlotExdener)
+            if (isExists_SlotExtender)
                 SNLogger.Log($"[{QSEConfig.PROGRAM_NAME}] SlotExtender found! trying to work together..");
 
             try

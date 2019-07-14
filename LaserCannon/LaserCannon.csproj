@@ -61,17 +61,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />
-    <Compile Include="Options.cs" />
+    <Compile Include="LaserCannonOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="LaserCannon.cs" />
-    <Compile Include="LaserCannon_Seamoth.cs" />
-    <Compile Include="Config.cs" />
+    <Compile Include="LaserCannonPrefab.cs" />
+    <Compile Include="LaserCannonControl.cs" />
+    <Compile Include="LaserCannonConfig.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\LaserCannon.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="config.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

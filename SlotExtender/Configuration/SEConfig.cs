@@ -16,13 +16,19 @@ namespace SlotExtender.Configuration
         internal static string CONFIG_VERSION = string.Empty;
 
         internal static Dictionary<string, KeyCode> KEYBINDINGS;        
-        private static readonly string[] SECTIONS = { "Hotkeys", "Settings" };
+       
         private static readonly string FILENAME = $"{Environment.CurrentDirectory}/QMods/{PROGRAM_NAME}/config.txt";
         internal static Dictionary<string, string> Section_hotkeys;
         public static Dictionary<string, string> SLOTKEYS = new Dictionary<string, string>();
         public static List<string> SLOTKEYSLIST = new List<string>();
         internal static int MAXSLOTS;
         public static Color TEXTCOLOR;
+
+        private static readonly string[] SECTIONS =
+        {
+            "Hotkeys",
+            "Settings"
+        };
 
         private static readonly string[] SECTION_HOTKEYS =
         {
@@ -105,28 +111,37 @@ namespace SlotExtender.Configuration
                 }
             }
 
-            Section_hotkeys = Helper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[0], SECTION_HOTKEYS);
+            try
+            {
+                Section_hotkeys = Helper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[0], SECTION_HOTKEYS);
 
-            int.TryParse(Helper.GetKeyValue(FILENAME, SECTIONS[1], SECTION_SETTINGS[0]), out int result);
-            MAXSLOTS = result < 5 || result > 12 ? 12 : result;
+                int.TryParse(Helper.GetKeyValue(FILENAME, SECTIONS[1], SECTION_SETTINGS[0]), out int result);
+                MAXSLOTS = result < 5 || result > 12 ? 12 : result;
 
-            TEXTCOLOR = Modules.GetColor(Helper.GetKeyValue(FILENAME, SECTIONS[1], SECTION_SETTINGS[1]));
+                TEXTCOLOR = Modules.GetColor(Helper.GetKeyValue(FILENAME, SECTIONS[1], SECTION_SETTINGS[1]));
 
-            SNLogger.Log($"[{PROGRAM_NAME}] Configuration loaded.");
+                SNLogger.Log($"[{PROGRAM_NAME}] Configuration loaded.");
+            }
+            catch
+            {
+                SNLogger.Log($"[{PROGRAM_NAME}] An error occurred while loading the configuration file!");
+            }
         }
 
         internal static void CreateDefaultConfigFile()
         {
-            SNLogger.Log($"[{PROGRAM_NAME}] Warning! Configuration file is missing or wrong version. Creating a new one.");
+            SNLogger.Log($"[{PROGRAM_NAME}] Warning! Configuration file is missing or wrong version. Trying to create a new one.");
 
             try
             {
                 Helper.CreateDefaultConfigFile(FILENAME, PROGRAM_NAME, PROGRAM_VERSION, DEFAULT_CONFIG);
                 Helper.AddInfoText(FILENAME, SECTIONS[1], "TextColor possible values: Red, Green, Blue, Yellow, White, Magenta, Cyan, Orange, Lime, Amethyst, Default");
+
+                SNLogger.Log($"[{PROGRAM_NAME}] The new configuration file was successfully created.");
             }
             catch
             {
-                SNLogger.Log($"[{PROGRAM_NAME}] Error! Creating new configuration file has failed!");
+                SNLogger.Log($"[{PROGRAM_NAME}] An error occured while creating the new configuration file!");
             }
         }
 

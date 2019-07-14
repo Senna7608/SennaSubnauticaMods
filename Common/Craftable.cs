@@ -1,5 +1,4 @@
-﻿using System;
-using SMLHelper.V2.Assets;
+﻿using SMLHelper.V2.Assets;
 using SMLHelper.V2.Crafting;
 using SMLHelper.V2.Handlers;
 using SMLHelper.V2.Utility;
@@ -15,9 +14,10 @@ namespace Common
     internal abstract class Craftable : ModPrefab
     {
         public readonly string NameID;
+        public readonly string NameUsingForFiles;
         public readonly string FriendlyName;
         public readonly string Description;
-        public GameObject prefab { get; private set; }
+        public GameObject _GameObject { get; private set; }
 
         protected readonly TechType PrefabTemplate;
         protected readonly CraftTree.Type FabricatorType;
@@ -27,11 +27,12 @@ namespace Common
         protected readonly TechCategory CategoryForPDA;
         protected readonly EquipmentType TypeForEquipment;
         protected readonly QuickSlotType TypeForQuickslot;
-        protected readonly Type[] ComponentsToAdd;
-        internal readonly string GameResourceFileName;        
+        protected readonly Vector2int ItemSize;
+        protected readonly string GameResourceFileName;        
 
         protected Craftable(
             string nameID,
+            string nameUsingForFiles,
             string friendlyName,
             string description,            
             TechType template,
@@ -42,12 +43,13 @@ namespace Common
             TechCategory categoryForPDA,
             EquipmentType equipmentType,
             QuickSlotType quickSlotType,
-            Type[] componentsToAdd,
+            Vector2int itemSize,            
             string gamerResourceFileName
             )
             : base(nameID, $"{nameID}Prefab")
         {
             NameID = nameID;
+            NameUsingForFiles = nameUsingForFiles;
             FriendlyName = friendlyName;
             Description = description;            
             PrefabTemplate = template;
@@ -58,13 +60,13 @@ namespace Common
             CategoryForPDA = categoryForPDA;
             TypeForEquipment = equipmentType;
             TypeForQuickslot = quickSlotType;
-            ComponentsToAdd = componentsToAdd;
+            ItemSize = itemSize;            
             GameResourceFileName = gamerResourceFileName;
         }
 
         public virtual void Patch()
         {
-            Atlas.Sprite sprite = ImageUtils.LoadSpriteFromFile($"./QMods/{NameID}/Assets/{NameID}.png");
+            Atlas.Sprite sprite = ImageUtils.LoadSpriteFromFile($"./QMods/{NameUsingForFiles}/Assets/{NameUsingForFiles}.png");
             TechType = TechTypeHandler.AddTechType(NameID, FriendlyName, Description, sprite , false);
             SpriteHandler.RegisterSprite(TechType, sprite);            
             CraftTreeHandler.AddCraftingNode(FabricatorType, TechType, FabricatorTab);
@@ -72,29 +74,29 @@ namespace Common
             CraftDataHandler.AddToGroup(GroupForPDA, CategoryForPDA, TechType);
             CraftDataHandler.SetEquipmentType(TechType, TypeForEquipment);
             CraftDataHandler.SetQuickSlotType(TechType, TypeForQuickslot);
+            CraftDataHandler.SetItemSize(TechType, ItemSize);
+
             KnownTechHandler.SetAnalysisTechEntry(RequiredForUnlock, new TechType[1] { TechType }, $"{FriendlyName} blueprint discovered!");
 
             PrefabHandler.RegisterPrefab(this);            
         }
 
-        protected abstract TechData GetRecipe();
+        protected abstract TechData GetRecipe();        
 
         public override GameObject GetGameObject()
         {
             if (GameResourceFileName == null)
-                prefab = CraftData.GetPrefabForTechType(PrefabTemplate);
-            else
-                prefab = Resources.Load<GameObject>(GameResourceFileName);
-
-            if (ComponentsToAdd != null)
-            {
-                foreach (Type component in ComponentsToAdd)
-                {
-                    prefab.AddIfNeedComponent(component);
-                }
+            {                
+                _GameObject = Object.Instantiate(CraftData.GetPrefabForTechType(PrefabTemplate));                             
             }
+            else
+            {
+                _GameObject = Object.Instantiate(Resources.Load<GameObject>(GameResourceFileName));
+            }
+
+            _GameObject.name = NameID;            
             
-            return prefab;
+            return _GameObject;
         }        
     }
 }

@@ -26,7 +26,7 @@ namespace QuickSlotExtender
             Instance = gameObject.GetComponent<QSEHandler>();
             quickSlots = gameObject.GetComponent<uGUI_QuickSlots>();
 
-            if (Main.isExists_SlotExdener)
+            if (Main.isExists_SlotExtender)
             {
                 SLOTEXTENDER_SLOTKEYSLIST = new List<string>();
 
@@ -145,11 +145,11 @@ namespace QuickSlotExtender
 
             for (int i = 0; i < icons.Length; i++)
             {
-                if (Main.isExists_SlotExdener && Player.main.inSeamoth && Player.main.GetPDA().state != PDA.State.Opening)
+                if (Main.isExists_SlotExtender && Player.main.inSeamoth && Player.main.GetPDA().state != PDA.State.Opening)
                 {
                     AddTextToSlot(icons[i].transform, SLOTEXTENDER_SLOTKEYSLIST[i], i);
                 }
-                else if (Main.isExists_SlotExdener && Player.main.inExosuit && Player.main.GetPDA().state != PDA.State.Opening)
+                else if (Main.isExists_SlotExtender && Player.main.inExosuit && Player.main.GetPDA().state != PDA.State.Opening)
                 {
                     if (i < 2)
                     {

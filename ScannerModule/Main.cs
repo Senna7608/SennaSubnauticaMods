@@ -25,8 +25,7 @@ namespace ScannerModule
     }
 
     [HarmonyPatch(typeof(Vehicle))]
-    [HarmonyPatch("OnUpgradeModuleChange")]
-    [HarmonyPatch(new Type[] { typeof(int), typeof(TechType), typeof(bool) })]
+    [HarmonyPatch("OnUpgradeModuleChange")]    
     public class Vehicle_OnUpgradeModuleChange_Patch
     {
         static void Postfix(Vehicle __instance, int slotID, TechType techType, bool added)

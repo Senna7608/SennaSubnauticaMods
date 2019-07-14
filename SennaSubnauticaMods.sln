@@ -17,13 +17,15 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Common", "Common\Common.shp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AncientSword", "AncientSword\AncientSword.csproj", "{7723914C-1E34-4C61-9965-7F00FB55A12D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CannonArm", "CannonArm\CannonArm.csproj", "{2F4899A3-9373-47AD-88CF-3F5A27D5E3F0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlasmaCannonArm", "PlasmaCannonArm\PlasmaCannonArm.csproj", "{2F4899A3-9373-47AD-88CF-3F5A27D5E3F0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickSlotExtender", "QuickSlotExtender\QuickSlotExtender.csproj", "{091061EA-9A9C-4737-B6CA-2A57596AC087}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsLaserCannonModule", "CyclopsLaserCannon\CyclopsLaserCannonModule.csproj", "{C729FB4C-861B-4428-AEB5-D119142105C9}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "RuntimeHelper", "RuntimeHelper\RuntimeHelper.shproj", "{6B7E7B0F-8B8B-4D04-857F-C36C326F6C0F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RuntimeHelper", "RuntimeHelper\RuntimeHelper.csproj", "{B85E6D34-ABED-4E6F-9A66-D84F423225BE}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SharedRuntimeHelper", "SharedRuntimeHelper\SharedRuntimeHelper.shproj", "{A52EB27A-4476-4F96-9056-220613BB9BA6}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -31,12 +33,12 @@ Global
 		Common\Common.projitems*{1306dea8-6a8b-4e61-a63e-779b439b6590}*SharedItemsImports = 4
 		Common\Common.projitems*{1ed43566-559a-4962-804d-9b5a23163808}*SharedItemsImports = 4
 		Common\Common.projitems*{2f4899a3-9373-47ad-88cf-3f5a27d5e3f0}*SharedItemsImports = 4
-		RuntimeHelper\RuntimeHelper.projitems*{2f4899a3-9373-47ad-88cf-3f5a27d5e3f0}*SharedItemsImports = 4
 		Common\Common.projitems*{38021293-9c9f-474a-a3f0-c782fc93a15a}*SharedItemsImports = 4
-		RuntimeHelper\RuntimeHelper.projitems*{6b7e7b0f-8b8b-4d04-857f-c36c326f6c0f}*SharedItemsImports = 13
 		Common\Common.projitems*{7723914c-1e34-4c61-9965-7f00fb55a12d}*SharedItemsImports = 4
 		Common\Common.projitems*{99ed7304-8603-4a34-9cba-a38557a64d0c}*SharedItemsImports = 4
+		SharedRuntimeHelper\SharedRuntimeHelper.projitems*{a52eb27a-4476-4f96-9056-220613bb9ba6}*SharedItemsImports = 13
 		Common\Common.projitems*{b2710992-57f8-4b97-8ff3-f96e1085fec2}*SharedItemsImports = 13
+		Common\Common.projitems*{b85e6d34-abed-4e6f-9a66-d84f423225be}*SharedItemsImports = 4
 		Common\Common.projitems*{c729fb4c-861b-4428-aeb5-d119142105c9}*SharedItemsImports = 4
 		Common\Common.projitems*{cad5c123-3df0-4562-b3ac-5721d45072e8}*SharedItemsImports = 4
 	EndGlobalSection
@@ -81,6 +83,10 @@ Global
 		{C729FB4C-861B-4428-AEB5-D119142105C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C729FB4C-861B-4428-AEB5-D119142105C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C729FB4C-861B-4428-AEB5-D119142105C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B85E6D34-ABED-4E6F-9A66-D84F423225BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B85E6D34-ABED-4E6F-9A66-D84F423225BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B85E6D34-ABED-4E6F-9A66-D84F423225BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B85E6D34-ABED-4E6F-9A66-D84F423225BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

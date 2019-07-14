@@ -124,7 +124,7 @@ namespace CyclopsLaserCannonModule
             new ConfigData(SECTIONS[3], SECTION_LANGUAGE[8], "Hanghatások hangereje"),
         };
 
-        internal static void InitConfig()
+        internal static void LoadConfig()
         {
             PROGRAM_VERSION = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
 
@@ -135,24 +135,24 @@ namespace CyclopsLaserCannonModule
             else
             {
                 CONFIG_VERSION = Helper.GetKeyValue(FILENAME, PROGRAM_NAME, "Version");
+
+
+                if (CONFIG_VERSION.Equals(PROGRAM_VERSION))
+                {
+                    SNLogger.Log($"[{PROGRAM_NAME}] Configuration version match with program version.");
+                }
+                else
+                {
+                    CreateDefaultConfigFile();
+                }
             }
 
-            if (CONFIG_VERSION.Equals(PROGRAM_VERSION))
-            {
-                SNLogger.Log($"[{PROGRAM_NAME}] Configuration version match with program version.");
-            }
-            else
-            {
-                CreateDefaultConfigFile();
-            }
-
-            ReadConfig();
-            ReadLanguageText();           
+            ReadConfig();                                             
         }
 
         internal static void CreateDefaultConfigFile()
         {
-            SNLogger.Log($"[{PROGRAM_NAME}] Warning! Configuration file is missing or wrong version. Creating a new one.");
+            SNLogger.Log($"[{PROGRAM_NAME}] Warning! Configuration file is missing or wrong version. Trying to create a new one.");
 
             try
             {
@@ -170,10 +170,12 @@ namespace CyclopsLaserCannonModule
                         configParser.SetKeyValueInSection(language, item, "");
                     }
                 }
+
+                SNLogger.Log($"[{PROGRAM_NAME}] The new configuration file was successfully created.");
             }
             catch
             {
-                SNLogger.Log($"[{PROGRAM_NAME}] Error! Creating new configuration file has failed!");
+                SNLogger.Log($"[{PROGRAM_NAME}] An error occured while creating the new configuration file!");
             }
         }
 
@@ -181,13 +183,22 @@ namespace CyclopsLaserCannonModule
         {            
             program_settings["Language"] = Language.main.GetCurrentLanguage();
             WriteConfig();
-            ReadConfig();
-            ReadLanguageText();            
+            ReadConfig();                      
         }
 
         internal static void ReadConfig()
         {
-            program_settings = Helper.GetAllKeyValuesFromSection(FILENAME, "Program", SECTION_PROGRAM);            
+            try
+            {
+                program_settings = Helper.GetAllKeyValuesFromSection(FILENAME, "Program", SECTION_PROGRAM);
+                language_settings = Helper.GetAllKeyValuesFromSection(FILENAME, program_settings["Language"], SECTION_LANGUAGE);
+
+                SNLogger.Log($"[{PROGRAM_NAME}] Configuration loaded.");
+            }
+            catch
+            {
+                SNLogger.Log($"[{PROGRAM_NAME}] An error occurred while loading the configuration file!");
+            }
         }
 
         internal static void WriteConfig()
@@ -196,11 +207,8 @@ namespace CyclopsLaserCannonModule
             {
                 Helper.SetKeyValue(FILENAME, "Program", item.Key, item.Value);
             }
-        }        
 
-        internal static void ReadLanguageText()
-        {            
-            language_settings = Helper.GetAllKeyValuesFromSection(FILENAME, program_settings["Language"], SECTION_LANGUAGE);
-        }              
+            SNLogger.Log($"[{PROGRAM_NAME}] Configuration saved.");
+        }                    
     }
 }

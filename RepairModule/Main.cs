@@ -26,8 +26,7 @@ namespace RepairModule
     }
     
     [HarmonyPatch(typeof(Vehicle))]
-    [HarmonyPatch("OnUpgradeModuleChange")] 
-    [HarmonyPatch(new Type[] { typeof(int), typeof(TechType), typeof(bool) })]
+    [HarmonyPatch("OnUpgradeModuleChange")]    
     public class Vehicle_OnUpgradeModuleChange_Patch
     {
         [HarmonyPostfix]

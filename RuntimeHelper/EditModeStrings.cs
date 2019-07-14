@@ -21,7 +21,7 @@ namespace RuntimeHelper
             "Z"
         };
 
-        public static readonly string[] OBJECT_MODES = new string[7]
+        public static readonly string[] OBJECT_MODES = new string[9]
         {            
             "Rotation: x",
             "Rotation: y",
@@ -29,7 +29,9 @@ namespace RuntimeHelper
             "Position: x",
             "Position: y",
             "Position: z",
-            "Scale"
+            "Scale: x",
+            "Scale: y",
+            "Scale: z",
         };        
 
         public static readonly string[] BOXCOLLIDER_MODES = new string[6]

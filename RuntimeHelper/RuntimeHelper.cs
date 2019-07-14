@@ -35,6 +35,8 @@ namespace RuntimeHelper
 
         private static readonly List<string> EDIT_MODE = new List<string>();
 
+        private bool showLocal = true;
+
         public RuntimeHelper ()
         {
             if (Main.Instance == null)
@@ -109,11 +111,26 @@ namespace RuntimeHelper
 
         private void PrintObjectInfo()
         {
+            Vector3 tr, qt, sc;
+
+            if (showLocal)
+            {
+                tr = selectedObject.transform.localPosition;                
+                qt = selectedObject.transform.localEulerAngles;
+            }
+            else
+            {
+                tr = selectedObject.transform.position;                
+                qt = selectedObject.transform.eulerAngles;
+            }
+
+            sc = selectedObject.transform.localScale;
+
             OBJECTINFO =
                 $"{selectedObject.transform.name} :\n\n" +
-                $"Position{" ",4}x:{selectedObject.transform.localPosition.x,8:F2},  y:{selectedObject.transform.localPosition.y,8:F2},  z:{selectedObject.transform.localPosition.z,8:F2}\n" +
-                $"Scale{" ",7}x:{selectedObject.transform.localScale.x,8:F2},  y:{selectedObject.transform.localScale.y,8:F2},  z:{selectedObject.transform.localScale.z,8:F2}\n" +
-                $"Rotation{" ",3}x:{selectedObject.transform.localEulerAngles.x,8:F0},  y:{selectedObject.transform.localEulerAngles.y,8:F0},  z:{selectedObject.transform.localEulerAngles.z,8:F0}\n";
+                $"Position{" ",4}x:{tr.x,8:F2},  y:{tr.y,8:F2},  z:{tr.z,8:F2}\n" +
+                $"Scale{" ",7}x:{sc.x,8:F2},  y:{sc.y,8:F2},  z:{sc.z,8:F2}\n" +
+                $"Rotation{" ",3}x:{qt.x,8:F0},  y:{qt.y,8:F0},  z:{qt.z,8:F0}\n";
         }
 
         private void PrintColliderInfo()
@@ -213,28 +230,68 @@ namespace RuntimeHelper
                 GUI.TextArea(new Rect(windowRect.x + 5, windowRect.y + 465, windowRect.width - 10, 72), COLLIDERINFO);
             }
 
-            GUI.Label(new Rect(windowRect.x + 5, windowRect.y + 542, 40, 22), "Transform shorthands:", SNStyles.GetGuiItemStyle(GuiItemType.LABEL, GuiColor.Green, TextAnchor.MiddleLeft));
+            GUI.Label(new Rect(windowRect.x + 5, windowRect.y + 542, 145, 22), "Transform shorthands:", SNStyles.GetGuiItemStyle(GuiItemType.LABEL, GuiColor.Green, TextAnchor.MiddleLeft));
 
-
-            if (GUI.Button(new Rect(windowRect.x + 5, windowRect.y + 567, 140, 22), "Set All to Zero", SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
+            if (GUI.Button(new Rect(windowRect.x + 150, windowRect.y + 542, 140, 22), showLocal ? "Relative to: Local" : "Relative to: World", SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
-                selectedObject.transform.SetAllToZero();
-                OutputWindow_Log($"Object [{selectedObject.name}] transform set to zero.");
+                showLocal = !showLocal;
+
+                if (showLocal)
+                {
+                    OutputWindow_Log("Transform info now relative to local space.");
+                }
+                else
+                {
+                    OutputWindow_Log("Transform info now relative to world space.");
+                }
+                
+            }
+
+            if (GUI.Button(new Rect(windowRect.x + 5, windowRect.y + 567, 140, 22), "Set vectors to Default", SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
+            {
+                if (showLocal)
+                {
+                    selectedObject.transform.SetLocalsToZero();
+                    OutputWindow_Log($"Object [{selectedObject.name}] local vectors set to: pos: (0,0,0); rot: (0,0,0); scale: (1,1,1)");
+                }
+                else
+                {
+                    selectedObject.transform.SetWorldToZero();
+                    OutputWindow_Log($"Object [{selectedObject.name}] world vectors set to: pos: (0,0,0); rot: (0,0,0); scale: (1,1,1)");
+                }
+
+                
             }
 
             if (GUI.Button(new Rect(windowRect.x + 150, windowRect.y + 567, 140, 22), "Set position to Zero", SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
-                selectedObject.transform.SetLocalPositionToZero();
-                OutputWindow_Log($"Object [{selectedObject.name}] local position set to zero.");
+                if (showLocal)
+                {
+                    selectedObject.transform.SetLocalPositionToZero();
+                    OutputWindow_Log($"Object [{selectedObject.name}] local position set to zero.");
+                }
+                else
+                {
+                    selectedObject.transform.SetPositionToZero();
+                    OutputWindow_Log($"Object [{selectedObject.name}] world position set to zero.");
+                }                
             }
 
             if (GUI.Button(new Rect(windowRect.x + 5, windowRect.y + 592, 140, 22), "Set Rotation to Zero", SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
-                selectedObject.transform.SetLocalRotationToZero();
-                OutputWindow_Log($"Object [{selectedObject.name}] rotation set to zero.");
+                if (showLocal)
+                {
+                    selectedObject.transform.SetLocalRotationToZero();
+                    OutputWindow_Log($"Object [{selectedObject.name}] local rotation set to zero.");
+                }
+                else
+                {
+                    selectedObject.transform.SetRotationToZero();
+                    OutputWindow_Log($"Object [{selectedObject.name}] world rotation set to zero.");
+                }                
             }
 
-            if (GUI.Button(new Rect(windowRect.x + 150, windowRect.y + 592, 140, 22), "Set Scale to one", SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
+            if (GUI.Button(new Rect(windowRect.x + 150, windowRect.y + 592, 140, 22), "Set Scale to One", SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
                 selectedObject.transform.SetLocalScaleToOne();
                 OutputWindow_Log($"Object [{selectedObject.name}] local scale set to one.");
@@ -243,7 +300,7 @@ namespace RuntimeHelper
             if (GUI.Button(new Rect(windowRect.x + 5, windowRect.y + 617, 140, 22), "Reset Transform", SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
                 DrawObjectBounds dob = selectedObject.GetOrAddVisualBase(BaseType.Object).GetComponent<DrawObjectBounds>();                
-                selectedObject.transform.SetTransformLocals(ref dob.transformBase);
+                selectedObject.transform.SetTransformInfo(ref dob.transformBase);
                 OutputWindow_Log($"Object [{selectedObject.name}] transform set to original values.");
             }
 
@@ -354,36 +411,60 @@ namespace RuntimeHelper
             if (Event.current.Equals(Event.KeyboardEvent("up")))
             {
                 value = scaleFactor;
-                SetObjectVectors();
+                EditObjectVectors();
             }
             else if (Event.current.Equals(Event.KeyboardEvent("down")))
             {
                 value = -scaleFactor;                
-                SetObjectVectors();                
+                EditObjectVectors();                
             }            
         }
 
+        
         private void GetObjectVectors()
-        {            
-            lRot = selectedObject.transform.localEulerAngles;
-            lPos = selectedObject.transform.localPosition;
+        {         
+            if (showLocal)
+            {
+                lRot = selectedObject.transform.localEulerAngles;
+                lPos = selectedObject.transform.localPosition;                
+            }
+            else
+            {
+                lRot = selectedObject.transform.eulerAngles;
+                lPos = selectedObject.transform.position;                
+            }
+
             lScale = selectedObject.transform.localScale;
         }
-        
+
         private void SetObjectVectors()
+        {
+            if (showLocal)
+            {
+                selectedObject.transform.localPosition = new Vector3(lPos.x, lPos.y, lPos.z);                               
+            }
+            else
+            {
+                selectedObject.transform.position = new Vector3(lPos.x, lPos.y, lPos.z);                
+            }
+
+            selectedObject.transform.localScale = new Vector3(lScale.x, lScale.y, lScale.z);
+        }        
+
+        private void EditObjectVectors()
         {
             switch (EDIT_MODE[current_editmode_index])
             {                
                 case "Rotation: x":                    
-                    selectedObject.transform.Rotate(Vector3.right, value < 0 ? -1 : 1, Space.Self);
+                    selectedObject.transform.Rotate(Vector3.right, value < 0 ? -1 : 1, showLocal? Space.Self : Space.World);
                     break;
 
                 case "Rotation: y":                    
-                    selectedObject.transform.Rotate(Vector3.up, value < 0 ? -1 : 1, Space.Self);
+                    selectedObject.transform.Rotate(Vector3.up, value < 0 ? -1 : 1, showLocal ? Space.Self : Space.World);
                     break;
 
                 case "Rotation: z":                    
-                    selectedObject.transform.Rotate(Vector3.forward, value < 0 ? -1 : 1, Space.Self);
+                    selectedObject.transform.Rotate(Vector3.forward, value < 0 ? -1 : 1, showLocal ? Space.Self : Space.World);
                     break;
 
                 case "Position: x":
@@ -395,9 +476,13 @@ namespace RuntimeHelper
                 case "Position: z":
                     lPos.z += value;
                     break;
-                case "Scale":
+                case "Scale: x":
                     lScale.x += value;
+                    break;
+                case "Scale: y":
                     lScale.y += value;
+                    break;
+                case "Scale: z":
                     lScale.z += value;
                     break;
                 case "Collider Size: x":
@@ -441,8 +526,7 @@ namespace RuntimeHelper
                     break;                
             }
 
-            selectedObject.transform.localPosition = new Vector3(lPos.x, lPos.y, lPos.z);            
-            selectedObject.transform.localScale = new Vector3(lScale.x, lScale.y, lScale.z);
+            SetObjectVectors();
             
             if (isExistsCollider)
             {

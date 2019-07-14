@@ -12,7 +12,8 @@ namespace RuntimeHelper.Visuals
         private void Awake()
         {
             Transform parent = transform.parent;
-            transformBase = new TransformInfo(parent.localPosition, parent.localRotation, parent.localScale);
+           
+            transformBase = new TransformInfo(parent);
 
             if (parent.GetType().Equals(typeof(RectTransform)))
             {

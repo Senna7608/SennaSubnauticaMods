@@ -8,8 +8,8 @@ using Common;
 using UWE;
 using static Common.GameHelper;
 using SMLHelper.V2.Utility;
-using MoreCyclopsUpgrades.CyclopsUpgrades;
-using MoreCyclopsUpgrades.Managers;
+using MoreCyclopsUpgrades.API;
+using MoreCyclopsUpgrades.API.Upgrades;
 
 namespace CyclopsLaserCannonModule
 {
@@ -18,15 +18,10 @@ namespace CyclopsLaserCannonModule
         public static AssetBundle assetBundle;
         public static Material cannon_material;
         public static Sprite buttonSprite;
-
+        public static TechType techTypeID;
         public static bool isAssetsLoaded;
 
-        public static Event<string> onConfigurationChanged = new Event<string>();
-
-        //MCU upgrade events      
-        public static UpgradeEvent onClearUpgrades;
-        public static UpgradeEventSlotBound onUpgradeCounted;
-
+        public static Event<string> onConfigurationChanged = new Event<string>();        
 
         public static void Load()
         {
@@ -34,17 +29,19 @@ namespace CyclopsLaserCannonModule
             {
                 isAssetsLoaded = LoadAssets();
 
-                CannonConfig.InitConfig();
+                CannonConfig.LoadConfig();
 
                 var laserCannon = new CannonPrefab();
 
                 laserCannon.Patch();
 
+                techTypeID = laserCannon.TechType;
+
                 HarmonyInstance.Create("Subnautica.CyclopsLaserCannonModule.mod").PatchAll(Assembly.GetExecutingAssembly());
 
-                SceneManager.sceneLoaded += new UnityAction<Scene, LoadSceneMode>(OnSceneLoaded);
+                SceneManager.sceneLoaded += new UnityAction<Scene, LoadSceneMode>(OnSceneLoaded);                
 
-                UpgradeManager.UpgradeManagerInitializing += RegisterUpgrade;
+                RegisterUpgrade();                
             }
             catch (Exception ex)
             {
@@ -82,19 +79,19 @@ namespace CyclopsLaserCannonModule
                 return false;
             }
 
-        }    
+        }
 
-        private static void RegisterUpgrade()
+        public static void RegisterUpgrade()
         {
-            UpgradeManager.RegisterOneTimeUseHandlerCreator(() =>
+            MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
             {
                 SNLogger.Log($"[CyclopsLaserCannonModule] Upgrade registered for CannonControl");
-                return new UpgradeHandler(CannonPrefab.TechTypeID)
+
+                return new UpgradeHandler(techTypeID, cyclops)
                 {
-                    MaxCount = 1,
-                    OnUpgradeCounted = onUpgradeCounted,
-                    OnClearUpgrades = onClearUpgrades,
+                    MaxCount = 1                    
                 };                
+
             });
         }
     }        

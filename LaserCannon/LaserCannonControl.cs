@@ -7,9 +7,9 @@ using UnityEngine.Rendering;
 
 namespace LaserCannon
 {
-    public class LaserCannon_Seamoth : MonoBehaviour
+    public class LaserCannonControl : MonoBehaviour
     {
-        public LaserCannon_Seamoth Instance { get; private set; }
+        public LaserCannonControl Instance { get; private set; }
         public int moduleSlotID { get; set; }
 
         private SeaMoth thisSeamoth { get; set; }
@@ -47,7 +47,7 @@ namespace LaserCannon
 
         public void Start()
         {
-            Instance = gameObject.GetComponent<LaserCannon_Seamoth>();
+            Instance = gameObject.GetComponent<LaserCannonControl>();
             thisSeamoth = Instance.GetComponent<SeaMoth>();
             energyMixin = thisSeamoth.GetComponent<EnergyMixin>();
             playerMain = Player.main;
@@ -89,8 +89,7 @@ namespace LaserCannon
             leftBeam = laserLeft.GetComponent<LineRenderer>();            
 
             Destroy(laserBeam);
-            Destroy(powerTransmitterPrefab);
-            
+            Destroy(powerTransmitterPrefab);            
 
             SetBeamColor();
             ShootOnlyHostile();
@@ -105,7 +104,7 @@ namespace LaserCannon
 
         private void OnRemoveItem(InventoryItem item)
         {
-            if (item.item.GetTechType() == LaserCannon.TechTypeID)
+            if (item.item.GetTechType() == LaserCannonPrefab.TechTypeID)
             {
                 moduleSlotID = -1;
                 OnDisable();
@@ -115,7 +114,7 @@ namespace LaserCannon
 
         private void OnAddItem(InventoryItem item)
         {
-            if (item.item.GetTechType() == LaserCannon.TechTypeID)
+            if (item.item.GetTechType() == LaserCannonPrefab.TechTypeID)
             {               
                 moduleSlotID = thisSeamoth.GetSlotByItem(item);
                 OnEnable();
@@ -135,25 +134,25 @@ namespace LaserCannon
 
         public void SetBeamColor()
         {
-            rightBeam.material.color = Colors.ColorArray[Config.beamColor];
-            leftBeam.material.color = Colors.ColorArray[Config.beamColor];            
+            rightBeam.material.color = Colors.ColorArray[LaserCannonConfig.beamColor];
+            leftBeam.material.color = Colors.ColorArray[LaserCannonConfig.beamColor];            
         }
 
         public void ShootOnlyHostile()
         {
-            isOnlyHostile = bool.Parse(Config.program_settings["OnlyHostile"].ToString());
+            isOnlyHostile = bool.Parse(LaserCannonConfig.program_settings["OnlyHostile"].ToString());
         }
 
         public void SetLaserStrength()
         {
-            laserDamage = float.Parse(Config.program_settings["Damage"].ToString()) * 0.1f;
+            laserDamage = float.Parse(LaserCannonConfig.program_settings["Damage"].ToString()) * 0.1f;
             powerConsumption = 1 + laserDamage * 1f;            
         }
 
         public void SetWarningMessage()
         {
-            lowPower_title = Config.language_settings[Config.SECTION_LANGUAGE[17]];
-            lowPower_message = Config.language_settings[Config.SECTION_LANGUAGE[18]];
+            lowPower_title = LaserCannonConfig.language_settings[LaserCannonConfig.SECTION_LANGUAGE[17]];
+            lowPower_message = LaserCannonConfig.language_settings[LaserCannonConfig.SECTION_LANGUAGE[18]];
         }
 
         private void OnPlayerModeChanged(Player.Mode playerMode)
@@ -182,7 +181,7 @@ namespace LaserCannon
 
         private void OnToggle(int slotID, bool state)
         {
-            if (thisSeamoth.GetSlotBinding(slotID) == LaserCannon.TechTypeID)
+            if (thisSeamoth.GetSlotBinding(slotID) == LaserCannonPrefab.TechTypeID)
             {
                 isToggle = state;
 
@@ -202,8 +201,6 @@ namespace LaserCannon
             laserRight.SetActive(value);
             laserLeft.SetActive(value);
         }
-
-
 
         public void OnEnable()
         {            
@@ -314,7 +311,7 @@ namespace LaserCannon
         {
             if (isActive)
             {
-                if (isActive && IngameMenu.main.isActiveAndEnabled || isActive && PdaMain.state == PDA.State.Opening)
+                if (IngameMenu.main.isActiveAndEnabled || PdaMain.state == PDA.State.Opening)
                 {
                     thisSeamoth.SlotKeyDown(moduleSlotID);                    
                 }

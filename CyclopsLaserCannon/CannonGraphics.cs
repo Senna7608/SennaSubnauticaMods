@@ -48,7 +48,9 @@ namespace CyclopsLaserCannonModule
 
         public void CreateCannonCamera()
         {
-            CamPosition_Keel = gameObject.FindChild("CamPosition_Keel");
+            //CamPosition_Keel = gameObject.FindChild("CamPosition_Keel");
+
+            CamPosition_Keel = This_Cyclops_Root.FindChildWithMaxDepth("CamPosition_Keel");
 
             CannonCamPosition = new GameObject("CannonCamPosition");
             CannonCamPosition.transform.SetParent(CamPosition_Keel.transform.parent, false);
@@ -225,11 +227,6 @@ namespace CyclopsLaserCannonModule
 
             Destroy(laserBeam);
         }
-
-
-
-
-
 
     }
 }

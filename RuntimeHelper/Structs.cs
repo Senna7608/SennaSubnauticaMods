@@ -18,16 +18,29 @@ namespace RuntimeHelper
     
     public struct TransformInfo
     {
-        public TransformInfo(Vector3 localPosition, Quaternion localRotation, Vector3 localScale) : this()
+        public TransformInfo(Transform transform) : this()
         {
-            LocalPosition = localPosition;
-            LocalRotation = localRotation;
-            LocalScale = localScale;
+            Position = transform.position;
+            Rotation = transform.rotation;
+            LocalPosition = transform.localPosition;
+            LocalRotation = transform.localRotation;
+            Scale = transform.localScale;
         }
 
+        public TransformInfo(Vector3 position, Quaternion rotation, Vector3 localPosition, Quaternion localRotation, Vector3 scale) : this()
+        {
+            Position = position;
+            Rotation = rotation;
+            LocalPosition = localPosition;
+            LocalRotation = localRotation;
+            Scale = scale;
+        }
+
+        public Vector3 Position { get; set; }
+        public Quaternion Rotation { get; set; }
         public Vector3 LocalPosition { get; set; }
-        public Quaternion LocalRotation { get; set; }
-        public Vector3 LocalScale { get; set; }        
+        public Quaternion LocalRotation { get; set; }        
+        public Vector3 Scale { get; set; }        
     }
 
     public enum ColliderType

@@ -136,23 +136,17 @@ namespace Common
 
         public static void SetMeshMaterial(this GameObject model, Material newMaterial, int index)
         {
-            model.SetActive(false);
-
             Renderer renderer = model.GetComponent<Renderer>();
 
             Material[] materials = renderer.materials;
 
             materials.SetValue(newMaterial, index);
 
-            renderer.materials = materials;
-
-            model.SetActive(true);
+            renderer.materials = materials;            
         }
 
         public static void CreateNewMaterialForObject(this GameObject model, string name, int materialIndex, Texture2D mainTex, Texture2D illumTex, Texture2D bumpMap, Texture2D specTex)
         {
-            model.SetActive(false);
-
             Renderer renderer = model.GetComponent<Renderer>();
 
             Shader newShader = renderer.material.shader;
@@ -180,9 +174,7 @@ namespace Common
 
             materials.SetValue(newMaterial, materialIndex);
 
-            renderer.materials = materials;
-
-            model.SetActive(true);
+            renderer.materials = materials;            
         }
 
         public static Texture2D GetTextureFromRenderer(Renderer renderer, string shaderPropertyKeyword)
@@ -230,6 +222,30 @@ namespace Common
             string pngPath = Path.Combine(Environment.CurrentDirectory, $"{filename}.png");            
 
             File.WriteAllBytes(pngPath, textureData);
+        }
+
+
+        public static void DebugObjectTransforms(this Transform transform, string space = "")
+        {
+            Console.WriteLine($"{space}--{transform.name}");            
+
+            foreach (Transform child in transform)
+            {
+                child.DebugObjectTransforms(space + "   |");
+            }            
+        }
+
+        public static GameObject FindChildWithMaxDepth(this GameObject gameObject, string name)
+        {
+            foreach (Transform child in gameObject.GetComponentsInChildren<Transform>(true))
+            {
+                if (child.name.Equals(name))
+                {                    
+                    return child.gameObject;
+                }                
+            }
+
+            return null;
         }
     }
 }

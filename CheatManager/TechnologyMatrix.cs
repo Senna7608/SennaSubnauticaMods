@@ -163,7 +163,7 @@ namespace CheatManager
             { "AlienRifle", CATEGORY.Tools },
             { "AncientSword", CATEGORY.Tools },
             { "Crowbar", CATEGORY.Tools },
-            { "CannonArm", CATEGORY.Upgrades },
+            { "ExosuitPlasmaCannonArmModule", CATEGORY.Upgrades },
             { "CyclopsLaserCannonModule", CATEGORY.Upgrades }
 
         };

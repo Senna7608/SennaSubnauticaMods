@@ -5,15 +5,15 @@ using Common;
 
 namespace LaserCannon
 {
-    internal class LaserCannon : Craftable
+    internal class LaserCannonPrefab : Craftable
     {
         public static TechType TechTypeID { get; private set; }        
-        public static Options Config { get; } = new Options();       
+        public static LaserCannonOptions Config { get; } = new LaserCannonOptions();       
 
-        internal LaserCannon()
+        internal LaserCannonPrefab()
             : base(nameID: "LaserCannon",
-                  friendlyName: global::LaserCannon.Config.language_settings["Item_Name"].ToString(),
-                  description: global::LaserCannon.Config.language_settings["Item_Description"].ToString(),
+                  friendlyName: LaserCannonConfig.language_settings["Item_Name"].ToString(),
+                  description: LaserCannonConfig.language_settings["Item_Description"].ToString(),
                   template: TechType.SeamothSonarModule,
                   fabricatorType: CraftTree.Type.SeamothUpgrades,
                   fabricatorTab: "SeamothModules",

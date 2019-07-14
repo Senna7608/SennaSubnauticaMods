@@ -7,7 +7,7 @@ namespace CheatManager
     internal class Patches
     {
         [HarmonyPatch(typeof(SeaMoth))]
-        [HarmonyPatch("Awake")]
+        [HarmonyPatch("Start")]
         internal class SeaMoth_Start_Patch
         {
             [HarmonyPostfix]
@@ -18,13 +18,13 @@ namespace CheatManager
         }
 
         [HarmonyPatch(typeof(Exosuit))]
-        [HarmonyPatch("Awake")]
+        [HarmonyPatch("Start")]
         internal class Exosuit_Start_Patch
         {
             [HarmonyPostfix]
             internal static void Postfix(Exosuit __instance)
-            {
-                __instance.gameObject.AddIfNeedComponent<ExosuitOverDrive>();
+            {                
+                __instance.gameObject.AddIfNeedComponent<ExosuitOverDrive>();               
             }
         }
         
@@ -94,48 +94,6 @@ namespace CheatManager
                     Main.Instance.onFilterFastChanged.Trigger((bool)__instance.GetPrivateField("fastFiltering"));
                 }                
             }
-        }
-
-        
-        
-        /*
-        [HarmonyPatch(typeof(Pickupable))]
-        [HarmonyPatch("Initialize")]
-        internal class Pickupable_Start_Patch
-        {
-            [HarmonyPostfix]
-            internal static void Postfix(Pickupable __instance)
-            {
-                switch (__instance.name)
-                {
-                    case "Knife(Clone)":
-                    case "HeatBlade(Clone)":
-                    case "Flashlight(Clone)":
-                    case "Scanner(Clone)":
-                    case "AlienRifle(Clone)":
-                    case "Builder(Clone)":
-                    case "Welder(Clone)":
-                    case "LaserCutter(Clone)":
-                    case "StasisRifle(Clone)":
-                    case "RepulsionCannon(Clone)":
-                    case "PropulsionCannon(Clone)":
-                    case "Gravsphere(Clone)":
-                    case "AncientSword(Clone)":
-                    case "Crowbar(Clone)":
-                    case "Transfuser(Clone)":
-                    case "LEDLight(Clone)":
-                    case "DiveReel(Clone)":
-                    case "SeaGlide(Clone)":
-                    case "ExosuitPropulsionArmModule(Clone)":
-                    case "ExosuitTorpedoArmModule(Clone)":
-                    case "ExosuitDrillArmModule(Clone)":
-                    case "CannonArm(Clone)":
-
-                    __instance.gameObject.AddIfNeedComponent<RuntimeObjectManager>();
-                    break;
-                }
-            }
-        }
-        */
+        }       
     }
 }

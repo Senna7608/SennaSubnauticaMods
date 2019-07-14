@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using SMLHelper.V2.Crafting;
-using SMLHelper.V2.Handlers;
 using Common;
 
 namespace RepairModule
@@ -11,6 +10,7 @@ namespace RepairModule
 
         internal RepairModule()
             : base(nameID: "RepairModule",
+                  nameUsingForFiles: "RepairModule",
                   friendlyName: "Repair Module",
                   description: "Allows to repair damaged Vehicles from inside.",
                   template: TechType.SeamothSonarModule,
@@ -21,7 +21,7 @@ namespace RepairModule
                   categoryForPDA: TechCategory.VehicleUpgrades,
                   equipmentType: EquipmentType.VehicleModule,
                   quickSlotType: QuickSlotType.Toggleable,
-                  componentsToAdd: null,
+                  itemSize: new Vector2int(1, 1),
                   gamerResourceFileName: null
                   )
         {

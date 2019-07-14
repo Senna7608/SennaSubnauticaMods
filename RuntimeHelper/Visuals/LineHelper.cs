@@ -86,7 +86,7 @@ namespace RuntimeHelper.Visuals
 
         public static void DrawBox(this List<GameObject> lineContainers, Vector3 center, Vector3 size)
         {
-            Vector3[] vertices = GetBoxLocalVertexPositions(center, size);
+            Vector3[] vertices = GetBoxLocalCorners(center, size);
 
             lineContainers[0].DrawLine(vertices[0], vertices[1]);
             lineContainers[1].DrawLine(vertices[0], vertices[3]);
@@ -122,7 +122,7 @@ namespace RuntimeHelper.Visuals
             lineRenderer.SetPositions(points);            
         }
         
-        private static Vector3[] GetBoxLocalVertexPositions(Vector3 center, Vector3 size)
+        private static Vector3[] GetBoxLocalCorners(Vector3 center, Vector3 size)
         {
             Vector3[] vertices = new Vector3[8];
 

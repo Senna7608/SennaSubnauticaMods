@@ -1,4 +1,6 @@
-﻿namespace CyclopsLaserCannonModule
+﻿using Common;
+
+namespace CyclopsLaserCannonModule
 {
     public partial class CannonControl
     {        
@@ -14,25 +16,7 @@
             cannon_base_left.SetActive(value);
             Button_Cannon.SetActive(value);
         }
-
-        private void EnableCannonOnUpgradeCounted(SubRoot cyclops, Equipment modules, string slot)
-        {
-            if (cyclops != subroot)
-                return;
-            
-            isModuleInserted = true;
-            LaserCannonSetActive(isModuleInserted);                      
-        }
-
-        private void DisableCannonOnClearUpgrades(SubRoot cyclops)
-        {
-            if (cyclops != subroot)
-                return;
-
-            isModuleInserted = false;
-            LaserCannonSetActive(isModuleInserted);            
-        }        
-
+        
         private void OnConfigurationChanged(string configToChange)
         {
             switch (configToChange)
@@ -67,6 +51,32 @@
             {
                 isActive = false;
             }            
-        }           
+        }
+        
+        private void OnFinishedUpgrades()
+        {            
+            if (upgradeHandler.TechType == Main.techTypeID && upgradeHandler.Count > 0)
+            {
+                isModuleInserted = true;
+                LaserCannonSetActive(isModuleInserted);
+            }
+        }
+
+        private void OnClearUpgrades()
+        {
+            isModuleInserted = false;
+            LaserCannonSetActive(isModuleInserted);
+        }
+
+        private void OnFirstTimeCheckModuleIsExists()
+        {
+            SNLogger.Log($"[CyclopsLaserCannonModule] Trying to enable module...");
+
+            if (upgradeHandler.Count > 0)
+            {
+                isModuleInserted = true;
+                LaserCannonSetActive(isModuleInserted);
+            }
+        }
     }
 }

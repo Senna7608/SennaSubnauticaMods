@@ -5,6 +5,8 @@ using static Common.Modules;
 using static Common.GameHelper;
 using Common;
 using System.Collections;
+using MoreCyclopsUpgrades.API.Upgrades;
+using MoreCyclopsUpgrades.API;
 
 namespace CyclopsLaserCannonModule
 {
@@ -18,7 +20,7 @@ namespace CyclopsLaserCannonModule
         public CannonCamera camera_instance;        
 
         private AudioSource audioSource;
-        private readonly TechType laserCannon = CannonPrefab.TechTypeID;        
+        private readonly TechType laserCannon = Main.techTypeID;        
         
         private readonly float fireRate = 0.5f;
         private float nextFire;        
@@ -29,19 +31,20 @@ namespace CyclopsLaserCannonModule
         private Vector3[] left_right_beamPositions = new Vector3[2];
         private Vector3[] left_left_beamPositions = new Vector3[2];
         private GameObject targetGameobject;        
-        private Vector3 targetPosition;               
+        private Vector3 targetPosition;
+
+        private UpgradeHandler upgradeHandler;
+        
 
         public void Start()
-        {            
-            Main.onClearUpgrades += DisableCannonOnClearUpgrades;
-            Main.onUpgradeCounted += EnableCannonOnUpgradeCounted;
-
+        {                       
             Instance = this;            
 
-            Main.onConfigurationChanged.AddHandler(this, new Event<string>.HandleFunction(OnConfigurationChanged));             
+            Main.onConfigurationChanged.AddHandler(this, new Event<string>.HandleFunction(OnConfigurationChanged));
 
-            This_Cyclops_Root = transform.parent.gameObject;
-            subroot = gameObject.GetComponentInParent<SubRoot>();            
+            This_Cyclops_Root = gameObject;
+            
+            subroot = gameObject.GetComponent<SubRoot>();
             subcontrol = subroot.GetComponentInParent<SubControl>();            
             powerRelay = subcontrol.powerRelay;            
 
@@ -61,17 +64,39 @@ namespace CyclopsLaserCannonModule
             SetWarningMessage();                        
             
             Player.main.playerModeChanged.AddHandler(this, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
-            Player.main.currentSubChangedEvent.AddHandler(this, new Event<SubRoot>.HandleFunction(OnSubRootChanged));            
+            Player.main.currentSubChangedEvent.AddHandler(this, new Event<SubRoot>.HandleFunction(OnSubRootChanged));
+
+            StartCoroutine(GetMCUHandler());            
         }        
 
+        private IEnumerator GetMCUHandler()
+        {
+            SNLogger.Log($"[CyclopsLaserCannonModule] GetMCUHandler coroutine started for this Cyclops: {This_Cyclops_Root.GetInstanceID()}");
+
+            while (upgradeHandler == null)
+            {
+                upgradeHandler = MCUServices.Find.CyclopsUpgradeHandler(subroot, Main.techTypeID);
+                SNLogger.Log($"[CyclopsLaserCannonModule] MCU UpgradeHandler is not ready for this Cyclops: {This_Cyclops_Root.GetInstanceID()}");
+                yield return null;
+            }
+
+            SNLogger.Log($"[CyclopsLaserCannonModule] MCU UpgradeHandler is ready for this Cyclops: {This_Cyclops_Root.GetInstanceID()}");
+
+            upgradeHandler.OnFinishedUpgrades = OnFinishedUpgrades;
+            upgradeHandler.OnClearUpgrades = OnClearUpgrades;
+
+            OnFirstTimeCheckModuleIsExists();
+
+            SNLogger.Log($"[CyclopsLaserCannonModule] GetMCUHandler coroutine stopped for this Cyclops: {This_Cyclops_Root.GetInstanceID()}");
+
+            yield break;
+        }
+                     
         public void OnDestroy()
         {
             Player.main.playerModeChanged.RemoveHandler(this, OnPlayerModeChanged);
             Player.main.currentSubChangedEvent.RemoveHandler(this, OnSubRootChanged);
-
-            Main.onClearUpgrades -= DisableCannonOnClearUpgrades;
-            Main.onUpgradeCounted -= EnableCannonOnUpgradeCounted;
-
+            
             Destroy(cannon_base_right);
             Destroy(cannon_base_left);            
             Destroy(Button_Cannon);
@@ -108,6 +133,7 @@ namespace CyclopsLaserCannonModule
             }
         }
 
+        /*
         private void AddForceToTarget()
         {
             Rigidbody rb = targetGameobject.GetComponent<Rigidbody>();
@@ -123,6 +149,28 @@ namespace CyclopsLaserCannonModule
                 if (rb != null)
                 {
                     rb.AddForce(targetPosition.normalized * 20f, ForceMode.Impulse);
+                }
+            }
+        }
+        */
+
+        private void AddForceToTarget(Transform source, GameObject targetObject)
+        {
+            Rigidbody rb = targetObject.GetComponent<Rigidbody>();
+
+            Vector3 forwardForce = source.forward;
+
+            if (rb != null)
+            {
+                rb.AddForce(forwardForce * 20f, ForceMode.Impulse);
+            }
+            else
+            {
+                rb = targetObject.GetComponentInChildren<Rigidbody>();
+
+                if (rb != null)
+                {
+                    rb.AddForce(forwardForce * 20f, ForceMode.Impulse);
                 }
             }
         }
@@ -167,7 +215,7 @@ namespace CyclopsLaserCannonModule
 
                     AddDamageToTarget(targetGameobject);
 
-                    AddForceToTarget();
+                    AddForceToTarget(Player.main.camRoot.GetAimingTransform(), targetGameobject);
                 }
             }
             else

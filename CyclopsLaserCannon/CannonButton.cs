@@ -26,18 +26,24 @@ namespace CyclopsLaserCannonModule
 
             eventTrigger.triggers.Clear();
 
-            EventTrigger.Entry newEntry_1 = new EventTrigger.Entry();
-            newEntry_1.eventID = EventTriggerType.PointerEnter;
+            EventTrigger.Entry newEntry_1 = new EventTrigger.Entry
+            {
+                eventID = EventTriggerType.PointerEnter
+            };
             newEntry_1.callback.AddListener((data) => { OnPointerEnter(); });
             eventTrigger.triggers.Add(newEntry_1);
 
-            EventTrigger.Entry newEntry_2 = new EventTrigger.Entry();
-            newEntry_2.eventID = EventTriggerType.PointerExit;            
+            EventTrigger.Entry newEntry_2 = new EventTrigger.Entry
+            {
+                eventID = EventTriggerType.PointerExit
+            };
             newEntry_2.callback.AddListener((data) => { OnPointerExit(); });
             eventTrigger.triggers.Add(newEntry_2);
 
-            EventTrigger.Entry newEntry_3 = new EventTrigger.Entry();
-            newEntry_3.eventID = EventTriggerType.PointerClick;
+            EventTrigger.Entry newEntry_3 = new EventTrigger.Entry
+            {
+                eventID = EventTriggerType.PointerClick
+            };
             newEntry_3.callback.AddListener((data) => { OnPointerClick(); });
             eventTrigger.triggers.Add(newEntry_3);            
         }

@@ -74,7 +74,7 @@ namespace Common.ConfigurationParser
             }
             catch
             {
-                Console.WriteLine($"Parser Error! Section [{section}] creation error!");
+                Console.WriteLine($"Parser warning! The [{section}] section already exists in file: '{_reader.FilePath}'");
                 return false;
             }
         }

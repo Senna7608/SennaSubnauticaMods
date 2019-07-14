@@ -34,9 +34,13 @@ namespace Common.ConfigurationParser
         public override string ToString()
         {
             var sb = new StringBuilder();
+
             sb.AppendFormat($"[{Name}]\r\n");
+
             foreach (var kvp in this)
+            {
                 sb.AppendFormat($"{kvp.Key}: {kvp.Value}\r\n");
+            }
 
             return sb.ToString();
         }

@@ -10,14 +10,14 @@ namespace LaserCannon
 {
     public static class Main
     {
-        public static LaserCannon_Seamoth Instance { get; internal set; }        
+        public static LaserCannonControl Instance { get; internal set; }        
 
         public static void Load()
         {
             try
             {
-                Config.InitConfig();
-                var laserCannon = new LaserCannon();
+                LaserCannonConfig.LoadConfig();
+                var laserCannon = new LaserCannonPrefab();
                 laserCannon.Patch();
 
                 HarmonyInstance.Create("Subnautica.LaserCannon.mod").PatchAll(Assembly.GetExecutingAssembly());
@@ -33,22 +33,21 @@ namespace LaserCannon
         {
             if (scene.name == "StartScreen")
             {
-                Language.main.OnLanguageChanged += Config.OnLanguageChanged;
+                Language.main.OnLanguageChanged += LaserCannonConfig.OnLanguageChanged;
             }
         }
     }
 
     [HarmonyPatch(typeof(SeaMoth))]
-    [HarmonyPatch("OnUpgradeModuleChange")]
-    [HarmonyPatch(new Type[] { typeof(int), typeof(TechType), typeof(bool) })]
+    [HarmonyPatch("OnUpgradeModuleChange")]    
     public class SeaMoth_OnUpgradeModuleChange_Patch
     {
         [HarmonyPostfix]
         static void Postfix(SeaMoth __instance, int slotID, TechType techType, bool added)
         {            
-            if (techType == LaserCannon.TechTypeID && added)
+            if (techType == LaserCannonPrefab.TechTypeID && added)
             {
-                var control = __instance.gameObject.GetOrAddComponent<LaserCannon_Seamoth>();
+                var control = __instance.gameObject.GetOrAddComponent<LaserCannonControl>();
                 control.moduleSlotID = slotID;
                 Main.Instance = control;               
             }                                  

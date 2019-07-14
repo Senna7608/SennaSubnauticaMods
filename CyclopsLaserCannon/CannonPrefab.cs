@@ -2,16 +2,17 @@
 using SMLHelper.V2.Crafting;
 using SMLHelper.V2.Handlers;
 using Common;
+using UnityEngine;
 
 namespace CyclopsLaserCannonModule
 {
     internal class CannonPrefab : Craftable
-    {
-        public static TechType TechTypeID { get; private set; }        
+    {              
         public static CannonOptions Config { get; } = new CannonOptions();       
 
         internal CannonPrefab()
             : base(nameID: "CyclopsLaserCannonModule",
+                  nameUsingForFiles: "CyclopsLaserCannonModule",
                   friendlyName: CannonConfig.language_settings["Item_Name"],
                   description: CannonConfig.language_settings["Item_Description"],
                   template: TechType.CyclopsHullModule1,
@@ -22,7 +23,7 @@ namespace CyclopsLaserCannonModule
                   categoryForPDA: TechCategory.VehicleUpgrades,
                   equipmentType: EquipmentType.CyclopsModule,
                   quickSlotType: QuickSlotType.None,
-                  componentsToAdd: null,
+                  itemSize: new Vector2int(1, 1),                  
                   gamerResourceFileName: null
                   )
         {
@@ -30,8 +31,7 @@ namespace CyclopsLaserCannonModule
                
         public override void Patch()
         {
-            base.Patch();                                    
-            TechTypeID = TechType;           
+            base.Patch();                   
             OptionsPanelHandler.RegisterModOptions(Config);
         }
         

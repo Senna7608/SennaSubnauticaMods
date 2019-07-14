@@ -30,11 +30,19 @@ namespace Common.ConfigurationParser
         private void ParseLine(string line)
         {
             if (SectionPattern.IsMatch(line))
+            {
                 InitNewSectionFromLine(line);
+            }
+
             if (PairPattern.IsMatch(line))
+            {
                 AddKeyValuePairToLastSectionFromLine(line);
+            }
+
             if (ContinuationPattern.IsMatch(line))
+            {
                 AppendToLastSectionValueFromLine(line);
+            }
         }
 
         private void InitNewSectionFromLine(string line)
