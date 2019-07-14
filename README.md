@@ -28,7 +28,3 @@
 # Cyclops Laser Cannon
 - This mod is the first weapon mod for the cyclops.
 - This mod is using the services of PrimeSonic's More Cyclops Upgrades mod.
-
-# Cannon Arm
-- This mod idea: add the new Cannon arm for the Exosuit.
-- This mod is in the very early stage and not working.
