@@ -1,6 +1,9 @@
 ﻿using System;
 using System.IO;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace Common
 {
@@ -145,36 +148,29 @@ namespace Common
             renderer.materials = materials;            
         }
 
-        public static void CreateNewMaterialForObject(this GameObject model, string name, int materialIndex, Texture2D mainTex, Texture2D illumTex, Texture2D bumpMap, Texture2D specTex)
+        public static void ChangeObjectTexture(this GameObject model, int materialIndex, Texture2D mainTex = null, Texture2D illumTex = null, Texture2D bumpMap = null, Texture2D specTex = null)
         {
-            Renderer renderer = model.GetComponent<Renderer>();
-
-            Shader newShader = renderer.material.shader;
-
-            Material newMaterial = new Material(newShader)
-            {
-                name = name,
-                hideFlags = HideFlags.HideAndDontSave,
-                shaderKeywords = renderer.material.shaderKeywords
-            };
+            Renderer renderer = model.GetComponent<Renderer>();            
 
             if (mainTex != null)
-                newMaterial.SetTexture(ShaderPropertyID._MainTex, mainTex);
+            {
+                renderer.materials[materialIndex].SetTexture(ShaderPropertyID._MainTex, mainTex);
+            }            
 
             if (illumTex != null)
-                newMaterial.SetTexture(ShaderPropertyID._Illum, illumTex);
+            {
+                renderer.materials[materialIndex].SetTexture(ShaderPropertyID._Illum, illumTex);
+            }
 
             if (bumpMap != null)
-                newMaterial.SetTexture(ShaderPropertyID._BumpMap, bumpMap);
+            {
+                renderer.materials[materialIndex].SetTexture(ShaderPropertyID._BumpMap, bumpMap);
+            }
 
             if (specTex != null)
-                newMaterial.SetTexture(ShaderPropertyID._SpecTex, specTex);
-
-            Material[] materials = renderer.materials;
-
-            materials.SetValue(newMaterial, materialIndex);
-
-            renderer.materials = materials;            
+            {
+                renderer.materials[materialIndex].SetTexture(ShaderPropertyID._SpecTex, specTex);
+            }            
         }
 
         public static Texture2D GetTextureFromRenderer(Renderer renderer, string shaderPropertyKeyword)
@@ -247,5 +243,68 @@ namespace Common
 
             return null;
         }
+
+        public static GameObject GetRootGameObject(string sceneName, string gameObjectName)
+        {
+            Scene scene;
+
+            GameObject[] rootObjects;
+
+            try
+            {
+                scene = SceneManager.GetSceneByName(sceneName);
+            }
+            catch
+            {
+                return null;
+            }
+
+            rootObjects = scene.GetRootGameObjects();
+            
+            foreach (GameObject gameObject in rootObjects)
+            {
+                if (gameObject.name.Equals(gameObjectName, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    return gameObject;
+                }
+            }
+            return null;
+        }
+        
+        public static void DebugComponent(this Component component)
+        {
+            List<string> keywords = new List<string>();
+
+            BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.IgnoreReturn;
+
+            keywords.Add("Properties:");
+
+            foreach (PropertyInfo propertyInfo in component.GetType().GetProperties(bindingFlags))
+            {
+                keywords.Add($"{propertyInfo.Name}  [{propertyInfo.GetValue(component, bindingFlags, null, null, null).ToString()}]");
+            }
+
+            keywords.Add("Fields:");
+
+            foreach (FieldInfo fieldInfo in component.GetType().GetFields(bindingFlags))
+            {
+                keywords.Add($"{fieldInfo.Name}  [{fieldInfo.GetValue(component).ToString()}]");
+            }
+
+            foreach (string key in keywords)
+            {
+                SNLogger.Log($"{key}");
+            }
+        }
+
+        public static void DebugAnimator(this Animator animator)
+        {
+            foreach (AnimatorControllerParameter param in animator.parameters)
+            {
+                SNLogger.Log($"parameter name: {param.name}");
+                SNLogger.Log($"parameter type: {param.type.ToString()}");
+            }
+        }
+
     }
 }

@@ -21,8 +21,8 @@ namespace CheatManager
 
         public void Awake()
         {
-            Instance = gameObject.GetComponent<SeamothOverDrive>();
-            ThisSeamoth = Instance.GetComponent<SeaMoth>();            
+            Instance = this;
+            ThisSeamoth = gameObject.GetComponent<SeaMoth>();            
         }
 
         public void Start()

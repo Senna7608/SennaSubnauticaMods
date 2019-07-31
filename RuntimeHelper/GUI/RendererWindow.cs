@@ -25,8 +25,9 @@ namespace RuntimeHelper
         private Vector2 scrollPos_Renderer = Vector2.zero;
 
         private string currentRenderer = string.Empty;
+        
+        private IDictionary<int, Material[]> undoDictionary = new Dictionary<int, Material[]>();
 
-        private Material[] undoMaterials;
         private bool undo = false;
 
         private int ScrollView_renderer_retval = -1;
@@ -39,6 +40,8 @@ namespace RuntimeHelper
         private void RendererWindow_Awake()
         {           
             _materialInfos = selectedObject.GetRendererInfo();
+
+            undo = IsUndoAvailable();
 
             RendererWindow_Refresh();
         }        
@@ -54,7 +57,7 @@ namespace RuntimeHelper
           
             if (undo)
             {
-                if (GUI.Button(new Rect(windowrect.x + 5, windowrect.y + (windowrect.height - 50), 60, 22), "Reset"))
+                if (GUI.Button(new Rect(windowrect.x + 5, windowrect.y + (windowrect.height - 50), 60, 22), RendererWindow[0]))
                 {
                     ResetMaterials();
                 }
@@ -64,8 +67,7 @@ namespace RuntimeHelper
         private void RendererWindow_Update()
         {
             if (!showRendererWindow)
-            {
-                undoMaterials = null;
+            {                
                 return;
             }
 
@@ -116,12 +118,14 @@ namespace RuntimeHelper
             
             CreateNewMaterialForObject(texture);
         }
-
-        private void ClearUndoArray()
+        
+        private bool IsUndoAvailable()
         {
-            undoMaterials = null;
-            undo = false;
+            Renderer renderer = selectedObject.GetComponent<Renderer>();
+
+            return undoDictionary.Keys.Contains(renderer.GetInstanceID());            
         }
+
 
         private bool GetSelectedMaterialIndex(int scrollIndex)
         {
@@ -149,18 +153,17 @@ namespace RuntimeHelper
         }
         
         private void ResetMaterials()
-        {
-            selectedObject.SetActive(false);
+        {           
 
             Renderer renderer = selectedObject.GetComponent<Renderer>();
 
-            Material[] materials = (Material[])undoMaterials.Clone();           
+            int rendererID = renderer.GetInstanceID();
 
-            renderer.materials = materials;                        
+            Material[] materials = (Material[])undoDictionary[rendererID].Clone();      
 
-            selectedObject.SetActive(true);
+            renderer.materials = materials;            
 
-            OutputWindow_Log($"Material set to original.");
+            OutputWindow_Log($"Renderer materials set to original.");
 
             RendererWindow_Awake();
         }
@@ -188,12 +191,13 @@ namespace RuntimeHelper
 
             Material[] materials = renderer.materials;
 
-            if (!undo)
-            {                
-                undoMaterials = (Material[])materials.Clone();
-                undo = true;
-            }                      
+            int rendererID = renderer.GetInstanceID();
 
+            if (!undoDictionary.Keys.Contains(rendererID))
+            {
+                undoDictionary.Add(components[selected_component].GetInstanceID(), (Material[])materials.Clone());
+            }
+            
             foreach (ShaderInfo shaderInfo in _materialInfos[materialIndex].ActiveShaders)
             {
                 if (shaderInfo.PropertyKeyword == shaderKeyword)

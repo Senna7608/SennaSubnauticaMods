@@ -168,7 +168,7 @@ namespace Common.GUIHelper
                     NormalButton.wordWrap = wordWrap;
                     NormalButton.normal.textColor = GetGuiColor(textColor);
                     NormalButton.hover.textColor = Color.white;
-                    NormalButton.active.textColor = Color.green;
+                    NormalButton.active.textColor = Color.green;                    
                     return NormalButton;
                 case GuiItemType.TOGGLEBUTTON:
                     return ToggleButton;
@@ -181,7 +181,7 @@ namespace Common.GUIHelper
                     Label.fontStyle = fontStyle;
                     Label.alignment = textAnchor;
                     Label.wordWrap = wordWrap;
-                    Label.clipping = TextClipping.Overflow;
+                    Label.clipping = TextClipping.Overflow;                    
                     return Label;
 
                 case GuiItemType.TEXTFIELD:
@@ -190,7 +190,8 @@ namespace Common.GUIHelper
                 case GuiItemType.TEXTAREA:
                     Textarea.fontStyle = fontStyle;
                     Textarea.alignment = textAnchor;
-                    Textarea.wordWrap = wordWrap;                    
+                    Textarea.wordWrap = wordWrap;
+                    Textarea.normal.textColor = GetGuiColor(textColor);
                     return Textarea;
 
                 case GuiItemType.BOX:

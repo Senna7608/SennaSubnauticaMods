@@ -66,7 +66,18 @@ namespace Common
 
         public virtual void Patch()
         {
-            Atlas.Sprite sprite = ImageUtils.LoadSpriteFromFile($"./QMods/{NameUsingForFiles}/Assets/{NameUsingForFiles}.png");
+            Atlas.Sprite sprite;
+
+            if (NameUsingForFiles != null)
+            {
+               sprite = ImageUtils.LoadSpriteFromFile($"./QMods/{NameUsingForFiles}/Assets/{NameUsingForFiles}.png");
+            }
+            else
+            {
+                sprite = GetResourceIcon(PrefabTemplate);
+            }
+
+
             TechType = TechTypeHandler.AddTechType(NameID, FriendlyName, Description, sprite , false);
             SpriteHandler.RegisterSprite(TechType, sprite);            
             CraftTreeHandler.AddCraftingNode(FabricatorType, TechType, FabricatorTab);
@@ -97,6 +108,11 @@ namespace Common
             _GameObject.name = NameID;            
             
             return _GameObject;
-        }        
+        }
+        
+        public Atlas.Sprite GetResourceIcon(TechType techType)
+        {
+            return SpriteManager.Get(techType);
+        }
     }
 }

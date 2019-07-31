@@ -3,7 +3,7 @@
   "DisplayName": "SlotExtender",
   "Author": "Senna, PrimeSonic",
   "Version": "2.5.1",
-  "Dependencies": [],
+  "Dependencies": ["SMLHelper"],
   "LoadBefore": [],
   "LoadAfter": [],
   "Enable": true,

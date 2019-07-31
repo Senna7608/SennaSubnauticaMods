@@ -12,6 +12,7 @@ namespace LaserCannon
 
         internal LaserCannonPrefab()
             : base(nameID: "LaserCannon",
+                  nameUsingForFiles: "LaserCannon",
                   friendlyName: LaserCannonConfig.language_settings["Item_Name"].ToString(),
                   description: LaserCannonConfig.language_settings["Item_Description"].ToString(),
                   template: TechType.SeamothSonarModule,
@@ -22,7 +23,7 @@ namespace LaserCannon
                   categoryForPDA: TechCategory.VehicleUpgrades,
                   equipmentType: EquipmentType.SeamothModule,
                   quickSlotType: QuickSlotType.Toggleable,
-                  componentsToAdd: null,
+                  itemSize: new Vector2int(1, 1),
                   gamerResourceFileName: null
                   )
         {

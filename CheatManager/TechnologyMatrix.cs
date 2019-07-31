@@ -164,7 +164,9 @@ namespace CheatManager
             { "AncientSword", CATEGORY.Tools },
             { "Crowbar", CATEGORY.Tools },
             { "ExosuitPlasmaCannonArmModule", CATEGORY.Upgrades },
-            { "CyclopsLaserCannonModule", CATEGORY.Upgrades }
+            { "CyclopsLaserCannonModule", CATEGORY.Upgrades },
+            { "SeamothEnergyShield", CATEGORY.Upgrades },
+            { "ExosuitRepulsionCannonArmModule", CATEGORY.Upgrades }
 
         };
 

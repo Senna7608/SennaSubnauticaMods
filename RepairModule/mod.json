@@ -3,7 +3,7 @@
   "DisplayName": "RepairModule",
   "Author": "Senna",
   "Version": "2.3",
-  "Dependencies": [],
+  "Dependencies": ["SMLHelper"],
   "LoadBefore": [],
   "LoadAfter": [],
   "Enable": true,

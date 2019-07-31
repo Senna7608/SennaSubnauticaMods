@@ -85,8 +85,6 @@ namespace CyclopsLaserCannonModule
         {
             MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
             {
-                SNLogger.Log($"[CyclopsLaserCannonModule] Upgrade registered for CannonControl");
-
                 return new UpgradeHandler(techTypeID, cyclops)
                 {
                     MaxCount = 1                    

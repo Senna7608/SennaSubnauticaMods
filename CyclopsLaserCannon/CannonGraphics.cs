@@ -48,12 +48,10 @@ namespace CyclopsLaserCannonModule
 
         public void CreateCannonCamera()
         {
-            //CamPosition_Keel = gameObject.FindChild("CamPosition_Keel");
-
-            CamPosition_Keel = This_Cyclops_Root.FindChildWithMaxDepth("CamPosition_Keel");
+            CamPosition_Keel = This_Cyclops_Root.FindChild("ExternalCams").FindChild("CamPosition_Keel");
 
             CannonCamPosition = new GameObject("CannonCamPosition");
-            CannonCamPosition.transform.SetParent(CamPosition_Keel.transform.parent, false);
+            CannonCamPosition.transform.SetParent(transform, false);
             CannonCamPosition.transform.localPosition = CamPosition_Keel.transform.localPosition;
             CannonCamPosition.transform.localRotation = Quaternion.Euler(25, 180, 0);
 

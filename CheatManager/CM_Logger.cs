@@ -125,7 +125,7 @@ namespace CheatManager
                     
                     logStyle.normal.textColor = SNStyles.GetGuiColor(logTypeColors[logMessage[i].type]);
                     
-                    GUI.Label(new Rect(scrollRect.x + 20, drawingPos, scrollRect.width, contentHeight), logMessage[i].stackTrace, logStyle);
+                    GUI.Label(new Rect(scrollRect.x + 20, drawingPos, scrollWidth, contentHeight), logMessage[i].stackTrace, logStyle);
                     
                     drawingPos += contentHeight + 1;
                 }

@@ -21,7 +21,7 @@ namespace RuntimeHelper
             "Z"
         };
 
-        public static readonly string[] OBJECT_MODES = new string[9]
+        public static readonly string[] OBJECT_MODES = new string[10]
         {            
             "Rotation: x",
             "Rotation: y",
@@ -29,6 +29,7 @@ namespace RuntimeHelper
             "Position: x",
             "Position: y",
             "Position: z",
+            "Scale: x,y,z",
             "Scale: x",
             "Scale: y",
             "Scale: z",

@@ -63,7 +63,7 @@ namespace ScannerModule
 
         private void OnRemoveItem(InventoryItem item)
         {
-            if (item.item.GetTechType() == ScannerModule.TechTypeID)
+            if (item.item.GetTechType() == ScannerModulePrefab.TechTypeID)
             {
                 moduleSlotID = -1;
                 Instance.enabled = false;
@@ -72,7 +72,7 @@ namespace ScannerModule
 
         private void OnAddItem(InventoryItem item)
         {
-            if (item.item.GetTechType() == ScannerModule.TechTypeID)
+            if (item.item.GetTechType() == ScannerModulePrefab.TechTypeID)
             {
                 moduleSlotID = thisExosuit.GetSlotByItem(item) - 2;
                 Instance.enabled = true;
@@ -105,7 +105,7 @@ namespace ScannerModule
 
         private void OnToggle(int slotID, bool state)
         {
-            if (thisExosuit.GetSlotBinding(slotID) == ScannerModule.TechTypeID)
+            if (thisExosuit.GetSlotBinding(slotID) == ScannerModulePrefab.TechTypeID)
             {
                 isToggle = state;
 

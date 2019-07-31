@@ -3,7 +3,7 @@
   "DisplayName": "AncientSword",
   "Author": "Senna",
   "Version": "1.0",
-  "Dependencies": [],
+  "Dependencies": ["SMLHelper"],
   "LoadBefore": [],
   "LoadAfter": [],
   "Enable": true,

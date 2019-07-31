@@ -14,9 +14,8 @@ namespace RuntimeHelper.Visuals
         private GameObject pointer;
 
         private void Awake()
-        {
-            Transform parent = transform.parent;
-            transformBase = new TransformInfo(parent.localPosition, parent.localRotation, parent.localScale);
+        {            
+            transformBase = new TransformInfo(transform.parent);
 
             gameObject.CreatePointerLine(PointerType.Collider);
 

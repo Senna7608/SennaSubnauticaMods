@@ -38,7 +38,7 @@ namespace RuntimeHelper
 
                 foreach (Component component in components)
                 {
-                    componentNames.Add(component.GetType().ToString());
+                    componentNames.Add(component.GetType().ToString().Split('.').GetLast());
                 }
             }
             catch
@@ -58,7 +58,7 @@ namespace RuntimeHelper
 
             ScrollView_components_retval = SNScrollView.CreateScrollView(new Rect(ComponentWindow_drawRect.x + 5, ComponentWindow_drawRect.y, ComponentWindow_drawRect.width - 10, 168), ref scrollPos_Components, ref guiItems_Components, "Components of", selectedObject.name, 7);
 
-            if (GUI.Button(new Rect(ComponentWindow_drawRect.x + 5, (ComponentWindow_drawRect.y + ComponentWindow_drawRect.height) - 27, 150, 22), "Remove Component", SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
+            if (GUI.Button(new Rect(ComponentWindow_drawRect.x + 5, (ComponentWindow_drawRect.y + ComponentWindow_drawRect.height) - 27, 150, 22), ComponentWindow[0], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
                 RemoveComponent();
             }
@@ -69,27 +69,31 @@ namespace RuntimeHelper
             if (ScrollView_components_retval != -1)
             {
                 selected_component = ScrollView_components_retval;
-                
+
+                Type componentType = components[selected_component].GetType();
+                                
                 if (IsSupportedCollider(components[selected_component]))
-                {
-                    GetColliderInfo();                    
+                {                        
+                    GetColliderInfo();
                     SetColliderDrawing(true, (Collider)components[selected_component]);
                     RefreshEditModeList();
                 }
                 else
-                {                    
+                {
                     SetColliderDrawing(false, null);
                     RefreshEditModeList();
                 }
-                
+               
                 if (IsSupportedRenderer(components[selected_component]))
                 {
-                    RendererWindow_Awake();                    
-                }
+                    showComponentInfoWindow = false;
+                    RendererWindow_Awake();
+                }                
                 else
                 {
-                    showRendererWindow = false;
-                    ClearUndoArray();
+                    showRendererWindow = false;                    
+                    ComponentInfoWindow_Awake(components[selected_component]);
+                    showComponentInfoWindow = true;
                 }
             }
 

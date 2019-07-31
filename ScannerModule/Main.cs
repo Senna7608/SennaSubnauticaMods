@@ -12,7 +12,7 @@ namespace ScannerModule
         {
             try
             {
-                var scannermodule = new ScannerModule();
+                var scannermodule = new ScannerModulePrefab();
                 scannermodule.Patch();
 
                 HarmonyInstance.Create("Subnautica.ScannerModule.mod").PatchAll(Assembly.GetExecutingAssembly());                
@@ -30,7 +30,7 @@ namespace ScannerModule
     {
         static void Postfix(Vehicle __instance, int slotID, TechType techType, bool added)
         {
-            if (techType == ScannerModule.TechTypeID && added)
+            if (techType == ScannerModulePrefab.TechTypeID && added)
             {
                 if (__instance.GetType() == typeof(SeaMoth))
                 {

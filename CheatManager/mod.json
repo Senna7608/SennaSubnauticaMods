@@ -3,7 +3,7 @@
   "DisplayName": "CheatManager",
   "Author": "Senna",
   "Version": "2.1",
-  "Dependencies": [],
+  "Dependencies": ["SMLHelper"],
   "LoadBefore": [],
   "LoadAfter": [],
   "Enable": true,

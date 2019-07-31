@@ -12,7 +12,7 @@ namespace ScannerModule
         private SeaMoth thisSeamoth { get; set; }
         private Player playerMain { get; set; }
         private EnergyMixin energyMixin { get; set; }
-        private Transform leftTorpedoSlot { get; set; }
+        private Transform leftTorpedoSlot;
 
         private GameObject scanBeam;
         private float powerConsumption = 0.5f;
@@ -46,7 +46,7 @@ namespace ScannerModule
 
         public void Awake()
         {
-            Instance = gameObject.GetComponent<ScannerModuleSeamoth>();
+            Instance = this;
             thisSeamoth = Instance.GetComponent<SeaMoth>();            
             leftTorpedoSlot = thisSeamoth.torpedoTubeLeft.transform;
             energyMixin = thisSeamoth.GetComponent<EnergyMixin>();
@@ -102,7 +102,7 @@ namespace ScannerModule
 
         private void OnRemoveItem(InventoryItem item)
         {
-            if (item.item.GetTechType() == ScannerModule.TechTypeID)
+            if (item.item.GetTechType() == ScannerModulePrefab.TechTypeID)
             {                
                 moduleSlotID = -1;
                 Instance.enabled = false;                
@@ -111,7 +111,7 @@ namespace ScannerModule
 
         private void OnAddItem(InventoryItem item)
         {
-            if (item.item.GetTechType() == ScannerModule.TechTypeID)
+            if (item.item.GetTechType() == ScannerModulePrefab.TechTypeID)
             {
                 moduleSlotID = thisSeamoth.GetSlotByItem(item);
                 Instance.enabled = true;
@@ -145,7 +145,7 @@ namespace ScannerModule
 
         private void OnToggle(int slotID, bool state)
         {
-            if (thisSeamoth.GetSlotBinding(slotID) == ScannerModule.TechTypeID)
+            if (thisSeamoth.GetSlotBinding(slotID) == ScannerModulePrefab.TechTypeID)
             {
                 isToggle = state;
 

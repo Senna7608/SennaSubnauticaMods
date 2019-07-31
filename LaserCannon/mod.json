@@ -3,7 +3,7 @@
   "DisplayName": "LaserCannon",
   "Author": "Senna",
   "Version": "1.5",
-  "Dependencies": [],
+  "Dependencies": ["SMLHelper"],
   "LoadBefore": [],
   "LoadAfter": [],
   "Enable": true,

@@ -55,6 +55,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ButtonText.cs" />
     <Compile Include="Command\RuntimeHelperCommand.cs" />
     <Compile Include="Components\ComponentHelper.cs" />
     <Compile Include="Components\TransformsHelper.cs" />
@@ -66,6 +67,7 @@
     <Compile Include="GUI\EditWindow.cs" />
     <Compile Include="GUI\GuiHelper.cs" />
     <Compile Include="GUI\ObjectWindow.cs" />
+    <Compile Include="GUI\ComponentInfoWindow.cs" />
     <Compile Include="GUI\RendererWindow.cs" />
     <Compile Include="Handlers.cs" />
     <Compile Include="GUI\OutputWindow.cs" />

@@ -52,7 +52,7 @@ namespace CheatManager.Configuration
 
             itemInfo.CreateGuiItemsGroup(HotkeyLabels.ToArray(), itemsRect, GuiItemType.TEXTFIELD, new GuiItemColor());
 
-            buttonInfo.CreateGuiItemsGroup(HotkeyButtons.ToArray(), buttonsRect, GuiItemType.NORMALBUTTON, new GuiItemColor(GuiColor.Gray, GuiColor.White, GuiColor.Green), GuiItemState.NORMAL, true, FontStyle.Bold, TextAnchor.MiddleCenter);
+            buttonInfo.CreateGuiItemsGroup(HotkeyButtons.ToArray(), buttonsRect, GuiItemType.NORMALBUTTON, new GuiItemColor(GuiColor.Gray, GuiColor.White, GuiColor.Green), null, GuiItemState.NORMAL, true, FontStyle.Bold, TextAnchor.MiddleCenter);
         }
 
         public void OnGUI()

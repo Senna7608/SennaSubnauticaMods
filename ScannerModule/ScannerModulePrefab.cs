@@ -5,12 +5,13 @@ using Common;
 
 namespace ScannerModule
 {
-    internal class ScannerModule : Craftable
+    internal class ScannerModulePrefab : Craftable
     {
         public static TechType TechTypeID { get; private set; }        
 
-        internal ScannerModule()
+        internal ScannerModulePrefab()
             : base(nameID: "ScannerModule",
+                  nameUsingForFiles: "ScannerModule",
                   friendlyName: "Scanner Module",
                   description: "Allows to scan objects within Vehicles.",
                   template: TechType.SeamothSonarModule,
@@ -21,7 +22,7 @@ namespace ScannerModule
                   categoryForPDA: TechCategory.VehicleUpgrades,
                   equipmentType: EquipmentType.VehicleModule,
                   quickSlotType: QuickSlotType.Toggleable,
-                  componentsToAdd: null,
+                  itemSize: new Vector2int(1, 1),
                   gamerResourceFileName: null
                   )
         {

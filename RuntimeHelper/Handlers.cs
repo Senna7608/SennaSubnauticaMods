@@ -120,8 +120,8 @@ namespace RuntimeHelper
 
             if (tempObject.IsNotNull())
             {
-                tempObject.PasteObject(selectedObject.transform);
-                OutputWindow_Log($"Object [{tempObject.name}] pasted.\nName set to [newPastedObject]. Parent set to [{selectedObject.transform.name}]");
+                tempObject.PasteObject(baseObject.transform);
+                OutputWindow_Log($"Object [{tempObject.name}] pasted.\nName set to [newPastedObject]. Parent set to [{baseObject.transform.name}]");
             }
 
             RefreshTransformsList();

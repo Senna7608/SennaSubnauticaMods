@@ -78,7 +78,10 @@ namespace RuntimeHelper
             isDirty = value;
 
             if (isDirty)
-                showRendererWindow = false;            
+            {
+                showRendererWindow = false;
+                showComponentInfoWindow = false;
+            }
         }
 
         private void SetScrollPos(ref Vector2 scrollpos, int index)
@@ -148,33 +151,33 @@ namespace RuntimeHelper
             if (selectedObject.IsNull())
                 return;
 
-            Rect windowRect = SNWindow.CreateWindow(new Rect(0, 30, 298, 700), "Runtime Helper v.1.0 (Public Beta)");                       
+            Rect windowRect = SNWindow.CreateWindow(new Rect(0, 30, 298, 700), "Runtime Helper v.1.1 (Public Beta)");                       
 
             GUI.Label(new Rect(windowRect.x + 5, windowRect.y, 290, 25), $"Base : {baseObject.name}", SNStyles.GetGuiItemStyle(GuiItemType.LABEL, GuiColor.Green, TextAnchor.MiddleLeft));
 
-            ScrollView_transforms_retval = SNScrollView.CreateScrollView(new Rect(windowRect.x + 5, windowRect.y + 22, windowRect.width - 10, 212), ref scrollpos_transforms, ref guiItems_transforms, isRootList ? "Active Scenes Root Transforms" : "Transforms of", isRootList ? string.Empty : baseObject.name, 10);
+            ScrollView_transforms_retval = SNScrollView.CreateScrollView(new Rect(windowRect.x + 5, windowRect.y + 22, windowRect.width - 10, 212), ref scrollpos_transforms, ref guiItems_transforms, isRootList ? "Active Scenes Root Game Objects" : "Childs of", isRootList ? string.Empty : baseObject.name, 10);
 
             GUI.Label(new Rect(windowRect.x + 5, windowRect.y + 300, 40, 22), "Base :", SNStyles.GetGuiItemStyle(GuiItemType.LABEL, GuiColor.Green, TextAnchor.MiddleLeft));
 
 
-            if (GUI.Button(new Rect(windowRect.x + 60, windowRect.y + 300, 60, 22), "Set", SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
+            if (GUI.Button(new Rect(windowRect.x + 60, windowRect.y + 300, 60, 22), MainWindow[0], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
                 OnBaseObjectChange();
             }
 
-            if (GUI.Button(new Rect(windowRect.x + 125, windowRect.y + 300, 60, 22), "Refresh", SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
+            if (GUI.Button(new Rect(windowRect.x + 125, windowRect.y + 300, 60, 22), MainWindow[1], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
                 OnRefresHBase();
             }
 
-            if (GUI.Button(new Rect(windowRect.x + 190, windowRect.y + 300, 103, 22), "Get Roots", SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
+            if (GUI.Button(new Rect(windowRect.x + 190, windowRect.y + 300, 103, 22), MainWindow[2], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
                 GetRoots();
             }
 
             GUI.Label(new Rect(windowRect.x + 5, windowRect.y + 325, 40, 22), "Object :", SNStyles.GetGuiItemStyle(GuiItemType.LABEL, GuiColor.Green, TextAnchor.MiddleLeft));
 
-            if (GUI.Button(new Rect(windowRect.x + 60, windowRect.y + 325, 38, 22), selectedObject.activeSelf ? "Off" : "On", SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
+            if (GUI.Button(new Rect(windowRect.x + 60, windowRect.y + 325, 38, 22), selectedObject.activeSelf ? MainWindow[4] : MainWindow[3], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
                 if (selectedObject == gameObject)
                 {
@@ -186,28 +189,33 @@ namespace RuntimeHelper
                 OutputWindow_Log($"Object [{selectedObject.name}] active state now: {selectedObject.activeSelf.ToString()}");
             }
 
-            if (GUI.Button(new Rect(windowRect.x + 100, windowRect.y + 325, 48, 22), "Copy", SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
+            if (GUI.Button(new Rect(windowRect.x + 100, windowRect.y + 325, 48, 22), MainWindow[5], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
                 if (selectedObject == gameObject)
                 {
-                    OutputWindow_Log($"Object [{selectedObject.name}] is cannot be copied to TEMP!", LogType.Warning);
+                    OutputWindow_Log($"Object [{selectedObject.name}] is cannot be copied!", LogType.Warning);
                 }
                 else
                 {
+                    if (tempObject.IsNotNull())
+                    {
+                        DestroyImmediate(tempObject);
+                    }
+
                     selectedObject.CopyObject(out tempObject);
-                    OutputWindow_Log($"Object [{tempObject.name}] is copied to TEMP and ready for paste.");
+                    OutputWindow_Log($"Object [{tempObject.name}] is copied to a temporary game object and ready for paste.");
                 }
             }
 
             if (tempObject.IsNotNull())
             {
-                if (GUI.Button(new Rect(windowRect.x + 150, windowRect.y + 325, 48, 22), "Paste", SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
+                if (GUI.Button(new Rect(windowRect.x + 150, windowRect.y + 325, 48, 22), MainWindow[6], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
                 {
                     OnPasteObject();
                 }
             }
 
-            if (GUI.Button(new Rect(windowRect.x + 200, windowRect.y + 325, 93, 22), "Destroy", SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
+            if (GUI.Button(new Rect(windowRect.x + 200, windowRect.y + 325, 93, 22), MainWindow[7], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
                 if (selectedObject == gameObject)
                 {
@@ -232,22 +240,22 @@ namespace RuntimeHelper
 
             GUI.Label(new Rect(windowRect.x + 5, windowRect.y + 542, 145, 22), "Transform shorthands:", SNStyles.GetGuiItemStyle(GuiItemType.LABEL, GuiColor.Green, TextAnchor.MiddleLeft));
 
-            if (GUI.Button(new Rect(windowRect.x + 150, windowRect.y + 542, 140, 22), showLocal ? "Relative to: Local" : "Relative to: World", SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
+            if (GUI.Button(new Rect(windowRect.x + 150, windowRect.y + 542, 140, 22), showLocal ? MainWindow[8] : MainWindow[9], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
                 showLocal = !showLocal;
 
                 if (showLocal)
                 {
-                    OutputWindow_Log("Transform info now relative to local space.");
+                    OutputWindow_Log("Transform information now relative to parent local space.");
                 }
                 else
                 {
-                    OutputWindow_Log("Transform info now relative to world space.");
+                    OutputWindow_Log("Transform information now relative to world space.");
                 }
                 
             }
 
-            if (GUI.Button(new Rect(windowRect.x + 5, windowRect.y + 567, 140, 22), "Set vectors to Default", SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
+            if (GUI.Button(new Rect(windowRect.x + 5, windowRect.y + 567, 140, 22), MainWindow[10], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
                 if (showLocal)
                 {
@@ -257,13 +265,13 @@ namespace RuntimeHelper
                 else
                 {
                     selectedObject.transform.SetWorldToZero();
-                    OutputWindow_Log($"Object [{selectedObject.name}] world vectors set to: pos: (0,0,0); rot: (0,0,0); scale: (1,1,1)");
+                    OutputWindow_Log($"Object [{selectedObject.name}] world vectors set to: pos: (0,0,0); rot: (0,0,0)");
                 }
 
                 
             }
 
-            if (GUI.Button(new Rect(windowRect.x + 150, windowRect.y + 567, 140, 22), "Set position to Zero", SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
+            if (GUI.Button(new Rect(windowRect.x + 150, windowRect.y + 567, 140, 22), MainWindow[11], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
                 if (showLocal)
                 {
@@ -277,7 +285,7 @@ namespace RuntimeHelper
                 }                
             }
 
-            if (GUI.Button(new Rect(windowRect.x + 5, windowRect.y + 592, 140, 22), "Set Rotation to Zero", SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
+            if (GUI.Button(new Rect(windowRect.x + 5, windowRect.y + 592, 140, 22), MainWindow[12], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
                 if (showLocal)
                 {
@@ -291,22 +299,22 @@ namespace RuntimeHelper
                 }                
             }
 
-            if (GUI.Button(new Rect(windowRect.x + 150, windowRect.y + 592, 140, 22), "Set Scale to One", SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
+            if (GUI.Button(new Rect(windowRect.x + 150, windowRect.y + 592, 140, 22), MainWindow[13], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
                 selectedObject.transform.SetLocalScaleToOne();
                 OutputWindow_Log($"Object [{selectedObject.name}] local scale set to one.");
             }
 
-            if (GUI.Button(new Rect(windowRect.x + 5, windowRect.y + 617, 140, 22), "Reset Transform", SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
+            if (GUI.Button(new Rect(windowRect.x + 5, windowRect.y + 617, 140, 22), MainWindow[14], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
                 DrawObjectBounds dob = selectedObject.GetOrAddVisualBase(BaseType.Object).GetComponent<DrawObjectBounds>();                
                 selectedObject.transform.SetTransformInfo(ref dob.transformBase);
-                OutputWindow_Log($"Object [{selectedObject.name}] transform set to original values.");
+                OutputWindow_Log($"Object [{selectedObject.name}] transform values set to original.");
             }
 
             if (isExistsCollider && showCollider)
             {
-                if (GUI.Button(new Rect(windowRect.x + 150, windowRect.y + 617, 140, 22), "Reset Collider", SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
+                if (GUI.Button(new Rect(windowRect.x + 150, windowRect.y + 617, 140, 22), MainWindow[15], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
                 {
                     DrawColliderBounds dcb = selectedObject.GetOrAddVisualBase(BaseType.Collider).GetComponent<DrawColliderBounds>();                    
                     selectedObject.ResetCollider(dcb.ColliderBases[dcb.cInstanceID], dcb.cInstanceID);
@@ -317,10 +325,10 @@ namespace RuntimeHelper
                 }
             }            
 
-            if (GUI.Button(new Rect(windowRect.x + 5, (windowRect.y + windowRect.height) - 27, windowRect.width - 10, 22), "Exit Program", SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
+            if (GUI.Button(new Rect(windowRect.x + 5, (windowRect.y + windowRect.height) - 27, windowRect.width - 10, 22), MainWindow[16], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
                 OnDestroy();                               
-            }
+            }             
 
             OutputWindow_OnGUI();
 
@@ -331,8 +339,19 @@ namespace RuntimeHelper
             ComponentWindow_OnGUI();
 
             RendererWindow_OnGUI();
-        }             
-        
+
+            ComponentInfoWindow_OnGUI();
+
+            if (GUI.tooltip != "")
+            {
+                GUIStyle gUIStyle = SNStyles.GetGuiItemStyle(GuiItemType.TEXTAREA, GuiColor.Green, TextAnchor.MiddleLeft);
+
+                Vector2 vector2 = gUIStyle.CalcSize(new GUIContent(GUI.tooltip));
+
+                GUI.Label(new Rect(Event.current.mousePosition.x + 10, Event.current.mousePosition.y + 10, vector2.x, vector2.y), GUI.tooltip, gUIStyle);
+            }
+        }       
+
         public void Update()
         {
             if (selectedObject.IsNull())
@@ -475,6 +494,11 @@ namespace RuntimeHelper
                     break;
                 case "Position: z":
                     lPos.z += value;
+                    break;
+                case "Scale: x,y,z":
+                    lScale.x += value;
+                    lScale.y += value;
+                    lScale.z += value;
                     break;
                 case "Scale: x":
                     lScale.x += value;

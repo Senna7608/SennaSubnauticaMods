@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UWE;
-using static Common.Modules;
-using static Common.GameHelper;
 using Common;
 using System.Collections;
 using MoreCyclopsUpgrades.API.Upgrades;
@@ -36,17 +34,17 @@ namespace CyclopsLaserCannonModule
         private UpgradeHandler upgradeHandler;
         
 
-        public void Start()
-        {                       
-            Instance = this;            
-
-            Main.onConfigurationChanged.AddHandler(this, new Event<string>.HandleFunction(OnConfigurationChanged));
+        public void Awake()
+        {
+            Instance = this;
 
             This_Cyclops_Root = gameObject;
-            
-            subroot = gameObject.GetComponent<SubRoot>();
-            subcontrol = subroot.GetComponentInParent<SubControl>();            
-            powerRelay = subcontrol.powerRelay;            
+
+            subroot = This_Cyclops_Root.GetComponent<SubRoot>();
+            subcontrol = This_Cyclops_Root.GetComponent<SubControl>();
+            powerRelay = This_Cyclops_Root.GetComponent<PowerRelay>();
+
+            Main.onConfigurationChanged.AddHandler(this, new Event<string>.HandleFunction(OnConfigurationChanged));
 
             CreateCannonCamera();
             CreateCannonButton();
@@ -56,13 +54,16 @@ namespace CyclopsLaserCannonModule
             LaserCannonSetActive(false);
 
             GameObject laser_sound = Instantiate(Main.assetBundle.LoadAsset<GameObject>("turret_sound"), CannonCamPosition.transform);
-            audioSource = laser_sound.GetComponent<AudioSource>();           
-            
+            audioSource = laser_sound.GetComponent<AudioSource>();
+
             SetOnlyHostile();
             SetLaserStrength();
             SetLaserSFXVolume();
-            SetWarningMessage();                        
-            
+            SetWarningMessage();
+        }
+
+        public void Start()
+        {             
             Player.main.playerModeChanged.AddHandler(this, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
             Player.main.currentSubChangedEvent.AddHandler(this, new Event<SubRoot>.HandleFunction(OnSubRootChanged));
 
@@ -131,28 +132,7 @@ namespace CyclopsLaserCannonModule
                     }                    
                 }                
             }
-        }
-
-        /*
-        private void AddForceToTarget()
-        {
-            Rigidbody rb = targetGameobject.GetComponent<Rigidbody>();
-
-            if (rb != null)
-            {
-                rb.AddForce(targetPosition.normalized * 20f, ForceMode.Impulse);
-            }
-            else
-            {
-                rb = targetGameobject.GetComponentInChildren<Rigidbody>();
-
-                if (rb != null)
-                {
-                    rb.AddForce(targetPosition.normalized * 20f, ForceMode.Impulse);
-                }
-            }
-        }
-        */
+        }        
 
         private void AddForceToTarget(Transform source, GameObject targetObject)
         {

@@ -74,7 +74,7 @@
     <Compile Include="CannonSetConfig.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="CannonHandlers.cs" />
-    <Compile Include="Patch\SubRoot_Start_Patch.cs" />
+    <Compile Include="Patch\CyclopsExternalCams_Start_Patch.cs" />
     <Compile Include="Patch\PDAScanner_Unlock_Patch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

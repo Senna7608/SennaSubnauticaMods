@@ -13,7 +13,7 @@ namespace RuntimeHelper
             targetList.Clear();
            
             List<Rect> rects = new Rect(0, 0, width, itemNames.Count * 24).SetGridItemsRect(1, itemNames.Count, 22, 5, 2, false, false, true);
-            targetList.CreateGuiItemsGroup(itemNames, rects, GuiItemType.TAB, new GuiItemColor(), GuiItemState.NORMAL, textAnchor: TextAnchor.MiddleLeft);            
+            targetList.CreateGuiItemsGroup(itemNames, rects, GuiItemType.TAB, new GuiItemColor(), null, GuiItemState.NORMAL, textAnchor: TextAnchor.MiddleLeft);            
         }
 
         public static List<string> InitTransformNamesList(this List<Transform> transformsList)

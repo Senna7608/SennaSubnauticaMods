@@ -71,8 +71,17 @@ namespace Common.GUIHelper
         public GuiItem()
         {
         }
+
+        public GUIContent Content
+        {
+            get
+            {                
+                return new GUIContent(Name, Tooltip);
+            }            
+        }
         
         public string Name { get; set; }
+        public string Tooltip { get; set; }
         public GuiItemType Type { get; set; }
         public bool Enabled { get; set; }       
         public Rect Rect { get; set; }
@@ -85,9 +94,18 @@ namespace Common.GUIHelper
 
     public static class SNGUI
     {
-        public static bool CreateGuiItemsGroup(this List<GuiItem> guiItems, string[] names, List<Rect> rects, GuiItemType type, GuiItemColor itemColor,
-                                               GuiItemState state = GuiItemState.NORMAL, bool enabled = true, FontStyle fontStyle = FontStyle.Normal,
-                                               TextAnchor textAnchor = TextAnchor.MiddleCenter, Event<object> onChangedEvent = null)
+        public static bool CreateGuiItemsGroup(
+            this List<GuiItem> guiItems,
+            string[] names,
+            List<Rect> rects,
+            GuiItemType type,
+            GuiItemColor itemColor,
+            string toolTip = null,
+            GuiItemState state = GuiItemState.NORMAL,
+            bool enabled = true,
+            FontStyle fontStyle = FontStyle.Normal,
+            TextAnchor textAnchor = TextAnchor.MiddleCenter,
+            Event<object> onChangedEvent = null)
         {
             guiItems.Clear();
 
@@ -96,6 +114,7 @@ namespace Common.GUIHelper
                 guiItems.Add(new GuiItem()
                 {
                     Name = names[i],
+                    Tooltip = toolTip,
                     Type = type,
                     Enabled = enabled,
                     Rect = rects[i],
@@ -110,9 +129,18 @@ namespace Common.GUIHelper
             return true;
         }
 
-        public static bool CreateGuiItemsGroup(this List<GuiItem> guiItems, List<string> names, List<Rect> rects, GuiItemType type, GuiItemColor itemColor,
-                                               GuiItemState state = GuiItemState.NORMAL, bool enabled = true, FontStyle fontStyle = FontStyle.Normal,
-                                               TextAnchor textAnchor = TextAnchor.MiddleCenter, Event<object> onChangedEvent = null)
+        public static bool CreateGuiItemsGroup(
+            this List<GuiItem> guiItems,
+            List<string> names,
+            List<Rect> rects,
+            GuiItemType type,
+            GuiItemColor itemColor,
+            string toolTip = null,
+            GuiItemState state = GuiItemState.NORMAL,
+            bool enabled = true,
+            FontStyle fontStyle = FontStyle.Normal,
+            TextAnchor textAnchor = TextAnchor.MiddleCenter,
+            Event<object> onChangedEvent = null)
         {
             guiItems.Clear();
 
@@ -121,6 +149,7 @@ namespace Common.GUIHelper
                 guiItems.Add(new GuiItem()
                 {
                     Name = names[i],
+                    Tooltip = toolTip,
                     Type = type,
                     Enabled = enabled,
                     Rect = rects[i],
@@ -135,13 +164,23 @@ namespace Common.GUIHelper
             return true;
         }
 
-        public static bool AddGuiItemToGroup(this List<GuiItem> guiItems, string name, Rect rect, GuiItemType type, GuiItemColor itemColor,
-                                             GuiItemState state = GuiItemState.NORMAL, bool enabled = true, FontStyle fontStyle = FontStyle.Normal,
-                                             TextAnchor textAnchor = TextAnchor.MiddleCenter, Event<object> onChangedEvent = null)
+        public static bool AddGuiItemToGroup(
+            this List<GuiItem> guiItems,
+            string name,
+            Rect rect,
+            GuiItemType type,
+            GuiItemColor itemColor,
+            string toolTip = null,
+            GuiItemState state = GuiItemState.NORMAL,
+            bool enabled = true,
+            FontStyle fontStyle = FontStyle.Normal,
+            TextAnchor textAnchor = TextAnchor.MiddleCenter,
+            Event<object> onChangedEvent = null)
         {            
             guiItems.Add(new GuiItem()
             {
                 Name = name,
+                Tooltip = toolTip,
                 Type = type,
                 Enabled = enabled,
                 Rect = rect,
@@ -184,7 +223,7 @@ namespace Common.GUIHelper
                 {
                     case GuiItemType.NORMALBUTTON:
                     
-                        if (GUI.Button(guiItems[i].Rect, guiItems[i].Name, SNStyles.GetGuiItemStyle(guiItems[i])))
+                        if (GUI.Button(guiItems[i].Rect, guiItems[i].Content, SNStyles.GetGuiItemStyle(guiItems[i])))
                         {
                             return i;
                         }
@@ -192,7 +231,7 @@ namespace Common.GUIHelper
 
                     case GuiItemType.TOGGLEBUTTON:
 
-                        if (GUI.Button(guiItems[i].Rect, guiItems[i].Name, SNStyles.GetGuiItemStyle(guiItems[i])))
+                        if (GUI.Button(guiItems[i].Rect, guiItems[i].Content, SNStyles.GetGuiItemStyle(guiItems[i])))
                         {
                             guiItems[i].State = SetStateInverse(guiItems[i].State);
                             return i;
