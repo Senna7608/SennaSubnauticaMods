@@ -4,6 +4,7 @@ using UWE;
 using static Common.Modules;
 using static Common.GameHelper;
 using UnityEngine.Rendering;
+using System.Collections;
 
 namespace LaserCannon
 {
@@ -45,7 +46,7 @@ namespace LaserCannon
         private string lowPower_title;
         private string lowPower_message;
 
-        public void Start()
+        public void Awake()
         {
             Instance = gameObject.GetComponent<LaserCannonControl>();
             thisSeamoth = Instance.GetComponent<SeaMoth>();
@@ -55,19 +56,17 @@ namespace LaserCannon
 
             isPlayerInThisVehicle = playerMain.GetVehicle() == thisSeamoth ? true : false;
 
-            GameObject repulsionCannonPrefab = Resources.Load<GameObject>("WorldEntities/Tools/RepulsionCannon");
-            repulsionCannonPrefab.SetActive(false);
+            GameObject repulsionCannonPrefab = Instantiate(Resources.Load<GameObject>("WorldEntities/Tools/RepulsionCannon"));            
 
-            shootSound = Instantiate(repulsionCannonPrefab.GetComponent<RepulsionCannon>().shootSound, thisSeamoth.transform, false);
-            Destroy(repulsionCannonPrefab);
+            shootSound = repulsionCannonPrefab.GetComponent<RepulsionCannon>().shootSound.GetObjectClone();
+            DestroyImmediate(repulsionCannonPrefab);
 
             loopingEmitter = gameObject.AddComponent<FMOD_CustomLoopingEmitter>();
             loopingEmitter.asset = shootSound;
 
-            GameObject powerTransmitterPrefab = Resources.Load<GameObject>("Submarine/Build/PowerTransmitter");
-            
-            GameObject laserBeam = Instantiate(powerTransmitterPrefab.GetComponent<PowerFX>().vfxPrefab, null, false);
-            laserBeam.SetActive(false);
+            GameObject powerTransmitterPrefab = Instantiate(Resources.Load<GameObject>("Submarine/Build/PowerTransmitter"));
+
+            GameObject laserBeam = powerTransmitterPrefab.GetComponent<PowerFX>().vfxPrefab.GetPrefabClone(null, false);            
 
             LineRenderer lineRenderer = laserBeam.GetComponent<LineRenderer>();
             lineRenderer.startWidth = 0.2f;
@@ -76,20 +75,20 @@ namespace LaserCannon
             lineRenderer.receiveShadows = false;
             lineRenderer.loop = false;           
 
-            laserRight = Instantiate(laserBeam, thisSeamoth.torpedoTubeRight, false);
+            laserRight = laserBeam.GetPrefabClone(thisSeamoth.torpedoTubeRight, false);
             laserRight.name = "laserRight";
             laserRight.transform.localPosition = Vector3.zero;
             laserRight.transform.localRotation = Quaternion.identity;
             rightBeam = laserRight.GetComponent<LineRenderer>();                      
 
-            laserLeft = Instantiate(laserBeam, thisSeamoth.torpedoTubeLeft, false);
+            laserLeft = laserBeam.GetPrefabClone(thisSeamoth.torpedoTubeLeft, false);
             laserLeft.name = "laserLeft";
             laserLeft.transform.localPosition = Vector3.zero;
             laserLeft.transform.localRotation = Quaternion.identity;
-            leftBeam = laserLeft.GetComponent<LineRenderer>();            
+            leftBeam = laserLeft.GetComponent<LineRenderer>();
 
-            Destroy(laserBeam);
-            Destroy(powerTransmitterPrefab);            
+            DestroyImmediate(laserBeam);
+            DestroyImmediate(powerTransmitterPrefab);            
 
             SetBeamColor();
             ShootOnlyHostile();
@@ -155,30 +154,52 @@ namespace LaserCannon
             lowPower_message = LaserCannonConfig.language_settings[LaserCannonConfig.SECTION_LANGUAGE[18]];
         }
 
-        private void OnPlayerModeChanged(Player.Mode playerMode)
+        internal void OnPlayerModeChanged(Player.Mode newMode)
         {
-            if (playerMode == Player.Mode.LockedPiloting)
+            if (newMode == Player.Mode.LockedPiloting)
             {
-                if (playerMain.GetVehicle() == thisSeamoth)
-                {
-                    isPlayerInThisVehicle = true;
-                    OnEnable();
-                    return;
-                }
-                else
-                {
-                    isPlayerInThisVehicle = false;
-                    OnDisable();
-                    return;
-                }
+                //the player is in one of the vehicles but at this point Player.main.currentMountedVehicle is null.
+                //therefore starting a coroutine while currentMountedVehicle is not null.
+                StartCoroutine(WaitForPlayerModeChangeFinished(newMode));
             }
             else
             {
-                isPlayerInThisVehicle = false;
-                OnDisable();
+                //player not in any Vehicle: this Slot Extender now disabled
+                isActive = false;
             }
         }
 
+        private IEnumerator WaitForPlayerModeChangeFinished(Player.Mode newMode)
+        {
+            //print($"[{SEConfig.PROGRAM_NAME}] WaitForPlayerModeChangeFinished coroutine started for this Vehicle: {ThisVehicle.GetInstanceID()}");
+
+            while (Player.main.currentMountedVehicle == null)
+            {
+                //print($"[{SEConfig.PROGRAM_NAME}] Player.main.currentMountedVehicle is NULL!");
+                yield return null;
+            }
+
+            //print($"[{SEConfig.PROGRAM_NAME}] Player.main.currentMountedVehicle is {Player.main.currentMountedVehicle.GetInstanceID()}");
+            //print($"[{SEConfig.PROGRAM_NAME}] WaitForPlayerModeChangeFinished coroutine stopped for this Vehicle: {ThisVehicle.GetInstanceID()}");
+
+            if (Player.main.currentMountedVehicle == thisSeamoth)
+            {
+                //player in this Vehicle: this Slot Extender now enabled
+                isPlayerInThisVehicle = true;
+                OnEnable();
+            }
+            else
+            {
+                //player not in this Vehicle: this Slot Extender now disabled
+                isPlayerInThisVehicle = false;
+                OnDisable();
+            }
+
+            //print($"[{SEConfig.PROGRAM_NAME}] isActive now {isActive}, Player mode now {newMode}");
+
+            yield break;
+        }
+        
         private void OnToggle(int slotID, bool state)
         {
             if (thisSeamoth.GetSlotBinding(slotID) == LaserCannonPrefab.TechTypeID)

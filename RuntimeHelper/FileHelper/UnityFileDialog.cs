@@ -13,7 +13,7 @@ namespace RuntimeHelper.FileHelper
     public class UnityFileDialog : MonoBehaviour
     {
         public UnityFileDialog Instance { get; private set; }
-        private int Scroll_retval = -1;
+        private GuiItemEvent Scroll_retval;
         private int current_index = 0;
         private List<GuiItem> guiItems = new List<GuiItem>();
         private Vector2 scrollpos = Vector2.zero;
@@ -54,9 +54,9 @@ namespace RuntimeHelper.FileHelper
 
             Scroll_retval = SNScrollView.CreateScrollView(new Rect(drawRect.x + 5, drawRect.y, drawRect.width - 10, 168), ref scrollpos, ref guiItems, "Current Directory:", directoryInfo.Name, 7);
 
-            if (Scroll_retval != -1)
+            if (Scroll_retval.ItemID != -1)
             {
-                current_index = Scroll_retval;
+                current_index = Scroll_retval.ItemID;
             }
         }
 

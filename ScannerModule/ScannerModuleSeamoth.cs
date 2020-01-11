@@ -2,24 +2,30 @@
 using UWE;
 using static Common.Modules;
 using static Common.GameHelper;
+using Common;
 
 namespace ScannerModule
 {
+    public enum ScanState
+    {
+        None,
+        Scan
+    }
+
     public class ScannerModuleSeamoth : MonoBehaviour
     {
-        public ScannerModuleSeamoth Instance { get; private set; }
-        public int moduleSlotID { get; set; }
-        private SeaMoth thisSeamoth { get; set; }
-        private Player playerMain { get; set; }
-        private EnergyMixin energyMixin { get; set; }
+        private int moduleCount = 0;
+        private SeaMoth thisSeamoth;
+        private EnergyMixin energyMixin;
         private Transform leftTorpedoSlot;
 
         private GameObject scanBeam;
         private float powerConsumption = 0.5f;
-        private const float scanDistance = 50f;
+        private const float scanDistance = 30f;
 
         private FMOD_CustomLoopingEmitter scanSound;
         private FMODAsset completeSound;
+        private FMODAsset scan_loop;
         private Texture scanCircuitTex;
         private Color scanCircuitColor = Color.white;
         private Texture scanOrganicTex;
@@ -36,44 +42,54 @@ namespace ScannerModule
         private bool isToggle;
         private bool isScanning;
         private bool isActive;
-        private bool isPlayerInThisSeamoth;
-
-        public enum ScanState
-        {
-            None,
-            Scan
-        }
+        private bool isPlayerInThisSeamoth;        
 
         public void Awake()
-        {
-            Instance = this;
-            thisSeamoth = Instance.GetComponent<SeaMoth>();            
+        {            
+            thisSeamoth = GetComponent<SeaMoth>();            
             leftTorpedoSlot = thisSeamoth.torpedoTubeLeft.transform;
-            energyMixin = thisSeamoth.GetComponent<EnergyMixin>();
-            playerMain = Player.main;
+            energyMixin = thisSeamoth.GetComponent<EnergyMixin>();            
 
-            isPlayerInThisSeamoth = playerMain.GetVehicle() == thisSeamoth ? true : false;
-            var scannerPrefab = Resources.Load<GameObject>("WorldEntities/Tools/Scanner").GetComponent<ScannerTool>();
-            //ScannerTool scannerPrefab = CraftData.InstantiateFromPrefab(TechType.Scanner, false).GetComponent<ScannerTool>();
-            scanSound = Instantiate(scannerPrefab.scanSound, gameObject.transform);
-            completeSound = Instantiate(scannerPrefab.completeSound, gameObject.transform);
-            fxControl = Instantiate(scannerPrefab.fxControl, gameObject.transform);
-            scanBeam = Instantiate(scannerPrefab.scanBeam, leftTorpedoSlot.transform);
+            GameObject scannerPrefab = Instantiate(CraftData.GetPrefabForTechType(TechType.Scanner));
 
-            MeshRenderer[] renderers = scannerPrefab.GetComponentsInChildren<MeshRenderer>(true);                        
-            Renderer instantiated_renderer = Instantiate(renderers[0]);
-            scanCircuitTex = instantiated_renderer.materials[0].mainTexture;
-            scanOrganicTex = instantiated_renderer.materials[2].mainTexture;            
+            scannerPrefab.SetActive(false);
+            Utils.ZeroTransform(scannerPrefab.transform);
+
+            ScannerTool scannerTool = scannerPrefab.GetComponent<ScannerTool>();
             
-            //Destroy(instantiated_renderer);            
-            //Resources.UnloadAsset(scannerPrefab);
+            GameObject ScannerModuleGO = new GameObject("ScannerModuleGO");
+            ScannerModuleGO.transform.SetParent(leftTorpedoSlot.transform, false);
+            Utils.ZeroTransform(ScannerModuleGO.transform);
+
+            scan_loop = ScriptableObject.CreateInstance<FMODAsset>();
+            scan_loop.name = "scan_loop";
+            scan_loop.path = "event:/tools/scanner/scan_loop";
+            scanSound = ScannerModuleGO.AddComponent<FMOD_CustomLoopingEmitter>();
+            scanSound.asset = scan_loop;
             
-            scanBeam.transform.localScale = new Vector3(1, 4, 1);
-            scanBeam.transform.localRotation = new Quaternion(-0.7683826f, 0.1253118f, 0.0448633f, 0.6259971f);
-        }        
+            completeSound = ScriptableObject.CreateInstance<FMODAsset>();
+            completeSound.name = "scan_complete";
+            completeSound.path = "event:/tools/scanner/scan_complete";
+
+            fxControl = scannerTool.fxControl.GetComponentClone(ScannerModuleGO.transform);            
+
+            scanBeam = scannerPrefab.FindChild("x_ScannerBeam").GetPrefabClone(ScannerModuleGO.transform, false);
+            
+            scanCircuitTex = scannerTool.scanCircuitTex.CreateRWTextureFromNonReadableTexture();
+            scanOrganicTex = scannerTool.scanOrganicTex.CreateRWTextureFromNonReadableTexture();
+
+            scanCircuitColor = scannerTool.scanCircuitColor;
+            scanOrganicColor = scannerTool.scanOrganicColor;
+
+            scanBeam.transform.localPosition = new Vector3(0, 0, -0.37f);
+            scanBeam.transform.localScale = new Vector3(1, 4.41f, 1.55f);
+            scanBeam.transform.localRotation = Quaternion.Euler(280, 184, 185);                        
+
+            Destroy(scannerPrefab);
+            Destroy(ScannerModuleGO.FindChild("Scanner(Clone)(Clone)"));
+
+            
         
-        private void Start()
-        {
             SetFXActive(false);
 
             Shader shader = Shader.Find("FX/Scanning");
@@ -96,16 +112,40 @@ namespace ScannerModule
 
             thisSeamoth.onToggle += OnToggle;
             thisSeamoth.modules.onAddItem += OnAddItem;
-            thisSeamoth.modules.onRemoveItem += OnRemoveItem;
-            playerMain.playerModeChanged.AddHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
+            thisSeamoth.modules.onRemoveItem += OnRemoveItem;            
+
+            Player.main.playerMotorModeChanged.AddHandler(this, new Event<Player.MotorMode>.HandleFunction(OnPlayerMotorModeChanged));
+
+            moduleCount = thisSeamoth.modules.GetCount(ScannerModulePrefab.TechTypeID);            
         }
+
+        private void OnPlayerMotorModeChanged(Player.MotorMode newMotorMode)
+        {
+            if (newMotorMode == Player.MotorMode.Vehicle)
+            {
+                if (Player.main.currentMountedVehicle == thisSeamoth)
+                {                    
+                    isPlayerInThisSeamoth = true;
+                    OnEnable();
+                }
+                else
+                {
+                    isPlayerInThisSeamoth = false;
+                    OnDisable();
+                }
+            }
+            else
+            {
+                isPlayerInThisSeamoth = false;
+                OnDisable();
+            }
+        }        
 
         private void OnRemoveItem(InventoryItem item)
         {
             if (item.item.GetTechType() == ScannerModulePrefab.TechTypeID)
             {                
-                moduleSlotID = -1;
-                Instance.enabled = false;                
+                moduleCount--;                              
             }
         }
 
@@ -113,35 +153,9 @@ namespace ScannerModule
         {
             if (item.item.GetTechType() == ScannerModulePrefab.TechTypeID)
             {
-                moduleSlotID = thisSeamoth.GetSlotByItem(item);
-                Instance.enabled = true;
+                moduleCount++;               
             }
-        }
-
-        private void OnPlayerModeChanged(Player.Mode playerMode)
-        {
-            if (playerMode == Player.Mode.LockedPiloting)
-            {
-                if (playerMain.GetVehicle() == thisSeamoth)
-                {
-                    isPlayerInThisSeamoth = true;
-                    OnEnable();
-                    return;
-                }
-                else
-                {
-                    isPlayerInThisSeamoth = false;
-                    OnDisable();
-                    return;
-                }
-            }
-            else
-            {
-                isPlayerInThisSeamoth = false;
-                OnDisable();
-            }                
-        }
-
+        }       
 
         private void OnToggle(int slotID, bool state)
         {
@@ -162,7 +176,7 @@ namespace ScannerModule
 
         public void OnEnable()
         {
-            isActive = isPlayerInThisSeamoth && playerMain.isPiloting && isToggle && moduleSlotID > -1;
+            isActive = isPlayerInThisSeamoth && Player.main.isPiloting && isToggle && moduleCount > 0;
         }
 
         public void OnDisable()
@@ -294,7 +308,7 @@ namespace ScannerModule
                 {                    
                     main.SetIcon(HandReticle.IconType.Progress, 4f);
                     main.progressText.text = Mathf.RoundToInt(PDAScanner.scanTarget.progress * 100f) + "%";
-                    SetProgressColor(Colors.Orange);                    
+                    SetProgressColor(Colors.Green);                    
                     main.progressImage.fillAmount = Mathf.Clamp01(PDAScanner.scanTarget.progress);                    
                     main.SetProgress(PDAScanner.scanTarget.progress);
                 }                
@@ -366,12 +380,34 @@ namespace ScannerModule
         {
             if (scanFX != null)
                 StopScanFX();
-
-            playerMain.playerModeChanged.RemoveHandler(gameObject, OnPlayerModeChanged);
+            
             thisSeamoth.onToggle -= OnToggle;
             thisSeamoth.modules.onAddItem -= OnAddItem;
             thisSeamoth.modules.onRemoveItem -= OnRemoveItem;
-        } 
+            Player.main.playerMotorModeChanged.RemoveHandler(this, OnPlayerMotorModeChanged);
+        }
+        
+        /*
+        private void DestroyFakeScanners()
+        {
+            try
+            {
+                GameObject trash = gameObject.FindChild("Scanner(Clone)");
+
+                if (trash)
+                {
+                    Debug.Log($"[ScannerModule] Found fake scanner gameobject in seamoth hierarchy with ID: [{trash.GetInstanceID()}]");
+                    Debug.Log("and destroying it...");
+                    DestroyImmediate(trash);                    
+                }
+            }
+            catch
+            {
+                return;
+            }
+        }
+        */
+
     }
 }
 

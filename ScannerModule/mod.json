@@ -2,7 +2,7 @@
   "Id": "ScannerModule",
   "DisplayName": "ScannerModule",
   "Author": "Senna",
-  "Version": "1.5",
+  "Version": "1.8",
   "Dependencies": ["SMLHelper"],
   "LoadBefore": [],
   "LoadAfter": [],

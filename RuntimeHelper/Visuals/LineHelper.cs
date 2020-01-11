@@ -79,7 +79,7 @@ namespace RuntimeHelper.Visuals
             lineRenderer.loop = true;
 
             for (int i = 0; i < 4; i++)
-            {
+            {                
                 lineRenderer.SetPosition(i, vertices[i]);
             }            
         }
@@ -136,6 +136,15 @@ namespace RuntimeHelper.Visuals
             vertices[7] = center + new Vector3(-size.x, size.y, size.z) * 0.5f;
 
             return vertices;
+        }
+
+        public static Vector3 CompensateSizefromScale(Vector3 size, Vector3 scale)
+        {
+            float diffX = size.x / scale.x;
+            float diffY = size.y / scale.y;
+            float diffZ = size.z / scale.z;
+
+            return new Vector3(size.x * diffX, size.y * diffY, size.z * diffZ);
         }
     }
 }

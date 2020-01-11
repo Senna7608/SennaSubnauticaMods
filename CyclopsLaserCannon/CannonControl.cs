@@ -10,9 +10,23 @@ namespace CyclopsLaserCannonModule
 {
     public partial class CannonControl : MonoBehaviour
     {
-        public CannonControl Instance { get; private set; }           
+        public CannonControl Instance { get; private set; }
 
-        public PowerRelay powerRelay;
+        public PowerRelay powerRelay
+        {
+            get
+            {
+                if (GameModeUtils.RequiresPower())
+                {
+                    return This_Cyclops_Root.GetComponent<PowerRelay>();
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
         public SubRoot subroot;
         public SubControl subcontrol;
         public CannonCamera camera_instance;        
@@ -41,8 +55,7 @@ namespace CyclopsLaserCannonModule
             This_Cyclops_Root = gameObject;
 
             subroot = This_Cyclops_Root.GetComponent<SubRoot>();
-            subcontrol = This_Cyclops_Root.GetComponent<SubControl>();
-            powerRelay = This_Cyclops_Root.GetComponent<PowerRelay>();
+            subcontrol = This_Cyclops_Root.GetComponent<SubControl>();            
 
             Main.onConfigurationChanged.AddHandler(this, new Event<string>.HandleFunction(OnConfigurationChanged));
 
@@ -206,14 +219,17 @@ namespace CyclopsLaserCannonModule
 
         public void Update()
         {
-            if (powerRelay.GetPower() < powerRelay.GetMaxPower() * 0.2f)
-            {               
-                isLowPower = true;
-                isShoot = false;
-            }
-            else
+            if (powerRelay != null)
             {
-                isLowPower = false;
+                if (powerRelay.GetPower() < powerRelay.GetMaxPower() * 0.2f)
+                {
+                    isLowPower = true;
+                    isShoot = false;
+                }
+                else
+                {
+                    isLowPower = false;
+                }
             }
 
             if (isModuleInserted && isActive && !isLowPower && isPiloting && camera_instance.usingCamera)
@@ -223,7 +239,11 @@ namespace CyclopsLaserCannonModule
                     nextFire = Time.time + fireRate;
                     isShoot = true;
                     audioSource.Play();
-                    powerRelay.ConsumeEnergy(powerConsumption, out float num);                    
+
+                    if (powerRelay != null)
+                    {
+                        powerRelay.ConsumeEnergy(powerConsumption, out float num);
+                    }
                 }
                 if (Time.time > nextFire)
                 {

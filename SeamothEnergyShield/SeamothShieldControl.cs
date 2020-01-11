@@ -4,12 +4,10 @@ using Common;
 namespace SeamothEnergyShield
 {
     public class SeamothShieldControl : MonoBehaviour
-    {
-        public SeamothShieldControl Instance { get; private set; }
+    {        
         private SeaMoth thisSeamoth;
         private LiveMixin liveMixin;
         private EnergyMixin energyMixin;
-
         private MeshRenderer shieldFX;
         private float shieldIntensity;
         private float shieldImpactIntensity;
@@ -20,15 +18,14 @@ namespace SeamothEnergyShield
         private FMODAsset shield_on_loop;
         private FMOD_CustomEmitter sfx;        
 
-        public void Awake()
-        {
-            Instance = this;
-
-            thisSeamoth = gameObject.GetComponent<SeaMoth>();
-            liveMixin = gameObject.GetComponent<LiveMixin>();
-            energyMixin = gameObject.GetComponent<EnergyMixin>();
+        private void Start()
+        {            
+            thisSeamoth = GetComponent<SeaMoth>();
+            liveMixin = GetComponent<LiveMixin>();
+            energyMixin = GetComponent<EnergyMixin>();
 
             shield_on_loop = ScriptableObject.CreateInstance<FMODAsset>();
+            shield_on_loop.name = "shield_on_loop";
             shield_on_loop.path = "event:/sub/cyclops/shield_on_loop";
             sfx = gameObject.AddComponent<FMOD_CustomEmitter>();
             sfx.asset = shield_on_loop;
@@ -38,7 +35,7 @@ namespace SeamothEnergyShield
 
             SubRoot subRoot = CyclopsPrefab.GetComponent<SubRoot>();
 
-            shieldFX = Instantiate(subRoot.shieldFX, transform, false);
+            shieldFX = Instantiate(subRoot.shieldFX, transform);
             
             shieldFX.gameObject.SetActive(false);
 
@@ -75,7 +72,7 @@ namespace SeamothEnergyShield
         {
             if (item.item.GetTechType() == SeamothShieldPrefab.TechTypeID)
             {
-                Instance.enabled = false;                
+                enabled = false;                
             }
         }
 
@@ -83,7 +80,7 @@ namespace SeamothEnergyShield
         {
             if (item.item.GetTechType() == SeamothShieldPrefab.TechTypeID)
             {               
-               Instance.enabled = true;
+               enabled = true;
             }
         }
 
@@ -92,7 +89,7 @@ namespace SeamothEnergyShield
             thisSeamoth.onToggle -= OnToggle;
             thisSeamoth.modules.onAddItem -= OnAddItem;
             thisSeamoth.modules.onRemoveItem -= OnRemoveItem;                     
-            Destroy(Instance);
+            Destroy(this);
         }       
 
         private void OnToggle(int slotID, bool state)

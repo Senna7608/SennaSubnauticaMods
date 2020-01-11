@@ -59,9 +59,8 @@ namespace CheatManager
 
                 if (Instance == null)
                 {
-                    GameObject cm_logger = new GameObject().AddComponent<CM_Logger>().gameObject;
-                    cm_logger.name = "CM_Logger";
-                    Instance = cm_logger.GetComponent<CM_Logger>();                    
+                    GameObject cm_logger = new GameObject("CM_Logger");
+                    Instance = cm_logger.AddComponent<CM_Logger>();                    
                 }
             }            
         }

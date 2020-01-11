@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime;
 
 namespace Common
 {
@@ -30,6 +31,9 @@ namespace Common
 
         public static bool IsPlayerInVehicle()
         {
+            if (!Player.main)
+                return false;
+
             return Player.main.inSeamoth || Player.main.inExosuit ? true : false;
         }
 
@@ -137,6 +141,7 @@ namespace Common
             return null;
         }
 
+        
         public static void SetMeshMaterial(this GameObject model, Material newMaterial, int index)
         {
             Renderer renderer = model.GetComponent<Renderer>();
@@ -148,9 +153,27 @@ namespace Common
             renderer.materials = materials;            
         }
 
+        public static void SetMeshMaterial(this GameObject model, Material newMaterial, int index, string newMaterialName)
+        {
+            Renderer renderer = model.GetComponent<Renderer>();
+
+            Material[] materials = renderer.materials;
+
+            materials.SetValue(newMaterial, index);
+
+            materials[index].name = newMaterialName;
+
+            renderer.materials = materials;
+        }
+
         public static void ChangeObjectTexture(this GameObject model, int materialIndex, Texture2D mainTex = null, Texture2D illumTex = null, Texture2D bumpMap = null, Texture2D specTex = null)
         {
-            Renderer renderer = model.GetComponent<Renderer>();            
+            Renderer renderer = model.GetComponent<Renderer>();
+
+            if (materialIndex < 0 || materialIndex >= renderer.materials.Length)
+            {                
+                throw new ArgumentException("Material index is out of range!");
+            }
 
             if (mainTex != null)
             {
@@ -181,14 +204,14 @@ namespace Common
                 {
                     Texture2D texture = (Texture2D)material.GetTexture(Shader.PropertyToID(shaderPropertyKeyword));
 
-                    return CreateTextureFromNonReadableShaderTexture(texture);                    
+                    return CreateRWTextureFromNonReadableTexture(texture);                    
                 }
             }
 
             return null;
         }
 
-        private static Texture2D CreateTextureFromNonReadableShaderTexture(Texture2D texture)
+        public static Texture2D CreateRWTextureFromNonReadableTexture(this Texture2D texture)
         {            
             RenderTexture tmp = RenderTexture.GetTemporary(texture.width, texture.height, 32, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear);                        
             
@@ -211,7 +234,7 @@ namespace Common
             return newTexture;            
         }
 
-        public static void WriteTextureToPNGFile(Texture2D texture, string filename)
+        public static void WriteTextureToPNG(this Texture2D texture, string filename)
         {
             byte[] textureData = texture.EncodeToPNG();
 
@@ -231,7 +254,7 @@ namespace Common
             }            
         }
 
-        public static GameObject FindChildWithMaxDepth(this GameObject gameObject, string name)
+        public static GameObject FindChildInMaxDepth(this GameObject gameObject, string name)
         {
             foreach (Transform child in gameObject.GetComponentsInChildren<Transform>(true))
             {
@@ -276,7 +299,7 @@ namespace Common
             List<string> keywords = new List<string>();
 
             BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.IgnoreReturn;
-
+                        
             keywords.Add("Properties:");
 
             foreach (PropertyInfo propertyInfo in component.GetType().GetProperties(bindingFlags))
@@ -297,14 +320,189 @@ namespace Common
             }
         }
 
-        public static void DebugAnimator(this Animator animator)
+        public static GameObject GetPrefabClone(this GameObject prefab)
         {
-            foreach (AnimatorControllerParameter param in animator.parameters)
+            bool isActive = prefab.activeSelf;
+
+            if (isActive)
             {
-                SNLogger.Log($"parameter name: {param.name}");
-                SNLogger.Log($"parameter type: {param.type.ToString()}");
+                prefab.SetActive(false);
             }
+
+            GameObject clone = UnityEngine.Object.Instantiate(prefab);
+            Utils.ZeroTransform(clone.transform);            
+            return clone;
+        }
+
+        public static GameObject GetPrefabClone(this GameObject prefab, Transform newParent)
+        {
+            bool isActive = prefab.activeSelf;
+
+            if (isActive)
+            {
+                prefab.SetActive(false);
+            }
+
+            GameObject clone = UnityEngine.Object.Instantiate(prefab);
+            clone.transform.SetParent(newParent, false);
+            Utils.ZeroTransform(clone.transform);
+            prefab.SetActive(isActive);
+            return clone;
+        }
+
+        public static GameObject GetPrefabClone(this GameObject prefab, Transform newParent, bool setActive)
+        {
+            bool isActive = prefab.activeSelf;
+
+            if (isActive)
+            {
+                prefab.SetActive(false);
+            }
+
+            GameObject clone = UnityEngine.Object.Instantiate(prefab);
+            clone.SetActive(setActive);
+            clone.transform.SetParent(newParent, false);
+            Utils.ZeroTransform(clone.transform);
+            prefab.SetActive(isActive);
+            return clone;
+        }
+
+        public static GameObject GetPrefabClone(this GameObject prefab, Transform newParent, bool setActive, string newName)
+        {
+            bool isActive = prefab.activeSelf;
+
+            if (isActive)
+            {
+                prefab.SetActive(false);
+            }
+
+            GameObject clone = UnityEngine.Object.Instantiate(prefab);
+            clone.SetActive(setActive);
+            clone.transform.SetParent(newParent, false);
+            clone.name = newName;
+            Utils.ZeroTransform(clone.transform);
+            prefab.SetActive(isActive);            
+            return clone;
+        }
+
+        public static T GetObjectClone<T>(this T uEobject) where T : UnityEngine.Object
+        {
+            return UnityEngine.Object.Instantiate(uEobject);            
+        }
+
+        public static T GetComponentClone<T>(this T uEcomponent, Transform newParent) where T : Component
+        {
+            T clone = UnityEngine.Object.Instantiate(uEcomponent);
+            clone.transform.SetParent(newParent, false);
+            Utils.ZeroTransform(clone.transform);
+            return clone;
+        }        
+
+        public static GameObject CreateGameObject(string name, Transform newParent)
+        {
+            GameObject newObject = new GameObject(name);
+            newObject.transform.SetParent(newParent, false);
+            Utils.ZeroTransform(newObject.transform);
+
+            return newObject;
+        }
+
+        public static GameObject CreateGameObject(PrimitiveType primitiveType, string name, Transform newParent)
+        {
+            GameObject newObject = GameObject.CreatePrimitive(primitiveType);
+            newObject.name = name;
+            newObject.transform.SetParent(newParent, false);
+
+            return newObject;
+        }
+
+        public static GameObject CreateGameObject(string name, Transform newParent, Vector3 localPos)
+        {
+            GameObject newObject = new GameObject(name);
+            newObject.transform.SetParent(newParent, false);
+            Utils.ZeroTransform(newObject.transform);
+            newObject.transform.localPosition = localPos;            
+
+            return newObject;
+        }
+
+        public static GameObject CreateGameObject(PrimitiveType primitiveType, string name, Transform newParent, Vector3 localPos)
+        {
+            GameObject newObject = GameObject.CreatePrimitive(primitiveType);
+            newObject.name = name;
+            newObject.transform.SetParent(newParent, false);
+            newObject.transform.localPosition = localPos;            
+
+            return newObject;
+        }
+
+        public static GameObject CreateGameObject(string name, Transform newParent, Vector3 localPos, Vector3 localRot)
+        {
+            GameObject newObject = new GameObject(name);
+            newObject.transform.SetParent(newParent, false);
+            newObject.transform.localPosition = localPos;
+            newObject.transform.localRotation = Quaternion.Euler(localRot);
+
+            return newObject;
+        }
+        
+        public static GameObject CreateGameObject(PrimitiveType primitiveType, string name, Transform newParent, Vector3 localPos, Vector3 localRot)
+        {
+            GameObject newObject = GameObject.CreatePrimitive(primitiveType);
+            newObject.name = name;
+            newObject.transform.SetParent(newParent, false);
+            newObject.transform.localPosition = localPos;
+            newObject.transform.localRotation = Quaternion.Euler(localRot);
+
+            return newObject;
+        }
+
+        public static int GetSlotIndex(Vehicle vehicle, TechType techType)
+        {
+            InventoryItem inventoryItem = null;
+
+            for (int i = 0; i < vehicle.GetSlotCount(); i++)
+            {
+                try
+                {
+                    inventoryItem = vehicle.GetSlotItem(i);
+                }
+                catch
+                {
+                    continue;
+                }
+
+                if (inventoryItem != null && inventoryItem.item.GetTechType() == techType)
+                {
+                    return vehicle.GetType() == typeof(Exosuit) ? i - 2 : i;
+                }
+            }
+
+            return -1;
         }
 
     }
+
+
+    public class SelfDestruct : MonoBehaviour
+    {
+        private bool isRoot = false;
+
+        private void Start()
+        {
+            isRoot = transform.parent == null ? true : false;           
+        }
+
+        private void Update()
+        {
+            if (isRoot && Vector3.Distance(transform.position, Vector3.zero) > 8000)
+            {                
+                Destroy(gameObject);                
+            }
+        }
+    }
+
+    
+
+
 }

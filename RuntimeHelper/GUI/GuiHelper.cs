@@ -24,9 +24,16 @@ namespace RuntimeHelper
             {                
                 if (i == 0 && !transformsList[0].IsRoot())
                 {                   
-                    names.Add(transformsList[0].name + " (Parent)");
+                    names.Add(transformsList[0].name + " (Parent)");                    
                     continue;                   
                 }
+
+                if (i == 1 && !transformsList[0].IsRoot())
+                {                    
+                    names.Add(transformsList[1].name + " (Base)");
+                    continue;
+                }
+
                 if (transformsList[i].IsRoot())
                 {
                     names.Add(transformsList[i].name + " (Root)");                    
@@ -50,8 +57,6 @@ namespace RuntimeHelper
             }          
 
             return names;
-        }
-
-        
+        }       
     }
 }

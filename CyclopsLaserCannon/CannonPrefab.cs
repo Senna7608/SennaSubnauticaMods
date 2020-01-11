@@ -2,27 +2,28 @@
 using SMLHelper.V2.Crafting;
 using SMLHelper.V2.Handlers;
 using Common;
-using UnityEngine;
 
 namespace CyclopsLaserCannonModule
 {
-    internal class CannonPrefab : Craftable
+    internal class CannonPrefab : CraftableModItem
     {              
         public static CannonOptions Config { get; } = new CannonOptions();       
 
         internal CannonPrefab()
             : base(nameID: "CyclopsLaserCannonModule",
-                  nameUsingForFiles: "CyclopsLaserCannonModule",
+                  iconFileName: "CyclopsLaserCannonModule",
+                  iconTechType: TechType.None,
                   friendlyName: CannonConfig.language_settings["Item_Name"],
                   description: CannonConfig.language_settings["Item_Description"],
                   template: TechType.CyclopsHullModule1,
                   fabricatorType: CraftTree.Type.CyclopsFabricator,
-                  fabricatorTab: "Root",
+                  fabricatorTab: new string[] { "Root" },
                   requiredAnalysis: TechType.PrecursorPrisonArtifact7,
                   groupForPDA: TechGroup.VehicleUpgrades,
                   categoryForPDA: TechCategory.VehicleUpgrades,
                   equipmentType: EquipmentType.CyclopsModule,
                   quickSlotType: QuickSlotType.None,
+                  backgroundType: CraftData.BackgroundType.Normal,
                   itemSize: new Vector2int(1, 1),                  
                   gamerResourceFileName: null
                   )

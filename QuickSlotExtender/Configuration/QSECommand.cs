@@ -23,11 +23,11 @@ namespace QuickSlotExtender.Configuration
 
         public QSECommand()
         {
-            if (Instance.IsNull())
+            if (Instance == null)
             {
                 Instance = FindObjectOfType(typeof(QSECommand)) as QSECommand;
 
-                if (Instance.IsNull())
+                if (Instance == null)
                 {
                     GameObject qse_command = new GameObject("QSECommand");
                     Instance = qse_command.GetOrAddComponent<QSECommand>();                    

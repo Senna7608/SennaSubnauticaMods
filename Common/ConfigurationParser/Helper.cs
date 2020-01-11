@@ -94,5 +94,25 @@ namespace Common.ConfigurationParser
 
             return true;
         }
+
+        public static bool CheckSectionKeys(string filename, string section, string[] keys)
+        {
+            Parser parser = new Parser(filename);
+
+            foreach (string key in keys)
+            {
+                if (parser.IsExists(section, key))
+                {
+                    continue;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
     }
 }

@@ -14,7 +14,7 @@ namespace RuntimeHelper
         private List<Transform> TRANSFORMS = new List<Transform>();
         private List<GuiItem> guiItems_transforms = new List<GuiItem>();
         private Vector2 scrollpos_transforms = Vector2.zero;
-        private int ScrollView_transforms_retval = -1;
+        private GuiItemEvent ScrollView_transforms_event;
         private int current_transform_index = 0;
 
         private int addedChildObjectCount = 0;
@@ -28,14 +28,13 @@ namespace RuntimeHelper
         public bool isDirty = false;       
 
         private string sizeText = string.Empty;
-        private bool showCollider = true;
+        private bool showCollider = true;        
         
-        private bool isExistsCollider = false;
         private bool isRootList = false;
 
         private static readonly List<string> EDIT_MODE = new List<string>();
 
-        private bool showLocal = true;
+        private bool showLocal = true;        
 
         public RuntimeHelper ()
         {
@@ -56,7 +55,7 @@ namespace RuntimeHelper
             DontDestroyOnLoad(this);
 
             OutputWindow_Awake();
-            OutputWindow_Log("Runtime Helper started");
+            OutputWindow_Log(MESSAGE_TEXT[MESSAGES.PROGRAM_STARTED]);
 
             baseObject = gameObject;
             selectedObject = gameObject;           
@@ -65,12 +64,14 @@ namespace RuntimeHelper
 
             EditWindow_Awake();
 
-            ObjectWindow_Awake();            
+            ObjectWindow_Awake();
+
+            AddComponentWindow_Awake();
         }
 
         private void Start()
         {
-            OnBaseObjectChange();
+            OnBaseObjectChange(gameObject);
         }
 
         private void SetDirty(bool value)
@@ -93,7 +94,7 @@ namespace RuntimeHelper
         {
             foreach (GameObject containerBase in Main.AllVisuals)
             {
-                if (containerBase.IsNotNull())
+                if (containerBase)
                 {
                     DestroyImmediate(containerBase);
                 }
@@ -110,6 +111,21 @@ namespace RuntimeHelper
             guiItems_transforms.SetScrollViewItems(TRANSFORMS.InitTransformNamesList(), 278f);
 
             isRootList = false;
+        }
+
+        private void SafetyCheck()
+        {
+            if (!selectedObject)
+            {
+                OutputWindow_Log(ERROR_TEXT[ERRORS.SELECTED_OBJECT_DESTROYED], LogType.Exception);
+                EmergencyRefresh();
+            }
+
+            if (!baseObject)
+            {
+                OutputWindow_Log(ERROR_TEXT[ERRORS.BASE_OBJECT_DESTROYED], LogType.Exception);
+                EmergencyRefresh();
+            }
         }
 
         private void PrintObjectInfo()
@@ -148,26 +164,25 @@ namespace RuntimeHelper
             if (isDirty)
                 return;
 
-            if (selectedObject.IsNull())
-                return;
+            SafetyCheck();
 
-            Rect windowRect = SNWindow.CreateWindow(new Rect(0, 30, 298, 700), "Runtime Helper v.1.1 (Public Beta)");                       
+            Rect windowRect = SNWindow.CreateWindow(new Rect(0, 30, 298, 700), $"Runtime Helper v.{RuntimeHelper_Config.PROGRAM_VERSION}");                       
 
             GUI.Label(new Rect(windowRect.x + 5, windowRect.y, 290, 25), $"Base : {baseObject.name}", SNStyles.GetGuiItemStyle(GuiItemType.LABEL, GuiColor.Green, TextAnchor.MiddleLeft));
 
-            ScrollView_transforms_retval = SNScrollView.CreateScrollView(new Rect(windowRect.x + 5, windowRect.y + 22, windowRect.width - 10, 212), ref scrollpos_transforms, ref guiItems_transforms, isRootList ? "Active Scenes Root Game Objects" : "Childs of", isRootList ? string.Empty : baseObject.name, 10);
+            ScrollView_transforms_event = SNScrollView.CreateScrollView(new Rect(windowRect.x + 5, windowRect.y + 22, windowRect.width - 10, 212), ref scrollpos_transforms, ref guiItems_transforms, isRootList ? "Active Scenes Root Game Objects" : "Childs of", isRootList ? string.Empty : baseObject.name, 10);
 
             GUI.Label(new Rect(windowRect.x + 5, windowRect.y + 300, 40, 22), "Base :", SNStyles.GetGuiItemStyle(GuiItemType.LABEL, GuiColor.Green, TextAnchor.MiddleLeft));
 
 
             if (GUI.Button(new Rect(windowRect.x + 60, windowRect.y + 300, 60, 22), MainWindow[0], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
-                OnBaseObjectChange();
+                OnBaseObjectChange(selectedObject);
             }
 
             if (GUI.Button(new Rect(windowRect.x + 125, windowRect.y + 300, 60, 22), MainWindow[1], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
-                OnRefresHBase();
+                OnRefreshBase();
             }
 
             if (GUI.Button(new Rect(windowRect.x + 190, windowRect.y + 300, 103, 22), MainWindow[2], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
@@ -181,33 +196,33 @@ namespace RuntimeHelper
             {
                 if (selectedObject == gameObject)
                 {
-                    OutputWindow_Log($"Object [{selectedObject.name}] active state cannot be modified!", LogType.Warning);
+                    OutputWindow_Log(WARNING_TEXT[WARNINGS.OBJECT_STATE_CANNOT_MODIFIED], LogType.Warning, selectedObject.name);
                     return;
                 }
 
                 selectedObject.SetActive(!selectedObject.activeSelf);
-                OutputWindow_Log($"Object [{selectedObject.name}] active state now: {selectedObject.activeSelf.ToString()}");
+                OutputWindow_Log(MESSAGE_TEXT[MESSAGES.ACTIVE_STATE_CHANGE] ,selectedObject.name, selectedObject.activeSelf.ToString());
             }
 
             if (GUI.Button(new Rect(windowRect.x + 100, windowRect.y + 325, 48, 22), MainWindow[5], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
                 if (selectedObject == gameObject)
                 {
-                    OutputWindow_Log($"Object [{selectedObject.name}] is cannot be copied!", LogType.Warning);
+                    OutputWindow_Log(WARNING_TEXT[WARNINGS.OBJECT_CANNOT_COPIED], LogType.Warning, selectedObject.name);
                 }
                 else
                 {
-                    if (tempObject.IsNotNull())
+                    if (tempObject)
                     {
                         DestroyImmediate(tempObject);
                     }
 
                     selectedObject.CopyObject(out tempObject);
-                    OutputWindow_Log($"Object [{tempObject.name}] is copied to a temporary game object and ready for paste.");
+                    OutputWindow_Log(MESSAGE_TEXT[MESSAGES.OBJECT_COPIED], tempObject.name);
                 }
             }
 
-            if (tempObject.IsNotNull())
+            if (tempObject)
             {
                 if (GUI.Button(new Rect(windowRect.x + 150, windowRect.y + 325, 48, 22), MainWindow[6], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
                 {
@@ -219,21 +234,21 @@ namespace RuntimeHelper
             {
                 if (selectedObject == gameObject)
                 {
-                    OutputWindow_Log($"Object [{selectedObject.name}] is cannot be destroyed! Use 'Exit Program' button!", LogType.Warning);
+                    OutputWindow_Log(WARNING_TEXT[WARNINGS.PROGRAM_OBJECT_CANNOT_DESTROY], LogType.Warning, selectedObject.name);
                 }
                 else if (selectedObject.IsRoot())
                 {
-                    OutputWindow_Log("Root objects cannot be destroyed!", LogType.Warning);
+                    OutputWindow_Log(WARNING_TEXT[WARNINGS.ROOT_OBJECT_CANNOT_DESTROY], LogType.Warning);
                 }
                 else
                 {
-                    OnObjectDestroy(true);
+                    DestroyObject(true);
                 }
             }
 
             GUI.TextArea(new Rect(windowRect.x + 5, windowRect.y + 355, windowRect.width - 10, 100), OBJECTINFO);
 
-            if (isExistsCollider)
+            if (isColliderSelected)
             {
                 GUI.TextArea(new Rect(windowRect.x + 5, windowRect.y + 465, windowRect.width - 10, 72), COLLIDERINFO);
             }
@@ -246,11 +261,11 @@ namespace RuntimeHelper
 
                 if (showLocal)
                 {
-                    OutputWindow_Log("Transform information now relative to parent local space.");
+                    OutputWindow_Log(MESSAGE_TEXT[MESSAGES.TRANSFORM_TO_LOCAL]);
                 }
                 else
                 {
-                    OutputWindow_Log("Transform information now relative to world space.");
+                    OutputWindow_Log(MESSAGE_TEXT[MESSAGES.TRANSFORM_TO_WORLD]);
                 }
                 
             }
@@ -260,15 +275,13 @@ namespace RuntimeHelper
                 if (showLocal)
                 {
                     selectedObject.transform.SetLocalsToZero();
-                    OutputWindow_Log($"Object [{selectedObject.name}] local vectors set to: pos: (0,0,0); rot: (0,0,0); scale: (1,1,1)");
+                    OutputWindow_Log(MESSAGE_TEXT[MESSAGES.LOCALS_TO_ZERO], selectedObject.name);
                 }
                 else
                 {
                     selectedObject.transform.SetWorldToZero();
-                    OutputWindow_Log($"Object [{selectedObject.name}] world vectors set to: pos: (0,0,0); rot: (0,0,0)");
-                }
-
-                
+                    OutputWindow_Log(MESSAGE_TEXT[MESSAGES.WORLD_TO_ZERO], selectedObject.name);
+                }                
             }
 
             if (GUI.Button(new Rect(windowRect.x + 150, windowRect.y + 567, 140, 22), MainWindow[11], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
@@ -276,12 +289,12 @@ namespace RuntimeHelper
                 if (showLocal)
                 {
                     selectedObject.transform.SetLocalPositionToZero();
-                    OutputWindow_Log($"Object [{selectedObject.name}] local position set to zero.");
+                    OutputWindow_Log(MESSAGE_TEXT[MESSAGES.LOCAL_POS_TO_ZERO], selectedObject.name);
                 }
                 else
                 {
                     selectedObject.transform.SetPositionToZero();
-                    OutputWindow_Log($"Object [{selectedObject.name}] world position set to zero.");
+                    OutputWindow_Log(MESSAGE_TEXT[MESSAGES.WORLD_POS_TO_ZERO], selectedObject.name);
                 }                
             }
 
@@ -290,38 +303,41 @@ namespace RuntimeHelper
                 if (showLocal)
                 {
                     selectedObject.transform.SetLocalRotationToZero();
-                    OutputWindow_Log($"Object [{selectedObject.name}] local rotation set to zero.");
+                    OutputWindow_Log(MESSAGE_TEXT[MESSAGES.LOCAL_ROT_TO_ZERO], selectedObject.name);
                 }
                 else
                 {
                     selectedObject.transform.SetRotationToZero();
-                    OutputWindow_Log($"Object [{selectedObject.name}] world rotation set to zero.");
+                    OutputWindow_Log(MESSAGE_TEXT[MESSAGES.WORLD_ROT_TO_ZERO], selectedObject.name);
                 }                
             }
 
             if (GUI.Button(new Rect(windowRect.x + 150, windowRect.y + 592, 140, 22), MainWindow[13], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
                 selectedObject.transform.SetLocalScaleToOne();
-                OutputWindow_Log($"Object [{selectedObject.name}] local scale set to one.");
+                OutputWindow_Log(MESSAGE_TEXT[MESSAGES.LOCAL_SCALE_TO_ONE], selectedObject.name);
             }
 
             if (GUI.Button(new Rect(windowRect.x + 5, windowRect.y + 617, 140, 22), MainWindow[14], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
                 DrawObjectBounds dob = selectedObject.GetOrAddVisualBase(BaseType.Object).GetComponent<DrawObjectBounds>();                
-                selectedObject.transform.SetTransformInfo(ref dob.transformBase);
-                OutputWindow_Log($"Object [{selectedObject.name}] transform values set to original.");
+                selectedObject.transform.SetTransformInfo(ref dob.transformBase);                
+                OutputWindow_Log(MESSAGE_TEXT[MESSAGES.TRANSFORM_TO_ORIGINAL], selectedObject.name);
             }
 
-            if (isExistsCollider && showCollider)
+            if (isColliderSelected)
             {
                 if (GUI.Button(new Rect(windowRect.x + 150, windowRect.y + 617, 140, 22), MainWindow[15], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
                 {
-                    DrawColliderBounds dcb = selectedObject.GetOrAddVisualBase(BaseType.Collider).GetComponent<DrawColliderBounds>();                    
-                    selectedObject.ResetCollider(dcb.ColliderBases[dcb.cInstanceID], dcb.cInstanceID);
-                    dcb.colliderBase = dcb.ColliderBases[dcb.cInstanceID];
-                    dcb.IsDraw(true);
+                    DrawColliderControl dcc = selectedObject.GetComponentInChildren<DrawColliderControl>();
+
+                    int colliderID = components[selected_component].GetInstanceID();
+
+                    selectedObject.ResetCollider(dcc.ColliderBases[colliderID].ColliderBase, colliderID);
+
                     GetColliderInfo();
-                    OutputWindow_Log($"Collider [{dcb.ColliderBases[dcb.cInstanceID].ColliderType.ToString()}] values set to original.");
+
+                    OutputWindow_Log(MESSAGE_TEXT[MESSAGES.COLLIDER_TO_ORIGINAL], dcc.ColliderBases[colliderID].ColliderBase.ColliderType.ToString());
                 }
             }            
 
@@ -342,6 +358,9 @@ namespace RuntimeHelper
 
             ComponentInfoWindow_OnGUI();
 
+            AddComponentWindow_OnGUI();
+
+            
             if (GUI.tooltip != "")
             {
                 GUIStyle gUIStyle = SNStyles.GetGuiItemStyle(GuiItemType.TEXTAREA, GuiColor.Green, TextAnchor.MiddleLeft);
@@ -350,28 +369,27 @@ namespace RuntimeHelper
 
                 GUI.Label(new Rect(Event.current.mousePosition.x + 10, Event.current.mousePosition.y + 10, vector2.x, vector2.y), GUI.tooltip, gUIStyle);
             }
+            
+            
         }       
 
         public void Update()
         {
-            if (selectedObject.IsNull())
-            {
-                OutputWindow_Log("Selected object unexpectedly destroyed!", LogType.Warning);
-                OnObjectDestroy(false);
-            }
+            SafetyCheck();
 
-            if (baseObject.IsNull())
+            if (isRayEnabled)
             {
-                OutputWindow_Log("Base object unexpectedly destroyed!", LogType.Warning);
-                OnObjectDestroy(false);
+                RaycastMode_Update();
             }
 
             if (isDirty)
+            {
                 return;
+            }
 
             PrintObjectInfo();
 
-            if (isExistsCollider)
+            if (isColliderSelected)
             {
                 PrintColliderInfo();
             }
@@ -380,23 +398,34 @@ namespace RuntimeHelper
             {
                 UWE.Utils.lockCursor = !UWE.Utils.lockCursor;
             }
-            
-            if (ScrollView_transforms_retval != -1)
-            {                
-                current_transform_index = ScrollView_transforms_retval;
-                OnObjectChange(TRANSFORMS[current_transform_index].gameObject);                               
-            }
 
-            EditWindow_Update();
+            if (ScrollView_transforms_event.ItemID != -1)
+            {
+                if (ScrollView_transforms_event.MouseButton == 0)
+                {
+                    try
+                    {
+                        current_transform_index = ScrollView_transforms_event.ItemID;
+                        OnObjectChange(TRANSFORMS[current_transform_index].gameObject);
+                    }
+                    catch
+                    {
+                        current_transform_index = 0;
+                        OnObjectChange(TRANSFORMS[current_transform_index].gameObject);
+                    }
+                }
+                else if (ScrollView_transforms_event.MouseButton == 1)
+                {
 
-            ComponentWindow_Update();
 
-            if (showRendererWindow)
-                RendererWindow_Update();
+                }
+
+                return;
+            }            
 
             GetObjectVectors();
 
-            if (isExistsCollider)
+            if (isColliderSelected)
             {
                 switch (colliderModify.ColliderType)
                 {
@@ -411,19 +440,37 @@ namespace RuntimeHelper
                         break;
                 }
             }
-            
-            if (Input.GetKeyDown(KeyCode.Y))
+
+            if (Input.GetKeyDown(RuntimeHelper_Config.KEYBINDINGS["ToggleColliderDrawing"]))
             {
-                if (isExistsCollider)
-                {
+                //if (isColliderSelected)
+               // {
                     showCollider = !showCollider;                    
-                    SetColliderDrawing(showCollider, null);
+                    ShowAllCollider(showCollider);
+               // }
+            }
+
+            if (Input.GetKeyDown(RuntimeHelper_Config.KEYBINDINGS["ToggleRaycastMode"]))
+            {
+                if (!Player.main || uGUI.main.loading.IsLoading || GameHelper.IsPlayerInVehicle())
+                {
+                    isRayEnabled = false;
+                    OutputWindow_Log(WARNING_TEXT[WARNINGS.UNABLE_TO_RAYCAST], LogType.Warning);
+                    return;
                 }
-            }            
+                else
+                {
+                    ReleaseObjectDrawing();
+
+                    isRayEnabled = !isRayEnabled;
+
+                    OutputWindow_Log(MESSAGE_TEXT[MESSAGES.RAYCAST_STATE], isRayEnabled);
+                }
+            }
 
             if (Event.current == null)
             {
-                OutputWindow_Log("Event.current is not ready!", LogType.Warning);
+                OutputWindow_Log(WARNING_TEXT[WARNINGS.EVENT_CURRENT_NOT_READY], LogType.Warning);
                 return;
             }
 
@@ -436,10 +483,21 @@ namespace RuntimeHelper
             {
                 value = -scaleFactor;                
                 EditObjectVectors();                
-            }            
-        }
+            }
 
-        
+            EditWindow_Update();
+
+            ComponentWindow_Update();
+
+            AddComponentWindow_Update();
+
+            if (showRendererWindow)
+                RendererWindow_Update();
+
+            if (showComponentInfoWindow)
+                ComponentInfoWindow_Update();
+        }       
+
         private void GetObjectVectors()
         {         
             if (showLocal)
@@ -471,7 +529,7 @@ namespace RuntimeHelper
         }        
 
         private void EditObjectVectors()
-        {
+        {            
             switch (EDIT_MODE[current_editmode_index])
             {                
                 case "Rotation: x":                    
@@ -552,32 +610,26 @@ namespace RuntimeHelper
 
             SetObjectVectors();
             
-            if (isExistsCollider)
+            if (isColliderSelected)
             {
                 switch (colliderModify.ColliderType)
                 {
                     case ColliderType.BoxCollider:
                         bc.center = colliderModify.Center;
-                        bc.size = colliderModify.Size;
-                        SetColliderDrawing(true, bc);
+                        bc.size = colliderModify.Size;                        
                         break;
                     case ColliderType.CapsuleCollider:
                         cc.center = colliderModify.Center;
                         cc.radius = colliderModify.Radius;
                         cc.height = colliderModify.Height;
-                        cc.direction = colliderModify.Direction;
-                        SetColliderDrawing(true, cc);
+                        cc.direction = colliderModify.Direction;                        
                         break;
                     case ColliderType.SphereCollider:
                         sc.center = colliderModify.Center;
-                        sc.radius = colliderModify.Radius;
-                        SetColliderDrawing(true, sc);
+                        sc.radius = colliderModify.Radius;                        
                         break;
-                }
-
-                
-            }
-            
+                }                
+            }            
         }        
     }
 }

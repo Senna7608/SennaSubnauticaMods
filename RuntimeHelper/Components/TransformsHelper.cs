@@ -1,5 +1,4 @@
 ﻿using Common;
-using RuntimeHelper.Logger;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -42,7 +41,10 @@ namespace RuntimeHelper.Components
             else
             {
                 transforms.Insert(0, gameObject.transform.parent);
+                transforms.Insert(1, gameObject.transform);
             }
+
+
         }
 
         public static int SortByName(Transform transform_1, Transform transform_2)
@@ -98,24 +100,16 @@ namespace RuntimeHelper.Components
             transform.localPosition = Vector3.zero;
             transform.localScale = Vector3.one;
             transform.localRotation = Quaternion.Euler(Vector3.zero);
-        }        
-
-        public static void GetTransformInfo(this Transform source, ref TransformInfo transformInfo)
-        {
-            transformInfo.Position = source.position;
-            transformInfo.Rotation = source.rotation;
-            transformInfo.LocalPosition = source.localPosition;
-            transformInfo.LocalRotation = source.localRotation;
-            transformInfo.Scale = source.localScale;
-        }
+        }               
 
         public static void SetTransformInfo(this Transform destination, ref TransformInfo transformInfo)
         {
+            destination.parent = transformInfo.Parent;
             destination.position = transformInfo.Position;
             destination.rotation = transformInfo.Rotation;
             destination.localPosition = transformInfo.LocalPosition;
             destination.localRotation = transformInfo.LocalRotation;
             destination.localScale = transformInfo.Scale;
-        }        
+        }
     }
 }

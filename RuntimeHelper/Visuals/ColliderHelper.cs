@@ -16,7 +16,7 @@ namespace RuntimeHelper.Visuals
 
         public static ColliderType GetColliderType(this Collider collider)
         {
-            if (collider.IsNull())
+            if (!collider)
             {                             
                 return ColliderType.None;
             }

@@ -70,14 +70,14 @@ namespace CheatManager
         */
         public static CheatManager Init()
         {
-            if (Instance.IsNull())
+            if (Instance == null)
             {
                 Instance = UnityEngine.Object.FindObjectOfType(typeof(CheatManager)) as CheatManager;
 
-                if (Instance.IsNull())
+                if (Instance == null)
                 {
                     GameObject cheatmanager = new GameObject("CheatManager");
-                    Instance = cheatmanager.GetOrAddComponent<CheatManager>();
+                    Instance = cheatmanager.AddComponent<CheatManager>();
                 }                    
             }
 

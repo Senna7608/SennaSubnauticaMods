@@ -13,7 +13,7 @@ namespace SlotExtender
         private Dictionary<string, Text> Seamoth_SlotText = new Dictionary<string, Text>();
         private Dictionary<string, Text> Exosuit_SlotText = new Dictionary<string, Text>();
 
-        private bool isPatched = false;
+        internal bool isPatched = false;
         private uGUI_EquipmentSlot temp_slot;
         private const float Unit = 200f;
         private const float RowStep = Unit * 2.2f / 3;
@@ -25,6 +25,7 @@ namespace SlotExtender
         private const float CenterColumn = 0f;
         private const float RightColumn = RowStep;
         private const float LeftColumn = -RowStep;
+        private Transform seamothSlotTransform = null;
 
         private readonly Vector2[] slotPos = new Vector2[12]
         {
@@ -47,7 +48,7 @@ namespace SlotExtender
 
         public void Awake()
         {
-            Instance = gameObject.GetComponent<Initialize_uGUI>();
+            Instance = GetComponent<Initialize_uGUI>();
             RefreshText();
         }
 
@@ -71,8 +72,13 @@ namespace SlotExtender
                     // slot1 always includes the background image, therefore instantiate the slot2 to avoid duplicate background images
                     if (slot.name == "SeamothModule2")
                     {
+                        seamothSlotTransform = slot.transform;
+
                         foreach (string slotID in SlotHelper.NewSeamothSlotIDs)
                         {
+                            if (slotID.StartsWith("SeamothArm"))
+                                break;
+
                             temp_slot = Instantiate(slot, slot.transform.parent);
                             temp_slot.name = slotID;
                             temp_slot.slot = slotID;
@@ -89,6 +95,21 @@ namespace SlotExtender
                             allSlots.Add(slotID, temp_slot);
                         }                        
                     }
+                    else if (slot.name == "ExosuitArmLeft")
+                    {
+                        temp_slot = Instantiate(slot, seamothSlotTransform.parent);                                              
+                        temp_slot.name = "SeamothArmLeft";
+                        temp_slot.slot = "SeamothArmLeft";                        
+                        allSlots.Add("SeamothArmLeft", temp_slot);                        
+                    }
+                    else if (slot.name == "ExosuitArmRight")
+                    {
+                        temp_slot = Instantiate(slot, seamothSlotTransform.parent);
+                        temp_slot.name = "SeamothArmRight";
+                        temp_slot.slot = "SeamothArmRight";                        
+                        allSlots.Add("SeamothArmRight", temp_slot);
+                    }
+
                 }
 
                 foreach (KeyValuePair<string, uGUI_EquipmentSlot> item in allSlots)
@@ -131,15 +152,24 @@ namespace SlotExtender
                     if (item.Value.name == "ExosuitArmRight")
                     {
                         item.Value.rectTransform.anchoredPosition = new Vector3(RightColumn, FifthRow);
-                    }                    
+                    }
+
+                    if (item.Value.name == "SeamothArmLeft")
+                    {
+                        item.Value.rectTransform.anchoredPosition = new Vector3(LeftColumn, FifthRow);
+                    }
+
+                    if (item.Value.name == "SeamothArmRight")
+                    {
+                        item.Value.rectTransform.anchoredPosition = new Vector3(RightColumn, FifthRow);
+                    }
                 }
 
                 SNLogger.Log($"[{SEConfig.PROGRAM_NAME}] uGUI_EquipmentSlots Patched!");
                 isPatched = true;
             }
         }
-
-        
+                
         internal void RefreshText()
         {
             foreach (KeyValuePair<string, string> kvp in SEConfig.SLOTKEYS)

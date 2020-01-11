@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UWE;
+using System.Runtime.CompilerServices;
 
 namespace Common.GUIHelper
 {
@@ -17,6 +18,20 @@ namespace Common.GUIHelper
         GuiItemType Type { get; set; }
     }
 
+    public struct GuiItemEvent
+    {
+        public readonly int ItemID;
+        public readonly int MouseButton;
+        public readonly bool DoubleClick;
+
+        public GuiItemEvent(int itemID, int mouseButton, bool doubleClick)
+        {
+            ItemID = itemID;
+            MouseButton = mouseButton;
+            DoubleClick = doubleClick;
+        }
+    }    
+
     public enum GuiItemType
     {
         NORMALBUTTON,
@@ -27,7 +42,8 @@ namespace Common.GUIHelper
         TEXTAREA,
         BOX,
         DROPDOWN,
-        HORIZONTALSLIDER
+        HORIZONTALSLIDER,
+        TITLETEXT
     }
 
     public enum GuiItemState
@@ -210,39 +226,45 @@ namespace Common.GUIHelper
         }
 
         //to be called from OnGui
-        public static int DrawGuiItemsGroup(this List<GuiItem> guiItems)
+        public static GuiItemEvent DrawGuiItemsGroup(this List<GuiItem> guiItems)
         {
+            var e = Event.current;            
+
             for (int i = 0; i < guiItems.Count; ++i)
             {
                 if (!guiItems[i].Enabled)
                 {
                     continue;
                 }
-
+                                
                 switch (guiItems[i].Type)
                 {
                     case GuiItemType.NORMALBUTTON:
                     
-                        if (GUI.Button(guiItems[i].Rect, guiItems[i].Content, SNStyles.GetGuiItemStyle(guiItems[i])))
-                        {
-                            return i;
+                        if (GUI.Button(guiItems[i].Rect, guiItems[i].Content, SNStyles.GetGuiItemStyle(guiItems[i])) && e.button == 0)
+                        {                            
+                            return new GuiItemEvent(i, e.button, false);
                         }
                         break;
 
                     case GuiItemType.TOGGLEBUTTON:
 
-                        if (GUI.Button(guiItems[i].Rect, guiItems[i].Content, SNStyles.GetGuiItemStyle(guiItems[i])))
-                        {
+                        if (GUI.Button(guiItems[i].Rect, guiItems[i].Content, SNStyles.GetGuiItemStyle(guiItems[i])) && e.button == 0)
+                        {                            
                             guiItems[i].State = SetStateInverse(guiItems[i].State);
-                            return i;
+                            return new GuiItemEvent(i, e.button, false);
                         }
                         break;
 
-                    case GuiItemType.TAB:
+                    case GuiItemType.TAB:                        
                         if (GUI.Button(guiItems[i].Rect, guiItems[i].Name, SNStyles.GetGuiItemStyle(guiItems[i])))
-                        {
-                            SetStateInverseTAB(guiItems, i);
-                            return i;
+                        {       
+                            if (e.button == 0)
+                            {
+                                SetStateInverseTAB(guiItems, i);
+                            }
+
+                            return new GuiItemEvent(i, e.button, false);
                         }
                         break;
 
@@ -257,7 +279,7 @@ namespace Common.GUIHelper
                 
             }
             
-            return -1;
+            return new GuiItemEvent(-1, -1, false);
         }
 
         public static void SetStateInverseTAB(this List<GuiItem> guiItems, int setActiveState)

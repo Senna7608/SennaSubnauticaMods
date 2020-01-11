@@ -55,7 +55,7 @@ namespace QuickSlotExtender
             //input changed, refreshing key bindings
             QSEConfig.InitSLOTKEYS();
 
-            if (Instance.IsNotNull())
+            if (Instance != null)
             {
                 Instance.ReadSlotExtenderConfig();
             }

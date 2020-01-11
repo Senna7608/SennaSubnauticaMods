@@ -14,7 +14,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)ConfigurationParser\Parser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigurationParser\Section.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigurationParser\SectionParser.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Craftable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BuildableModItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CraftableModItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GUIHelper\SNDropDown.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GUIHelper\SNHorizontalSlider.cs" />

@@ -5,23 +5,25 @@ using Common;
 
 namespace SeamothEnergyShield
 {
-    internal class SeamothShieldPrefab : Craftable
+    internal class SeamothShieldPrefab : CraftableModItem
     {
         public static TechType TechTypeID { get; private set; }
 
         internal SeamothShieldPrefab()
             : base(nameID: "SeamothEnergyShield",
-                  nameUsingForFiles: "SeamothEnergyShield",
+                  iconFileName: "SeamothEnergyShield",
+                  iconTechType: TechType.None,
                   friendlyName: "Seamoth Energy Shield",
                   description: "Allows Seamoth to use a miniaturized Cyclops energy shield.",
                   template: TechType.SeamothElectricalDefense,
                   fabricatorType: CraftTree.Type.SeamothUpgrades,
-                  fabricatorTab: "SeamothModules",
+                  fabricatorTab: new string[] { "SeamothModules" },
                   requiredAnalysis: TechType.CyclopsShieldModule,
                   groupForPDA: TechGroup.VehicleUpgrades,
                   categoryForPDA: TechCategory.VehicleUpgrades,
                   equipmentType: EquipmentType.SeamothModule,
                   quickSlotType: QuickSlotType.Toggleable,
+                  backgroundType: CraftData.BackgroundType.Normal,
                   itemSize: new Vector2int(1,1),                  
                   gamerResourceFileName: null
                   )

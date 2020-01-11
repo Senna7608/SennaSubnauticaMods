@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using Common.GUIHelper;
+using RuntimeHelper.Logger;
 
 namespace RuntimeHelper
 {
@@ -91,6 +92,8 @@ namespace RuntimeHelper
             {
                 RemoveFirstLogEntry();
             }
+
+            RHLogger.RH_Log(message);
         }
 
         private void Write(string message, LogType type)
@@ -98,27 +101,47 @@ namespace RuntimeHelper
             logMessage.Add(new LOG()            
             {
                 message = message,                
-                type = type,
+                type = type
             });
 
             if (logMessage.Count == MAXLOG)
             {
                 RemoveFirstLogEntry();
             }
-        }        
+
+            RHLogger.RH_Log(message, type);
+        }
+
+        private void Write(string message, params object[] arg)
+        {
+            logMessage.Add(new LOG()
+            {
+                message = string.Format(message, arg),
+                type = LogType.Log
+            });
+
+            if (logMessage.Count == MAXLOG)
+            {
+                RemoveFirstLogEntry();
+            }
+
+            RHLogger.RH_Log(message, arg);
+        }
 
         private void Write(string message, LogType type, params object[] arg)
         {
             logMessage.Add(new LOG()            
             {
                 message = string.Format(message, arg),                
-                type = type,
+                type = type
             });
 
             if (logMessage.Count == MAXLOG)
             {
                 RemoveFirstLogEntry();
             }
+
+            RHLogger.RH_Log(message, type, arg);
         }        
 
         private void RemoveFirstLogEntry()
@@ -130,6 +153,8 @@ namespace RuntimeHelper
         public void OutputWindow_Log(string message) => Write(message);
 
         public void OutputWindow_Log(string message, LogType type) => Write(message, type);
+
+        public void OutputWindow_Log(string message, params object[] arg) => Write(message, arg);
 
         public void OutputWindow_Log(string message, LogType type, params object[] arg) => Write(message, type, arg);       
     }

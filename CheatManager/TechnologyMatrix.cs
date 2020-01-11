@@ -166,7 +166,12 @@ namespace CheatManager
             { "ExosuitPlasmaCannonArmModule", CATEGORY.Upgrades },
             { "CyclopsLaserCannonModule", CATEGORY.Upgrades },
             { "SeamothEnergyShield", CATEGORY.Upgrades },
-            { "ExosuitRepulsionCannonArmModule", CATEGORY.Upgrades }
+            { "ExosuitRepulsionCannonArmModule", CATEGORY.Upgrades },
+            { "SeamothDrillArmModule", CATEGORY.Upgrades },
+            { "SeamothClawArmModule", CATEGORY.Upgrades },
+            { "SeamothGrapplingArmModule", CATEGORY.Upgrades },
+            { "SeamothPropulsionArmModule", CATEGORY.Upgrades },
+            { "SeamothTorpedoArmModule", CATEGORY.Upgrades },            
 
         };
 
@@ -725,10 +730,15 @@ namespace CheatManager
                     TechType.AdvancedWiringKit,
                     TechType.Aerogel,
                     TechType.AirBladder,
-                    TechType.Aquarium,
+                    //TechType.Aquarium,
                     TechType.AramidFibers,
+
+                    TechType.BaseBioReactor,
                     TechType.BaseBulkhead,
+                    TechType.BaseFiltrationMachine,
                     TechType.BaseMapRoom,
+                    TechType.BaseMoonpool,
+                    TechType.BaseNuclearReactor,
                     TechType.BaseObservatory,
                     TechType.BasePlanter,
                     TechType.BaseRoom,
@@ -736,26 +746,35 @@ namespace CheatManager
                     TechType.BaseWaterPark,
                     TechType.BatteryCharger,
                     TechType.Bench,
-                    TechType.Benzene,
-                    TechType.Bioreactor,                    
+                    TechType.Benzene,                    
+                    
                     TechType.Compass,
                     TechType.Constructor,
-                    TechType.Cyclops,                    
+                    TechType.Cyclops,
+                    
                     TechType.Exosuit,
+                    TechType.ExosuitDrillArmModule,
+                    TechType.ExosuitGrapplingArmModule,
+                    TechType.ExosuitJetUpgradeModule,
+                    TechType.ExosuitPropulsionArmModule,
+                    TechType.ExosuitTorpedoArmModule,
+
                     TechType.FarmingTray,
-                    TechType.FiberMesh,
-                    TechType.FiltrationMachine,
+                    TechType.FiberMesh,                    
+
                     TechType.Gravsphere,
+
                     TechType.HeatBlade,
                     TechType.HighCapacityTank,
                     TechType.HydrochloricAcid,
+
                     TechType.Knife,
+
                     TechType.LaserCutter,
                     TechType.LEDLight,                    
-                    TechType.Locker,
+                    //TechType.Locker,
                     TechType.Lubricant,                     
-                    TechType.BaseMoonpool,
-                    TechType.NuclearReactor,
+                                        
                     TechType.PictureFrame,
                     TechType.PlanterBox,
                     TechType.PlanterPot2,
@@ -770,32 +789,39 @@ namespace CheatManager
                     TechType.PrecursorIonBattery,
                     TechType.PrecursorIonPowerCell,
                     TechType.PropulsionCannon,
+
                     TechType.RadiationSuit,
-                    TechType.Radio,
+                    //TechType.Radio,
                     TechType.ReinforcedDiveSuit,
                     TechType.Rebreather,
                     TechType.RocketBaseLadder,
                     TechType.RocketStage1,
                     TechType.RocketStage2,
                     TechType.RocketStage3,
-                    TechType.BaseReinforcement,                    
+                    TechType.BaseReinforcement,
+                    
                     TechType.Seaglide,
                     TechType.Seamoth,
-                    TechType.Sign,                    
+                    //TechType.Sign,
+                    //TechType.SmallLocker,
                     TechType.Spotlight,                    
                     TechType.StarshipChair,
                     TechType.StarshipDesk,
                     TechType.StasisRifle,
                     TechType.Stillsuit,
                     TechType.SwimChargeFins,
+
                     TechType.Techlight,
                     TechType.Terraformer,
                     TechType.ThermalPlant,
                     TechType.Thermometer,
                     TechType.Transfuser,
-                    TechType.Trashcans,                    
+                    TechType.Trashcans,
+                    
                     TechType.UltraGlideFins,
+
                     TechType.VendingMachine,
+
                     TechType.Workbench                    
                 }
             }

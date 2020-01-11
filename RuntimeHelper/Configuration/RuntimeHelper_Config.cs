@@ -14,23 +14,33 @@ namespace RuntimeHelper.Configuration
         public const string PROGRAM_NAME = "RuntimeHelper";
         internal static string PROGRAM_VERSION = string.Empty;
         internal static string CONFIG_VERSION = string.Empty;
-
+        public static bool AUTOSTART = false;
         private static readonly string FILENAME = $"{Environment.CurrentDirectory}/QMods/{PROGRAM_NAME}/config.txt";
 
-        private static readonly string[] SECTIONS = { "Hotkeys"};
+        private static readonly string[] SECTIONS = { "Settings", "Hotkeys"};
 
         internal static Dictionary<string, KeyCode> KEYBINDINGS;
-        internal static Dictionary<string, string> Section_hotkeys;           
+        internal static Dictionary<string, string> Section_hotkeys;
+
+        private static readonly string[] SECTION_SETTINGS =
+        {
+            "Autostart"            
+        };
 
         private static readonly string[] SECTION_HOTKEYS =
-        {           
-            "ToggleMouse",            
+        {            
+            "ToggleMouse",
+            "ToggleRaycastMode",
+            "ToggleColliderDrawing"
         };      
         
         
         private static readonly List<ConfigData> DEFAULT_CONFIG = new List<ConfigData>
         {
-            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[0], KeyCode.X.ToString())            
+            new ConfigData(SECTIONS[0], SECTION_SETTINGS[0], false.ToString()),
+            new ConfigData(SECTIONS[1], SECTION_HOTKEYS[0], KeyCode.X.ToString()),
+            new ConfigData(SECTIONS[1], SECTION_HOTKEYS[1], KeyCode.R.ToString()),
+            new ConfigData(SECTIONS[1], SECTION_HOTKEYS[2], KeyCode.Y.ToString()),
         };
 
         internal static void LoadConfig()
@@ -55,7 +65,14 @@ namespace RuntimeHelper.Configuration
                 }
             }
 
-            Section_hotkeys = Helper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[0], SECTION_HOTKEYS);
+            Section_hotkeys = Helper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[1], SECTION_HOTKEYS);
+
+            string autostart = Helper.GetKeyValue(FILENAME, SECTIONS[0], SECTION_SETTINGS[0]);
+
+            if (!bool.TryParse(autostart, out AUTOSTART))
+            {
+                AUTOSTART = false;
+            }
 
             SNLogger.Log($"[{PROGRAM_NAME}] Configuration loaded.");
         }
@@ -83,7 +100,8 @@ namespace RuntimeHelper.Configuration
 
         internal static void WriteConfig()
         {
-            Helper.SetAllKeyValuesInSection(FILENAME, SECTIONS[0], Section_hotkeys);            
+            Helper.SetKeyValue(FILENAME, SECTIONS[0], SECTION_SETTINGS[0], AUTOSTART.ToString());
+            Helper.SetAllKeyValuesInSection(FILENAME, SECTIONS[1], Section_hotkeys);            
         }
 
         internal static void SyncConfig()

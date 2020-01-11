@@ -4,7 +4,6 @@ using RuntimeHelper.Visuals;
 using RuntimeHelper.Components;
 using static RuntimeHelper.SceneHelper.SceneHelper;
 using Common;
-using RuntimeHelper.Logger;
 using RuntimeHelper.Objects;
 
 namespace RuntimeHelper
@@ -13,9 +12,7 @@ namespace RuntimeHelper
     {
         public void UpdateVisuals()
         {
-            RefreshTransformIndex();
-
-            isExistsCollider = selectedObject.IsExistsCollider();            
+            RefreshTransformIndex();                        
 
             RefreshEditModeList();
 
@@ -24,19 +21,21 @@ namespace RuntimeHelper
             RefreshComponentsList();            
         }
 
-        private void OnBaseObjectChange()
+        private void OnBaseObjectChange(GameObject newObject)
         {            
             SetDirty(true);
 
             ReleaseObjectDrawing();
 
-            baseObject = selectedObject;
+            baseObject = newObject;
+
+            selectedObject = newObject;
 
             RefreshTransformsList();
 
             UpdateVisuals();
 
-            OutputWindow_Log($"Base Object changed to [{baseObject.name}]");
+            OutputWindow_Log(MESSAGE_TEXT[MESSAGES.BASE_OBJECT_CHANGED], baseObject.name);
 
             SetDirty(false);            
         }
@@ -49,20 +48,43 @@ namespace RuntimeHelper
 
             selectedObject = newObject;
 
+            if (!isRootList)
+                RefreshTransformsList();
+
             UpdateVisuals();
 
             SetDirty(false);
         }
 
-        private void OnObjectDestroy(bool immediate)
+        private void EmergencyRefresh()
+        {
+            SetDirty(true);
+
+            OutputWindow_Log(WARNING_TEXT[WARNINGS.EMERGENCY_METHOD_STARTED], LogType.Warning);
+
+            ReleaseObjectDrawing();
+
+            baseObject = gameObject;
+            selectedObject = baseObject;
+
+            RefreshTransformsList();
+
+            UpdateVisuals();
+
+            SetDirty(false);
+
+            OutputWindow_Log(MESSAGE_TEXT[MESSAGES.BASE_OBJECT_CHANGED], baseObject.name);
+        }
+
+        private void DestroyObject(bool immediate)
         {
             SetDirty(true);
 
             ReleaseObjectDrawing();
 
-            if (selectedObject.IsNotNull())
+            if (selectedObject)
             {
-                OutputWindow_Log($"Object [{selectedObject.name}] now destroy.\nTransforms: parent [{selectedObject.transform.parent.name}], root [{selectedObject.transform.root.name}]");
+                OutputWindow_Log(MESSAGE_TEXT[MESSAGES.OBJECT_DESTROY],  selectedObject.name, selectedObject.transform.parent.name, selectedObject.transform.root.name);
 
                 if (immediate)
                     DestroyImmediate(selectedObject);
@@ -79,10 +101,10 @@ namespace RuntimeHelper
                 selectedObject = gameObject;
             }
 
-            if (baseObject.IsNull())
+            if (!baseObject)
             {
                 baseObject = selectedObject;
-                OutputWindow_Log($"Base Object changed to [{baseObject.name}]");
+                OutputWindow_Log(MESSAGE_TEXT[MESSAGES.BASE_OBJECT_CHANGED], baseObject.name);
             }
 
             RefreshTransformsList();
@@ -92,14 +114,16 @@ namespace RuntimeHelper
             SetDirty(false);
         }
                 
-        private void OnRefresHBase()
+        private void OnRefreshBase()
         {            
             SetDirty(true);
 
             ReleaseObjectDrawing();
 
-            if (baseObject.IsNull())
+            if (!baseObject)
+            {
                 return;
+            }
 
             selectedObject = baseObject;
 
@@ -109,22 +133,31 @@ namespace RuntimeHelper
 
             SetScroll();
 
-            OutputWindow_Log("Base transform list refreshed.");
+            OutputWindow_Log(MESSAGE_TEXT[MESSAGES.CHILD_OBJECTS_LIST_REFRESHED]);
 
             SetDirty(false);           
         }
 
         private void OnPasteObject()
         {
-            SetDirty(true);            
+            SetDirty(true);
 
-            if (tempObject.IsNotNull())
+            GameObject clone = null;
+
+            if (tempObject)
             {
-                tempObject.PasteObject(baseObject.transform);
-                OutputWindow_Log($"Object [{tempObject.name}] pasted.\nName set to [newPastedObject]. Parent set to [{baseObject.transform.name}]");
+                clone = tempObject.PasteObject(baseObject.transform);
+                OutputWindow_Log(MESSAGE_TEXT[MESSAGES.OBJECT_PASTED], tempObject.name, baseObject.transform.name);                
             }
 
+            ReleaseObjectDrawing();
+
             RefreshTransformsList();
+
+            if (clone)
+            {
+                selectedObject = clone;
+            }
 
             UpdateVisuals();
 
@@ -133,14 +166,15 @@ namespace RuntimeHelper
 
         private void ReleaseObjectDrawing()
         {
-            if (selectedObject.IsNull())
+            if (!selectedObject)
+            {
                 return;
+            }
+
+            isColliderSelected = false;
+            showCollider = false;
 
             SetObjectDrawing(false);
-            
-            if (isExistsCollider)
-                SetColliderDrawing(false, null);
-                
         }
 
 
@@ -162,7 +196,7 @@ namespace RuntimeHelper
 
             UpdateVisuals();
 
-            OutputWindow_Log("Getting Root transforms.");
+            OutputWindow_Log(MESSAGE_TEXT[MESSAGES.GET_ROOTS]);
 
             isRootList = true;
 
@@ -195,32 +229,22 @@ namespace RuntimeHelper
             {
                 GameObject containerBase = selectedObject.GetOrAddVisualBase(BaseType.Object);
                 DrawObjectBounds dob = containerBase.GetOrAddComponent<DrawObjectBounds>();
-                dob.IsDraw(value);
+                dob.IsDraw(value);               
             }
             catch
             {
-                OutputWindow_Log($"GetOrAddComponent [DrawObjectBounds] to object [{selectedObject.name}] has failed!", LogType.Exception);
+                string component = typeof(DrawObjectBounds).ToString().Split('.').GetLast();
+                OutputWindow_Log(ERROR_TEXT[ERRORS.GET_OR_ADD_COMPONENT_ERROR], LogType.Exception, component, selectedObject.name);
             }
         }
 
-        private void SetColliderDrawing(bool value, Collider collider)
-        {
-            try
+        private void ShowAllCollider(bool value)
+        {            
+            foreach (DrawColliderControl dcc in selectedObject.GetComponentsInChildren<DrawColliderControl>(true))
             {
-                GameObject containerBase = selectedObject.GetOrAddVisualBase(BaseType.Collider);
-                DrawColliderBounds dcb = containerBase.GetOrAddComponent<DrawColliderBounds>();
-
-                if (collider.IsNotNull())
-                {
-                    dcb.SetColliderBase(collider);
-                }
-
-                dcb.IsDraw(value);
-            }
-            catch
-            {
-                OutputWindow_Log($"GetOrAddComponent [DrawColliderBounds] to object [{selectedObject.name}] has failed!", LogType.Exception);
+                dcc.DrawAllCollider(value);
             }
         }
+
     }
 }

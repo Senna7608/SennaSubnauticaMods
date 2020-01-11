@@ -63,13 +63,13 @@ namespace CheatManager.Configuration
 
             itemInfo.DrawGuiItemsGroup();
 
-            int sBtn = buttonInfo.DrawGuiItemsGroup();
+            GuiItemEvent sBtn = buttonInfo.DrawGuiItemsGroup();
 
-            if (sBtn != -1)
+            if (sBtn.ItemID != -1)
             {
-                StartAssignment(HotkeyButtons[sBtn]);
-                selected = sBtn;
-                buttonInfo[sBtn].Name = "Press any key!";
+                StartAssignment(HotkeyButtons[sBtn.ItemID]);
+                selected = sBtn.ItemID;
+                buttonInfo[sBtn.ItemID].Name = "Press any key!";
             }           
             
             if (GUI.Button(new Rect(drawRect.x + space, buttonsRect.GetLast().y + space * 2, drawRect.width / 2 - space * 2, 40), "Save"))

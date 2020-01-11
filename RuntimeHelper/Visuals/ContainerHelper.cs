@@ -122,26 +122,26 @@ namespace RuntimeHelper.Visuals
                 case BaseType.Object:
                     containerBase = gameObject.FindChild("RH_OBJECT_VISUAL_BASE");
 
-                    if (containerBase.IsNull())
+                    if (containerBase)
                     {
-                        containerBase = new GameObject("RH_OBJECT_VISUAL_BASE");                        
+                        return containerBase;
                     }
                     else
                     {
-                        return containerBase;
+                        containerBase = new GameObject("RH_OBJECT_VISUAL_BASE");
                     }
                     break;
 
                 case BaseType.Collider:
                     containerBase = gameObject.FindChild("RH_COLLIDER_VISUAL_BASE");
 
-                    if (containerBase.IsNull())
+                    if (containerBase)
                     {
-                        containerBase = new GameObject("RH_COLLIDER_VISUAL_BASE");                        
+                        return containerBase;
                     }
                     else
                     {
-                        return containerBase;
+                        containerBase = new GameObject("RH_COLLIDER_VISUAL_BASE");
                     }
                     break;
             }
@@ -153,5 +153,22 @@ namespace RuntimeHelper.Visuals
             return containerBase;
         }
 
+        public static GameObject GetVisualBase(this GameObject gameObject, BaseType baseType)
+        {
+            GameObject containerBase = null;
+
+            switch (baseType)
+            {
+                case BaseType.Object:
+                    containerBase = gameObject.FindChild("RH_OBJECT_VISUAL_BASE");                                  
+                    break;
+
+                case BaseType.Collider:
+                    containerBase = gameObject.FindChild("RH_COLLIDER_VISUAL_BASE");                                     
+                    break;
+            }
+            
+            return containerBase;
+        }
     }
 }

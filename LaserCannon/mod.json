@@ -2,7 +2,7 @@
   "Id": "LaserCannon",
   "DisplayName": "LaserCannon",
   "Author": "Senna",
-  "Version": "1.5",
+  "Version": "1.7",
   "Dependencies": ["SMLHelper"],
   "LoadBefore": [],
   "LoadAfter": [],

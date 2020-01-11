@@ -15,7 +15,7 @@ namespace CheatManager
             new string[] { "-594 -740 -72",   "Bones Field (Lost River)"},
             new string[] { "420 132 1185",    "TopGun"},
             new string[] { "349 158 906",     "HillTop"},
-            new string[] { "0 -3050 0",       "Underworld"},
+            new string[] { "0 -1930 0",       "Underworld"},
             new string[] { "-486 -500 1326",  "Lifepod 2 (Blood Kelp Two)"},
             new string[] { "-24 -15 409",     "Lifepod 3 (Kelp Forest)"},
             new string[] { "710 -5 152",      "Lifepod 4 (Crash Zone)"},

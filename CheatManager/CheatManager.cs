@@ -62,12 +62,14 @@ namespace CheatManager
         private const int MAXSHOWITEMS = 4;
 
         private string windowTitle;
-        private int normalButtonID = -1;
-        private int toggleButtonID = -1;
-        private int daynightTabID = 4;
-        private int categoriesTabID = 0;
-        private int scrollviewID = -1;
-        private int vehicleSettingsID = -1;
+
+        private GuiItemEvent CommandsGroup = new GuiItemEvent(-1, -1, false);
+        private GuiItemEvent ToggleCommandsGroup = new GuiItemEvent(-1, -1, false);
+        private GuiItemEvent DayNightGroup = new GuiItemEvent(-1, -1, false);
+        private GuiItemEvent CategoriesGroup = new GuiItemEvent(-1, -1, false);
+        private GuiItemEvent ScrollViewGroup = new GuiItemEvent(-1, -1, false);
+        private GuiItemEvent VehicleSettingsGroup = new GuiItemEvent(-1, -1, false);
+
         private int currentdaynightTab = 4;
         private int currentTab = 0;
         private bool filterFast;
@@ -79,7 +81,8 @@ namespace CheatManager
         public void Awake()
         {
             Instance = this;
-            useGUILayout = false;
+            useGUILayout = false;            
+
 #if DEBUG
             isActive = true;
 #endif
@@ -186,15 +189,16 @@ namespace CheatManager
 
             commands[(int)Commands.BackWarp].Enabled = false;
             commands[(int)Commands.BackWarp].State = GuiItemState.PRESSED;
-            
-            daynightTab[4].State = GuiItemState.PRESSED;
+
+            daynightTab.SetStateInverseTAB(4);
             categoriesTab[0].State = GuiItemState.PRESSED;
 
             seamothSpeedMultiplier = 1;
             exosuitSpeedMultiplier = 1;
             cyclopsSpeedMultiplier = 1;
             
-            buttonControl = new ButtonControl();            
+            buttonControl = new ButtonControl();           
+            
         }
 
         public void AddListToGroup(List<string[]> names, List<Rect> rects, GuiItemType type, ref List<GuiItem> guiItems, GuiItemColor itemColor,
@@ -306,57 +310,59 @@ namespace CheatManager
                     UWE.Utils.lockCursor = !UWE.Utils.lockCursor;
                 }
 
-                if(!initToggleButtons && !uGUI.main.loading.IsLoading)
+                if (!initToggleButtons && !uGUI.main.loading.IsLoading)
                 {
-                    SetToggleButtons();                                                
+                    SetToggleButtons();
                     initToggleButtons = true;
                     UpdateButtonsState();
                 }
-                if (normalButtonID != -1)
-                {                        
-                    buttonControl.NormalButtonControl(normalButtonID, ref commands, ref toggleCommands);
-                }
-
-                if (toggleButtonID != -1)
-                {                        
-                    buttonControl.ToggleButtonControl(toggleButtonID, ref toggleCommands);
-                }
-
-                if (daynightTabID != -1)
+                
+                if (CommandsGroup.ItemID != -1 && CommandsGroup.MouseButton == 0)
                 {
-                    buttonControl.DayNightButtonControl(daynightTabID, ref currentdaynightTab, ref daynightTab);
+                    buttonControl.NormalButtonControl(CommandsGroup.ItemID, ref commands, ref toggleCommands);
                 }
 
-                if (categoriesTabID != -1)
+                if (ToggleCommandsGroup.ItemID != -1 && ToggleCommandsGroup.MouseButton == 0)
                 {
-                    if (categoriesTabID != currentTab)
+                    buttonControl.ToggleButtonControl(ToggleCommandsGroup.ItemID, ref toggleCommands);
+                }
+
+                if (DayNightGroup.ItemID != -1 && DayNightGroup.MouseButton == 0)
+                {
+                    buttonControl.DayNightButtonControl(DayNightGroup.ItemID, ref currentdaynightTab, ref daynightTab);
+                }
+
+                if (CategoriesGroup.ItemID != -1 && CategoriesGroup.MouseButton == 0)
+                {
+                    if (CategoriesGroup.ItemID != currentTab)
                     {
                         //categoriesTab[currentTab].State = SNGUI.SetStateInverse(categoriesTab[currentTab].State);
                         //categoriesTab[categoriesTabID].State = SNGUI.SetStateInverse(categoriesTab[categoriesTabID].State);
-                        currentTab = categoriesTabID;
+                        currentTab = CategoriesGroup.ItemID;
                         scrollPos = Vector2.zero;
                     }
                 }
 
-                if (scrollviewID != -1)
+                if (ScrollViewGroup.ItemID != -1 && ScrollViewGroup.MouseButton == 0)
                 {
-                    buttonControl.ScrollViewControl(currentTab, ref scrollviewID, ref scrollItemsList[currentTab], ref tMatrix, ref commands);
+                    buttonControl.ScrollViewControl(currentTab, ScrollViewGroup.ItemID, ref scrollItemsList[currentTab], ref tMatrix, ref commands);
                 }
 
-                if (vehicleSettingsID != -1)
+                if (VehicleSettingsGroup.ItemID != -1 && VehicleSettingsGroup.MouseButton == 0)
                 {
-                    if (vehicleSettingsID == 0)
-                    {                        
+                    if (VehicleSettingsGroup.ItemID == 0)
+                    {
                         isSeamothCanFly.Update(!isSeamothCanFly.value);
-                        vehicleSettings[0].State = SNGUI.ConvertBoolToState(isSeamothCanFly.value);                
+                        vehicleSettings[0].State = SNGUI.ConvertBoolToState(isSeamothCanFly.value);
                     }
 
-                    if (vehicleSettingsID == 1)
-                    {                        
+                    if (VehicleSettingsGroup.ItemID == 1)
+                    {
                         isSeaglideFast.Update(!isSeaglideFast.value);
-                        vehicleSettings[1].State = SNGUI.ConvertBoolToState(isSeaglideFast.value);                                                
+                        vehicleSettings[1].State = SNGUI.ConvertBoolToState(isSeaglideFast.value);
                     }
-                }                                                                     
+                }
+                
             }
         }
         
@@ -385,7 +391,7 @@ namespace CheatManager
             toggleCommands[(int)ToggleCommands.fastscan].State = SNGUI.ConvertBoolToState(NoCostConsoleCommand.main.fastScanCheat);
             toggleCommands[(int)ToggleCommands.fastgrow].State = SNGUI.ConvertBoolToState(NoCostConsoleCommand.main.fastGrowCheat);
             toggleCommands[(int)ToggleCommands.fasthatch].State = SNGUI.ConvertBoolToState(NoCostConsoleCommand.main.fastHatchCheat);
-            toggleCommands[(int)ToggleCommands.filterfast].State = SNGUI.ConvertBoolToState(filterFast);            
+            toggleCommands[(int)ToggleCommands.filterfast].State = SNGUI.ConvertBoolToState(filterFast);
             toggleCommands[(int)ToggleCommands.nocost].State = SNGUI.ConvertBoolToState(GameModeUtils.IsOptionActive(GameModeOption.NoCost));
             toggleCommands[(int)ToggleCommands.noenergy].State = SNGUI.ConvertBoolToState(GameModeUtils.IsCheatActive(GameModeOption.NoEnergy));
             toggleCommands[(int)ToggleCommands.nosurvival].State = SNGUI.ConvertBoolToState(GameModeUtils.IsOptionActive(GameModeOption.NoSurvival));
@@ -412,16 +418,16 @@ namespace CheatManager
 
             SNWindow.CreateWindow(windowRect, windowTitle);
 
-            normalButtonID = commands.DrawGuiItemsGroup();
-            toggleButtonID = toggleCommands.DrawGuiItemsGroup();
-            daynightTabID = daynightTab.DrawGuiItemsGroup();
-            categoriesTabID = categoriesTab.DrawGuiItemsGroup();
+            CommandsGroup = commands.DrawGuiItemsGroup();
+            ToggleCommandsGroup = toggleCommands.DrawGuiItemsGroup();
+            DayNightGroup = daynightTab.DrawGuiItemsGroup();
+            CategoriesGroup = categoriesTab.DrawGuiItemsGroup();
             
             if (currentTab == 0)
             {
-                scrollviewID = SNScrollView.CreateScrollView(scrollRect, ref scrollPos, ref scrollItemsList[currentTab], "Select Item in Category:", categoriesTab[currentTab].Name, MAXSHOWITEMS);
+                ScrollViewGroup = SNScrollView.CreateScrollView(scrollRect, ref scrollPos, ref scrollItemsList[currentTab], "Select Item in Category:", categoriesTab[currentTab].Name, MAXSHOWITEMS);
 
-                vehicleSettingsID = vehicleSettings.DrawGuiItemsGroup();
+                VehicleSettingsGroup = vehicleSettings.DrawGuiItemsGroup();
                 
                 SNHorizontalSlider.CreateHorizontalSlider(sliders[0].Rect, ref seamothSpeedMultiplier, 1f, 5f, sliders[0].Name, sliders[0].OnChangedEvent);
                 SNHorizontalSlider.CreateHorizontalSlider(sliders[1].Rect, ref exosuitSpeedMultiplier, 1f, 5f, sliders[1].Name, sliders[1].OnChangedEvent);
@@ -429,7 +435,7 @@ namespace CheatManager
             }
             else
             {
-                scrollviewID = SNScrollView.CreateScrollView(scrollRect, ref scrollPos, ref scrollItemsList[currentTab], "Select Item in Category:", categoriesTab[currentTab].Name);
+                ScrollViewGroup = SNScrollView.CreateScrollView(scrollRect, ref scrollPos, ref scrollItemsList[currentTab], "Select Item in Category:", categoriesTab[currentTab].Name);
             }
         }        
     }

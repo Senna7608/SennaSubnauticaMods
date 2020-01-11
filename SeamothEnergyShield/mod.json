@@ -2,7 +2,7 @@
   "Id": "SeamothEnergyShield",
   "DisplayName": "SeamothEnergyShield",
   "Author": "Senna",
-  "Version": "1.0",
+  "Version": "1.2",
   "Dependencies": ["SMLHelper"],
   "LoadBefore": [],
   "LoadAfter": [],

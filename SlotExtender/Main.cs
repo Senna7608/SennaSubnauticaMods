@@ -30,7 +30,7 @@ namespace SlotExtender
 
                 //Harmony autopatch not working if MoreQuickSlots mod not installed therefore switch to manual patching mode
                 //hInstance.PatchAll(Assembly.GetExecutingAssembly());
-
+                
                 //begin manual patch
                 hInstance.Patch(typeof(DevConsole).GetMethod("SetState"),
                     new HarmonyMethod(typeof(DevConsole_SetState_Patch), "Prefix"), null);
@@ -46,9 +46,21 @@ namespace SlotExtender
                     BindingFlags.NonPublic |
                     BindingFlags.GetProperty).GetGetMethod(true),
                     new HarmonyMethod(typeof(Seamoth_slotIDs_Patch), "Prefix"),  null);
+                
+                hInstance.Patch(typeof(uGUI_QuickSlots).GetMethod("SetBackground",
+                    BindingFlags.NonPublic |
+                    BindingFlags.Instance),
+                    new HarmonyMethod(typeof(uGUI_QuickSlots_SetBackground_Patch), "Prefix"), null);
+
+                hInstance.Patch(typeof(uGUI_Equipment).GetMethod("Awake",
+                    BindingFlags.NonPublic |
+                    BindingFlags.Instance |
+                    BindingFlags.SetField),
+                    new HarmonyMethod(typeof(uGUI_Equipment_Awake_Patch), "Prefix"),
+                    new HarmonyMethod(typeof(uGUI_Equipment_Awake_Patch), "Postfix"));
 
                 hInstance.Patch(typeof(SeaMoth).GetMethod("Start"),  null,
-                    new HarmonyMethod(typeof(SeaMoth_Start_Patch), "Postfix"));
+                    new HarmonyMethod(typeof(SeaMoth_Start_Patch), "Postfix"));                
 
                 hInstance.Patch(typeof(Exosuit).GetProperty("slotIDs",
                     BindingFlags.Instance |
@@ -58,13 +70,8 @@ namespace SlotExtender
 
                 hInstance.Patch(typeof(Exosuit).GetMethod("Start"), null,
                     new HarmonyMethod(typeof(Exosuit_Start_Patch), "Postfix"));
-                               
-                hInstance.Patch(typeof(uGUI_Equipment).GetMethod("Awake",
-                    BindingFlags.NonPublic |
-                    BindingFlags.Instance |
-                    BindingFlags.SetField),
-                    new HarmonyMethod(typeof(uGUI_Equipment_Awake_Patch), "Prefix"),
-                    new HarmonyMethod(typeof(uGUI_Equipment_Awake_Patch), "Postfix"));                
+
+                
 
                 //end manual patch 
 
@@ -80,7 +87,7 @@ namespace SlotExtender
             {
                 SNLogger.Log($"[{SEConfig.PROGRAM_NAME}] -> MoreQuickSlots namespace is exist! Trying to install a Cross-MOD patch...");
                 //if yes construct a Harmony patch
-                MQS_Patcher mqs_patcher = new MQS_Patcher(hInstance);
+                MQS_Patches mqs_patcher = new MQS_Patches(hInstance);
 
                 if (mqs_patcher.InitPatch())
                     SNLogger.Log($"[{SEConfig.PROGRAM_NAME}] -> MoreQuickSlots Cross-MOD patch installed!");
@@ -95,7 +102,7 @@ namespace SlotExtender
             {
                 //enabling game console
                 GameHelper.EnableConsole();
-                //loading config from file
+                //init config
                 SEConfig.InitConfig();
                 //add console commad for configuration window
                 sEConfig = new SECommand();
@@ -116,7 +123,7 @@ namespace SlotExtender
             //input changed, refreshing key bindings
             SEConfig.InitSLOTKEYS();            
             
-            if (Initialize_uGUI.Instance.IsNotNull())
+            if (Initialize_uGUI.Instance != null)
             {
                 Initialize_uGUI.Instance.RefreshText();
             }
@@ -126,14 +133,14 @@ namespace SlotExtender
 
         internal static InputFieldListener InitializeListener()
         {
-            if (ListenerInstance.IsNull())
+            if (ListenerInstance == null)
             {
                 ListenerInstance = UnityEngine.Object.FindObjectOfType(typeof(InputFieldListener)) as InputFieldListener;
 
-                if (ListenerInstance.IsNull())
+                if (ListenerInstance == null)
                 {
                     GameObject inputFieldListener = new GameObject("InputFieldListener");
-                    ListenerInstance = inputFieldListener.GetOrAddComponent<InputFieldListener>();                    
+                    ListenerInstance = inputFieldListener.AddComponent<InputFieldListener>();                    
                 }
             }
 

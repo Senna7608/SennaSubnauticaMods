@@ -22,33 +22,5 @@ namespace ScannerModule
                 Debug.LogException(ex);
             }
         }
-    }
-
-    [HarmonyPatch(typeof(Vehicle))]
-    [HarmonyPatch("OnUpgradeModuleChange")]    
-    public class Vehicle_OnUpgradeModuleChange_Patch
-    {
-        static void Postfix(Vehicle __instance, int slotID, TechType techType, bool added)
-        {
-            if (techType == ScannerModulePrefab.TechTypeID && added)
-            {
-                if (__instance.GetType() == typeof(SeaMoth))
-                {
-                    var seamoth_control = __instance.gameObject.GetOrAddComponent<ScannerModuleSeamoth>();
-                    seamoth_control.moduleSlotID = slotID;
-                    return;
-                }
-                else if (__instance.GetType() == typeof(Exosuit))
-                {
-                    var exosuit_control = __instance.gameObject.GetOrAddComponent<ScannerModuleExosuit>();
-                    exosuit_control.moduleSlotID = slotID - 2;
-                    return;
-                }
-                else
-                {
-                    Debug.Log("[ScannerModule] Error! Unidentified Vehicle Type!");
-                }
-            }
-        }
     }    
 }

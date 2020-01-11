@@ -7,7 +7,7 @@ namespace RuntimeHelper
 {
     public partial class RuntimeHelper
     {
-        private int ScrollView_editmode_retval = -1;
+        private GuiItemEvent ScrollView_editmode_event;
         private int current_editmode_index = 0;
         private List<GuiItem> guiItems_editmode = new List<GuiItem>();
         private Vector2 scrollpos_editmode = Vector2.zero;
@@ -30,7 +30,7 @@ namespace RuntimeHelper
                 EDIT_MODE.Add(item);
             }
             
-            if (isExistsCollider)
+            if (isColliderSelected)
             {               
                 foreach (KeyValuePair<ColliderType, string[]> pair in EditModeStrings.COLLIDER_MODES)
                 {
@@ -69,16 +69,16 @@ namespace RuntimeHelper
         {
             SNWindow.CreateWindow(EditWindow_Rect, "Edit Window");
 
-            ScrollView_editmode_retval = SNScrollView.CreateScrollView(new Rect(EditWindow_drawRect.x + 5, EditWindow_drawRect.y, EditWindow_drawRect.width - 10, 168), ref scrollpos_editmode, ref guiItems_editmode, "Current mode:", EDIT_MODE[current_editmode_index], 7);
+            ScrollView_editmode_event = SNScrollView.CreateScrollView(new Rect(EditWindow_drawRect.x + 5, EditWindow_drawRect.y, EditWindow_drawRect.width - 10, 168), ref scrollpos_editmode, ref guiItems_editmode, "Current mode:", EDIT_MODE[current_editmode_index], 7);
 
             SNHorizontalSlider.CreateHorizontalSlider(new Rect(EditWindow_drawRect.x + 5, EditWindow_drawRect.y + 200, EditWindow_drawRect.width - 10, 35), ref scaleFactor, 0.01f, 1f, "Scale Factor:", onScaleFactorChanged);
         }
 
         private void EditWindow_Update()
         {
-            if (ScrollView_editmode_retval != -1)
+            if (ScrollView_editmode_event.ItemID != -1 && ScrollView_editmode_event.MouseButton == 0)
             {
-                current_editmode_index = ScrollView_editmode_retval;
+                current_editmode_index = ScrollView_editmode_event.ItemID;
             }
         }
 

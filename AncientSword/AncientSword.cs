@@ -10,9 +10,7 @@ namespace AncientSword
             {
                 return "knife";
             }
-        }
-        
-        public Animator animator;
+        }        
 
         public FMODAsset attackSound;        
         public FMODAsset underwaterMissSound;

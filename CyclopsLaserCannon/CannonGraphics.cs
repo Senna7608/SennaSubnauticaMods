@@ -107,14 +107,20 @@ namespace CyclopsLaserCannonModule
             cannon_base_right.transform.localPosition = new Vector3(-3.55f, -7.19f, 0.81f);
             cannon_base_right.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
 
-            GameObject cannon_right_circuit_box = Instantiate(CraftData.GetPrefabForTechType(TechType.StarshipCircuitBox), Vector3.zero, Quaternion.identity, cannon_base_right.transform);
+            //GameObject cannon_right_circuit_box = Instantiate(CraftData.GetPrefabForTechType(TechType.StarshipCircuitBox), Vector3.zero, Quaternion.identity, cannon_base_right.transform);
+            GameObject cannon_right_circuit_box = CraftData.InstantiateFromPrefab(TechType.StarshipCircuitBox);
+            cannon_right_circuit_box.transform.SetParent(cannon_base_right.transform, false);
+
             cannon_right_circuit_box.CleanObject();
             cannon_right_circuit_box.name = "cannon_right_circuit_box";
-            cannon_right_circuit_box.transform.localPosition = new Vector3(0.56f, 0.48f, -0.66f);
-            cannon_right_circuit_box.transform.localScale = new Vector3(0.72f, 0.72f, 0.72f);
-            cannon_right_circuit_box.transform.localRotation = Quaternion.Euler(72f, 90f, 0f);
-           
-            GameObject cannon_pylon_right = Instantiate(CraftData.GetPrefabForTechType(TechType.PowerTransmitter), Vector3.zero, Quaternion.identity, cannon_base_right.transform);
+            cannon_right_circuit_box.transform.localPosition = new Vector3(-0.56f, 0.43f, -0.66f);
+            cannon_right_circuit_box.transform.localScale = new Vector3(0.72f, -0.72f, 0.72f);
+            cannon_right_circuit_box.transform.localRotation = Quaternion.Euler(78f, 270f, 180f);
+
+            //GameObject cannon_pylon_right = Instantiate(CraftData.GetPrefabForTechType(TechType.PowerTransmitter), Vector3.zero, Quaternion.identity, cannon_base_right.transform);
+            GameObject cannon_pylon_right = CraftData.InstantiateFromPrefab(TechType.PowerTransmitter);
+            cannon_pylon_right.transform.SetParent(cannon_base_right.transform, false);
+            Utils.ZeroTransform(cannon_pylon_right.transform);
 
             GameObject laserBeam = Instantiate(cannon_pylon_right.GetComponent<PowerFX>().vfxPrefab, null, false);
             laserBeam.SetActive(false);
@@ -170,14 +176,21 @@ namespace CyclopsLaserCannonModule
             cannon_base_left.transform.localPosition = new Vector3(3.55f, -7.19f, 0.81f);
             cannon_base_left.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
 
-            GameObject cannon_left_circuit_box = Instantiate(CraftData.GetPrefabForTechType(TechType.StarshipCircuitBox), Vector3.zero, Quaternion.identity, cannon_base_left.transform);
+            //GameObject cannon_left_circuit_box = Instantiate(CraftData.GetPrefabForTechType(TechType.StarshipCircuitBox), Vector3.zero, Quaternion.identity, cannon_base_left.transform);
+            GameObject cannon_left_circuit_box = CraftData.InstantiateFromPrefab(TechType.StarshipCircuitBox);
+            cannon_left_circuit_box.transform.SetParent(cannon_base_left.transform, false);
+
             cannon_left_circuit_box.CleanObject();
             cannon_left_circuit_box.name = "cannon_left_circuit_box";
             cannon_left_circuit_box.transform.localPosition = new Vector3(0.56f, 0.48f, -0.66f);
             cannon_left_circuit_box.transform.localScale = new Vector3(0.72f, 0.72f, 0.72f);
-            cannon_left_circuit_box.transform.localRotation = Quaternion.Euler(72f, 90f, 0f);            
+            cannon_left_circuit_box.transform.localRotation = Quaternion.Euler(72f, 90f, 0f);
 
-            GameObject cannon_pylon_left = Instantiate(CraftData.GetPrefabForTechType(TechType.PowerTransmitter), Vector3.zero, Quaternion.identity, cannon_base_left.transform);
+            //GameObject cannon_pylon_left = Instantiate(CraftData.GetPrefabForTechType(TechType.PowerTransmitter), Vector3.zero, Quaternion.identity, cannon_base_left.transform);
+
+            GameObject cannon_pylon_left = CraftData.InstantiateFromPrefab(TechType.PowerTransmitter);
+            cannon_pylon_left.transform.SetParent(cannon_base_left.transform, false);
+            Utils.ZeroTransform(cannon_pylon_left.transform);
 
             GameObject laserBeam = Instantiate(cannon_pylon_left.GetComponent<PowerFX>().vfxPrefab, cannon_base_left.transform, false);
             laserBeam.SetActive(false);

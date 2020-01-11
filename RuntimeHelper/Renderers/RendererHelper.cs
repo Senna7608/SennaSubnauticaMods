@@ -8,6 +8,7 @@ namespace RuntimeHelper.Renderers
     public static class RendererHelper
     {
         public static List<string> ShaderPropertyKeywords;
+        private static Color transparent = new Color(0f, 0f, 0f, 0f);
 
         public static List<MaterialInfo> GetRendererInfo(this GameObject gameObject)
         {
@@ -29,6 +30,8 @@ namespace RuntimeHelper.Renderers
                 $"Object: {gameObject.name} has no renderers!".RH_Error();
             }
 
+            List<string> keywords = new List<string>();
+
             for (int i = 0; i < renderer.materials.Length; i++)
             {
                 Material material = renderer.materials[i];
@@ -37,26 +40,48 @@ namespace RuntimeHelper.Renderers
 
                 int activeIndex = 0;
 
-                for (int j = 0; j < ShaderPropertyKeywords.Count; j++)
+                keywords.Clear();
+
+                material.GetTexturePropertyNames(keywords);
+
+                for (int j = 0; j < keywords.Count; j++)
                 {
-                    string keyword = ShaderPropertyKeywords[j];
+                    string keyword = keywords[j];
 
                     if (material.HasProperty(keyword))
                     {
-                        string textureName;
+                        string value;
 
                         try
                         {
-                            textureName = material.GetTexture(Shader.PropertyToID(keyword)).name;
+                            value = material.GetTexture(Shader.PropertyToID(keyword)).name;
+                            materialInfos[i].ActiveShaders.Add(new ShaderInfo(material.shader.name, activeIndex, material.shader, keyword, value));
+                            activeIndex++;
                         }
                         catch
-                        {
-                            continue;
+                        {                            
                         }
 
-                        materialInfos[i].ActiveShaders.Add(new ShaderInfo(material.shader.name, activeIndex, keyword, textureName));
 
-                        activeIndex++;
+                        for (int k = 0; k < ShaderPropertyKeywords.Count; k++)
+                        {
+                            string keyword2 = ShaderPropertyKeywords[j];
+
+                            try
+                            {
+                                Color color = material. GetColor(keyword2);
+
+                                if (color != transparent)
+                                {
+                                    materialInfos[i].ActiveShaders.Add(new ShaderInfo(material.shader.name, activeIndex, material.shader, keyword2, color.ToString()));
+                                    activeIndex++;
+                                }
+
+                            }
+                            catch
+                            {
+                            }
+                        }
                     }
                 }
 
@@ -81,7 +106,9 @@ namespace RuntimeHelper.Renderers
                 ShaderPropertyKeywords = ShaderHelper.CreateShaderPropertyList();
             }
 
-            List<MaterialInfo> materialInfos = new List<MaterialInfo>();            
+            List<MaterialInfo> materialInfos = new List<MaterialInfo>();
+
+            List<string> keywords = new List<string>();
 
             for (int i = 0; i < renderer.materials.Length; i++)
             {
@@ -91,9 +118,13 @@ namespace RuntimeHelper.Renderers
 
                 int activeIndex = 0;
 
-                for (int j = 0; j < ShaderPropertyKeywords.Count; j++)
+                keywords.Clear();
+
+                material.GetTexturePropertyNames(keywords);
+
+                for (int j = 0; j < keywords.Count; j++)
                 {
-                    string keyword = ShaderPropertyKeywords[j];
+                    string keyword = keywords[j];
 
                     if (material.HasProperty(keyword))
                     {
@@ -108,7 +139,7 @@ namespace RuntimeHelper.Renderers
                             continue;
                         }
 
-                        materialInfos[i].ActiveShaders.Add(new ShaderInfo(material.shader.name, activeIndex, keyword, textureName));
+                        materialInfos[i].ActiveShaders.Add(new ShaderInfo(material.shader.name, activeIndex, material.shader, keyword, textureName));
 
                         activeIndex++;
                     }

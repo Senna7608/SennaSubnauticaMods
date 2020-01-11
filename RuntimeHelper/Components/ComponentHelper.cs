@@ -20,45 +20,48 @@ namespace RuntimeHelper.Components
             return null;
         }
 
-        public static List<string> CreateComponentInfoList(this Component component)
+        public static List<FieldInfo> GetComponentFieldsList(this Component component)
         {
-            List<string> keywords = new List<string>();
+            List<FieldInfo> fieldInfos = new List<FieldInfo>();
 
             BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
-            
-            keywords.Add("Properties:");
+                        
+            foreach (FieldInfo fieldInfo in component.GetType().GetFields(bindingFlags))
+            {
+                try
+                {
+                    fieldInfos.Add(fieldInfo);
+                }
+                catch
+                {
+                    continue;
+                }                
+            }
+
+            return fieldInfos;
+        }
+
+
+        public static List<PropertyInfo> GetComponentPropertiesList(this Component component)
+        {
+            List<PropertyInfo> properties = new List<PropertyInfo>();
+
+            BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;            
 
             foreach (PropertyInfo propertyInfo in component.GetType().GetProperties(bindingFlags))
             {
                 try
                 {
-                    keywords.Add($"{propertyInfo.Name} = [{propertyInfo.GetValue(component, bindingFlags, null, null, null).ToString()}]");
+                    properties.Add(propertyInfo);
                 }
                 catch
                 {
                     continue;
                 }
-            }
+            }           
 
-            keywords.Add("Fields:");
-
-            foreach (FieldInfo fieldInfo in component.GetType().GetFields(bindingFlags))
-            {
-                try
-                {
-                    keywords.Add($"{fieldInfo.Name} = [{fieldInfo.GetValue(component).ToString()}]");
-                }
-                catch
-                {
-                    continue;
-                }
-            }
-
-            return keywords;
+            return properties;
         }
-
-
-
 
 
 

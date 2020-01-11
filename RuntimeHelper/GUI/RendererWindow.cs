@@ -11,8 +11,7 @@ using RuntimeHelper.Renderers;
 namespace RuntimeHelper
 {
     public partial class RuntimeHelper
-    {
-        private const string INFOTEXT = "Information: []: Material index, S: Shader, P: Property keyword, T: Texture";
+    {        
         private bool showRendererWindow = false;        
 
         private List<GuiItem> guiItems_Renderer = new List<GuiItem>();
@@ -30,12 +29,21 @@ namespace RuntimeHelper
 
         private bool undo = false;
 
-        private int ScrollView_renderer_retval = -1;
+        private GuiItemEvent ScrollView_renderer_event;
         private int current_renderer_index = 0;
 
         private int materialIndex = -1;
-        private int shaderIndex = -1;       
-       
+        private int shaderIndex = -1;
+
+        private List<string> textureKeywords = new List<string>()
+        {
+            "_Illum",
+            "_MainTex",
+            "_Normal",            
+            "_BumpMap",            
+            "_SpecTex"
+        };
+
 
         private void RendererWindow_Awake()
         {           
@@ -53,7 +61,7 @@ namespace RuntimeHelper
 
             Rect windowrect = SNWindow.CreateWindow(new Rect(700, 732, 550, 348), "Renderer Window");
 
-            ScrollView_renderer_retval = SNScrollView.CreateScrollView(new Rect(windowrect.x + 5, windowrect.y, windowrect.width - 10, windowrect.height - 60), ref scrollPos_Renderer, ref guiItems_Renderer, currentRenderer, INFOTEXT, 10);
+            ScrollView_renderer_event = SNScrollView.CreateScrollView(new Rect(windowrect.x + 5, windowrect.y, windowrect.width - 10, windowrect.height - 60), ref scrollPos_Renderer, ref guiItems_Renderer, currentRenderer, MESSAGE_TEXT[MESSAGES.RENDERER_WINDOW_INFOTEXT], 10);
           
             if (undo)
             {
@@ -62,6 +70,14 @@ namespace RuntimeHelper
                     ResetMaterials();
                 }
             }
+                        
+            Renderer renderer = (Renderer)components[selected_component];
+
+            if (GUI.Button(new Rect(windowrect.x + 70, windowrect.y + (windowrect.height - 50), 60, 22), renderer.enabled ? "Off" : "On"))
+            {
+                renderer.enabled = !renderer.enabled;
+            }
+            
         }
 
         private void RendererWindow_Update()
@@ -71,13 +87,13 @@ namespace RuntimeHelper
                 return;
             }
 
-            if (ScrollView_renderer_retval != -1)
+            if (ScrollView_renderer_event.ItemID != -1 && ScrollView_renderer_event.MouseButton == 0)
             {
-                current_renderer_index = ScrollView_renderer_retval;
+                current_renderer_index = ScrollView_renderer_event.ItemID;
 
                 GetSelectedMaterialIndex(current_renderer_index);
 
-                if (IsShaderItem(current_renderer_index))
+                if (IsTextureItem(current_renderer_index))
                 {
                     SystemFileRequester();
                 }
@@ -102,7 +118,7 @@ namespace RuntimeHelper
             if (DllTest.GetOpenFileName(ofn))
             {
                 StartCoroutine(WaitToLoad(ofn.file));
-                OutputWindow_Log($"Selected file with full path: {ofn.file}");
+                OutputWindow_Log(MESSAGE_TEXT[MESSAGES.SELECTED_FILE], ofn.file);
             }
         }
 
@@ -138,16 +154,19 @@ namespace RuntimeHelper
         }
 
 
-        private bool IsShaderItem(int scrollIndex)
+        private bool IsTextureItem(int scrollIndex)
         {
-            string[] splittedItem = _materialInfo_ScrollItems[scrollIndex].Split(new char[] { '[', ']' }, StringSplitOptions.RemoveEmptyEntries);
-
-            if (int.TryParse(splittedItem[1].ToString(), out int sIndex))
-            {                
-                shaderIndex = sIndex;
-                return true;
-            }           
-           
+            foreach (string keyword in textureKeywords)
+            {
+                if (_materialInfo_ScrollItems[scrollIndex].Contains(keyword))
+                {
+                    string[] splittedItem = _materialInfo_ScrollItems[scrollIndex].Split(new char[] { '[', ']' }, StringSplitOptions.RemoveEmptyEntries);
+                    int.TryParse(splittedItem[1].ToString(), out int sIndex);
+                    shaderIndex = sIndex;
+                    return true;
+                }
+            }
+            
             shaderIndex = -1;
             return false;            
         }
@@ -163,7 +182,7 @@ namespace RuntimeHelper
 
             renderer.materials = materials;            
 
-            OutputWindow_Log($"Renderer materials set to original.");
+            OutputWindow_Log(MESSAGE_TEXT[MESSAGES.MATERIALS_TO_ORIGINAL]);
 
             RendererWindow_Awake();
         }
@@ -175,7 +194,7 @@ namespace RuntimeHelper
 
             Renderer renderer = selectedObject.GetComponent<Renderer>();            
             
-            string shaderKeyword = _materialInfos[materialIndex].ActiveShaders[shaderIndex].PropertyKeyword;
+            string shaderKeyword = _materialInfos[materialIndex].ActiveShaders[shaderIndex].Keyword;
             string shaderName = _materialInfos[materialIndex].ActiveShaders[shaderIndex].Name;            
 
             Shader newShader = Shader.Find(shaderName);
@@ -200,14 +219,14 @@ namespace RuntimeHelper
             
             foreach (ShaderInfo shaderInfo in _materialInfos[materialIndex].ActiveShaders)
             {
-                if (shaderInfo.PropertyKeyword == shaderKeyword)
+                if (shaderInfo.Keyword == shaderKeyword)
                 {
                     continue;
                 }
                 else
                 {
-                    Texture texture = materials[materialIndex].GetTexture(Shader.PropertyToID(shaderInfo.PropertyKeyword));
-                    newMaterial.SetTexture(Shader.PropertyToID(shaderInfo.PropertyKeyword), texture);
+                    Texture texture = materials[materialIndex].GetTexture(Shader.PropertyToID(shaderInfo.Keyword));
+                    newMaterial.SetTexture(Shader.PropertyToID(shaderInfo.Keyword), texture);
                 }
             }
 
@@ -217,7 +236,7 @@ namespace RuntimeHelper
 
             selectedObject.SetActive(true);
 
-            OutputWindow_Log($"New material created and set.");
+            OutputWindow_Log(MESSAGE_TEXT[MESSAGES.NEW_MATERIAL_CREATED]);
 
             RendererWindow_Awake();
         }        
@@ -234,13 +253,15 @@ namespace RuntimeHelper
 
                 foreach(ShaderInfo shaderInfo in materialInfo.ActiveShaders)
                 {
-                    _materialInfo_ScrollItems.Add($"[{materialInfo.Index}][{shaderInfo.Index}]: S: {shaderInfo.Name}, P: {shaderInfo.PropertyKeyword}, T: {shaderInfo.TextureName}");
+                    _materialInfo_ScrollItems.Add($"[{materialInfo.Index}][{shaderInfo.Index}]: S: {shaderInfo.Name}, P: {shaderInfo.Keyword}, V: {shaderInfo.KeywordValue}");
                 }
+
+                _materialInfo_ScrollItems.Add($"[{materialInfo.Index}] Color: {materialInfo.Material.color}");                
 
                 foreach (string shaderKeyword in materialInfo.ShaderKeywords)
                 {
                     _materialInfo_ScrollItems.Add($"[{materialInfo.Index}] Shader Keywords: {shaderKeyword}");
-                }
+                }                
             }
             
             guiItems_Renderer.SetScrollViewItems(_materialInfo_ScrollItems, 530f);

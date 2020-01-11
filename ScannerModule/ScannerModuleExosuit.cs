@@ -7,17 +7,15 @@ namespace ScannerModule
 {
     public class ScannerModuleExosuit : MonoBehaviour
     {
-        public ScannerModuleExosuit Instance { get; private set; }
-        public int moduleSlotID { get; set; }
-        private Exosuit thisExosuit { get; set; }
-        private Player playerMain { get; set; }
-        private EnergyMixin energyMixin { get; set; }
-        private HandReticle handReticleMain { get; set; }
+        private int moduleCount = 0;
+        private Exosuit thisExosuit;        
+        private EnergyMixin energyMixin;
+        private HandReticle handReticleMain;
 
         private FMOD_CustomLoopingEmitter scanSound;
-        private FMODAsset completeSoundAsset;
-        private FMODAsset scanSoundAsset;
-        
+        private FMODAsset completeSound;
+        private FMODAsset scan_loop;
+
         private const float powerConsumption = 0.5f;
         private const float scanDistance = 50f;        
         private float idleTimer;        
@@ -28,45 +26,60 @@ namespace ScannerModule
         private bool isPlayerInThisExosuit;
 
         private ScanState stateLast;
-        private ScanState stateCurrent;
-
-        public enum ScanState
-        {
-            None,
-            Scan
-        }
+        private ScanState stateCurrent;        
 
         public void Awake()
-        {
-            Instance = gameObject.GetComponent<ScannerModuleExosuit>();
-            thisExosuit = Instance.GetComponent<Exosuit>();
-            energyMixin = thisExosuit.GetComponent<EnergyMixin>();
-            playerMain = Player.main;
+        {            
+            thisExosuit = GetComponent<Exosuit>();
+            energyMixin = thisExosuit.GetComponent<EnergyMixin>();            
             handReticleMain = HandReticle.main;
 
-            isPlayerInThisExosuit = playerMain.GetVehicle() == thisExosuit ? true : false;
-            scanSoundAsset = ScriptableObject.CreateInstance<FMODAsset>();
-            scanSoundAsset.path = "event:/tools/scanner/scan_loop";
+            scan_loop = ScriptableObject.CreateInstance<FMODAsset>();
+            scan_loop.name = "scan_loop";
+            scan_loop.path = "event:/tools/scanner/scan_loop";
             scanSound = gameObject.AddComponent<FMOD_CustomLoopingEmitter>();
-            scanSound.asset = scanSoundAsset;
-            completeSoundAsset = ScriptableObject.CreateInstance<FMODAsset>();
-            completeSoundAsset.path = "event:/tools/scanner/scan_complete";            
-        }
+            scanSound.asset = scan_loop;
 
-        public void Start()
-        {
+            completeSound = ScriptableObject.CreateInstance<FMODAsset>();
+            completeSound.name = "scan_complete";
+            completeSound.path = "event:/tools/scanner/scan_complete";
+
             thisExosuit.onToggle += OnToggle;
             thisExosuit.modules.onAddItem += OnAddItem;
             thisExosuit.modules.onRemoveItem += OnRemoveItem;
-            playerMain.playerModeChanged.AddHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
+
+            Player.main.playerMotorModeChanged.AddHandler(this, new Event<Player.MotorMode>.HandleFunction(OnPlayerMotorModeChanged));
+
+            moduleCount = thisExosuit.modules.GetCount(ScannerModulePrefab.TechTypeID);
+        }
+
+        private void OnPlayerMotorModeChanged(Player.MotorMode newMotorMode)
+        {
+            if (newMotorMode == Player.MotorMode.Vehicle)
+            {
+                if (Player.main.currentMountedVehicle == thisExosuit)
+                {
+                    isPlayerInThisExosuit = true;
+                    OnEnable();
+                }
+                else
+                {
+                    isPlayerInThisExosuit = false;
+                    OnDisable();
+                }
+            }
+            else
+            {
+                isPlayerInThisExosuit = false;
+                OnDisable();
+            }
         }
 
         private void OnRemoveItem(InventoryItem item)
         {
             if (item.item.GetTechType() == ScannerModulePrefab.TechTypeID)
             {
-                moduleSlotID = -1;
-                Instance.enabled = false;
+                moduleCount--;
             }
         }
 
@@ -74,32 +87,7 @@ namespace ScannerModule
         {
             if (item.item.GetTechType() == ScannerModulePrefab.TechTypeID)
             {
-                moduleSlotID = thisExosuit.GetSlotByItem(item) - 2;
-                Instance.enabled = true;
-            }
-        }
-
-        private void OnPlayerModeChanged(Player.Mode playerMode)
-        {
-            if (playerMode == Player.Mode.LockedPiloting)
-            {
-                if (playerMain.GetVehicle() == thisExosuit)
-                {
-                    isPlayerInThisExosuit = true;
-                    OnEnable();
-                    return;
-                }
-                else
-                {
-                    isPlayerInThisExosuit = false;
-                    OnDisable();
-                    return;
-                }
-            }
-            else
-            {
-                isPlayerInThisExosuit = false;
-                OnDisable();
+                moduleCount++;
             }
         }
 
@@ -122,7 +110,7 @@ namespace ScannerModule
 
         public void OnEnable()
         {
-            isActive = isPlayerInThisExosuit && playerMain.isPiloting && isToggle && moduleSlotID > -1;
+            isActive = isPlayerInThisExosuit && Player.main.isPiloting && isToggle && moduleCount > 0;
         }
 
         public void OnDisable()
@@ -219,7 +207,7 @@ namespace ScannerModule
                 else if (result == PDAScanner.Result.Done || result == PDAScanner.Result.Researched)
                 {                    
                     idleTimer = 0.5f;
-                    PDASounds.queue.PlayIfFree(completeSoundAsset);                    
+                    PDASounds.queue.PlayIfFree(completeSound);                    
                 }                
             }
             return result;
@@ -245,11 +233,11 @@ namespace ScannerModule
         }
 
         private void OnDestroy()
-        {
-            playerMain.playerModeChanged.RemoveHandler(gameObject, OnPlayerModeChanged);
+        {            
             thisExosuit.onToggle -= OnToggle;
             thisExosuit.modules.onAddItem -= OnAddItem;
             thisExosuit.modules.onRemoveItem -= OnRemoveItem;
+            Player.main.playerMotorModeChanged.RemoveHandler(this, OnPlayerMotorModeChanged);
         }
     }
 }

@@ -129,9 +129,8 @@ namespace CheatManager
 
                 if (Instance == null)
                 {
-                    GameObject cm_infobar = new GameObject().AddComponent<CM_InfoBar>().gameObject;
-                    cm_infobar.name = "CM_InfoBar";
-                    Instance = cm_infobar.GetComponent<CM_InfoBar>();                    
+                    GameObject cm_infobar = new GameObject("CM_InfoBar");                    
+                    Instance = cm_infobar.AddComponent<CM_InfoBar>();                    
                 }
             }            
         }        

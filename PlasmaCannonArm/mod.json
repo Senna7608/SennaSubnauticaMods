@@ -1,0 +1,13 @@
+﻿{
+  "Id": "PlasmaCannonArm",
+  "DisplayName": "PlasmaCannonArm",
+  "Author": "Senna",
+  "Version": "1.2",
+  "Dependencies": ["SMLHelper"],
+  "LoadBefore": [],
+  "LoadAfter": [],
+  "Enable": true,
+  "Game": "Subnautica",
+  "AssemblyName": "PlasmaCannonArm.dll",
+  "EntryMethod": "PlasmaCannonArm.Main.Load"
+}

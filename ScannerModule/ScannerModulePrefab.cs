@@ -1,27 +1,28 @@
 ﻿using System.Collections.Generic;
 using SMLHelper.V2.Crafting;
-using SMLHelper.V2.Handlers;
 using Common;
 
 namespace ScannerModule
 {
-    internal class ScannerModulePrefab : Craftable
+    internal class ScannerModulePrefab : CraftableModItem
     {
         public static TechType TechTypeID { get; private set; }        
 
         internal ScannerModulePrefab()
             : base(nameID: "ScannerModule",
-                  nameUsingForFiles: "ScannerModule",
+                  iconFileName: "ScannerModule",
+                  iconTechType: TechType.None,
                   friendlyName: "Scanner Module",
                   description: "Allows to scan objects within Vehicles.",
                   template: TechType.SeamothSonarModule,
                   fabricatorType: CraftTree.Type.SeamothUpgrades,
-                  fabricatorTab: "CommonModules",
+                  fabricatorTab: new string[] { "CommonModules" },
                   requiredAnalysis: TechType.BaseUpgradeConsole,
                   groupForPDA: TechGroup.VehicleUpgrades,
                   categoryForPDA: TechCategory.VehicleUpgrades,
                   equipmentType: EquipmentType.VehicleModule,
-                  quickSlotType: QuickSlotType.Toggleable,
+                  quickSlotType: QuickSlotType.Selectable,
+                  backgroundType: CraftData.BackgroundType.Normal,
                   itemSize: new Vector2int(1, 1),
                   gamerResourceFileName: null
                   )

@@ -2,7 +2,7 @@
   "Id": "CheatManager",
   "DisplayName": "CheatManager",
   "Author": "Senna",
-  "Version": "2.1",
+  "Version": "2.3",
   "Dependencies": ["SMLHelper"],
   "LoadBefore": [],
   "LoadAfter": [],

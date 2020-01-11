@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>b57d4bcb-0b41-4f6a-9da2-3947f300fdc0</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Debuggers</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Object\_Component\_Behaviour\_Camera.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Object\_Component\_Behaviour\_Canvas.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Object\_Motion\_AnimationClip.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_SealedClasses\_TextGenerator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_SealedClasses\_AnimationCurve.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_SealedClasses\_AnimationEvent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Structures\_UICharInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Structures\_UIVertex.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Structures\_UILineInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Structures\_Rect.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_TrackedReference\_AnimationState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_SealedClasses\_AnimatorControllerParameter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Object\_Component\_Behaviour\_Animator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Object\_Component\_Behaviour\_MonoBehaviour\_UIBehaviour\_Graphic\_MaskableGraphic\_Text.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Object\_Texture\_Texture2D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SN\_AtlasSprite.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SN\_Atlas.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Object\_Avatar.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Object\_GameObject.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Object\_RuntimeAnimatorController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Object\_Object.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Object\_Component\_ParticleSystem\_MainModule.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Object\_Component\_ParticleSystem\_SizeOverLifeTimeModule.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SN\_SubName.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Structures\_AnimatorClipInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Structures\_AnimatorStateInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Structures\_GradientAlphaKey.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Structures\_GradientColorKey.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_SealedClasses\_Gradient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Structures\_KeyFrame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Object\_Component\_Behaviour\_Light.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Structures\_LayerMask.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Structures\_Matrix4x4.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Structures\_PlayableGraph.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Structures\_Scene.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Object\_Texture\_Texture.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Object\_Component\_Transform.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DLog.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Object\_Component\_ParticleSystem\_CollisionModule.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Object\_Component\_ParticleSystem\_EmissionModule.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Object\_Component\_ParticleSystem\_LightsModule.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Object\_Component\_ParticleSystem\_MinMaxCurve.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Object\_Component\_ParticleSystem\_MinMaxGradient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Object\_Component\_ParticleSystem\_ParticleSystem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Object\_Component\_ParticleSystem\_ShapeModule.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Object\_Component\_ParticleSystem\_TriggerModule.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UE\_Object\_Component\_ParticleSystem\_VelocityOverLifeTimeModule.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)UE\_TrackedReference\" />
+  </ItemGroup>
+</Project>

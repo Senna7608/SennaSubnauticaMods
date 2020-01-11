@@ -63,7 +63,8 @@ namespace LaserCannon
         {   "Program",
             "English",
             "German",
-            "Hungarian"
+            "Hungarian",
+            "French"
         };
 
         public static readonly string[] SECTION_PROGRAM =
@@ -163,6 +164,26 @@ namespace LaserCannon
             new ConfigData(SECTIONS[3], SECTION_LANGUAGE[16], "Alapbeállítás"),
             new ConfigData(SECTIONS[3], SECTION_LANGUAGE[17], "Vigyázat! Kevés az Energia!"),
             new ConfigData(SECTIONS[3], SECTION_LANGUAGE[18], "Lézerágyú letiltva!"),
+
+            new ConfigData(SECTIONS[4], SECTION_LANGUAGE[0], "Canon Laser"),
+            new ConfigData(SECTIONS[4], SECTION_LANGUAGE[1], "Utilise une ancienne technologie d'arme des Précurseurs."),
+            new ConfigData(SECTIONS[4], SECTION_LANGUAGE[2], "Options du Module de Canon Laser"),
+            new ConfigData(SECTIONS[4], SECTION_LANGUAGE[3], "Fonctionne seulement sur les animaux aggressifs"),
+            new ConfigData(SECTIONS[4], SECTION_LANGUAGE[4], "Couleur du laser"),
+            new ConfigData(SECTIONS[4], SECTION_LANGUAGE[5], "Dommage fait par le laser"),
+            new ConfigData(SECTIONS[4], SECTION_LANGUAGE[6], "Rouge"),
+            new ConfigData(SECTIONS[4], SECTION_LANGUAGE[7], "Vert"),
+            new ConfigData(SECTIONS[4], SECTION_LANGUAGE[8], "Bleu"),
+            new ConfigData(SECTIONS[4], SECTION_LANGUAGE[9], "Jaune"),
+            new ConfigData(SECTIONS[4], SECTION_LANGUAGE[10], "Blanc"),
+            new ConfigData(SECTIONS[4], SECTION_LANGUAGE[11], "Magenta"),
+            new ConfigData(SECTIONS[4], SECTION_LANGUAGE[12], "Cyan"),
+            new ConfigData(SECTIONS[4], SECTION_LANGUAGE[13], "Orange"),
+            new ConfigData(SECTIONS[4], SECTION_LANGUAGE[14], "Vert Lime"),
+            new ConfigData(SECTIONS[4], SECTION_LANGUAGE[15], "Violet"),
+            new ConfigData(SECTIONS[4], SECTION_LANGUAGE[16], "Par Défaut"),
+            new ConfigData(SECTIONS[4], SECTION_LANGUAGE[17], "Attention! Niveau d'énergie critique!"),
+            new ConfigData(SECTIONS[4], SECTION_LANGUAGE[18], "Canon Laser désactivé!"),
         };
 
         internal static void LoadConfig()

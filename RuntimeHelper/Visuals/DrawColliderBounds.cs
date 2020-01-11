@@ -4,64 +4,20 @@ using UnityEngine;
 namespace RuntimeHelper.Visuals
 {
     public class DrawColliderBounds : MonoBehaviour
-    {        
-        public TransformInfo transformBase;
-        public ColliderInfo colliderBase;
-        public int cInstanceID;
-        public IDictionary<int, ColliderInfo> ColliderBases = new Dictionary<int, ColliderInfo>();
-
+    {
+        public int cInstanceID;        
+        public Collider collider;        
+        public ColliderInfo colliderInfo;        
         private List<GameObject> lineContainers = new List<GameObject>();
-        private GameObject pointer;
 
-        private void Awake()
-        {            
-            transformBase = new TransformInfo(transform.parent);
-
-            gameObject.CreatePointerLine(PointerType.Collider);
-
-            pointer = gameObject.FindChild("RH_POINTER_LINE");
-
-            Main.AllVisuals.Add(gameObject);
-        }
-
-        public void IsDraw(bool value)
+        public void Init()
         {
-            gameObject.SetActive(value);
-
-            if (!value)
-                return;
-
-            switch (colliderBase.ColliderType)
+            if (lineContainers.Count > 0)
             {
-                case ColliderType.BoxCollider:
-                    gameObject.DrawBoxColliderBounds(ref lineContainers, colliderBase);
-                    break;
-                case ColliderType.CapsuleCollider:
-                    gameObject.DrawCapsuleColliderBounds(ref lineContainers, colliderBase);
-                    break;
-                case ColliderType.SphereCollider:
-                    gameObject.DrawSphereColliderBounds(ref lineContainers, colliderBase);
-                    break;
+                lineContainers.DestroyContainers();
             }
 
-            pointer.transform.position = transform.TransformPoint(colliderBase.Center);
-        }
-
-        public void SetColliderBase(Collider collider)
-        {
-            cInstanceID = collider.GetInstanceID();
-
-            collider.SetColliderInfo(ref colliderBase);
-
-            if (!ColliderBases.Keys.Contains(cInstanceID))
-            {               
-                ColliderBases.Add(cInstanceID, new ColliderInfo(colliderBase));
-                Main.Instance.OutputWindow_Log($"Collider instance: [{cInstanceID}] added to dictionary. Type: {colliderBase.ColliderType.ToString()}");
-            }         
-
-            lineContainers.DestroyContainers();
-
-            switch (colliderBase.ColliderType)
+            switch (colliderInfo.ColliderType)
             {
                 case ColliderType.BoxCollider:
                     gameObject.CreateLineContainers(ref lineContainers, ContainerType.Box, 0.008f, Color.red, false);
@@ -72,8 +28,28 @@ namespace RuntimeHelper.Visuals
                 case ColliderType.SphereCollider:
                     gameObject.CreateLineContainers(ref lineContainers, ContainerType.Sphere, 0.004f, Color.red, false);
                     break;
-            }            
+            }
         }
-        
+
+        public void LateUpdate()
+        {
+            if (lineContainers.Count == 0)
+                return;
+
+                collider.SetColliderInfo(ref colliderInfo);
+            
+            switch (colliderInfo.ColliderType)
+            {
+                case ColliderType.BoxCollider:
+                    gameObject.DrawBoxColliderBounds(ref lineContainers, colliderInfo);
+                    break;
+                case ColliderType.CapsuleCollider:
+                    gameObject.DrawCapsuleColliderBounds(ref lineContainers, colliderInfo);
+                    break;
+                case ColliderType.SphereCollider:
+                    gameObject.DrawSphereColliderBounds(ref lineContainers, colliderInfo);
+                    break;
+            }            
+        }        
     }
 }

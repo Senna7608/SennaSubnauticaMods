@@ -25,22 +25,22 @@ namespace RuntimeHelper
         {
             ObjectWindow_drawRect = SNWindow.CreateWindow(ObjectWindow_Rect, "Object Window");
 
-            if (GUI.Button(new Rect(ObjectWindow_drawRect.x + 5, ObjectWindow_drawRect.y + 5, 120, 22), "Add new empty"))
+            if (GUI.Button(new Rect(ObjectWindow_drawRect.x + 5, ObjectWindow_drawRect.y + 5, 120, 22), ObjectWindow[0]))
             {
                 if (!isDirty)
                     AddNewEmptyObject();
             }
 
-            if (GUI.Button(new Rect(ObjectWindow_drawRect.x + 130, ObjectWindow_drawRect.y + 5, 163, 22), "Add selected TechType"))
+            if (GUI.Button(new Rect(ObjectWindow_drawRect.x + 130, ObjectWindow_drawRect.y + 5, 163, 22), ObjectWindow[1]))
             {
                 AddNewTechObject(techTypeDatas[selected_TechType].TechType);
             }
 
-            int selValue = SNScrollView.CreateScrollView(new Rect(ObjectWindow_drawRect.x + 5, ObjectWindow_drawRect.y + 30, ObjectWindow_drawRect.width - 10, ObjectWindow_drawRect.height - 5), ref scrollPos_TechTypes, ref guiItems_TechTypes, "Selected TechType:", techTypeDatas[selected_TechType].Name, 7);
+            GuiItemEvent selValue = SNScrollView.CreateScrollView(new Rect(ObjectWindow_drawRect.x + 5, ObjectWindow_drawRect.y + 30, ObjectWindow_drawRect.width - 10, ObjectWindow_drawRect.height - 5), ref scrollPos_TechTypes, ref guiItems_TechTypes, "Selected TechType:", techTypeDatas[selected_TechType].Name, 7);
 
-            if (selValue != -1)
+            if (selValue.ItemID != -1 && selValue.MouseButton == 0)
             {
-                selected_TechType = selValue;
+                selected_TechType = selValue.ItemID;
             }           
         }
 
@@ -52,35 +52,36 @@ namespace RuntimeHelper
 
             GameObject newChild = new GameObject($"newChild_{addedChildObjectCount}");
 
-            newChild.transform.SetParent(selectedObject.transform, false);
+            newChild.transform.SetParent(baseObject.transform, false);
             newChild.transform.SetLocalsToZero();            
             addedChildObjectCount++;
             RefreshTransformsList();
             OnObjectChange(newChild);
-            OutputWindow_Log($"New empty GameObject added, name: [{newChild.name}], parent: {newChild.transform.parent.name}, root: {newChild.transform.root.name}");
+            OutputWindow_Log(MESSAGE_TEXT[MESSAGES.NEW_EMPTY_OBJECT_ADDED], newChild.name, newChild.transform.parent.name, newChild.transform.root.name);
         }
 
         public void AddNewTechObject(TechType techType)
         {
-            SetDirty(true);
+            SetDirty(true);            
 
-            ReleaseObjectDrawing();
+            GameObject newChild = null;
 
-            GameObject newChild;
-
-            OutputWindow_Log($"Trying to instantiate selected TechType: {techType.ToString()} from prefab.");
+            OutputWindow_Log(MESSAGE_TEXT[MESSAGES.TRY_TO_ADD_A_TECH_OBJECT], (int)techType, techType.ToString());
 
             try
             {
-                newChild = Instantiate(CraftData.GetPrefabForTechType(techType), Vector3.zero, Quaternion.identity);
+               newChild = Instantiate(CraftData.GetPrefabForTechType(techType), Vector3.zero, Quaternion.Euler(Vector3.zero));
             }
             catch
             {
-                AddNewEmptyObject();
+                OutputWindow_Log(WARNING_TEXT[WARNINGS.OBJECT_CANNOT_INSTANTIATE], LogType.Error, (int)techType, techType.ToString());
+                SetDirty(false);
                 return;
-            }           
+            }
 
-            newChild.transform.SetParent(selectedObject.transform, false);
+            ReleaseObjectDrawing();
+
+            newChild.transform.SetParent(baseObject.transform, false);
             newChild.transform.SetLocalsToZero();
             string objectName = newChild.name;
             newChild.name = "newChild_" + objectName;
@@ -89,22 +90,88 @@ namespace RuntimeHelper
             {
                 Type componentType = component.GetType();
 
-                if (componentType == typeof(Transform))
-                    continue;
-                if (componentType == typeof(Renderer))
-                    continue;
-                if (componentType == typeof(Mesh))
-                    continue;
-                if (componentType == typeof(Shader))
-                    continue;
+                bool isValid = false;
 
-                Destroy(component);
+                foreach (Type type in ValidTypes)
+                { 
+                    if (componentType == type)
+                    {
+                        isValid = true;
+                        break;
+                    }
+                }
+
+                if (isValid)
+                {
+                    if (componentType == typeof(Locomotion))
+                    {
+                        ((Locomotion)component).enabled = false;
+                        OutputWindow_Log(MESSAGE_TEXT[MESSAGES.COMPONENT_STATE_MODIFIED], LogType.Warning, GetComponentShortType(component), "False");
+                    }
+                    if (componentType == typeof(SplineFollowing))
+                    {
+                        ((SplineFollowing)component).enabled = false;
+                        OutputWindow_Log(MESSAGE_TEXT[MESSAGES.COMPONENT_STATE_MODIFIED], LogType.Warning, GetComponentShortType(component), "False");
+                    }
+                    if (componentType == typeof(SwimBehaviour))
+                    {
+                        ((SwimBehaviour)component).enabled = false;
+                        OutputWindow_Log(MESSAGE_TEXT[MESSAGES.COMPONENT_STATE_MODIFIED], LogType.Warning, GetComponentShortType(component), "False");
+                    }
+                    if (componentType == typeof(LiveMixin))
+                    {
+                        ((LiveMixin)component).enabled = false;
+                        OutputWindow_Log(MESSAGE_TEXT[MESSAGES.COMPONENT_STATE_MODIFIED], LogType.Warning, GetComponentShortType(component), "False");
+                    }
+                    continue;
+                }                
+                else
+                {
+                    try
+                    {
+                        DestroyImmediate(component);
+                        OutputWindow_Log(MESSAGE_TEXT[MESSAGES.COMPONENT_REMOVED], LogType.Warning, GetComponentShortType(component), newChild.name);
+                    }
+                    catch
+                    {
+                        OutputWindow_Log(MESSAGE_TEXT[MESSAGES.COMPONENT_CANNOT_REMOVED], LogType.Error, GetComponentShortType(component), newChild.name);
+                    }
+                }
             }
 
-            RefreshTransformsList();
+            RefreshTransformsList();            
             OnObjectChange(newChild);
 
-            OutputWindow_Log($"New TechType based GameObject added, name: [{newChild.name}], parent: {newChild.transform.parent.name}, root: {newChild.transform.root.name}");
+            OutputWindow_Log(MESSAGE_TEXT[MESSAGES.NEW_TECH_OBJECT_ADDED], newChild.name, newChild.transform.parent.name, newChild.transform.root.name);
         }
+        
+        private static List<Type> ValidTypes = new List<Type>
+        {
+            typeof(BoxCollider),
+            typeof(CapsuleCollider),
+            //typeof(LargeWorldEntity),
+            typeof(Mesh),
+            typeof(MeshFilter),
+            typeof(MeshRenderer),
+            typeof(Renderer),
+            typeof(Shader),
+            typeof(SkyApplier),
+            typeof(SphereCollider),
+            typeof(Transform),
+            typeof(VFXFabricating),
+            typeof(Rigidbody),
+            typeof(Locomotion),
+            typeof(SplineFollowing),
+            typeof(SwimBehaviour),
+            typeof(LiveMixin),
+            typeof(SkinnedMeshRenderer)
+
+
+
+
+
+
+
+        };
     }
 }

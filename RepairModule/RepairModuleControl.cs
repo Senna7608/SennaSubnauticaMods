@@ -7,14 +7,10 @@ namespace RepairModule
 {
     public class RepairModuleControl : MonoBehaviour
     {
-        public RepairModuleControl Instance { get; private set; }
-
-        public int moduleSlotID { get; set; }
-        private Vehicle thisVehicle { get; set; }
-        private EnergyMixin energyMixin { get; set; }
-        private Player playerMain { get; set; }        
-
-        private FMODAsset weldSoundAsset;
+        private Vehicle thisVehicle;
+        private EnergyMixin energyMixin;
+        private int moduleSlotID;
+        private FMODAsset weld_loop;
         private FMOD_CustomLoopingEmitter weldSound;
         private HandReticle main = HandReticle.main;
         private const float powerConsumption = 5f;
@@ -27,75 +23,41 @@ namespace RepairModule
 
         public void Awake()
         {            
-            Instance = gameObject.GetComponent<RepairModuleControl>();
-            thisVehicle = Instance.GetComponent<Vehicle>();            
-            energyMixin = thisVehicle.GetComponent<EnergyMixin>();            
-            playerMain = Player.main;            
+            thisVehicle = GetComponent<Vehicle>();            
+            energyMixin = thisVehicle.GetComponent<EnergyMixin>();
 
-            isPlayerInThisVehicle = playerMain.GetVehicle() == thisVehicle ? true : false;
+            weld_loop = ScriptableObject.CreateInstance<FMODAsset>();
+            weld_loop.name = "weld_loop";
+            weld_loop.path = "event:/tools/welder/weld_loop";
 
-            weldSoundAsset = ScriptableObject.CreateInstance<FMODAsset>();
-            weldSoundAsset.path = "event:/tools/welder/weld_loop";
             weldSound = gameObject.AddComponent<FMOD_CustomLoopingEmitter>();
-            weldSound.asset = weldSoundAsset;
-            repairPerSec = thisVehicle.liveMixin.maxHealth * 0.1f;            
-        }
+            weldSound.asset = weld_loop;
 
-        public void Start()
-        {            
-            thisVehicle.onToggle += OnToggle;            
+            repairPerSec = thisVehicle.liveMixin.maxHealth * 0.1f;
+
+            thisVehicle.onToggle += OnToggle;
             thisVehicle.modules.onAddItem += OnAddItem;
-            thisVehicle.modules.onRemoveItem += OnRemoveItem;
-            playerMain.playerModeChanged.AddHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
+            thisVehicle.modules.onRemoveItem += OnRemoveItem;            
+
+            Player.main.playerMotorModeChanged.AddHandler(this, new Event<Player.MotorMode>.HandleFunction(OnPlayerMotorModeChanged));
+
+            moduleSlotID = GetSlotIndex(thisVehicle, RepairModulePrefab.TechTypeID);
         }
 
-        private void OnRemoveItem(InventoryItem item)
+        
+        private void OnPlayerMotorModeChanged(Player.MotorMode newMotorMode)
         {
-            if (item.item.GetTechType() == RepairModule.TechTypeID)
+            if (newMotorMode == Player.MotorMode.Vehicle)
             {
-                moduleSlotID = -1;
-                Instance.enabled = false;
-            }
-        }
-
-        private void OnAddItem(InventoryItem item)
-        {            
-            if (item.item.GetTechType() == RepairModule.TechTypeID)
-            {
-                if (thisVehicle.GetType() == typeof(Exosuit))
-                    moduleSlotID = thisVehicle.GetSlotByItem(item) - 2;
-                else
-                    moduleSlotID = thisVehicle.GetSlotByItem(item);
-
-                Instance.enabled = true;
-            }
-        }
-
-        public void OnDestroy()
-        {
-            thisVehicle.onToggle -= OnToggle;
-            thisVehicle.modules.onAddItem -= OnAddItem;
-            thisVehicle.modules.onRemoveItem -= OnRemoveItem;
-            playerMain.playerModeChanged.RemoveHandler(gameObject, OnPlayerModeChanged);
-            SetInteractColor(Colors.White);
-            Destroy(Instance);            
-        }
-
-        private void OnPlayerModeChanged(Player.Mode playerMode)
-        {
-            if (playerMode == Player.Mode.LockedPiloting)
-            {
-                if (playerMain.GetVehicle() == thisVehicle)
+                if (Player.main.currentMountedVehicle == thisVehicle)
                 {
                     isPlayerInThisVehicle = true;
                     OnEnable();
-                    return;
                 }
                 else
                 {
                     isPlayerInThisVehicle = false;
                     OnDisable();
-                    return;
                 }
             }
             else
@@ -105,25 +67,55 @@ namespace RepairModule
             }
         }
 
+
+        private void OnRemoveItem(InventoryItem item)
+        {
+            if (item.item.GetTechType() == RepairModulePrefab.TechTypeID)
+            {
+                moduleSlotID = -1;                
+            }
+        }
+
+        private void OnAddItem(InventoryItem item)
+        {            
+            if (item.item.GetTechType() == RepairModulePrefab.TechTypeID)
+            {
+                if (thisVehicle.GetType() == typeof(Exosuit))
+                    moduleSlotID = thisVehicle.GetSlotByItem(item) - 2;
+                else
+                    moduleSlotID = thisVehicle.GetSlotByItem(item);                
+            }
+        }
+
+        public void OnDestroy()
+        {
+            thisVehicle.onToggle -= OnToggle;
+            thisVehicle.modules.onAddItem -= OnAddItem;
+            thisVehicle.modules.onRemoveItem -= OnRemoveItem;
+            Player.main.playerMotorModeChanged.RemoveHandler(this, OnPlayerMotorModeChanged);
+            SetInteractColor(Colors.White);                      
+        }
+        
         private void OnToggle(int slotID, bool state)
         {
-            if (thisVehicle.GetSlotBinding(slotID) == RepairModule.TechTypeID)
+            if (thisVehicle.GetSlotBinding(slotID) == RepairModulePrefab.TechTypeID)
             {
                 isToggle = state;
-                
+
                 if (state)
                 {
-                    OnEnable();
-                    return;
+                    OnEnable();                    
                 }
                 else
+                {
                     OnDisable();
+                }
             }            
         }
 
         private void OnEnable()
         {
-            isActive = isPlayerInThisVehicle && playerMain.isPiloting && isToggle && moduleSlotID > -1;            
+            isActive = isPlayerInThisVehicle && Player.main.isPiloting && isToggle && moduleSlotID > -1;            
         }
 
         private void OnDisable()

@@ -34,7 +34,8 @@ namespace Common.GUIHelper
                 return new Rect(windowRect.x, windowRect.y + titleHeight, windowRect.width, windowRect.height - titleHeight);
             }
 
-            return windowRect;
+            return windowRect;       
+            
         }
 
         public static Rect InitWindowRect(Rect windowRect, bool withTitle = true)

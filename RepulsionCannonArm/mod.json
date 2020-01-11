@@ -1,0 +1,13 @@
+﻿{
+  "Id": "RepulsionCannonArm",
+  "DisplayName": "RepulsionCannonArm",
+  "Author": "Senna",
+  "Version": "1.2",
+  "Dependencies": ["SMLHelper"],
+  "LoadBefore": [],
+  "LoadAfter": [],
+  "Enable": true,
+  "Game": "Subnautica",
+  "AssemblyName": "RepulsionCannonArm.dll",
+  "EntryMethod": "RepulsionCannonArm.Main.Load"
+}

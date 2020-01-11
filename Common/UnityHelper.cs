@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using System.Runtime.CompilerServices;
 
 namespace Common
 {
@@ -18,7 +19,7 @@ namespace Common
 
         public static void AddIfNeedComponent<T>(this GameObject gameObject) where T : Component
         {
-            if (gameObject.GetComponent<T>().IsNull())
+            if (gameObject.GetComponent<T>() == null)
             {
                 gameObject.AddComponent<T>();                
             }            
@@ -26,7 +27,7 @@ namespace Common
 
         public static void AddIfNeedComponent(this GameObject gameObject, Type component)
         {
-            if (gameObject.GetComponent(component).IsNull())
+            if (gameObject.GetComponent(component) == null)
             {
                 gameObject.AddComponent(component);                
             }            
@@ -59,17 +60,7 @@ namespace Common
 
                 UnityEngine.Object.Destroy(component);
             }
-        }
-        
-        public static bool IsNotNull(this UnityEngine.Object ueObject)
-        {
-            return ueObject == null ? false : true;
         }        
-
-        public static bool IsNull(this UnityEngine.Object ueObject)
-        {
-            return ueObject == null ? true : false;
-        }
     }
 }
 

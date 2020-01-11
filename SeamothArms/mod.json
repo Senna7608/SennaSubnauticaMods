@@ -1,0 +1,14 @@
+﻿{
+  "Id": "SeamothArms",
+  "DisplayName": "SeamothArms",
+  "Author": "Senna",
+  "Version": "1.3",
+  "Dependencies": ["SMLHelper"],
+  "VersionDependencies": { "SlotExtender": "2.5.5" },
+  "LoadBefore": [],
+  "LoadAfter": [],
+  "Enable": true,
+  "Game": "Subnautica",
+  "AssemblyName": "SeamothArms.dll",
+  "EntryMethod": "SeamothArms.Main.Load"
+}

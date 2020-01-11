@@ -12,7 +12,7 @@ namespace Common.GUIHelper
 
             Rect listRect = new Rect(rect.x, rect.y + rect.height, rect.width, /*Styles.GetGUIStyle(null, Button.BUTTONTYPE.NORMAL_CENTER).CalcHeight(listContent[0], 1.0f)*/ rect.height * listContent.Length);     
            
-            if (Event.current.GetTypeForControl(controlID) == EventType.mouseDown)
+            if (Event.current.GetTypeForControl(controlID) == EventType.MouseDown)
             {
                 if (rect.Contains(Event.current.mousePosition))
                 {
@@ -21,7 +21,7 @@ namespace Common.GUIHelper
                 }
             }
 
-            if (Event.current.GetTypeForControl(controlID) == EventType.mouseUp && showList)
+            if (Event.current.GetTypeForControl(controlID) == EventType.MouseUp && showList)
             {
                 if (listRect.Contains(Event.current.mousePosition))
                 {                    

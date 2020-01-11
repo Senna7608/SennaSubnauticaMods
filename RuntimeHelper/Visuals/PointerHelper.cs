@@ -13,9 +13,15 @@ namespace RuntimeHelper.Visuals
     {        
         public static float LineWidth = 0.004f;
         
-        public static void CreatePointerLine(this GameObject containerBase, PointerType pointerType)
+        public static GameObject CreatePointerLine(this GameObject containerBase, PointerType pointerType)
         {
-            GameObject pointerLine = new GameObject("RH_POINTER_LINE");
+            GameObject pointerLine = containerBase.FindChild("RH_POINTER_LINE");
+
+            if (pointerLine == null)
+            {
+                pointerLine = new GameObject("RH_POINTER_LINE");
+            }
+
             pointerLine.transform.SetParent(containerBase.transform, false);
             pointerLine.transform.localPosition = Vector3.zero;
 
@@ -29,7 +35,9 @@ namespace RuntimeHelper.Visuals
                     break;
             }
 
-            pointerLine.GetOrAddComponent<TracePlayerPos>().PointerType = pointerType;                       
+            pointerLine.GetOrAddComponent<TracePlayerPos>().PointerType = pointerType;
+
+            return pointerLine;
         }
     }
 
@@ -39,8 +47,8 @@ namespace RuntimeHelper.Visuals
 
         private void LateUpdate()
         {
-            if (Player.main != null)
-            {                
+            if (Player.main != null && !Main.Instance.isRayEnabled)
+            {
                 Vector3 arrow = Player.main.playerArrowTransform.position;
 
                 if (PointerType == PointerType.Object)
@@ -57,6 +65,7 @@ namespace RuntimeHelper.Visuals
 
                 gameObject.DrawLine(gameObject.transform.position, Player.main.playerArrowTransform.position);
             }
+            
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace Common
@@ -95,6 +96,53 @@ namespace Common
             }
 
             return null;
+        }
+
+        public static void GetPrefabInfo(this GameObject prefab)
+        {
+            List<string> keywords = new List<string>();
+
+            BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
+
+            keywords.Add($"prefab name: {prefab.name}");
+            keywords.Add("Properties:");
+
+            foreach (PropertyInfo propertyInfo in prefab.GetType().GetProperties(bindingFlags))
+            {
+                try
+                {
+                    keywords.Add($"{propertyInfo.Name} = [{propertyInfo.GetValue(prefab, bindingFlags, null, null, null).ToString()}]");
+                }
+                catch
+                {
+                    continue;
+                }
+            }
+
+            keywords.Add("Fields:");
+
+            foreach (FieldInfo fieldInfo in prefab.GetType().GetFields(bindingFlags))
+            {
+                try
+                {
+                    keywords.Add($"{fieldInfo.Name} = [{fieldInfo.GetValue(prefab).ToString()}]");
+                }
+                catch
+                {
+                    continue;
+                }
+
+                if (fieldInfo.GetValue(prefab).GetType() == typeof(GameObject))
+                {
+                    GameObject go = (GameObject)fieldInfo.GetValue(prefab);
+                    go.GetPrefabInfo();
+                }
+            }
+
+            foreach (string keyword in keywords)
+            {
+                SNLogger.Log(keyword);
+            }
         }
     }
 }

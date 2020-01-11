@@ -5,7 +5,7 @@ namespace Common.GUIHelper
 {
     public static class SNScrollView
     {
-        public static int CreateScrollView(Rect scrollRect, ref Vector2 scrollPos, ref List<GuiItem> scrollItems, string label, string listName, int maxShowItems = 0)
+        public static GuiItemEvent CreateScrollView(Rect scrollRect, ref Vector2 scrollPos, ref List<GuiItem> scrollItems, string label, string listName, int maxShowItems = 0)
         {
             Vector2 labelSize = SNStyles.GetGuiItemStyle(GuiItemType.LABEL).CalcSize(new GUIContent(label));
 
@@ -23,8 +23,8 @@ namespace Common.GUIHelper
             GUI.Label(new Rect(scrollRect.x + labelSize.x + 5, scrollRect.y + 5, scrollRect.width - labelSize.x, labelSize.y), listName, SNStyles.GetGuiItemStyle(GuiItemType.LABEL, GuiColor.Green, textAnchor: TextAnchor.MiddleLeft));
 
             scrollPos = GUI.BeginScrollView(new Rect(scrollRect.x, scrollRect.y + labelSize.y + 10, scrollRect.width, scrollRect.height), scrollPos, new Rect(scrollItems[0].Rect.x, scrollItems[0].Rect.y, scrollItems[0].Rect.width, scrollItems.Count * (scrollItems[0].Rect.height + 2)));
-
-            int result = scrollItems.DrawGuiItemsGroup();
+            
+            GuiItemEvent result = scrollItems.DrawGuiItemsGroup();            
 
             GUI.EndScrollView();
 

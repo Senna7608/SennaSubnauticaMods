@@ -55,13 +55,13 @@ namespace QuickSlotExtender.Configuration
 
             labelInfo.DrawGuiItemsGroup();
 
-            int sBtn = buttonInfo.DrawGuiItemsGroup();
+            GuiItemEvent sBtn = buttonInfo.DrawGuiItemsGroup();
 
-            if (sBtn != -1)
+            if (sBtn.ItemID != -1)
             {
-                StartAssignment(buttons[sBtn]);
-                selected = sBtn;
-                buttonInfo[sBtn].Name = "Press any key!";
+                StartAssignment(buttons[sBtn.ItemID]);
+                selected = sBtn.ItemID;
+                buttonInfo[sBtn.ItemID].Name = "Press any key!";
             }
 
             float lastY = SNWindow.GetNextYPos(ref buttonRects);
@@ -147,11 +147,11 @@ namespace QuickSlotExtender.Configuration
 
         public QSEConfigUI()
         {
-            if (Instance.IsNull())
+            if (Instance == null)
             {
                 Instance = FindObjectOfType(typeof(QSEConfigUI)) as QSEConfigUI;
 
-                if (Instance.IsNull())
+                if (Instance == null)
                 {
                     GameObject qse_configUI = new GameObject("QSEConfigUI");
                     Instance = qse_configUI.GetOrAddComponent<QSEConfigUI>();                    

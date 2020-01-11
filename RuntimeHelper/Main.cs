@@ -1,6 +1,4 @@
-﻿//#define AUTOSTART
-
-using System;
+﻿using System;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
@@ -13,7 +11,7 @@ using static Common.GameHelper;
 namespace RuntimeHelper
 {
     public static class Main
-    {
+    {        
         public static RuntimeHelperCommand Command_Instance { get; internal set; }
         public static RuntimeHelper Instance { get; internal set; }
         public static List<GameObject> AllVisuals = new List<GameObject>();
@@ -38,13 +36,15 @@ namespace RuntimeHelper
             if (scene.name == "StartScreen")
             {
                 Command_Instance = new RuntimeHelperCommand();
-#if AUTOSTART
-                new RuntimeHelper();
-#endif
+
+                if (RuntimeHelper_Config.AUTOSTART)
+                {
+                    new RuntimeHelper();
+                }
             }
             if (scene.name =="Main")
             {
-                Command_Instance.Awake();
+                Command_Instance = new RuntimeHelperCommand();
             }
         }
     }  

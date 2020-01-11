@@ -4,7 +4,7 @@ namespace CyclopsLaserCannonModule
 {
     public partial class CannonControl
     {        
-        private bool isActive;
+        private bool isActive = true;
         private bool isShoot = false;
         private bool isModuleInserted = false;
         public bool isPiloting = false;

@@ -5,7 +5,7 @@ namespace SlotExtender.Configuration
 {
     public class SECommand : MonoBehaviour
     {
-        private const string Message = "Information: Enter 'seconfig' command for configuration window.";
+        private const string Message = "Information: Enter 'seconfig' command in main menu for configuration window.";
 
         public SECommand Instance { get; private set; }
         
@@ -21,16 +21,16 @@ namespace SlotExtender.Configuration
             SEConfigUI configUI = new SEConfigUI();
         }
 
-        public SECommand ()
+        public SECommand()
         {
-            if (Instance.IsNull())
+            if (Instance == null)
             {
                 Instance = FindObjectOfType(typeof(SECommand)) as SECommand;
 
-                if (Instance.IsNull())
+                if (Instance == null)
                 {
                     GameObject se_command = new GameObject("SECommand");
-                    Instance = se_command.GetOrAddComponent<SECommand>();                    
+                    Instance = se_command.AddComponent<SECommand>();                    
                 }
             }            
         }

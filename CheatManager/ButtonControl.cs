@@ -91,7 +91,7 @@ namespace CheatManager
             }
         }
         
-        internal void ScrollViewControl(int categoryTabID, ref int selected, ref List<GuiItem> scrollItems, ref List<TechTypeData>[] tMatrix, ref List<GuiItem> commands)
+        internal void ScrollViewControl(int categoryTabID, int selected, ref List<GuiItem> scrollItems, ref List<TechTypeData>[] tMatrix, ref List<GuiItem> commands)
         {            
             string selectedTech;
             Categories category = GetCategoryFromID(categoryTabID);
@@ -146,6 +146,9 @@ namespace CheatManager
                     ExecuteCommand($"{scrollItems[selected].Name}  has spawned", $"spawn {selectedTech}");
                     break;
                 case Categories.Blueprints:
+
+                    TechType techType = tMatrix[categoryTabID][selected].TechType;                                        
+                    
                     ExecuteCommand($"Blueprint: {scrollItems[selected].Name} unlocked", $"unlock {selectedTech}");
                     break;
                 case Categories.Warp:

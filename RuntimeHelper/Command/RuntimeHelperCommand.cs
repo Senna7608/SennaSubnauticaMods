@@ -8,8 +8,7 @@ namespace RuntimeHelper.Command
         public static RuntimeHelperCommand Instance;
 
         public void Awake()
-        {
-            DontDestroyOnLoad(this);
+        {            
             DevConsole.RegisterConsoleCommand(Instance, "runtimehelper", false, false);
         }        
 
@@ -20,14 +19,14 @@ namespace RuntimeHelper.Command
 
         public RuntimeHelperCommand()
         {
-            if (Instance.IsNull())
+            if (!Instance)
             {
-                Instance = UnityEngine.Object.FindObjectOfType(typeof(RuntimeHelperCommand)) as RuntimeHelperCommand;
+                Instance = FindObjectOfType(typeof(RuntimeHelperCommand)) as RuntimeHelperCommand;
 
-                if (Instance.IsNull())
+                if (!Instance)
                 {
                     GameObject rh_command_go = new GameObject("rh_command_go");
-                    Instance = rh_command_go.GetOrAddComponent<RuntimeHelperCommand>();
+                    Instance = rh_command_go.AddComponent<RuntimeHelperCommand>();
                 }
             }            
         }

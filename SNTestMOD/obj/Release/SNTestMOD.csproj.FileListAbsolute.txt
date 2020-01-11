@@ -1,0 +1,7 @@
+c:\Users\Senna\source\repos\SennaSubnauticaMods\SNTestMOD\obj\Release\SNTestMOD.csproj.CoreCompileInputs.cache
+c:\Users\Senna\source\repos\SennaSubnauticaMods\SNTestMOD\obj\Release\SNTestMOD.dll
+f:\Program Files\Epic Games\Subnautica\QMods\SNTestMOD\mod.json
+f:\Program Files\Epic Games\Subnautica\QMods\SNTestMOD\SNTestMOD.dll
+f:\SennaSubnauticaMods\SNTestMOD\obj\Release\SNTestMOD.csproj.CoreCompileInputs.cache
+f:\SennaSubnauticaMods\SNTestMOD\obj\Release\SNTestMOD.dll
+f:\SennaSubnauticaMods\SNTestMOD\obj\Release\SNTestMOD.csprojAssemblyReference.cache
