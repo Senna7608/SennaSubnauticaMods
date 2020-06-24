@@ -2,7 +2,7 @@
 using Common;
 using SlotExtender.Configuration;
 
-namespace SlotExtender.Patchers
+namespace SlotExtender.Patches
 {
     [HarmonyPatch(typeof(SeaMoth))]
     [HarmonyPatch("slotIDs", MethodType.Getter)]
@@ -24,12 +24,8 @@ namespace SlotExtender.Patchers
         [HarmonyPostfix]
         internal static void Postfix(SeaMoth __instance)
         {
-            string name = __instance.name;
-            int ID = __instance.GetInstanceID();
-
             __instance.gameObject.AddIfNeedComponent<SlotExtender>();
-
-            SNLogger.Log($"[{SEConfig.PROGRAM_NAME}] component added to instance: {name} ID: {ID}");            
+            SNLogger.Log("SlotExtender", $"Component added to instance: {__instance.name} ID: {__instance.GetInstanceID()}");
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Harmony;
 
-namespace SlotExtender.Patchers
+namespace SlotExtender.Patches
 {
     [HarmonyPatch(typeof(uGUI_QuickSlots))]
     [HarmonyPatch("SetBackground")]

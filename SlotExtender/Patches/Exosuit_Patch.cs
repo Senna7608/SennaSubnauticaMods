@@ -2,7 +2,7 @@
 using Common;
 using SlotExtender.Configuration;
 
-namespace SlotExtender.Patchers
+namespace SlotExtender.Patches
 {
     [HarmonyPatch(typeof(Exosuit))]
     [HarmonyPatch("slotIDs", MethodType.Getter)]
@@ -24,7 +24,7 @@ namespace SlotExtender.Patchers
         public static void Postfix(Exosuit __instance)
         {            
             __instance.gameObject.AddIfNeedComponent<SlotExtender>();
-            SNLogger.Log($"[{SEConfig.PROGRAM_NAME}] Added component to instance: {__instance.name} ID: {__instance.GetInstanceID()}");           
+            SNLogger.Log("SlotExtender", $"Component added to instance: {__instance.name} ID: {__instance.GetInstanceID()}");           
         }
     }
 }

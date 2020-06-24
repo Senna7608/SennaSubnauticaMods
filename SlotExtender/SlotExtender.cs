@@ -17,29 +17,33 @@ namespace SlotExtender
         internal void Awake()
         {
             //get this SlotExtender instance
-            Instance = GetComponent<SlotExtender>();
+            Instance = this;
 
-            if (Instance.GetComponent<SeaMoth>())
+            if (gameObject.GetComponent<SeaMoth>())
             {
                 //this Vehicle type is SeaMoth
-                ThisVehicle = Instance.GetComponent<SeaMoth>();
+                ThisVehicle = GetComponent<SeaMoth>();
 
                 //add extra slots
+                /*
                 foreach (string slotID in SlotHelper.NewSeamothSlotIDs)
                     ThisVehicle.modules.AddSlot(slotID);
+                    */
             }
-            else if (Instance.GetComponent<Exosuit>())
+            else if (gameObject.GetComponent<Exosuit>())
             {
                 //this Vehicle type is Exosuit
                 ThisVehicle = Instance.GetComponent<Exosuit>();
 
                 //add extra slots
+                /*
                 foreach (string slotID in SlotHelper.NewExosuitSlotIDs)
-                    ThisVehicle.modules.AddSlot(slotID);                
+                    ThisVehicle.modules.AddSlot(slotID); 
+                    */
             }
             else
             {
-                SNLogger.Log($"[{SEConfig.PROGRAM_NAME}] Unknown Vehicle type error! Instance destroyed!");
+                SNLogger.Error("SlotExtender", "Unknown Vehicle type! Instance now destroy!");
                 Destroy(Instance);
             }            
         }
@@ -48,15 +52,17 @@ namespace SlotExtender
         {               
             PdaMain = Player.main.GetPDA();
             //forced triggering the Awake method in uGUI_Equipment for patching
+                       
+            /*
             PdaMain.Open();
             PdaMain.Close();
-
+            */
             //add and start a handler to check the player mode if changed
             Player.main.playerModeChanged.AddHandler(this, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
 
             isActive = Player.main.currentMountedVehicle == ThisVehicle ? true : false;
 
-            SNLogger.Log($"[SlotExtender] Broadcasting message: 'WakeUp', Vehicle Name: {ThisVehicle.GetName()}, Instance ID: {ThisVehicle.GetInstanceID()}");
+            SNLogger.Log("SlotExtender", $"Broadcasting message: 'WakeUp', Vehicle Name: {ThisVehicle.GetName()}, Instance ID: {ThisVehicle.GetInstanceID()}");
 
             gameObject.BroadcastMessage("WakeUp", SendMessageOptions.DontRequireReceiver);
         }        
@@ -115,7 +121,8 @@ namespace SlotExtender
             
             if (Main.isKeyBindigsUpdate)
                 return; // Keybindings changed and updating in progress. Exit method.
-            
+
+            // Safety check
             if (!IsPlayerInVehicle())
                 return; // Player not in any vehicle. Exit method.
 

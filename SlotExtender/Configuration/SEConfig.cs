@@ -10,14 +10,13 @@ using Common;
 namespace SlotExtender.Configuration
 {
     internal static class SEConfig
-    {
-        public const string PROGRAM_NAME = "SlotExtender";
+    {        
         internal static string PROGRAM_VERSION = string.Empty;
         internal static string CONFIG_VERSION = string.Empty;
 
-        internal static Dictionary<string, KeyCode> KEYBINDINGS;        
-       
-        private static readonly string FILENAME = $"{Environment.CurrentDirectory}/QMods/{PROGRAM_NAME}/config.txt";
+        internal static Dictionary<string, KeyCode> KEYBINDINGS;
+        private static readonly string modFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        private static readonly string FILENAME = $"{modFolder}/config.txt";
         internal static Dictionary<string, string> Section_hotkeys;
         public static Dictionary<string, string> SLOTKEYS = new Dictionary<string, string>();
         public static List<string> SLOTKEYSLIST = new List<string>();
@@ -113,28 +112,28 @@ namespace SlotExtender.Configuration
 
                 TEXTCOLOR = Modules.GetColor(Helper.GetKeyValue(FILENAME, SECTIONS[1], SECTION_Settings[1]));
 
-                SNLogger.Log($"[{PROGRAM_NAME}] Configuration loaded.");
+                SNLogger.Log("SlotExtender", "Configuration loaded.");
             }
             catch
             {
-                SNLogger.Log($"[{PROGRAM_NAME}] An error occurred while loading the configuration file!");
+                SNLogger.Error("SlotExtender", "An error occurred while loading the configuration file!");
             }
         }
 
         internal static void CreateDefaultConfigFile()
         {
-            SNLogger.Log($"[{PROGRAM_NAME}] Warning! Configuration file is missing or wrong version. Trying to create a new one.");
+            SNLogger.Warn("SlotExtender", "Configuration file is missing or wrong version. Trying to create a new one.");
 
             try
             {
-                Helper.CreateDefaultConfigFile(FILENAME, PROGRAM_NAME, PROGRAM_VERSION, DEFAULT_CONFIG);
+                Helper.CreateDefaultConfigFile(FILENAME, "SlotExtender", PROGRAM_VERSION, DEFAULT_CONFIG);
                 Helper.AddInfoText(FILENAME, SECTIONS[1], "TextColor possible values: Red, Green, Blue, Yellow, White, Magenta, Cyan, Orange, Lime, Amethyst, Default");
 
-                SNLogger.Log($"[{PROGRAM_NAME}] The new configuration file was successfully created.");
+                SNLogger.Log("SlotExtender", "The new configuration file was successfully created.");
             }
             catch
             {
-                SNLogger.Log($"[{PROGRAM_NAME}] An error occured while creating the new configuration file!");
+                SNLogger.Error("SlotExtender", "An error occured while creating the new configuration file!");
             }
         }
 
@@ -142,7 +141,7 @@ namespace SlotExtender.Configuration
         {
             SetKeyBindings();            
 
-            SNLogger.Log($"[{PROGRAM_NAME}] Configuration initialized.");
+            SNLogger.Log("SlotExtender", "Configuration initialized.");
         }
 
         internal static void WriteConfig()
@@ -151,7 +150,7 @@ namespace SlotExtender.Configuration
             Helper.SetKeyValue(FILENAME, SECTIONS[1], SECTION_Settings[0], MAXSLOTS.ToString());
             Helper.SetKeyValue(FILENAME, SECTIONS[1], SECTION_Settings[1], Modules.GetColorName(TEXTCOLOR));
 
-            SNLogger.Log($"[{PROGRAM_NAME}] Configuration saved.");            
+            SNLogger.Log("SlotExtender", "Configuration saved.");            
         }
 
         internal static void SyncConfig()
@@ -178,7 +177,7 @@ namespace SlotExtender.Configuration
                 }
                 catch (ArgumentException)
                 {
-                    SNLogger.Log($"[{PROGRAM_NAME}] Warning! ({kvp.Value}) is not a valid KeyCode! Setting default value!");
+                    SNLogger.Warn("SlotExtender", $"[{kvp.Value}] is not a valid KeyCode! Setting default value!");
 
                     for (int i = 0; i < DEFAULT_CONFIG.Count; i++)
                     {
@@ -201,27 +200,27 @@ namespace SlotExtender.Configuration
         {
             if (!File.Exists(FILENAME))
             {
-                SNLogger.Log($"[{PROGRAM_NAME}] Configuration file open error!");
+                SNLogger.Error("SlotExtender", "Configuration file open error!");
                 return false;
             }
 
-            CONFIG_VERSION = Helper.GetKeyValue(FILENAME, PROGRAM_NAME, "Version");            
+            CONFIG_VERSION = Helper.GetKeyValue(FILENAME, "SlotExtender", "Version");            
 
             if (!CONFIG_VERSION.Equals(PROGRAM_VERSION))            
             {
-                SNLogger.Log($"[{PROGRAM_NAME}] Configuration file version error!");
+                SNLogger.Error("SlotExtender", "Configuration file version error!");
                 return false;
             }            
 
             if (!Helper.CheckSectionKeys(FILENAME, SECTIONS[0], SECTION_Hotkeys))            
             {
-                SNLogger.Log($"[{PROGRAM_NAME}] Configuration {SECTIONS[0]} section error!");
+                SNLogger.Error("SlotExtender", $"Configuration {SECTIONS[0]} section error!");
                 return false;
             }
 
             if (!Helper.CheckSectionKeys(FILENAME, SECTIONS[1], SECTION_Settings))            
             {
-                SNLogger.Log($"[{PROGRAM_NAME}] Configuration {SECTIONS[1]} section error!");
+                SNLogger.Error("SlotExtender", $"Configuration {SECTIONS[1]} section error!");
                 return false;
             }
 

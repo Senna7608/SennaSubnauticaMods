@@ -1,8 +1,10 @@
 ﻿using System;
 using Harmony;
+using UnityEngine;
 
-namespace SlotExtender.Patchers
+namespace SlotExtender.Patches
 {
+    /*
     [HarmonyPatch(typeof(Equipment))]
     [HarmonyPatch("GetSlotType")]
     internal class Equipment_GetSlotType_Patch
@@ -13,7 +15,27 @@ namespace SlotExtender.Patchers
             SlotHelper.ExpandSlotMapping();
         }
     }
-    
+    */
+
+    [HarmonyPatch(typeof(Equipment))]
+    [HarmonyPatch(MethodType.Constructor)]
+    [HarmonyPatch(new Type[] { typeof(GameObject), typeof(Transform) })]
+    public class Equipment_Constructor_Patch
+    {
+        public static bool isPatched = false;
+
+        [HarmonyPostfix]
+        public static void Postfix(GameObject owner, Transform tr)
+        {
+            if (!isPatched && owner.name == "Player")
+            {
+                SlotHelper.ExpandSlotMapping();
+
+                isPatched = true;
+            }
+        }
+    }
+
     [HarmonyPatch(typeof(Equipment))]
     [HarmonyPatch("AllowedToAdd")]
     [HarmonyPatch(new Type[] { typeof(string), typeof(Pickupable), typeof(bool) })]
