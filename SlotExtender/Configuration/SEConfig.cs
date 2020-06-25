@@ -70,6 +70,7 @@ namespace SlotExtender.Configuration
 
         internal static void InitSLOTKEYS()
         {
+
             SLOTKEYS.Clear();
             SLOTKEYSLIST.Clear();
 

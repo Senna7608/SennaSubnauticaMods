@@ -11,7 +11,7 @@ namespace SlotExtender
         public static uGUI_SlotTextHandler Instance { get; private set; }
 
         private Dictionary<string, Text> Exosuit_SlotText = new Dictionary<string, Text>();
-        private Dictionary<string, Text> SeaMoth_SlotText = new Dictionary<string, Text>();
+        private Dictionary<string, Text> Seamoth_SlotText = new Dictionary<string, Text>();
         private Dictionary<string, uGUI_EquipmentSlot> ALLSLOTS;
 
         public void Awake()
@@ -33,22 +33,22 @@ namespace SlotExtender
                     Text text = AddTextToSlotIcon(item.Value.transform, SEConfig.SLOTKEYS[slot], slot);
                     Exosuit_SlotText.Add(text.gameObject.name, text);
                 }
-                else if (item.Value.name.StartsWith("SeaMothModule"))
+                else if (item.Value.name.StartsWith("SeamothModule"))
                 {
-                    int.TryParse(item.Key.Substring(14), out int slotNum);
+                    int.TryParse(item.Key.Substring(13), out int slotNum);
                     string slot = $"Slot{slotNum}";
                     Text text = AddTextToSlotIcon(item.Value.transform, SEConfig.SLOTKEYS[slot], slot);
-                    SeaMoth_SlotText.Add(text.gameObject.name, text);
+                    Seamoth_SlotText.Add(text.gameObject.name, text);
                 }
-                else if (item.Value.name.StartsWith("SeaMothArmLeft"))
+                else if (item.Value.name.StartsWith("SeamothArmLeft"))
                 {
-                    Text text = AddTextToSlotIcon(item.Value.transform, SEConfig.SLOTKEYS["ArmLeft"], "ArmLeft");
-                    SeaMoth_SlotText.Add(text.gameObject.name, text);
+                    Text text = AddTextToSlotIcon(item.Value.transform, SEConfig.SLOTKEYS["SeamothArmLeft"], "SeamothArmLeft");
+                    Seamoth_SlotText.Add(text.gameObject.name, text);
                 }
-                else if (item.Value.name.StartsWith("SeaMothArmRight"))
+                else if (item.Value.name.StartsWith("SeamothArmRight"))
                 {
-                    Text text = AddTextToSlotIcon(item.Value.transform, SEConfig.SLOTKEYS["ArmRight"], "ArmRight");
-                    SeaMoth_SlotText.Add(text.gameObject.name, text);
+                    Text text = AddTextToSlotIcon(item.Value.transform, SEConfig.SLOTKEYS["SeamothArmRight"], "SeamothArmRight");
+                    Seamoth_SlotText.Add(text.gameObject.name, text);
                 }
             }
         }
@@ -60,7 +60,7 @@ namespace SlotExtender
                 try
                 {
                     Exosuit_SlotText[kvp.Key].text = kvp.Value;
-                    SeaMoth_SlotText[kvp.Key].text = kvp.Value;
+                    Seamoth_SlotText[kvp.Key].text = kvp.Value;
                 }
                 catch
                 {
