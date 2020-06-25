@@ -1,6 +1,7 @@
 ﻿using System;
 using Harmony;
 using UnityEngine;
+using SlotExtender.Configuration;
 
 namespace SlotExtender.Patches
 {
@@ -45,39 +46,76 @@ namespace SlotExtender.Patches
         internal static bool Prefix(Equipment __instance, string slot, Pickupable pickupable, bool verbose, ref bool __result)
         {
             TechType techTypeInSlot = pickupable.GetTechType();
-            
-            if (SlotHelper.IsExtendedSeamothSlot(slot))
+
+            bool isExtendedSlot = SlotHelper.IsExtendedSeamothSlot(slot);
+
+            if (isExtendedSlot && techTypeInSlot == TechType.SeamothTorpedoModule)
             {
-                switch (techTypeInSlot)
+                // Do not allow torpedo modules in extended slots in Seamoth
+                __result = false;
+                ErrorMessage.AddMessage("Slot Extender:\nTorpedo module not allowed for this slot!");
+                return false;
+            }
+
+            if (techTypeInSlot == TechType.VehicleStorageModule) 
+            {
+                if (SEConfig.STORAGE_SLOTS_OFFSET == 0)
                 {
-                    case TechType.VehicleStorageModule:
-                        // Do not allow storage modules in extended slots in Seamoth
-                        __result = false;
+                    if (!isExtendedSlot)
+                        return true;
+
+                    // Do not allow storage modules in extended slots in Seamoth
+                    __result = false;
+                    ErrorMessage.AddMessage("Slot Extender:\nStorage module not allowed for this slot!");
+                    return false;
+                }
+                else
+                {
+                    SeaMoth seamoth = __instance.owner.GetComponent<SeaMoth>();
+                    if (seamoth == null)
+                        return false;
+
+                    int slotID = int.Parse(slot.Substring(13)) - 1;
+
+                    if (slotID > 3 && (slotID < SEConfig.STORAGE_SLOTS_OFFSET || slotID > SEConfig.STORAGE_SLOTS_OFFSET + 3))
+                    {
                         ErrorMessage.AddMessage("Slot Extender:\nStorage module not allowed for this slot!");
                         return false;
-                        
-                    case TechType.SeamothTorpedoModule:
-                        // Do not allow torpedo modules in extended slots in Seamoth
-                        __result = false;
-                        ErrorMessage.AddMessage("Slot Extender:\nTorpedo module not allowed for this slot!");
-                        return false;
-                }
+                    }
 
-                return true;
+                    // HACK: trying to swap one storage to another while drag, silently refusing because of ui problems
+                    if (seamoth.GetSlotItem(slotID)?.item.GetTechType() == TechType.VehicleStorageModule)
+                    {
+                        __result = false;
+                        return false;
+                    }
+
+                    SeamothStorageInput storageInput = seamoth.storageInputs[slotID % SEConfig.STORAGE_SLOTS_OFFSET];
+                    var fieldState = AccessTools.Field(typeof(SeamothStorageInput), "state");
+                    __result = !(bool)fieldState.GetValue(storageInput); //already active
+
+                    if (!__result && verbose)
+                    {
+                        int _slotID = (slotID < 4? slotID + SEConfig.STORAGE_SLOTS_OFFSET: slotID - SEConfig.STORAGE_SLOTS_OFFSET) + 1;
+                        ErrorMessage.AddMessage($"Slot Extender:\nStorage module is already in the slot {_slotID}");
+                    }
+
+                    return false;
+                }
             }
-            
+
             if (techTypeInSlot == TechType.VehicleStorageModule && __instance.owner.name.Equals("Exosuit(Clone)"))
-            {                
-                // Do not allow more than four storage modules in Exosuit slots                               
+            {
+                // Do not allow more than four storage modules in Exosuit slots
                 if (__instance.GetCount(TechType.VehicleStorageModule) >= 4)
                 {
                     __result = false;
                     ErrorMessage.AddMessage("Slot Extender:\nStorage module limit reached!");
                     return false;
                 }
-            }            
+            }
 
-            return true;            
-        }        
-    }   
+            return true;
+        }
+    }
 }

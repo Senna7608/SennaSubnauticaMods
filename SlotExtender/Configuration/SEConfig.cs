@@ -22,6 +22,7 @@ namespace SlotExtender.Configuration
         public static List<string> SLOTKEYSLIST = new List<string>();
         internal static int MAXSLOTS;
         public static Color TEXTCOLOR;
+        internal static int STORAGE_SLOTS_OFFSET = 4;
 
         private static readonly string[] SECTIONS =
         {
@@ -48,13 +49,15 @@ namespace SlotExtender.Configuration
         private static readonly string[] SECTION_Settings =
         {
             "MaxSlots",
-            "TextColor"
+            "TextColor",
+            "SeamothStorageSlotsOffset",
         };
 
         private static readonly List<ConfigData> DEFAULT_CONFIG = new List<ConfigData>
         {
             new ConfigData(SECTIONS[1], SECTION_Settings[0], 12.ToString()),
             new ConfigData(SECTIONS[1], SECTION_Settings[1], COLORS.Green.ToString()),
+            new ConfigData(SECTIONS[1], SECTION_Settings[2], 4.ToString()),
             new ConfigData(SECTIONS[0], SECTION_Hotkeys[0], InputHelper.GetKeyCodeAsInputName(KeyCode.T)),
             new ConfigData(SECTIONS[0], SECTION_Hotkeys[1], InputHelper.GetKeyCodeAsInputName(KeyCode.R)),
             new ConfigData(SECTIONS[0], SECTION_Hotkeys[2], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha6)),
@@ -101,16 +104,31 @@ namespace SlotExtender.Configuration
             if (!CheckConfig())
             {
                 CreateDefaultConfigFile();
-            }            
+            }
 
             try
             {
-                Section_hotkeys = Helper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[0], SECTION_Hotkeys);                
+                Section_hotkeys = Helper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[0], SECTION_Hotkeys);
 
                 int.TryParse(Helper.GetKeyValue(FILENAME, SECTIONS[1], SECTION_Settings[0]), out int result);
                 MAXSLOTS = result < 5 || result > 12 ? 12 : result;
 
                 TEXTCOLOR = Modules.GetColor(Helper.GetKeyValue(FILENAME, SECTIONS[1], SECTION_Settings[1]));
+
+                if (RefHelp.IsNamespaceExists("SeamothStorageSlots"))
+                {
+                    STORAGE_SLOTS_OFFSET = 0; // don't patch storages stuff if SeamothStorageSlots mod is active
+                    const string msg = "<i>SeamothStorageSlots</i> mod is now merged into SlotExtender, you can safely delete it.";
+
+                    Type qmmServices = RefHelp.SafeGetTypeFromAssembly("QModInstaller", "QModManager.API.QModServices");
+                    MethodInfo qmmMain = qmmServices?.GetProperty("Main")?.GetGetMethod();
+                    qmmServices?.GetMethod("AddCriticalMessage")?.Invoke(qmmMain.Invoke(null, null), new object[] { msg, 25, "yellow", true });
+                }
+                else
+                {
+                    int.TryParse(Helper.GetKeyValue(FILENAME, SECTIONS[1], SECTION_Settings[2]), out result);
+                    STORAGE_SLOTS_OFFSET = result < 3? 0: result > 8? 8: result;
+                }
 
                 SNLogger.Log("SlotExtender", "Configuration loaded.");
             }
@@ -139,7 +157,7 @@ namespace SlotExtender.Configuration
 
         internal static void InitConfig()
         {
-            SetKeyBindings();            
+            SetKeyBindings();
 
             SNLogger.Log("SlotExtender", "Configuration initialized.");
         }
@@ -149,15 +167,16 @@ namespace SlotExtender.Configuration
             Helper.SetAllKeyValuesInSection(FILENAME, SECTIONS[0], Section_hotkeys);
             Helper.SetKeyValue(FILENAME, SECTIONS[1], SECTION_Settings[0], MAXSLOTS.ToString());
             Helper.SetKeyValue(FILENAME, SECTIONS[1], SECTION_Settings[1], Modules.GetColorName(TEXTCOLOR));
+            Helper.SetKeyValue(FILENAME, SECTIONS[1], SECTION_Settings[2], STORAGE_SLOTS_OFFSET.ToString());
 
-            SNLogger.Log("SlotExtender", "Configuration saved.");            
+            SNLogger.Log("SlotExtender", "Configuration saved.");
         }
 
         internal static void SyncConfig()
         {
             foreach (string key in SECTION_Hotkeys)
             {
-                Section_hotkeys[key] = InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[key]);                
+                Section_hotkeys[key] = InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[key]);
             }
 
             WriteConfig();
@@ -204,21 +223,21 @@ namespace SlotExtender.Configuration
                 return false;
             }
 
-            CONFIG_VERSION = Helper.GetKeyValue(FILENAME, "SlotExtender", "Version");            
+            CONFIG_VERSION = Helper.GetKeyValue(FILENAME, "SlotExtender", "Version");
 
-            if (!CONFIG_VERSION.Equals(PROGRAM_VERSION))            
+            if (!CONFIG_VERSION.Equals(PROGRAM_VERSION))
             {
                 SNLogger.Error("SlotExtender", "Configuration file version error!");
                 return false;
-            }            
+            }
 
-            if (!Helper.CheckSectionKeys(FILENAME, SECTIONS[0], SECTION_Hotkeys))            
+            if (!Helper.CheckSectionKeys(FILENAME, SECTIONS[0], SECTION_Hotkeys))
             {
                 SNLogger.Error("SlotExtender", $"Configuration {SECTIONS[0]} section error!");
                 return false;
             }
 
-            if (!Helper.CheckSectionKeys(FILENAME, SECTIONS[1], SECTION_Settings))            
+            if (!Helper.CheckSectionKeys(FILENAME, SECTIONS[1], SECTION_Settings))
             {
                 SNLogger.Error("SlotExtender", $"Configuration {SECTIONS[1]} section error!");
                 return false;

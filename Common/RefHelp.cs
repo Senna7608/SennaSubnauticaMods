@@ -71,6 +71,12 @@ namespace Common
             return false;
         }
 
+        public static Type SafeGetTypeFromAssembly(string assemblyName, string typeName)
+        {
+            try   { return Assembly.Load(assemblyName)?.GetType(typeName, false); }
+            catch { return null; }
+        }
+
         public static MethodInfo GetAssemblyClassPrivateMethod(string className, string methodName)
         {
             try
