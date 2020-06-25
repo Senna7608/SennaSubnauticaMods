@@ -44,7 +44,7 @@ namespace SlotExtender
         private const float RightColumn = RowStep;
         private const float LeftColumn = -RowStep;
         
-        private static readonly Vector2[] slotPos = new Vector2[12]
+        public static readonly Vector2[] slotPos = new Vector2[12]
         {
             new Vector2(LeftColumn, TopRow), //slot 1
             new Vector2(CenterColumn, TopRow),  //slot 2
@@ -217,6 +217,10 @@ namespace SlotExtender
         
         internal static void InitSlotIDs()
         {
+
+#if DEBUG
+            SNLogger.Debug("SlotExtender", "Method call: SlotHelper.InitSlotIDs()");
+#endif 
             SessionSeamothSlotIDs = (string[])Array.CreateInstance(typeof(string), SEConfig.MAXSLOTS + 2);
             SessionExosuitSlotIDs = (string[])Array.CreateInstance(typeof(string), SEConfig.MAXSLOTS + 2);
 
@@ -239,11 +243,16 @@ namespace SlotExtender
             for (int i = 0; i < SEConfig.MAXSLOTS + 2; i++)
             {                
                 SessionExosuitSlotIDs[i] = ExpandedExosuitSlotIDs[i];
-            }
+            } 
         }
 
         internal static void ExpandSlotMapping()
         {
+
+#if DEBUG
+            SNLogger.Debug("SlotExtender", "Method call: SlotHelper.ExpandSlotMapping()");
+#endif
+
             foreach (SlotData slotData in NewSeamothSlotsData)
             {
                 Equipment.slotMapping.Add(slotData.SlotID, EquipmentType.SeamothModule);
@@ -260,6 +269,7 @@ namespace SlotExtender
             }
 
             SNLogger.Log("SlotExtender", "Equipment slot mapping Patched!");
+
             /*
             if (!SlotMappingExpanded)
             {
@@ -292,6 +302,9 @@ namespace SlotExtender
 
         internal static bool IsExtendedSeamothSlot(string slotName)
         {
+#if DEBUG
+            SNLogger.Debug("SlotExtender", $"Method call: SlotHelper.IsExtendedSeamothSlot({slotName})");
+#endif
             foreach (string slot in NewSeamothSlotIDs)
             { 
                 if (slotName.Equals(slot))

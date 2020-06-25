@@ -22,6 +22,10 @@ namespace SlotExtender
 
         public static void Load()
         {
+
+#if DEBUG
+            SNLogger.Debug("SlotExtender", "Method call: Main.Load()");
+#endif
             try
             {
                 SEConfig.LoadConfig();
@@ -30,11 +34,13 @@ namespace SlotExtender
                 hInstance = HarmonyInstance.Create("Subnautica.SlotExtender.mod");
 
 #if DEBUG
-                SNLogger.Debug("SlotExtender", $"Harmony Instance created, Name = [{hInstance.Id}]");
+                SNLogger.Debug("SlotExtender", $"Main.Load(): Harmony Instance created, Name = [{hInstance.Id}]");
 #endif
                 //Harmony autopatch not working if MoreQuickSlots mod not installed therefore switch to manual patching mode
                 //hInstance.PatchAll(Assembly.GetExecutingAssembly());
-
+#if DEBUG
+                SNLogger.Debug("SlotExtender", "Main.Load(): Initializing manual patches...");
+#endif
                 //begin manual patch
                 hInstance.Patch(typeof(DevConsole).GetMethod("SetState"),
                     new HarmonyMethod(typeof(DevConsole_SetState_Patch), "Prefix"), null);
@@ -81,11 +87,17 @@ namespace SlotExtender
                 hInstance.Patch(typeof(Exosuit).GetMethod("Start"), null,
                     new HarmonyMethod(typeof(Exosuit_Start_Patch), "Postfix"));
 
-                
+#if DEBUG
+                SNLogger.Debug("SlotExtender", "Main.Load(): All patches initialized.");
+#endif                
 
                 //end manual patch 
 
-                SceneManager.sceneLoaded += new UnityAction<Scene, LoadSceneMode>(OnSceneLoaded);                
+                SceneManager.sceneLoaded += new UnityAction<Scene, LoadSceneMode>(OnSceneLoaded);
+
+#if DEBUG
+                SNLogger.Debug("SlotExtender", "Main.Load(): Added OnSceneLoaded method to SceneManager.sceneLoaded event.");
+#endif
             }
             catch (Exception ex)
             {
@@ -166,6 +178,9 @@ namespace SlotExtender
 
         internal static MethodBase GetConstructorMethodBase(Type type, string ctorName)
         {
+#if DEBUG
+            SNLogger.Debug("SlotExtender", $"Method call: Main.GetConstructorMethodBase({type}, {ctorName})");
+#endif
             List<ConstructorInfo> ctor_Infos = new List<ConstructorInfo>();
 
             ctor_Infos = AccessTools.GetDeclaredConstructors(type);
@@ -181,7 +196,7 @@ namespace SlotExtender
 
                 if (pInfos.Length == 0)
                 {
-                    SNLogger.Debug("SlotExtender", $"constructor [{ctor_info.Name}] has no parameters.");
+                    SNLogger.Debug("SlotExtender", $"this constructor [{ctor_info.Name}] has no parameters.");
                 }
                 else
                 {

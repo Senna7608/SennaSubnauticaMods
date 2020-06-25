@@ -35,7 +35,8 @@ namespace SlotExtender.Patches
         public static void Prefix(uGUI_Equipment __instance)
         {
             GameObject Equipment = __instance.gameObject;
-                        
+
+            GameObject SeamothModule1 = Equipment.FindChild("SeamothModule1");
             GameObject SeamothModule2 = Equipment.FindChild("SeamothModule2");
             GameObject ExosuitModule2 = Equipment.FindChild("ExosuitModule2");
             GameObject ExosuitArmLeft = Equipment.FindChild("ExosuitArmLeft");
@@ -62,6 +63,8 @@ namespace SlotExtender.Patches
 
             uGUI_EquipmentSlot exosuitArmRight = ExosuitArmRight.GetComponent<uGUI_EquipmentSlot>();
             exosuitArmRight.rectTransform.anchoredPosition = SlotHelper.NewSeamothArmSlotsData[1].SlotPOS;
+
+            SeamothModule1.FindChild("Seamoth").transform.localPosition = SlotHelper.slotPos[11];
 
             foreach (SlotData baseSeamothSlotData in SlotHelper.BaseSeamothSlotsData)
             {
