@@ -22,6 +22,9 @@ namespace SlotExtender
 
         public static void Load()
         {
+#if DEBUG
+            SNLogger.Debug("SlotExtender", "Method call: Main.Load()");
+#endif
             try
             {
                 SEConfig.LoadConfig();
@@ -29,11 +32,15 @@ namespace SlotExtender
 
                 hInstance = HarmonyInstance.Create("Subnautica.SlotExtender.mod");
 #if DEBUG
-                SNLogger.Debug("SlotExtender", $"Harmony Instance created, Name = [{hInstance.Id}]");
+                SNLogger.Debug("SlotExtender", $"Main.Load(): Harmony Instance created, Name = [{hInstance.Id}]");
 #endif
                 hInstance.PatchAll(Assembly.GetExecutingAssembly());
 
                 SceneManager.sceneLoaded += new UnityAction<Scene, LoadSceneMode>(OnSceneLoaded);
+
+#if DEBUG
+                SNLogger.Debug("SlotExtender", "Main.Load(): Added OnSceneLoaded method to SceneManager.sceneLoaded event.");
+#endif
             }
             catch (Exception ex)
             {
@@ -113,6 +120,9 @@ namespace SlotExtender
 
         internal static MethodBase GetConstructorMethodBase(Type type, string ctorName)
         {
+#if DEBUG
+            SNLogger.Debug("SlotExtender", $"Method call: Main.GetConstructorMethodBase({type}, {ctorName})");
+#endif
             List<ConstructorInfo> ctor_Infos = new List<ConstructorInfo>();
 
             ctor_Infos = AccessTools.GetDeclaredConstructors(type);
@@ -128,7 +138,7 @@ namespace SlotExtender
 
                 if (pInfos.Length == 0)
                 {
-                    SNLogger.Debug("SlotExtender", $"constructor [{ctor_info.Name}] has no parameters.");
+                    SNLogger.Debug("SlotExtender", $"this constructor [{ctor_info.Name}] has no parameters.");
                 }
                 else
                 {
