@@ -47,9 +47,9 @@ namespace SlotExtender.Patches
         {
             TechType techTypeInSlot = pickupable.GetTechType();
 
-            bool isExtendedSlot = SlotHelper.IsExtendedSeamothSlot(slot);
+            bool isExtendedSeamothSlot = SlotHelper.IsExtendedSeamothSlot(slot);
 
-            if (isExtendedSlot && techTypeInSlot == TechType.SeamothTorpedoModule)
+            if (isExtendedSeamothSlot && techTypeInSlot == TechType.SeamothTorpedoModule)
             {
                 // Do not allow torpedo modules in extended slots in Seamoth
                 __result = false;
@@ -57,11 +57,21 @@ namespace SlotExtender.Patches
                 return false;
             }
 
-            if (techTypeInSlot == TechType.VehicleStorageModule) 
+            if (techTypeInSlot == TechType.VehicleStorageModule)
             {
-                if (SEConfig.STORAGE_SLOTS_OFFSET == 0)
+                if (__instance.owner.GetComponent<Exosuit>())
                 {
-                    if (!isExtendedSlot)
+                    // Do not allow more than four storage modules in Exosuit slots
+                    if (__instance.GetCount(TechType.VehicleStorageModule) >= 4)
+                    {
+                        __result = false;
+                        ErrorMessage.AddMessage("Slot Extender:\nStorage module limit reached!");
+                        return false;
+                    }
+                }
+                else if (SEConfig.STORAGE_SLOTS_OFFSET == 0)
+                {
+                    if (!isExtendedSeamothSlot)
                         return true;
 
                     // Do not allow storage modules in extended slots in Seamoth
@@ -69,12 +79,8 @@ namespace SlotExtender.Patches
                     ErrorMessage.AddMessage("Slot Extender:\nStorage module not allowed for this slot!");
                     return false;
                 }
-                else
+                else if (__instance.owner.GetComponent<SeaMoth>() is SeaMoth seamoth)
                 {
-                    SeaMoth seamoth = __instance.owner.GetComponent<SeaMoth>();
-                    if (seamoth == null)
-                        return false;
-
                     int slotID = int.Parse(slot.Substring(13)) - 1;
 
                     if (slotID > 3 && (slotID < SEConfig.STORAGE_SLOTS_OFFSET || slotID > SEConfig.STORAGE_SLOTS_OFFSET + 3))
@@ -100,17 +106,6 @@ namespace SlotExtender.Patches
                         ErrorMessage.AddMessage($"Slot Extender:\nStorage module is already in the slot {_slotID}");
                     }
 
-                    return false;
-                }
-            }
-
-            if (techTypeInSlot == TechType.VehicleStorageModule && __instance.owner.name.Equals("Exosuit(Clone)"))
-            {
-                // Do not allow more than four storage modules in Exosuit slots
-                if (__instance.GetCount(TechType.VehicleStorageModule) >= 4)
-                {
-                    __result = false;
-                    ErrorMessage.AddMessage("Slot Extender:\nStorage module limit reached!");
                     return false;
                 }
             }
