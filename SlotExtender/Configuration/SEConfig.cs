@@ -120,7 +120,7 @@ namespace SlotExtender.Configuration
                     STORAGE_SLOTS_OFFSET = 0; // don't patch storages stuff if SeamothStorageSlots mod is active
                     const string msg = "<i>SeamothStorageSlots</i> mod is now merged into SlotExtender, you can safely delete it.";
 
-                    Type qmmServices = RefHelp.SafeGetTypeFromAssembly("QModInstaller", "QModManager.API.QModServices");
+                    Type qmmServices = Type.GetType("QModManager.API.QModServices, QModInstaller", false);
                     MethodInfo qmmMain = qmmServices?.GetProperty("Main")?.GetGetMethod();
                     qmmServices?.GetMethod("AddCriticalMessage")?.Invoke(qmmMain.Invoke(null, null), new object[] { msg, 25, "yellow", true });
                 }

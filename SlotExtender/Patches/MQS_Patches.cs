@@ -2,7 +2,6 @@
 using Harmony;
 using UnityEngine;
 using SlotExtender.Configuration;
-using Common;
 
 namespace SlotExtender.Patches
 {
@@ -12,7 +11,7 @@ namespace SlotExtender.Patches
         {
             try
             {
-                if (RefHelp.SafeGetTypeFromAssembly("MoreQuickSlots", "MoreQuickSlots.GameController") is Type typeGameController)
+                if (Type.GetType("MoreQuickSlots.GameController, MoreQuickSlots", false) is Type typeGameController)
                 {
                     hInstance.Patch(AccessTools.Method(typeGameController, "CreateNewText"),
                         new HarmonyMethod(typeof(MQS_Patches), nameof(MQS_GameController_CreateNewText_Prefix)));
