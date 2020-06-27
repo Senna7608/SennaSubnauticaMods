@@ -23,6 +23,7 @@ namespace SlotExtender.Configuration
         internal static int MAXSLOTS;
         public static Color TEXTCOLOR;
         internal static int STORAGE_SLOTS_OFFSET = 4;
+        internal static int SLOT_LAYOUT = 0; // 0 - grid, 1 - circle
 
         private static readonly string[] SECTIONS =
         {
@@ -51,6 +52,7 @@ namespace SlotExtender.Configuration
             "MaxSlots",
             "TextColor",
             "SeamothStorageSlotsOffset",
+            "SlotLayout"
         };
 
         private static readonly List<ConfigData> DEFAULT_CONFIG = new List<ConfigData>
@@ -58,6 +60,7 @@ namespace SlotExtender.Configuration
             new ConfigData(SECTIONS[1], SECTION_Settings[0], 12.ToString()),
             new ConfigData(SECTIONS[1], SECTION_Settings[1], COLORS.Green.ToString()),
             new ConfigData(SECTIONS[1], SECTION_Settings[2], 4.ToString()),
+            new ConfigData(SECTIONS[1], SECTION_Settings[3], "Circle"),
             new ConfigData(SECTIONS[0], SECTION_Hotkeys[0], InputHelper.GetKeyCodeAsInputName(KeyCode.T)),
             new ConfigData(SECTIONS[0], SECTION_Hotkeys[1], InputHelper.GetKeyCodeAsInputName(KeyCode.R)),
             new ConfigData(SECTIONS[0], SECTION_Hotkeys[2], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha6)),
@@ -130,6 +133,8 @@ namespace SlotExtender.Configuration
                     STORAGE_SLOTS_OFFSET = result < 3? 0: result > 8? 8: result;
                 }
 
+                SLOT_LAYOUT = Helper.GetKeyValue(FILENAME, SECTIONS[1], SECTION_Settings[3]) == "Circle"? 1: 0;
+
                 SNLogger.Log("SlotExtender", "Configuration loaded.");
             }
             catch
@@ -168,6 +173,7 @@ namespace SlotExtender.Configuration
             Helper.SetKeyValue(FILENAME, SECTIONS[1], SECTION_Settings[0], MAXSLOTS.ToString());
             Helper.SetKeyValue(FILENAME, SECTIONS[1], SECTION_Settings[1], Modules.GetColorName(TEXTCOLOR));
             Helper.SetKeyValue(FILENAME, SECTIONS[1], SECTION_Settings[2], STORAGE_SLOTS_OFFSET.ToString());
+            Helper.SetKeyValue(FILENAME, SECTIONS[1], SECTION_Settings[3], SLOT_LAYOUT == 0? "Grid": "Circle");
 
             SNLogger.Log("SlotExtender", "Configuration saved.");
         }
