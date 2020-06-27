@@ -263,36 +263,21 @@ namespace SlotExtender
                 */
             }
         }
-        
+
         internal static void InitSlotIDs()
         {
-
 #if DEBUG
             SNLogger.Debug("SlotExtender", "Method call: SlotHelper.InitSlotIDs()");
 #endif 
-            SessionSeamothSlotIDs = (string[])Array.CreateInstance(typeof(string), SEConfig.MAXSLOTS + 2);
-            SessionExosuitSlotIDs = (string[])Array.CreateInstance(typeof(string), SEConfig.MAXSLOTS + 2);
+            bool addSeamothArms = RefHelp.IsNamespaceExists("SeamothArms");
 
-            for (int i = 0; i < SEConfig.MAXSLOTS + 2; i++)
-            {
-                if (i == SEConfig.MAXSLOTS)
-                {
-                    SessionSeamothSlotIDs[i] = ExpandedSeamothSlotIDs[12];
-                }
-                else if (i == SEConfig.MAXSLOTS + 1)
-                {
-                    SessionSeamothSlotIDs[i] = ExpandedSeamothSlotIDs[13];
-                }
-                else
-                {
-                    SessionSeamothSlotIDs[i] = ExpandedSeamothSlotIDs[i];
-                }
-            }
+            SessionSeamothSlotIDs = new string[SEConfig.MAXSLOTS + (addSeamothArms? 2: 0)];
+            Array.Copy(ExpandedSeamothSlotIDs, SessionSeamothSlotIDs, SEConfig.MAXSLOTS);
+            if (addSeamothArms)
+                Array.Copy(ExpandedSeamothSlotIDs, 12, SessionSeamothSlotIDs, SEConfig.MAXSLOTS, 2);
 
-            for (int i = 0; i < SEConfig.MAXSLOTS + 2; i++)
-            {                
-                SessionExosuitSlotIDs[i] = ExpandedExosuitSlotIDs[i];
-            } 
+            SessionExosuitSlotIDs = new string[SEConfig.MAXSLOTS + 2];
+            Array.Copy(ExpandedExosuitSlotIDs, SessionExosuitSlotIDs, SEConfig.MAXSLOTS + 2);
         }
 
         internal static void ExpandSlotMapping()
