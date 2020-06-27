@@ -14,7 +14,7 @@ namespace SlotExtender.Patches
         [HarmonyPrefix]
         internal static void Prefix(uGUI_Equipment __instance)
         {
-           __instance.gameObject.AddIfNeedComponent<Initialize_uGUI>();            
+           __instance.gameObject.AddIfNeedComponent<Initialize_uGUI>();
         }
 
         [HarmonyPostfix]
@@ -22,7 +22,7 @@ namespace SlotExtender.Patches
         {
             var allSlots = (Dictionary<string, uGUI_EquipmentSlot>)__instance.GetPrivateField("allSlots", BindingFlags.SetField);
 
-            Initialize_uGUI.Instance.Add_uGUIslots(__instance, allSlots);            
+            Initialize_uGUI.Instance.Add_uGUIslots(__instance, allSlots);
         }
     }
     */
@@ -36,60 +36,47 @@ namespace SlotExtender.Patches
         {
             GameObject Equipment = __instance.gameObject;
 
-            GameObject SeamothModule1 = Equipment.FindChild("SeamothModule1");
-            GameObject SeamothModule2 = Equipment.FindChild("SeamothModule2");
-            GameObject ExosuitModule2 = Equipment.FindChild("ExosuitModule2");
+            void _setSlotPos(GameObject slot, Vector2 pos)
+            {
+                slot.GetComponent<uGUI_EquipmentSlot>().rectTransform.anchoredPosition = pos;
+            }
+
+            void _processBaseSlot(SlotData slotData)
+            {
+                _setSlotPos(Equipment.FindChild(slotData.SlotID), slotData.SlotPOS);
+            }
+
+            void _processNewSlot(SlotData slotData, GameObject prefab)
+            {
+                GameObject temp_slot = Object.Instantiate(prefab, Equipment.transform, false);
+                temp_slot.name = slotData.SlotID;
+
+                _setSlotPos(temp_slot, slotData.SlotPOS);
+                temp_slot.GetComponent<uGUI_EquipmentSlot>().slot = slotData.SlotID;
+            }
+
+            GameObject SeamothModule = Equipment.FindChild("SeamothModule2");
+            GameObject ExosuitModule = Equipment.FindChild("ExosuitModule2");
             GameObject ExosuitArmLeft = Equipment.FindChild("ExosuitArmLeft");
             GameObject ExosuitArmRight = Equipment.FindChild("ExosuitArmRight");
 
-            foreach (SlotData baseExoSlotData in SlotHelper.BaseExosuitSlotsData)
-            {
-                GameObject temp_slot = Equipment.FindChild(baseExoSlotData.SlotID);
-                uGUI_EquipmentSlot temp_slot_uGUI = temp_slot.GetComponent<uGUI_EquipmentSlot>();
-                temp_slot_uGUI.rectTransform.anchoredPosition = baseExoSlotData.SlotPOS;
-            }
+            // processing exosuit slots
+            SlotHelper.BaseExosuitSlotsData.ForEach(slotData => _processBaseSlot(slotData));
+            SlotHelper.NewExosuitSlotsData.ForEach(slotData => _processNewSlot(slotData, ExosuitModule));
 
-            foreach (SlotData newExoSlotData in SlotHelper.NewExosuitSlotsData)
-            {
-                GameObject temp_slot = Object.Instantiate(ExosuitModule2, Equipment.transform, false);
-                temp_slot.name = newExoSlotData.SlotID;
-                uGUI_EquipmentSlot temp_slot_uGUI = temp_slot.GetComponent<uGUI_EquipmentSlot>();
-                temp_slot_uGUI.slot = newExoSlotData.SlotID;
-                temp_slot_uGUI.rectTransform.anchoredPosition = newExoSlotData.SlotPOS;
-            }
+            _setSlotPos(ExosuitArmLeft, SlotHelper.NewSeamothArmSlotsData[0].SlotPOS);
+            _setSlotPos(ExosuitArmRight, SlotHelper.NewSeamothArmSlotsData[1].SlotPOS);
 
-            uGUI_EquipmentSlot exosuitArmLeft = ExosuitArmLeft.GetComponent<uGUI_EquipmentSlot>();
-            exosuitArmLeft.rectTransform.anchoredPosition = SlotHelper.NewSeamothArmSlotsData[0].SlotPOS;
+            Equipment.transform.Find("ExosuitModule1/Exosuit").localPosition = SlotHelper.vehicleImgPos;
 
-            uGUI_EquipmentSlot exosuitArmRight = ExosuitArmRight.GetComponent<uGUI_EquipmentSlot>();
-            exosuitArmRight.rectTransform.anchoredPosition = SlotHelper.NewSeamothArmSlotsData[1].SlotPOS;
+            // processing seamoth slots
+            SlotHelper.BaseSeamothSlotsData.ForEach(slotData => _processBaseSlot(slotData));
+            SlotHelper.NewSeamothSlotsData.ForEach(slotData => _processNewSlot(slotData, SeamothModule));
 
-            SeamothModule1.FindChild("Seamoth").transform.localPosition = SlotHelper.slotPos[11];
+            _processNewSlot(SlotHelper.NewSeamothArmSlotsData[0], ExosuitArmLeft);
+            _processNewSlot(SlotHelper.NewSeamothArmSlotsData[1], ExosuitArmRight);
 
-            foreach (SlotData baseSeamothSlotData in SlotHelper.BaseSeamothSlotsData)
-            {
-                GameObject temp_slot = Equipment.FindChild(baseSeamothSlotData.SlotID);
-                uGUI_EquipmentSlot temp_slot_uGUI = temp_slot.GetComponent<uGUI_EquipmentSlot>();
-                temp_slot_uGUI.rectTransform.anchoredPosition = baseSeamothSlotData.SlotPOS;
-            }
-
-            foreach (SlotData newSeamothSlotData in SlotHelper.NewSeamothSlotsData)
-            {
-                GameObject temp_slot = Object.Instantiate(SeamothModule2, Equipment.transform, false);
-                temp_slot.name = newSeamothSlotData.SlotID;
-                uGUI_EquipmentSlot temp_slot_uGUI = temp_slot.GetComponent<uGUI_EquipmentSlot>();
-                temp_slot_uGUI.slot = newSeamothSlotData.SlotID;
-                temp_slot_uGUI.rectTransform.anchoredPosition = newSeamothSlotData.SlotPOS;
-            }
-
-            foreach (SlotData armSlotData in SlotHelper.NewSeamothArmSlotsData)
-            {
-                GameObject temp_slot = Object.Instantiate(ExosuitArmLeft, Equipment.transform, false);
-                temp_slot.name = armSlotData.SlotID;
-                uGUI_EquipmentSlot temp_slot_uGUI = temp_slot.GetComponent<uGUI_EquipmentSlot>();
-                temp_slot_uGUI.slot = armSlotData.SlotID;
-                temp_slot_uGUI.rectTransform.anchoredPosition = armSlotData.SlotPOS;
-            }
+            Equipment.transform.Find("SeamothModule1/Seamoth").localPosition = SlotHelper.vehicleImgPos;
 
             SNLogger.Log("SlotExtender", "uGUI_Equipment Slots Patched!");
         }

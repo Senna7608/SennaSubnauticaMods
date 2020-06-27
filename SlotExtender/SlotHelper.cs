@@ -35,39 +35,88 @@ namespace SlotExtender
 
         private const float Unit = 200f;
         private const float RowStep = Unit * 2.2f / 3;
-        private const float TopRow = Unit;
-        private const float SecondRow = TopRow - RowStep;
-        private const float ThirdRow = SecondRow - RowStep;
-        private const float FourthRow = ThirdRow - RowStep;
-        private const float FifthRow = FourthRow - RowStep;
-        private const float CenterColumn = 0f;
-        private const float RightColumn = RowStep;
-        private const float LeftColumn = -RowStep;
-        
-        public static readonly Vector2[] slotPos = new Vector2[12]
+
+        private static class SlotPosGrid
         {
-            new Vector2(LeftColumn, TopRow), //slot 1
-            new Vector2(CenterColumn, TopRow),  //slot 2
-            new Vector2(RightColumn, TopRow),   //slot 3
+            private const float TopRow = Unit;
+            private const float SecondRow = TopRow - RowStep;
+            private const float ThirdRow = SecondRow - RowStep;
+            private const float FourthRow = ThirdRow - RowStep;
+            private const float FifthRow = FourthRow - RowStep;
+            private const float CenterColumn = 0f;
+            private const float RightColumn = RowStep;
+            private const float LeftColumn = -RowStep;
 
-            new Vector2(LeftColumn, SecondRow),  //slot 4
-            new Vector2(CenterColumn, SecondRow), //slot 5
-            new Vector2(RightColumn, SecondRow),   //slot 6
+            public static readonly Vector2[] slotPos = new Vector2[12]
+            {
+                new Vector2(LeftColumn, TopRow), //slot 1
+                new Vector2(CenterColumn, TopRow),  //slot 2
+                new Vector2(RightColumn, TopRow),   //slot 3
 
-            new Vector2(LeftColumn, ThirdRow),  //slot 7
-            new Vector2(CenterColumn, ThirdRow),  //slot 8
-            new Vector2(RightColumn, ThirdRow),   //slot 9
+                new Vector2(LeftColumn, SecondRow),  //slot 4
+                new Vector2(CenterColumn, SecondRow), //slot 5
+                new Vector2(RightColumn, SecondRow),   //slot 6
 
-            new Vector2(LeftColumn, FourthRow),   //slot 10
-            new Vector2(CenterColumn, FourthRow),  //slot 11
-            new Vector2(RightColumn, FourthRow)  //slot 12
-        };
+                new Vector2(LeftColumn, ThirdRow),  //slot 7
+                new Vector2(CenterColumn, ThirdRow),  //slot 8
+                new Vector2(RightColumn, ThirdRow),   //slot 9
 
-        private static readonly Vector2[] armSlotPos = new Vector2[2]
+                new Vector2(LeftColumn, FourthRow),   //slot 10
+                new Vector2(CenterColumn, FourthRow),  //slot 11
+                new Vector2(RightColumn, FourthRow)  //slot 12
+            };
+
+            public static readonly Vector2[] armSlotPos = new Vector2[2]
+            {
+                new Vector2(LeftColumn, FifthRow), //arm slot left
+                new Vector2(RightColumn, FifthRow) //arm slot right
+            };
+
+            public static Vector2 vehicleImgPos => slotPos[11];
+        }
+
+        private static class SlotPosCircle
         {
-            new Vector2(LeftColumn, FifthRow), //arm slot left
-            new Vector2(RightColumn, FifthRow) //arm slot right
-        };
+            private const float row1 = Unit;
+            private const float row2 = row1 - RowStep * 3f;
+            private const float row3 = row1 - RowStep * 3.97f;
+            private const float rowhalf = RowStep * 0.5f;
+
+            private const float col1 = -RowStep * 1.5f;
+            private const float col2 = -RowStep * 0.5f;
+            private const float col3 =  RowStep * 0.5f;
+            private const float col4 =  RowStep * 1.5f;
+
+            public static readonly Vector2[] slotPos = new Vector2[12]
+            {
+                new Vector2(col1, row1 - rowhalf), // slot 1
+                new Vector2(col2, row1),           // slot 2
+                new Vector2(col3, row1),           // slot 3
+                new Vector2(col4, row1 - rowhalf), // slot 4
+
+                new Vector2(col1, row2 + rowhalf), // slot 5
+                new Vector2(col2, row2),           // slot 6
+                new Vector2(col3, row2),           // slot 7
+                new Vector2(col4, row2 + rowhalf), // slot 8
+
+                new Vector2(col1, row3), // slot 9
+                new Vector2(col2, row3), // slot 10
+                new Vector2(col3, row3), // slot 11
+                new Vector2(col4, row3)  // slot 12
+            };
+
+            public static readonly Vector2[] armSlotPos = new Vector2[2]
+            {
+                new Vector2(col4, -Unit * 0.1f), // arm slot left
+                new Vector2(col1, -Unit * 0.1f)  // arm slot right
+            };
+
+            public static Vector2 vehicleImgPos => new Vector2(col4, -Unit + rowhalf);
+        }
+
+        public  static Vector2[] slotPos => SEConfig.SLOT_LAYOUT == 0? SlotPosGrid.slotPos: SlotPosCircle.slotPos;
+        private static Vector2[] armSlotPos => SEConfig.SLOT_LAYOUT == 0? SlotPosGrid.armSlotPos: SlotPosCircle.armSlotPos;
+        public  static Vector2   vehicleImgPos => SEConfig.SLOT_LAYOUT == 0? SlotPosGrid.vehicleImgPos: SlotPosCircle.vehicleImgPos;
 
         internal static readonly string[] ExpandedSeamothSlotIDs = new string[14]
         {
@@ -75,7 +124,7 @@ namespace SlotExtender
             "SeamothModule2",
             "SeamothModule3",
             "SeamothModule4",
-            // New slots start here            
+            // New slots start here
             "SeamothModule5",
             "SeamothModule6",
             "SeamothModule7",
@@ -192,7 +241,7 @@ namespace SlotExtender
                 }
                 */
             }
-        }        
+        }
 
         internal static IEnumerable<string> NewExosuitSlotIDs
         {
@@ -291,7 +340,7 @@ namespace SlotExtender
 
                 foreach (string slotID in NewExosuitSlotIDs)
                 {
-                    Equipment.slotMapping.Add(slotID, EquipmentType.ExosuitModule);                    
+                    Equipment.slotMapping.Add(slotID, EquipmentType.ExosuitModule);
                 }
 
                 SNLogger.Log($"[{SEConfig.PROGRAM_NAME}] Equipment slot mapping Patched!");
