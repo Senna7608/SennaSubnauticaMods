@@ -1,75 +1,44 @@
 ﻿using System;
-using System.Reflection;
 using Harmony;
-using System.Collections.Generic;
 using UnityEngine;
 using SlotExtender.Configuration;
 
 namespace SlotExtender.Patches
 {
-    internal class MQS_Patches
+    internal static class MQS_Patches
     {
-        internal HarmonyInstance hInstance;
-
-        internal MQS_Patches(HarmonyInstance hInstance)
-        {
-            this.hInstance = hInstance;
-        }
-
-        internal bool InitPatch()
+        internal static bool InitPatch(HarmonyInstance hInstance)
         {
             try
             {
-                hInstance.Patch(typeof(MoreQuickSlots.GameController).GetMethod("CreateNewText",
-                    BindingFlags.NonPublic |
-                    BindingFlags.Instance |
-                    BindingFlags.Static),
-                    new HarmonyMethod(typeof(MQS_GameController_CreateNewText_Patch), "Prefix"), null);
+                if (Type.GetType("MoreQuickSlots.GameController, MoreQuickSlots", false) is Type typeGameController)
+                {
+                    hInstance.Patch(AccessTools.Method(typeGameController, "CreateNewText"),
+                        new HarmonyMethod(typeof(MQS_Patches), nameof(MQS_GameController_CreateNewText_Prefix)));
+                }
             }
             catch (Exception ex)
             {
                 Debug.LogException(ex);
                 return false;
             }
+
             return true;
         }
-    }
 
-    [HarmonyPatch(typeof(MoreQuickSlots.GameController))]    
-    [HarmonyPatch("CreateNewText")]
-    internal class MQS_GameController_CreateNewText_Patch
-    {
-        [HarmonyPrefix]
-        internal static void Prefix(ref string newText, int index)
+        private static void MQS_GameController_CreateNewText_Prefix(ref string newText, int index)
         {
-            List<string> slotkeys = new List<string>();
-            
-            foreach (KeyValuePair<string, string> kvp in SEConfig.SLOTKEYS)
-            {
-                slotkeys.Add(kvp.Value);
-            }
-
-            if (index >= slotkeys.Count)
+            if (index >= SEConfig.SLOTKEYSLIST.Count || Player.main.GetPDA().state == PDA.State.Opening)
                 return;
 
-            if (Player.main.inSeamoth && Player.main.GetPDA().state != PDA.State.Opening)
+            if (Player.main.inSeamoth)
             {
-                newText = slotkeys[index];
-                return;
+                newText = SEConfig.SLOTKEYSLIST[index];
             }
-            else if (Player.main.inExosuit && Player.main.GetPDA().state != PDA.State.Opening)
+            else if (Player.main.inExosuit)
             {
-                if (index < 2)
-                {
-                    newText = "";
-                    return;
-                }
-                else
-                {
-                    newText = slotkeys[index - 2];
-                    return;
-                }
-            }            
-        }        
-    }    
+                newText = index < 2? "": SEConfig.SLOTKEYSLIST[index - 2];
+            }
+        }
+    }
 }
