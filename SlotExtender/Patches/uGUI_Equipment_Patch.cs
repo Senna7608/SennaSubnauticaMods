@@ -73,8 +73,11 @@ namespace SlotExtender.Patches
             SlotHelper.BaseSeamothSlotsData.ForEach(slotData => _processBaseSlot(slotData));
             SlotHelper.NewSeamothSlotsData.ForEach(slotData => _processNewSlot(slotData, SeamothModule));
 
-            _processNewSlot(SlotHelper.NewSeamothArmSlotsData[0], ExosuitArmLeft);
-            _processNewSlot(SlotHelper.NewSeamothArmSlotsData[1], ExosuitArmRight);
+            if (RefHelp.IsNamespaceExists("SeamothArms"))
+            {
+                _processNewSlot(SlotHelper.NewSeamothArmSlotsData[0], ExosuitArmLeft);
+                _processNewSlot(SlotHelper.NewSeamothArmSlotsData[1], ExosuitArmRight);
+            }
 
             Equipment.transform.Find("SeamothModule1/Seamoth").localPosition = SlotHelper.vehicleImgPos;
 
