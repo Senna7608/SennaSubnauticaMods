@@ -53,7 +53,7 @@ namespace SlotExtender.Patches
             {
                 // Do not allow torpedo modules in extended slots in Seamoth
                 __result = false;
-                ErrorMessage.AddMessage("Slot Extender:\nTorpedo module not allowed for this slot!");
+                ErrorMessage.AddDebug("Slot Extender:\nTorpedo module not allowed for this slot!");
                 return false;
             }
 
@@ -65,7 +65,7 @@ namespace SlotExtender.Patches
                     if (__instance.GetCount(TechType.VehicleStorageModule) >= 4)
                     {
                         __result = false;
-                        ErrorMessage.AddMessage("Slot Extender:\nStorage module limit reached!");
+                        ErrorMessage.AddDebug("Slot Extender:\nStorage module limit reached!");
                         return false;
                     }
                 }
@@ -76,7 +76,7 @@ namespace SlotExtender.Patches
 
                     // Do not allow storage modules in extended slots in Seamoth
                     __result = false;
-                    ErrorMessage.AddMessage("Slot Extender:\nStorage module not allowed for this slot!");
+                    ErrorMessage.AddDebug("Slot Extender:\nStorage module not allowed for this slot!");
                     return false;
                 }
                 else if (__instance.owner.GetComponent<SeaMoth>() is SeaMoth seamoth)
@@ -85,7 +85,7 @@ namespace SlotExtender.Patches
 
                     if (slotID > 3 && (slotID < SEConfig.STORAGE_SLOTS_OFFSET || slotID > SEConfig.STORAGE_SLOTS_OFFSET + 3))
                     {
-                        ErrorMessage.AddMessage("Slot Extender:\nStorage module not allowed for this slot!");
+                        ErrorMessage.AddDebug("Slot Extender:\nStorage module not allowed for this slot!");
                         return false;
                     }
 
@@ -103,7 +103,7 @@ namespace SlotExtender.Patches
                     if (!__result && verbose)
                     {
                         int _slotID = (slotID < 4? slotID + SEConfig.STORAGE_SLOTS_OFFSET: slotID - SEConfig.STORAGE_SLOTS_OFFSET) + 1;
-                        ErrorMessage.AddMessage($"Slot Extender:\nStorage module is already in the slot {_slotID}");
+                        ErrorMessage.AddDebug($"Slot Extender:\nStorage module is already in the slot {_slotID}");
                     }
 
                     return false;
