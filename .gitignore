@@ -8,7 +8,7 @@
 *.sln.docstates
 *.ide
 *.ide-wal
-.suo
+
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -26,8 +26,7 @@ bld/
 [Ll]og/
 
 # Visual Studio 2015 cache/options directory
-/.vs/**
-
+.vs/
 # Visual Studio 2017 auto generated files
 Generated\ Files/
 
