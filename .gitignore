@@ -8,7 +8,8 @@
 *.sln.docstates
 *.ide
 *.ide-wal
-.suo
+*.suo*
+
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -26,8 +27,8 @@ bld/
 [Ll]og/
 
 # Visual Studio 2015 cache/options directory
-/.vs/**
-
+.vs/
+.vs/SennaSubnauticaMods/v15/.suo
 # Visual Studio 2017 auto generated files
 Generated\ Files/
 
@@ -270,3 +271,4 @@ Assembly-CSharp-firstpass.dll
 Assembly-CSharp-firstpass_publicized.dll
 Assembly-CSharp.dll
 Assembly-CSharp_publicized.dll
+.vs/SennaSubnauticaMods/v15/.suo
