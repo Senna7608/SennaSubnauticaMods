@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SlotExtender</RootNamespace>
     <AssemblyName>SlotExtender</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
@@ -99,7 +99,7 @@
     <Compile Include="Configuration\SECommand.cs" />
     <Compile Include="Configuration\SEConfig.cs" />
     <Compile Include="Configuration\SEConfigUI.cs" />
-    <Compile Include="Initialize_uGUI.cs" />
+    <Compile Include="DataTypes.cs" />
     <Compile Include="InputFieldListener.cs" />
     <Compile Include="Patches\DevConsole_Patch.cs" />
     <Compile Include="Patches\MQS_Patches.cs" />
@@ -112,6 +112,8 @@
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SlotHelper.cs" />
+    <Compile Include="SlotPosCircle.cs" />
+    <Compile Include="SlotPosGrid.cs" />
     <Compile Include="uGUI_SlotTextHandler.cs" />
   </ItemGroup>
   <ItemGroup>

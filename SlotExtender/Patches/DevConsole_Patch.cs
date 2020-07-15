@@ -2,8 +2,7 @@
 
 namespace SlotExtender.Patches
 {
-    [HarmonyPatch(typeof(DevConsole))]
-    [HarmonyPatch("SetState")]
+    [HarmonyPatch(typeof(DevConsole), "SetState")]    
     internal class DevConsole_SetState_Patch
     {
         [HarmonyPrefix]

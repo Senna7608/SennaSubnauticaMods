@@ -2,7 +2,6 @@
 using UWE;
 using SlotExtender.Configuration;
 using Common;
-using static Common.GameHelper;
 using System.Collections;
 
 namespace SlotExtender
@@ -16,48 +15,31 @@ namespace SlotExtender
 
         internal void Awake()
         {
-            //get this SlotExtender instance
+            // set this SlotExtender instance
             Instance = this;
 
             if (gameObject.GetComponent<SeaMoth>())
             {
-                //this Vehicle type is SeaMoth
+                // set this Vehicle to SeaMoth
                 ThisVehicle = GetComponent<SeaMoth>();
-
-                //add extra slots
-                /*
-                foreach (string slotID in SlotHelper.NewSeamothSlotIDs)
-                    ThisVehicle.modules.AddSlot(slotID);
-                    */
             }
             else if (gameObject.GetComponent<Exosuit>())
             {
-                //this Vehicle type is Exosuit
+                // set this Vehicle to Exosuit
                 ThisVehicle = Instance.GetComponent<Exosuit>();
-
-                //add extra slots
-                /*
-                foreach (string slotID in SlotHelper.NewExosuitSlotIDs)
-                    ThisVehicle.modules.AddSlot(slotID); 
-                    */
-            }
-            else
-            {
-                SNLogger.Error("SlotExtender", "Unknown Vehicle type! Instance now destroy!");
-                Destroy(Instance);
-            }            
+            }                     
         }
 
         internal void Start()
-        {               
+        {
+            // get and set PDA
             PdaMain = Player.main.GetPDA();
-            //forced triggering the Awake method in uGUI_Equipment for patching
-                       
-            /*
+
+            // forced triggering the uGUI_Equipment constructor for start patching
             PdaMain.Open();
             PdaMain.Close();
-            */
-            //add and start a handler to check the player mode if changed
+
+            // adding and start a handler to check the player mode if changed
             Player.main.playerModeChanged.AddHandler(this, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
 
             isActive = Player.main.currentMountedVehicle == ThisVehicle ? true : false;
@@ -71,42 +53,34 @@ namespace SlotExtender
         {
             if (newMode == Player.Mode.LockedPiloting)
             {
-                //the player is in one of the vehicles but at this point Player.main.currentMountedVehicle is null.
-                //therefore starting a coroutine while currentMountedVehicle is not null.
+                // Player is in one of the vehicles but at this point Player.main.currentMountedVehicle is null.
+                // therefore starting a coroutine while currentMountedVehicle is not null.
                 StartCoroutine(WaitForPlayerModeChangeFinished(newMode));
             }
             else
             {
-                //player not in any Vehicle: this Slot Extender now disabled
+                // Player not in any Vehicle: this Slot Extender now disabled
                 isActive = false;
             }                        
         }
 
         private IEnumerator WaitForPlayerModeChangeFinished(Player.Mode newMode)
-        {
-            //print($"[{SEConfig.PROGRAM_NAME}] WaitForPlayerModeChangeFinished coroutine started for this Vehicle: {ThisVehicle.GetInstanceID()}");
-
+        {            
             while (Player.main.currentMountedVehicle == null)
-            {
-                //print($"[{SEConfig.PROGRAM_NAME}] Player.main.currentMountedVehicle is NULL!");
+            {                
                 yield return null;
             }
-
-            //print($"[{SEConfig.PROGRAM_NAME}] Player.main.currentMountedVehicle is {Player.main.currentMountedVehicle.GetInstanceID()}");
-            //print($"[{SEConfig.PROGRAM_NAME}] WaitForPlayerModeChangeFinished coroutine stopped for this Vehicle: {ThisVehicle.GetInstanceID()}");
-                         
+                                     
             if (Player.main.currentMountedVehicle == ThisVehicle)
             {
-                //player in this Vehicle: this Slot Extender now enabled
+                // Player in this Vehicle: this Slot Extender now enabled
                 isActive = true;
             }
             else
             {
-                //player not in this Vehicle: this Slot Extender now disabled
+                // Player not in this Vehicle: this Slot Extender now disabled
                 isActive = false;
-            }            
-
-            //print($"[{SEConfig.PROGRAM_NAME}] isActive now {isActive}, Player mode now {newMode}");
+            }
 
             yield break;
         }
@@ -156,71 +130,19 @@ namespace SlotExtender
             }
             else if (GameInput.GetButtonDown(GameInput.Button.Slot1))
             {
-                if (ThisVehicle.GetType() != typeof(SeaMoth))
-                    return;
-                if (ThisVehicle.GetSlotBinding(0) != TechType.VehicleStorageModule)
-                    return;
-                if (PdaMain.isOpen)
-                {
-                    PdaMain.Close();
-                    return;
-                }
-                else
-                {
-                    ThisVehicle.GetComponent<SeaMoth>().storageInputs[0].OpenFromExternal();
-                    return;
-                }
+                TryOpenSeamothStorage(0);
             }
             else if (GameInput.GetButtonDown(GameInput.Button.Slot2))
             {
-                if (ThisVehicle.GetType() != typeof(SeaMoth))
-                    return;
-                if (ThisVehicle.GetSlotBinding(1) != TechType.VehicleStorageModule)
-                    return;
-                if (PdaMain.isOpen)
-                {
-                    PdaMain.Close();
-                    return;
-                }
-                else
-                {
-                    ThisVehicle.GetComponent<SeaMoth>().storageInputs[1].OpenFromExternal();
-                    return;
-                }
+                TryOpenSeamothStorage(1);
             }
             else if (GameInput.GetButtonDown(GameInput.Button.Slot3))
             {
-                if (ThisVehicle.GetType() != typeof(SeaMoth))
-                    return;
-                if (ThisVehicle.GetSlotBinding(2) != TechType.VehicleStorageModule)
-                    return;
-                if (PdaMain.isOpen)
-                {
-                    PdaMain.Close();
-                    return;
-                }
-                else
-                {
-                    ThisVehicle.GetComponent<SeaMoth>().storageInputs[2].OpenFromExternal();
-                    return;
-                }
+                TryOpenSeamothStorage(2);
             }
             else if (GameInput.GetButtonDown(GameInput.Button.Slot4))
             {
-                if (ThisVehicle.GetType() != typeof(SeaMoth))
-                    return;
-                if (ThisVehicle.GetSlotBinding(3) != TechType.VehicleStorageModule)
-                    return;
-                if (PdaMain.isOpen)
-                {
-                    PdaMain.Close();
-                    return;
-                }
-                else
-                {
-                    ThisVehicle.GetComponent<SeaMoth>().storageInputs[3].OpenFromExternal();
-                    return;
-                }
+                TryOpenSeamothStorage(3);
             }
             else if (Input.GetKeyDown(SEConfig.KEYBINDINGS["Slot_6"]))
             {
@@ -261,23 +183,58 @@ namespace SlotExtender
             {
                 if (ThisVehicle.GetType() != typeof(SeaMoth))
                     return;
-                ThisVehicle.SendMessage("SlotKeyDown", 12);
+
+                int slotID = SlotHelper.GetSeamothSlotInt(SlotConfigID.SeamothArmLeft);
+
+                ThisVehicle.SendMessage("SlotKeyDown", slotID);
                 return;
             }
             else if (Input.GetKeyDown(SEConfig.KEYBINDINGS["SeamothArmRight"]))
             {
                 if (ThisVehicle.GetType() != typeof(SeaMoth))
                     return;
-                ThisVehicle.SendMessage("SlotKeyDown", 13);
+
+                int slotID = SlotHelper.GetSeamothSlotInt(SlotConfigID.SeamothArmRight);
+
+                ThisVehicle.SendMessage("SlotKeyDown", slotID);
+                
                 return;
             }
         }        
 
         public void OnDestroy()
         {
-            //remove unused handler from memory
-            Player.main.playerModeChanged.RemoveHandler(this, OnPlayerModeChanged);            
+            // removing unused handler from memory
+            Player.main.playerModeChanged.RemoveHandler(this, OnPlayerModeChanged);
+
+            // destroying this SlotExtender instance
             Destroy(Instance);
         }        
+
+        public void TryOpenSeamothStorage(int slotID)
+        {
+            if (ThisVehicle.GetType() != typeof(SeaMoth))
+                return;
+            if (ThisVehicle.GetSlotBinding(slotID) != TechType.VehicleStorageModule)
+                return;
+            if (PdaMain.isOpen)
+            {
+                PdaMain.Close();
+                return;
+            }
+            else
+            {
+                ThisVehicle.GetComponent<SeaMoth>().storageInputs[slotID].OpenFromExternal();
+                return;
+            }
+        }
+
+        public bool IsPlayerInVehicle()
+        {
+            if (!Player.main)
+                return false;
+
+            return Player.main.inSeamoth || Player.main.inExosuit ? true : false;
+        }
     }
 }

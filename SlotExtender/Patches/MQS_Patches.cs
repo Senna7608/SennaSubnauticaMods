@@ -28,16 +28,16 @@ namespace SlotExtender.Patches
 
         private static void MQS_GameController_CreateNewText_Prefix(ref string newText, int index)
         {
-            if (index >= SEConfig.SLOTKEYSLIST.Count || Player.main.GetPDA().state == PDA.State.Opening)
+            if (index >= SEConfig.SLOTKEYBINDINGS.Count || Player.main.GetPDA().state == PDA.State.Opening)
                 return;
 
             if (Player.main.inSeamoth)
             {
-                newText = SEConfig.SLOTKEYSLIST[index];
+                newText = SlotHelper.SessionSeamothSlots[index].KeyCodeName;
             }
             else if (Player.main.inExosuit)
             {
-                newText = index < 2? "": SEConfig.SLOTKEYSLIST[index - 2];
+                newText = SlotHelper.SessionExosuitSlots[index].KeyCodeName;
             }
         }
     }

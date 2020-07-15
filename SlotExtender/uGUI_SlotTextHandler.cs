@@ -9,89 +9,59 @@ namespace SlotExtender
     public class uGUI_SlotTextHandler : MonoBehaviour
     {
         public static uGUI_SlotTextHandler Instance { get; private set; }
-
-        private Dictionary<string, Text> Exosuit_SlotText = new Dictionary<string, Text>();
-        private Dictionary<string, Text> Seamoth_SlotText = new Dictionary<string, Text>();
-        private Dictionary<string, uGUI_EquipmentSlot> ALLSLOTS;
-
+        
+        private static Dictionary<string, Text> ALLSLOTS_Text = new Dictionary<string, Text>();
+        
         public void Awake()
         {
-            Instance = GetComponent<uGUI_SlotTextHandler>();
-
-            RefreshText();
+            Instance = this;            
 
             uGUI_Equipment uGUIequipment = gameObject.GetComponent<uGUI_Equipment>();
 
-            ALLSLOTS = (Dictionary<string, uGUI_EquipmentSlot>)uGUIequipment.GetPrivateField("allSlots");
+            Dictionary<string, uGUI_EquipmentSlot>  ALLSLOTS = (Dictionary<string, uGUI_EquipmentSlot>)uGUIequipment.GetPrivateField("allSlots");
 
             foreach (KeyValuePair<string, uGUI_EquipmentSlot> item in ALLSLOTS)
             {
-                if (item.Value.name.StartsWith("ExosuitModule"))
+                if (SlotHelper.ALLSLOTS.TryGetValue(item.Key, out SlotData slotData))
                 {
-                    int.TryParse(item.Key.Substring(13), out int slotNum);
-                    string slot = $"Slot{slotNum}";
-                    Text text = AddTextToSlotIcon(item.Value.transform, SEConfig.SLOTKEYS[slot], slot);
-                    Exosuit_SlotText.Add(text.gameObject.name, text);
-                }
-                else if (item.Value.name.StartsWith("SeamothModule"))
-                {
-                    int.TryParse(item.Key.Substring(13), out int slotNum);
-                    string slot = $"Slot{slotNum}";
-                    Text text = AddTextToSlotIcon(item.Value.transform, SEConfig.SLOTKEYS[slot], slot);
-                    Seamoth_SlotText.Add(text.gameObject.name, text);
-                }
-                else if (item.Value.name.StartsWith("SeamothArmLeft"))
-                {
-                    Text text = AddTextToSlotIcon(item.Value.transform, SEConfig.SLOTKEYS["SeamothArmLeft"], "SeamothArmLeft");
-                    Seamoth_SlotText.Add(text.gameObject.name, text);
-                }
-                else if (item.Value.name.StartsWith("SeamothArmRight"))
-                {
-                    Text text = AddTextToSlotIcon(item.Value.transform, SEConfig.SLOTKEYS["SeamothArmRight"], "SeamothArmRight");
-                    Seamoth_SlotText.Add(text.gameObject.name, text);
+                    Text text = AddTextToSlot(item.Value.transform, slotData);
+
+                    ALLSLOTS_Text.Add(slotData.SlotID, text);
                 }
             }
         }
 
-        public void RefreshText()
+        public void UpdateSlotText()
         {
-            foreach (KeyValuePair<string, string> kvp in SEConfig.SLOTKEYS)
+            foreach (KeyValuePair<string, SlotData> kvp in SlotHelper.ALLSLOTS)
             {
-                try
-                {
-                    Exosuit_SlotText[kvp.Key].text = kvp.Value;
-                    Seamoth_SlotText[kvp.Key].text = kvp.Value;
-                }
-                catch
-                {
-                    return;
-                }
+                ALLSLOTS_Text[kvp.Key].text = kvp.Value.KeyCodeName;
             }
         }
 
-        //based on RandyKnapp's MoreQuickSlots Subnautica mod: "CreateNewText()" method
-        //found on GitHub:https://github.com/RandyKnapp/SubnauticaModSystem
+        // based on RandyKnapp's MoreQuickSlots Subnautica mod: "CreateNewText()" method
+        // found on GitHub:https://github.com/RandyKnapp/SubnauticaModSystem
 
-        private Text AddTextToSlotIcon(Transform parent, string slotKey, string slotName)
+        private Text AddTextToSlot(Transform parent, SlotData slotData)
         {
-            Text TMProtext = Instantiate(HandReticle.main.interactPrimaryText);
-            TMProtext.gameObject.layer = parent.gameObject.layer;
-            TMProtext.gameObject.name = slotName;
-            TMProtext.transform.SetParent(parent, false);
-            TMProtext.transform.localScale = new Vector3(1, 1, 1);
-            TMProtext.gameObject.SetActive(true);
-            TMProtext.enabled = true;
-            TMProtext.text = slotKey;
-            TMProtext.fontSize = 17;
-            TMProtext.color = SEConfig.TEXTCOLOR;
-            RectTransformExtensions.SetParams(TMProtext.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), parent);
-            TMProtext.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 100);
-            TMProtext.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 100);
-            TMProtext.rectTransform.anchoredPosition = new Vector2(0, 70);
-            TMProtext.alignment = TextAnchor.MiddleCenter;
-            TMProtext.raycastTarget = false;
+            Text text = Instantiate(HandReticle.main.interactPrimaryText);
+            text.gameObject.layer = parent.gameObject.layer;
+            text.gameObject.name = slotData.SlotConfigIDName;
+            text.transform.SetParent(parent, false);
+            text.transform.localScale = new Vector3(1, 1, 1);
+            text.gameObject.SetActive(true);
+            text.enabled = true;
+            text.text = slotData.KeyCodeName;
+            text.fontSize = 17;
+            text.color = SEConfig.TEXTCOLOR;
+            RectTransformExtensions.SetParams(text.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), parent);
+            text.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 100);
+            text.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 100);
+            text.rectTransform.anchoredPosition = new Vector2(0, 70);
+            text.alignment = TextAnchor.MiddleCenter;
+            text.raycastTarget = false;
 
-            return TMProtext;
+            return text;
         }
     }
 }

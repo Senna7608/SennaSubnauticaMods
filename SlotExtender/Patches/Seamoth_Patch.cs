@@ -1,15 +1,13 @@
 ﻿using System.Linq;
 using System.Reflection.Emit;
 using System.Collections.Generic;
-
 using Harmony;
 using Common;
 using SlotExtender.Configuration;
 
 namespace SlotExtender.Patches
 {
-    [HarmonyPatch(typeof(SeaMoth))]
-    [HarmonyPatch("slotIDs", MethodType.Getter)]
+    [HarmonyPatch(typeof(SeaMoth), "slotIDs", MethodType.Getter)]    
     internal class Seamoth_slotIDs_Patch
     {
         [HarmonyPrefix]
@@ -18,11 +16,9 @@ namespace SlotExtender.Patches
             __result = SlotHelper.SessionSeamothSlotIDs;
             return false;
         }
-    }
+    }    
 
-
-    [HarmonyPatch(typeof(SeaMoth))]
-    [HarmonyPatch("Start")]
+    [HarmonyPatch(typeof(SeaMoth), "Start")]    
     internal class SeaMoth_Start_Patch
     {
         [HarmonyPostfix]
@@ -32,7 +28,6 @@ namespace SlotExtender.Patches
             SNLogger.Log("SlotExtender", $"Component added to instance: {__instance.name} ID: {__instance.GetInstanceID()}");
         }
     }
-
 
     internal static class SeamothStorageInputPatches
     {
@@ -65,7 +60,6 @@ namespace SlotExtender.Patches
             internal static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> cins) => SubstSlotGetter(cins);
         }
     }
-
 
     [HarmonyPatch(typeof(Vehicle), "OnUpgradeModuleChange")]
     internal static class Vehicle_OnUpgradeModuleChange_Patch

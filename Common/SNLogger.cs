@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace Common
 {
@@ -18,7 +19,7 @@ namespace Common
         {
             Console.WriteLine($"[{moduleName}] [LOG] {string.Format(format, args)}");
         }
-
+        
         public static void Error(string moduleName, string message)
         {
             Console.WriteLine($"[{moduleName}] [ERROR] {message}");
@@ -39,11 +40,13 @@ namespace Common
             Console.WriteLine($"[{moduleName}] [WARNING] {string.Format(format, args)}");
         }
 
+        [Conditional("DEBUG")]
         public static void Debug(string moduleName, string message)
         {
             Console.WriteLine($"[{moduleName}] [DEBUG] {message}");
         }
 
+        [Conditional("DEBUG")]
         public static void Debug(string moduleName, string format, params object[] args)
         {
             Console.WriteLine($"[{moduleName}] [DEBUG] {string.Format(format, args)}");

@@ -9,45 +9,41 @@ using Common;
 
 namespace SlotExtender.Configuration
 {
-    internal static class SEConfig
-    {        
-        internal static string PROGRAM_VERSION = string.Empty;
-        internal static string CONFIG_VERSION = string.Empty;
-
-        internal static Dictionary<string, KeyCode> KEYBINDINGS;
+    public static class SEConfig
+    {
+        public static string PROGRAM_VERSION = string.Empty;
+        public static string CONFIG_VERSION = string.Empty;
+        
         private static readonly string modFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         private static readonly string FILENAME = $"{modFolder}/config.txt";
-        internal static Dictionary<string, string> Section_hotkeys;
-        public static Dictionary<string, string> SLOTKEYS = new Dictionary<string, string>();
-        public static List<string> SLOTKEYSLIST = new List<string>();
-        internal static int MAXSLOTS;
+
+        public static Dictionary<string, string> Hotkeys_Config;
+        public static Dictionary<SlotConfigID, string> SLOTKEYBINDINGS = new Dictionary<SlotConfigID, string>();
+        public static Dictionary<string, KeyCode> KEYBINDINGS;
+
+        public static int MAXSLOTS;
+        public static int EXTRASLOTS;
         public static Color TEXTCOLOR;
-        internal static int STORAGE_SLOTS_OFFSET = 4;
-        internal static int SLOT_LAYOUT = 0; // 0 - grid, 1 - circle
+        public static int STORAGE_SLOTS_OFFSET = 4;
+        public static SlotLayout SLOT_LAYOUT = SlotLayout.Grid;
+        public static bool isSeamothArmsExists = false;
 
-        private static readonly string[] SECTIONS =
-        {
-            "Hotkeys",
-            "Settings"
-        };
-
-        private static readonly string[] SECTION_Hotkeys =
+        private static readonly string[] SECTION_HOTKEYS =
         {
             "Upgrade",
             "Storage",
-            "Slot_6",
-            "Slot_7",
-            "Slot_8",
-            "Slot_9",
-            "Slot_10",
-            "Slot_11",
-            "Slot_12",
-            "SeamothArmLeft",
-            "SeamothArmRight"
+            SlotConfigID.Slot_6.ToString(),
+            SlotConfigID.Slot_7.ToString(),
+            SlotConfigID.Slot_8.ToString(),
+            SlotConfigID.Slot_9.ToString(),
+            SlotConfigID.Slot_10.ToString(),
+            SlotConfigID.Slot_11.ToString(),
+            SlotConfigID.Slot_12.ToString(),
+            SlotConfigID.SeamothArmLeft.ToString(),
+            SlotConfigID.SeamothArmRight.ToString()
         };
-
-
-        private static readonly string[] SECTION_Settings =
+        
+        private static readonly string[] SECTION_SETTINGS =
         {
             "MaxSlots",
             "TextColor",
@@ -57,66 +53,66 @@ namespace SlotExtender.Configuration
 
         private static readonly List<ConfigData> DEFAULT_CONFIG = new List<ConfigData>
         {
-            new ConfigData(SECTIONS[1], SECTION_Settings[0], 12.ToString()),
-            new ConfigData(SECTIONS[1], SECTION_Settings[1], COLORS.Green.ToString()),
-            new ConfigData(SECTIONS[1], SECTION_Settings[2], 4.ToString()),
-            new ConfigData(SECTIONS[1], SECTION_Settings[3], "Circle"),
-            new ConfigData(SECTIONS[0], SECTION_Hotkeys[0], InputHelper.GetKeyCodeAsInputName(KeyCode.T)),
-            new ConfigData(SECTIONS[0], SECTION_Hotkeys[1], InputHelper.GetKeyCodeAsInputName(KeyCode.R)),
-            new ConfigData(SECTIONS[0], SECTION_Hotkeys[2], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha6)),
-            new ConfigData(SECTIONS[0], SECTION_Hotkeys[3], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha7)),
-            new ConfigData(SECTIONS[0], SECTION_Hotkeys[4], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha8)),
-            new ConfigData(SECTIONS[0], SECTION_Hotkeys[5], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha9)),
-            new ConfigData(SECTIONS[0], SECTION_Hotkeys[6], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha0)),
-            new ConfigData(SECTIONS[0], SECTION_Hotkeys[7], InputHelper.GetKeyCodeAsInputName(KeyCode.Slash)),
-            new ConfigData(SECTIONS[0], SECTION_Hotkeys[8], InputHelper.GetKeyCodeAsInputName(KeyCode.Equals)),
-            new ConfigData(SECTIONS[0], SECTION_Hotkeys[9], InputHelper.GetKeyCodeAsInputName(KeyCode.O)),
-            new ConfigData(SECTIONS[0], SECTION_Hotkeys[10], InputHelper.GetKeyCodeAsInputName(KeyCode.P))
+            new ConfigData("Settings", SECTION_SETTINGS[0], 12.ToString()),
+            new ConfigData("Settings", SECTION_SETTINGS[1], COLORS.Green.ToString()),
+            new ConfigData("Settings", SECTION_SETTINGS[2], 4.ToString()),
+            new ConfigData("Settings", SECTION_SETTINGS[3], SlotLayout.Circle.ToString()),
+            new ConfigData("Hotkeys", SECTION_HOTKEYS[0], InputHelper.GetKeyCodeAsInputName(KeyCode.T)),
+            new ConfigData("Hotkeys", SECTION_HOTKEYS[1], InputHelper.GetKeyCodeAsInputName(KeyCode.R)),
+            new ConfigData("Hotkeys", SECTION_HOTKEYS[2], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha6)),
+            new ConfigData("Hotkeys", SECTION_HOTKEYS[3], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha7)),
+            new ConfigData("Hotkeys", SECTION_HOTKEYS[4], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha8)),
+            new ConfigData("Hotkeys", SECTION_HOTKEYS[5], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha9)),
+            new ConfigData("Hotkeys", SECTION_HOTKEYS[6], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha0)),
+            new ConfigData("Hotkeys", SECTION_HOTKEYS[7], InputHelper.GetKeyCodeAsInputName(KeyCode.Slash)),
+            new ConfigData("Hotkeys", SECTION_HOTKEYS[8], InputHelper.GetKeyCodeAsInputName(KeyCode.Equals)),
+            new ConfigData("Hotkeys", SECTION_HOTKEYS[9], InputHelper.GetKeyCodeAsInputName(KeyCode.O)),
+            new ConfigData("Hotkeys", SECTION_HOTKEYS[10], InputHelper.GetKeyCodeAsInputName(KeyCode.P))
         };
 
-        internal static void InitSLOTKEYS()
+        internal static void SLOTKEYBINDINGS_Update()
         {
-            SLOTKEYS.Clear();
-            SLOTKEYSLIST.Clear();
+            SNLogger.Debug("SlotExtender", "Method call: SEConfig.Update_SLOTKEYBINDINGS()");
 
-            SLOTKEYS.Add("Slot1", GameInput.GetBindingName(GameInput.Button.Slot1, GameInput.BindingSet.Primary));
-            SLOTKEYS.Add("Slot2", GameInput.GetBindingName(GameInput.Button.Slot2, GameInput.BindingSet.Primary));
-            SLOTKEYS.Add("Slot3", GameInput.GetBindingName(GameInput.Button.Slot3, GameInput.BindingSet.Primary));
-            SLOTKEYS.Add("Slot4", GameInput.GetBindingName(GameInput.Button.Slot4, GameInput.BindingSet.Primary));
-            SLOTKEYS.Add("Slot5", GameInput.GetBindingName(GameInput.Button.Slot5, GameInput.BindingSet.Primary));
-            SLOTKEYS.Add("Slot6", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_Hotkeys[2]]));
-            SLOTKEYS.Add("Slot7", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_Hotkeys[3]]));
-            SLOTKEYS.Add("Slot8", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_Hotkeys[4]]));
-            SLOTKEYS.Add("Slot9", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_Hotkeys[5]]));
-            SLOTKEYS.Add("Slot10", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_Hotkeys[6]]));
-            SLOTKEYS.Add("Slot11", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_Hotkeys[7]]));
-            SLOTKEYS.Add("Slot12", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_Hotkeys[8]]));
-            SLOTKEYS.Add("SeamothArmLeft", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_Hotkeys[9]]));
-            SLOTKEYS.Add("SeamothArmRight", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_Hotkeys[10]]));
+            SLOTKEYBINDINGS.Clear();            
 
-            foreach (KeyValuePair<string, string> kvp in SLOTKEYS)
-            {
-                SLOTKEYSLIST.Add(kvp.Value);
-            }
+            SLOTKEYBINDINGS.Add(SlotConfigID.Slot_1, GameInput.GetBindingName(GameInput.Button.Slot1, GameInput.BindingSet.Primary));
+            SLOTKEYBINDINGS.Add(SlotConfigID.Slot_2, GameInput.GetBindingName(GameInput.Button.Slot2, GameInput.BindingSet.Primary));
+            SLOTKEYBINDINGS.Add(SlotConfigID.Slot_3, GameInput.GetBindingName(GameInput.Button.Slot3, GameInput.BindingSet.Primary));
+            SLOTKEYBINDINGS.Add(SlotConfigID.Slot_4, GameInput.GetBindingName(GameInput.Button.Slot4, GameInput.BindingSet.Primary));
+            SLOTKEYBINDINGS.Add(SlotConfigID.Slot_5, GameInput.GetBindingName(GameInput.Button.Slot5, GameInput.BindingSet.Primary));
+            SLOTKEYBINDINGS.Add(SlotConfigID.Slot_6, Hotkeys_Config[SlotConfigID.Slot_6.ToString()]);
+            SLOTKEYBINDINGS.Add(SlotConfigID.Slot_7, Hotkeys_Config[SlotConfigID.Slot_7.ToString()]);
+            SLOTKEYBINDINGS.Add(SlotConfigID.Slot_8, Hotkeys_Config[SlotConfigID.Slot_8.ToString()]);
+            SLOTKEYBINDINGS.Add(SlotConfigID.Slot_9, Hotkeys_Config[SlotConfigID.Slot_9.ToString()]);
+            SLOTKEYBINDINGS.Add(SlotConfigID.Slot_10, Hotkeys_Config[SlotConfigID.Slot_10.ToString()]);
+            SLOTKEYBINDINGS.Add(SlotConfigID.Slot_11, Hotkeys_Config[SlotConfigID.Slot_11.ToString()]);
+            SLOTKEYBINDINGS.Add(SlotConfigID.Slot_12, Hotkeys_Config[SlotConfigID.Slot_12.ToString()]);
+            SLOTKEYBINDINGS.Add(SlotConfigID.SeamothArmLeft, Hotkeys_Config[SlotConfigID.SeamothArmLeft.ToString()]);
+            SLOTKEYBINDINGS.Add(SlotConfigID.SeamothArmRight, Hotkeys_Config[SlotConfigID.SeamothArmRight.ToString()]);
         }
 
-        internal static void LoadConfig()
+        internal static void Config_Load()
         {
+            SNLogger.Debug("SlotExtender", "Method call: SEConfig.LoadConfig()");
+
             PROGRAM_VERSION = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
 
-            if (!CheckConfig())
+            if (!Config_Check())
             {
-                CreateDefaultConfigFile();
+                Config_CreateDefault();
             }
 
             try
             {
-                Section_hotkeys = Helper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[0], SECTION_Hotkeys);
+                Hotkeys_Config = ParserHelper.GetAllKeyValuesFromSection(FILENAME, "Hotkeys", SECTION_HOTKEYS);
 
-                int.TryParse(Helper.GetKeyValue(FILENAME, SECTIONS[1], SECTION_Settings[0]), out int result);
+                int.TryParse(ParserHelper.GetKeyValue(FILENAME, "Settings", SECTION_SETTINGS[0]), out int result);
                 MAXSLOTS = result < 5 || result > 12 ? 12 : result;
 
-                TEXTCOLOR = Modules.GetColor(Helper.GetKeyValue(FILENAME, SECTIONS[1], SECTION_Settings[1]));
+                EXTRASLOTS = SEConfig.MAXSLOTS - 4;
+
+                TEXTCOLOR = Modules.GetColor(ParserHelper.GetKeyValue(FILENAME, "Settings", SECTION_SETTINGS[1]));
 
                 if (RefHelp.IsNamespaceExists("SeamothStorageSlots"))
                 {
@@ -129,11 +125,13 @@ namespace SlotExtender.Configuration
                 }
                 else
                 {
-                    int.TryParse(Helper.GetKeyValue(FILENAME, SECTIONS[1], SECTION_Settings[2]), out result);
-                    STORAGE_SLOTS_OFFSET = result < 3? 0: result > 8? 8: result;
+                    int.TryParse(ParserHelper.GetKeyValue(FILENAME, "Settings", SECTION_SETTINGS[2]), out result);
+                    STORAGE_SLOTS_OFFSET = result < 3 ? 0 : result > 8 ? 8 : result;
                 }
 
-                SLOT_LAYOUT = Helper.GetKeyValue(FILENAME, SECTIONS[1], SECTION_Settings[3]) == "Circle"? 1: 0;
+                SLOT_LAYOUT = ParserHelper.GetKeyValue(FILENAME, "Settings", SECTION_SETTINGS[3]) == "Circle"? SlotLayout.Circle : SlotLayout.Grid;
+
+                isSeamothArmsExists = RefHelp.IsNamespaceExists("SeamothArms");
 
                 SNLogger.Log("SlotExtender", "Configuration loaded.");
             }
@@ -143,14 +141,21 @@ namespace SlotExtender.Configuration
             }
         }
 
-        internal static void CreateDefaultConfigFile()
+        internal static void Config_CreateDefault()
         {
+            SNLogger.Debug("SlotExtender", "Method call: SEConfig.CreateDefaultConfigFile()");
+
             SNLogger.Warn("SlotExtender", "Configuration file is missing or wrong version. Trying to create a new one.");
 
             try
             {
-                Helper.CreateDefaultConfigFile(FILENAME, "SlotExtender", PROGRAM_VERSION, DEFAULT_CONFIG);
-                Helper.AddInfoText(FILENAME, SECTIONS[1], "TextColor possible values: Red, Green, Blue, Yellow, White, Magenta, Cyan, Orange, Lime, Amethyst, Default");
+                ParserHelper.CreateDefaultConfigFile(FILENAME, "SlotExtender", PROGRAM_VERSION, DEFAULT_CONFIG);
+
+                ParserHelper.AddInfoText(FILENAME, "MaxSlots possible values", "5 to 12");
+                ParserHelper.AddInfoText(FILENAME, "TextColor possible values", "Red, Green, Blue, Yellow, White, Magenta, Cyan, Orange, Lime, Amethyst, Default");
+                ParserHelper.AddInfoText(FILENAME, "SeamothStorageSlotsOffset possible values", "0 to 8");
+                ParserHelper.AddInfoText(FILENAME, "SlotLayout possible values", "Grid, Circle");
+                
 
                 SNLogger.Log("SlotExtender", "The new configuration file was successfully created.");
             }
@@ -160,41 +165,73 @@ namespace SlotExtender.Configuration
             }
         }
 
-        internal static void InitConfig()
+        internal static void Config_Init()
         {
-            SetKeyBindings();
+            SNLogger.Debug("SlotExtender", "Method call: SEConfig.InitConfig()");
+
+            SLOTKEYBINDINGS_Update();
+
+            KEYBINDINGS_Set();
+
+            SLOTKEYBINDINGS_SyncToAll();
 
             SNLogger.Log("SlotExtender", "Configuration initialized.");
         }
 
-        internal static void WriteConfig()
+        internal static void Config_Write()
         {
-            Helper.SetAllKeyValuesInSection(FILENAME, SECTIONS[0], Section_hotkeys);
-            Helper.SetKeyValue(FILENAME, SECTIONS[1], SECTION_Settings[0], MAXSLOTS.ToString());
-            Helper.SetKeyValue(FILENAME, SECTIONS[1], SECTION_Settings[1], Modules.GetColorName(TEXTCOLOR));
-            Helper.SetKeyValue(FILENAME, SECTIONS[1], SECTION_Settings[2], STORAGE_SLOTS_OFFSET.ToString());
-            Helper.SetKeyValue(FILENAME, SECTIONS[1], SECTION_Settings[3], SLOT_LAYOUT == 0? "Grid": "Circle");
+            SNLogger.Debug("SlotExtender", "Method call: SEConfig.WriteConfig()");
+
+            ParserHelper.SetAllKeyValuesInSection(FILENAME, "Hotkeys", Hotkeys_Config);
+            ParserHelper.SetKeyValue(FILENAME, "Settings", SECTION_SETTINGS[0], MAXSLOTS.ToString());
+            ParserHelper.SetKeyValue(FILENAME, "Settings", SECTION_SETTINGS[1], Modules.GetColorName(TEXTCOLOR));
+            ParserHelper.SetKeyValue(FILENAME, "Settings", SECTION_SETTINGS[2], STORAGE_SLOTS_OFFSET.ToString());
+            ParserHelper.SetKeyValue(FILENAME, "Settings", SECTION_SETTINGS[3], SLOT_LAYOUT.ToString());
 
             SNLogger.Log("SlotExtender", "Configuration saved.");
         }
 
-        internal static void SyncConfig()
+        internal static void KEYBINDINGS_ToConfig()
         {
-            foreach (string key in SECTION_Hotkeys)
+            SNLogger.Debug("SlotExtender", "Method call: SEConfig.SyncConfig()");
+
+            foreach (string key in SECTION_HOTKEYS)
             {
-                Section_hotkeys[key] = InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[key]);
+                Hotkeys_Config[key] = InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[key]);
             }
 
-            WriteConfig();
+            Config_Write();
         }
 
-        internal static void SetKeyBindings()
+        internal static void SLOTKEYBINDINGS_SyncToAll()
         {
+            SNLogger.Debug("SlotExtender", "Method call: SEConfig.SyncSlotKeyBindings()");            
+
+            foreach (KeyValuePair<SlotConfigID, string> kvp in SLOTKEYBINDINGS)
+            {
+                SNLogger.Debug("SlotExtender", $"key: {kvp.Key.ToString()}, Value: {kvp.Value}");
+
+                string key = kvp.Key.ToString();
+                
+                if (Hotkeys_Config.ContainsKey(key))
+                    Hotkeys_Config[key] = kvp.Value;
+
+                KEYBINDINGS[key] = InputHelper.GetInputNameAsKeyCode(kvp.Value);
+            }
+
+            Config_Write();
+        }
+
+
+        internal static void KEYBINDINGS_Set()
+        {
+            SNLogger.Debug("SlotExtender", "Method call: SEConfig.SetKeyBindings()");
+
             KEYBINDINGS = new Dictionary<string, KeyCode>();
 
             bool sync = false;
 
-            foreach (KeyValuePair<string, string> kvp in Section_hotkeys)
+            foreach (KeyValuePair<string, string> kvp in Hotkeys_Config)
             {
                 try
                 {                    
@@ -217,19 +254,21 @@ namespace SlotExtender.Configuration
 
             if (sync)
             {
-                SyncConfig();
+                KEYBINDINGS_ToConfig();
             }
         }
 
-        private static bool CheckConfig()
+        private static bool Config_Check()
         {
+            SNLogger.Debug("SlotExtender", "Method call: SEConfig.CheckConfig()");
+
             if (!File.Exists(FILENAME))
             {
                 SNLogger.Error("SlotExtender", "Configuration file open error!");
                 return false;
             }
 
-            CONFIG_VERSION = Helper.GetKeyValue(FILENAME, "SlotExtender", "Version");
+            CONFIG_VERSION = ParserHelper.GetKeyValue(FILENAME, "SlotExtender", "Version");
 
             if (!CONFIG_VERSION.Equals(PROGRAM_VERSION))
             {
@@ -237,15 +276,15 @@ namespace SlotExtender.Configuration
                 return false;
             }
 
-            if (!Helper.CheckSectionKeys(FILENAME, SECTIONS[0], SECTION_Hotkeys))
+            if (!ParserHelper.CheckSectionKeys(FILENAME, "Hotkeys", SECTION_HOTKEYS))
             {
-                SNLogger.Error("SlotExtender", $"Configuration {SECTIONS[0]} section error!");
+                SNLogger.Error("SlotExtender", "Configuration file [Hotkeys] section error!");
                 return false;
             }
 
-            if (!Helper.CheckSectionKeys(FILENAME, SECTIONS[1], SECTION_Settings))
+            if (!ParserHelper.CheckSectionKeys(FILENAME, "Settings", SECTION_SETTINGS))
             {
-                SNLogger.Error("SlotExtender", $"Configuration {SECTIONS[1]} section error!");
+                SNLogger.Error("SlotExtender", "Configuration file [Settings] section error!");
                 return false;
             }
 

@@ -2,8 +2,7 @@
 
 namespace SlotExtender.Patches
 {
-    [HarmonyPatch(typeof(uGUI_QuickSlots))]
-    [HarmonyPatch("SetBackground")]
+    [HarmonyPatch(typeof(uGUI_QuickSlots), "SetBackground")]    
     internal static class uGUI_QuickSlots_SetBackground_Patch
     {        
         internal static Atlas.Sprite atlasSpriteExosuitArm = null;
@@ -11,7 +10,7 @@ namespace SlotExtender.Patches
         [HarmonyPrefix]
         internal static bool Prefix(uGUI_QuickSlots __instance, ref uGUI_ItemIcon icon, TechType techType, bool highlighted)
         {
-            if (CraftData.GetEquipmentType(techType) == (EquipmentType) 100)
+            if (CraftData.GetEquipmentType(techType) == (EquipmentType)ModdedEquipmentType.SeamothArm)
             {
                 if (icon == null)
                 {

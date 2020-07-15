@@ -88,7 +88,7 @@ namespace QuickSlotExtender.Configuration
             }
             else
             {
-                CONFIG_VERSION = Helper.GetKeyValue(FILENAME, PROGRAM_NAME, "Version");
+                CONFIG_VERSION = ParserHelper.GetKeyValue(FILENAME, PROGRAM_NAME, "Version");
 
                 if (CONFIG_VERSION.Equals(PROGRAM_VERSION))
                 {
@@ -100,12 +100,12 @@ namespace QuickSlotExtender.Configuration
                 }
             }
 
-            Section_hotkeys = Helper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[0], SECTION_HOTKEYS);
+            Section_hotkeys = ParserHelper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[0], SECTION_HOTKEYS);
 
-            int.TryParse(Helper.GetKeyValue(FILENAME, SECTIONS[1], SECTION_SETTINGS[0]), out int result);
+            int.TryParse(ParserHelper.GetKeyValue(FILENAME, SECTIONS[1], SECTION_SETTINGS[0]), out int result);
             MAXSLOTS = result < 5 || result > 12 ? 12 : result;
 
-            TEXTCOLOR = Modules.GetColor(Helper.GetKeyValue(FILENAME, SECTIONS[1], SECTION_SETTINGS[1]));
+            TEXTCOLOR = Modules.GetColor(ParserHelper.GetKeyValue(FILENAME, SECTIONS[1], SECTION_SETTINGS[1]));
 
             SNLogger.Log($"[{PROGRAM_NAME}] Configuration loaded.");
         }
@@ -116,8 +116,8 @@ namespace QuickSlotExtender.Configuration
 
             try
             {
-                Helper.CreateDefaultConfigFile(FILENAME, PROGRAM_NAME, PROGRAM_VERSION, DEFAULT_CONFIG);
-                Helper.AddInfoText(FILENAME, SECTIONS[1], "TextColor possible values: Red, Green, Blue, Yellow, White, Magenta, Cyan, Orange, Lime, Amethyst, Default");
+                ParserHelper.CreateDefaultConfigFile(FILENAME, PROGRAM_NAME, PROGRAM_VERSION, DEFAULT_CONFIG);
+                ParserHelper.AddInfoText(FILENAME, SECTIONS[1], "TextColor possible values: Red, Green, Blue, Yellow, White, Magenta, Cyan, Orange, Lime, Amethyst, Default");
             }
             catch
             {
@@ -134,7 +134,7 @@ namespace QuickSlotExtender.Configuration
 
         internal static void WriteConfig()
         {
-            if (Helper.SetAllKeyValuesInSection(FILENAME, SECTIONS[0], Section_hotkeys))
+            if (ParserHelper.SetAllKeyValuesInSection(FILENAME, SECTIONS[0], Section_hotkeys))
             {
                 SNLogger.Log($"[{PROGRAM_NAME}] Configuration saved.");
             }

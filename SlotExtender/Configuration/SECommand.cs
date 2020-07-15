@@ -1,36 +1,25 @@
-﻿using UnityEngine;
-using Common;
+﻿using Common;
 
 namespace SlotExtender.Configuration
 {
-    public class SECommand : MonoBehaviour
+    public class SECommand : ConsoleCommand
     {
-        public SECommand Instance;
-        
+        public override bool AvailableInStartScreen => true;
+        public override bool AvailableInGame => false;
+
         public void Awake()
         {
-            Instance = this;           
-            DevConsole.RegisterConsoleCommand(this, "seconfig", false, false);
             SNLogger.Log("SlotExtender", "Information: Enter 'seconfig' command in main menu for configuration window.");
         }
-        
-        private void OnConsoleCommand_seconfig(NotificationCenter.Notification n)
+
+        public override void RegisterCommand()
+        {
+            DevConsole.RegisterConsoleCommand(this, "seconfig", false, false);            
+        }
+
+        public void OnConsoleCommand_seconfig(NotificationCenter.Notification n)
         {
             SEConfigUI configUI = new SEConfigUI();
-        }
-
-        public SECommand()
-        {
-            if (Instance == null)
-            {
-                Instance = FindObjectOfType(typeof(SECommand)) as SECommand;
-
-                if (Instance == null)
-                {
-                    GameObject se_command = new GameObject("SECommand");
-                    Instance = se_command.AddComponent<SECommand>();                    
-                }
-            }            
-        }
+        }        
     }
 }

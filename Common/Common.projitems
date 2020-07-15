@@ -9,6 +9,8 @@
     <Import_RootNamespace>Common</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ConsoleCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CommandRoot.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigurationParser\FileReader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigurationParser\Helper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigurationParser\Parser.cs" />
@@ -23,6 +25,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)GUIHelper\SNStyles.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GUIHelper\SNGUI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GUIHelper\SNWindow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Indestructible.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)InputHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SNLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modules.cs" />

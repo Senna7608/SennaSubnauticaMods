@@ -1,11 +1,9 @@
 ﻿using Harmony;
 using Common;
-using SlotExtender.Configuration;
 
 namespace SlotExtender.Patches
 {
-    [HarmonyPatch(typeof(Exosuit))]
-    [HarmonyPatch("slotIDs", MethodType.Getter)]
+    [HarmonyPatch(typeof(Exosuit), "slotIDs", MethodType.Getter)]    
     public class Exosuit_slotIDs_Patch
     {
         [HarmonyPrefix]
@@ -16,8 +14,7 @@ namespace SlotExtender.Patches
         }
     }    
     
-    [HarmonyPatch(typeof(Exosuit))]
-    [HarmonyPatch("Start")]
+    [HarmonyPatch(typeof(Exosuit), "Start")]    
     public class Exosuit_Start_Patch
     {
         [HarmonyPostfix]

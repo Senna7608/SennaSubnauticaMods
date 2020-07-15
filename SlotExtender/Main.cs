@@ -7,12 +7,12 @@ using Common;
 using SlotExtender.Patches;
 using SlotExtender.Configuration;
 using System.Reflection;
-using System.Collections.Generic;
 
 namespace SlotExtender
 {
     public static class Main
     {
+        public static CommandRoot commandRoot = null;
         public static HarmonyInstance hInstance;
         public static SECommand sEConfig;
 
@@ -22,37 +22,39 @@ namespace SlotExtender
 
         public static void Load()
         {
-#if DEBUG
             SNLogger.Debug("SlotExtender", "Method call: Main.Load()");
-#endif
+
             try
             {
-                SEConfig.LoadConfig();
+                SEConfig.Config_Load();
                 SlotHelper.InitSlotIDs();
 
                 hInstance = HarmonyInstance.Create("Subnautica.SlotExtender.mod");
-#if DEBUG
+
                 SNLogger.Debug("SlotExtender", $"Main.Load(): Harmony Instance created, Name = [{hInstance.Id}]");
-#endif
+
                 hInstance.PatchAll(Assembly.GetExecutingAssembly());
 
                 SceneManager.sceneLoaded += new UnityAction<Scene, LoadSceneMode>(OnSceneLoaded);
-
-#if DEBUG
+                
                 SNLogger.Debug("SlotExtender", "Main.Load(): Added OnSceneLoaded method to SceneManager.sceneLoaded event.");
-#endif
+
+                //add console commad for configuration window
+                commandRoot = new CommandRoot("SEConfigGO");                
+                commandRoot.AddCommand<SECommand>();
+                
             }
             catch (Exception ex)
             {
-                Debug.LogException(ex);
+                UnityEngine.Debug.LogException(ex);
             }
 
-            //check MoreQuickSlots namespace is exists
+            // check MoreQuickSlots namespace is exists
             if (RefHelp.IsNamespaceExists("MoreQuickSlots"))
             {
                 SNLogger.Log("SlotExtender", " -> MoreQuickSlots namespace is exist! Trying to install a Cross-MOD patch...");
 
-                //if yes construct a Harmony patch
+                // if yes construct a Harmony patch
                 if (MQS_Patches.InitPatch(hInstance))
                     SNLogger.Log("SlotExtender", " -> MoreQuickSlots Cross-MOD patch installed!");
                 else
@@ -64,41 +66,47 @@ namespace SlotExtender
         {
             if (scene.name == "StartScreen")
             {
-                //enabling game console
+                // enabling game console
                 GameHelper.EnableConsole();
-                //init config
-                SEConfig.InitConfig();
-                //add console commad for configuration window
-                sEConfig = new SECommand();
-                //add an action if changed controls
+
+                // init config
+                SEConfig.Config_Init();
+
+                // add an action if changed keybindings
                 GameInput.OnBindingsChanged += GameInput_OnBindingsChanged;
+
+                SlotHelper.InitSessionAllSlots();
             }
             if (scene.name == "Main")
             {
-                //creating a console input field listener to skip SlotExdender Update method key events conflict
-                ListenerInstance = InitializeListener();
+                // creating a console input field listener to skip SlotExdender Update method key events conflict while console is active in game
+                ListenerInstance = InitializeListener();                
             }
         }
 
         internal static void GameInput_OnBindingsChanged()
         {
+            SNLogger.Debug("SlotExtender", "Method call: Main.GameInput_OnBindingsChanged()");
+
+            // SlotExtender Update() method now disabled until all keybinding updates are complete
             isKeyBindigsUpdate = true;
 
-            //input changed, refreshing key bindings
-            SEConfig.InitSLOTKEYS();
+            // updating slot key bindings
+            SEConfig.SLOTKEYBINDINGS_Update();
 
+            // synchronizing keybindings to config file
+            SEConfig.SLOTKEYBINDINGS_SyncToAll();
+
+            // updating ALLSLOTS dictionary
+            SlotHelper.ALLSLOTS_Update();
+
+            // updating SlotTextHandler
             if (uGUI_SlotTextHandler.Instance != null)
             {
-                uGUI_SlotTextHandler.Instance.RefreshText();
+                uGUI_SlotTextHandler.Instance.UpdateSlotText();
             }
 
-            /*
-            if (Initialize_uGUI.Instance != null)
-            {
-                Initialize_uGUI.Instance.RefreshText();
-            }
-            */
-
+            // SlotExtender Update() method now enabled
             isKeyBindigsUpdate = false;
         }
 
@@ -116,50 +124,6 @@ namespace SlotExtender
             }
 
             return ListenerInstance;
-        }
-
-        internal static MethodBase GetConstructorMethodBase(Type type, string ctorName)
-        {
-#if DEBUG
-            SNLogger.Debug("SlotExtender", $"Method call: Main.GetConstructorMethodBase({type}, {ctorName})");
-#endif
-            List<ConstructorInfo> ctor_Infos = new List<ConstructorInfo>();
-
-            ctor_Infos = AccessTools.GetDeclaredConstructors(type);
-
-            foreach (ConstructorInfo ctor_info in ctor_Infos)
-            {
-#if DEBUG
-                SNLogger.Debug("SlotExtender", $"Found constructor in [{type}] class: [{ctor_info.Name}]");
-
-                MethodBase mBase = ctor_info as MethodBase;
-
-                ParameterInfo[] pInfos = mBase.GetParameters();
-
-                if (pInfos.Length == 0)
-                {
-                    SNLogger.Debug("SlotExtender", $"this constructor [{ctor_info.Name}] has no parameters.");
-                }
-                else
-                {
-                    SNLogger.Debug("SlotExtender", $"listing constructor parameters...");
-
-                    foreach (ParameterInfo pInfo in pInfos)
-                    {
-                        SNLogger.Debug("SlotExtender", $"ctor parameter[{pInfo.Position}] = [{pInfo.ToString()}]");
-                    }
-                }
-#endif
-                if (ctor_info.Name == ctorName)
-                {
-                    return ctor_info as MethodBase;
-                }
-            }
-
-#if DEBUG
-            SNLogger.Debug("SlotExtender", $"the required constructor [{ctorName}] in class [{type}] has not found!");
-#endif
-            return null;
         }
     }
 }

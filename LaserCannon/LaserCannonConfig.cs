@@ -196,7 +196,7 @@ namespace LaserCannon
             }
             else
             {
-                CONFIG_VERSION = Helper.GetKeyValue(FILENAME, PROGRAM_NAME, "Version");
+                CONFIG_VERSION = ParserHelper.GetKeyValue(FILENAME, PROGRAM_NAME, "Version");
 
                 if (CONFIG_VERSION.Equals(PROGRAM_VERSION))
                 {
@@ -217,7 +217,7 @@ namespace LaserCannon
 
             try
             {
-                Helper.CreateDefaultConfigFile(FILENAME, PROGRAM_NAME, PROGRAM_VERSION, DEFAULT_CONFIG);
+                ParserHelper.CreateDefaultConfigFile(FILENAME, PROGRAM_NAME, PROGRAM_VERSION, DEFAULT_CONFIG);
 
                 var configParser = new Parser(FILENAME);
 
@@ -252,7 +252,7 @@ namespace LaserCannon
         {
             foreach (KeyValuePair<string, string> item in program_settings)
             {
-                Helper.SetKeyValue(FILENAME, "Program", item.Key, item.Value);
+                ParserHelper.SetKeyValue(FILENAME, "Program", item.Key, item.Value);
             }
 
             SNLogger.Log($"[{PROGRAM_NAME}] Configuration saved.");
@@ -262,7 +262,7 @@ namespace LaserCannon
         {
             try
             {
-                program_settings = Helper.GetAllKeyValuesFromSection(FILENAME, "Program", SECTION_PROGRAM);
+                program_settings = ParserHelper.GetAllKeyValuesFromSection(FILENAME, "Program", SECTION_PROGRAM);
 
                 for (int i = 0; i < Modules.Colors.ColorNames.Length; i++)
                 {
@@ -270,7 +270,7 @@ namespace LaserCannon
                         beamColor = i;
                 }
 
-                language_settings = Helper.GetAllKeyValuesFromSection(FILENAME, program_settings["Language"], SECTION_LANGUAGE);
+                language_settings = ParserHelper.GetAllKeyValuesFromSection(FILENAME, program_settings["Language"], SECTION_LANGUAGE);
 
                 colorNames.Clear();
 

@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Harmony;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using UnityEngine;
@@ -144,5 +146,46 @@ namespace Common
                 SNLogger.Log(keyword);
             }
         }
+
+
+        public static MethodBase GetConstructorMethodBase(Type type, string ctorName)
+        {
+            List<ConstructorInfo> ctor_Infos = new List<ConstructorInfo>();
+
+            ctor_Infos = AccessTools.GetDeclaredConstructors(type);
+
+            foreach (ConstructorInfo ctor_info in ctor_Infos)
+            {
+                GetConstructorInfo(ctor_info);
+
+                if (ctor_info.Name == ctorName)
+                {
+                    return ctor_info as MethodBase;
+                }
+            }            
+
+            return null;
+        }
+
+        [Conditional("DEBUG")]
+        public static void GetConstructorInfo(ConstructorInfo constructorInfo)
+        {
+            ParameterInfo[] pInfos = constructorInfo.GetParameters();
+
+            if (pInfos.Length == 0)
+            {
+                SNLogger.Debug("", $"this constructor [{constructorInfo.Name}] has no parameters.");
+            }
+            else
+            {
+                SNLogger.Debug("", $"listing constructor parameters...");
+
+                foreach (ParameterInfo pInfo in pInfos)
+                {
+                    SNLogger.Debug("", $"ctor parameter[{pInfo.Position}] = [{pInfo.ToString()}]");
+                }
+            }
+        }
+        
     }
 }

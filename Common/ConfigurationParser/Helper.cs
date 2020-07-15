@@ -17,7 +17,7 @@ namespace Common.ConfigurationParser
         }
     }
 
-    public class Helper
+    public class ParserHelper
     {
         public static void CreateDefaultConfigFile(string filename, string programName, string version, List<ConfigData> configData)
         {            
@@ -34,10 +34,14 @@ namespace Common.ConfigurationParser
             }            
         }
 
-        public static void AddInfoText(string filename, string section, string value)
+        public static void AddInfoText(string filename, string key, string value)
         {
             Parser parser = new Parser(filename);
-            parser.WriteInfoText(section, value);
+
+            if (!parser.IsExists("Information"))
+                parser.AddNewSection("Information");
+
+            parser.SetKeyValueInSection("Information", key, value);
         }
 
         public static string GetKeyValue(string filename, string section, string key)

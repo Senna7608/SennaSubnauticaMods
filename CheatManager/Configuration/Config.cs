@@ -90,23 +90,23 @@ namespace CheatManager.Configuration
             {
                 SNLogger.Log($"[{PROGRAM_NAME}] Warning! Configuration file is missing. Creating a new one.");                
                 
-                Helper.CreateDefaultConfigFile(FILENAME, PROGRAM_NAME, VERSION, DEFAULT_CONFIG);
-                Helper.AddInfoText(FILENAME, SECTIONS[2], "OverPowerMultiplier and HungerAndThirstInterval possible values: 1 to 10");
+                ParserHelper.CreateDefaultConfigFile(FILENAME, PROGRAM_NAME, VERSION, DEFAULT_CONFIG);
+                ParserHelper.AddInfoText(FILENAME, SECTIONS[2], "OverPowerMultiplier and HungerAndThirstInterval possible values: 1 to 10");
             }
 
-            Main.isConsoleEnabled = bool.Parse(Helper.GetKeyValue(FILENAME, SECTIONS[1], SECTION_PROGRAM[0]));
-            Main.isInfoBarEnabled = bool.Parse(Helper.GetKeyValue(FILENAME, SECTIONS[1], SECTION_PROGRAM[1]));
+            Main.isConsoleEnabled = bool.Parse(ParserHelper.GetKeyValue(FILENAME, SECTIONS[1], SECTION_PROGRAM[0]));
+            Main.isInfoBarEnabled = bool.Parse(ParserHelper.GetKeyValue(FILENAME, SECTIONS[1], SECTION_PROGRAM[1]));
 
-            Section_hotkeys = Helper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[0], SECTION_HOTKEYS);            
-            Section_settings = Helper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[2], SECTION_SETTINGS);
-            Section_toggleButtons = Helper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[3], SECTION_TOGGLEBUTTONS);
+            Section_hotkeys = ParserHelper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[0], SECTION_HOTKEYS);            
+            Section_settings = ParserHelper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[2], SECTION_SETTINGS);
+            Section_toggleButtons = ParserHelper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[3], SECTION_TOGGLEBUTTONS);
 
             int.TryParse(Section_settings[SECTION_SETTINGS[0]], out overPowerMultiplier);
             
             if (overPowerMultiplier < 0 && overPowerMultiplier > 10)
             {
                 overPowerMultiplier = 10;
-                Helper.SetKeyValue(FILENAME, SECTIONS[1], Section_settings[SECTION_SETTINGS[0]], 2.ToString());
+                ParserHelper.SetKeyValue(FILENAME, SECTIONS[1], Section_settings[SECTION_SETTINGS[0]], 2.ToString());
             }
 
             int.TryParse(Section_settings[SECTION_SETTINGS[1]], out hungerAndThirstInterval);
@@ -114,7 +114,7 @@ namespace CheatManager.Configuration
             if (hungerAndThirstInterval < 0 && hungerAndThirstInterval > 10)
             {
                 hungerAndThirstInterval = 10;
-                Helper.SetKeyValue(FILENAME, SECTIONS[1], Section_settings[SECTION_SETTINGS[1]], 2.ToString());
+                ParserHelper.SetKeyValue(FILENAME, SECTIONS[1], Section_settings[SECTION_SETTINGS[1]], 2.ToString());
             }
 
             SetKeyBindings();            
@@ -122,8 +122,8 @@ namespace CheatManager.Configuration
         
         internal static void WriteConfig()
         {
-            Helper.SetAllKeyValuesInSection(FILENAME, SECTIONS[0], Section_hotkeys);
-            Helper.SetAllKeyValuesInSection(FILENAME, SECTIONS[1], Section_settings);
+            ParserHelper.SetAllKeyValuesInSection(FILENAME, SECTIONS[0], Section_hotkeys);
+            ParserHelper.SetAllKeyValuesInSection(FILENAME, SECTIONS[1], Section_settings);
         }
 
         internal static void SyncConfig()

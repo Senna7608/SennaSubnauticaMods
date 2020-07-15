@@ -90,12 +90,7 @@ namespace Common.ConfigurationParser
             var sb = new StringBuilder();
             _sections.All(kvp => { sb.AppendFormat("{0}\r\n", kvp.Value.ToString()); return true; });
             File.WriteAllText(_reader.FilePath, sb.ToString());
-        }
-
-        public void WriteInfoText(string section, string value)
-        {
-            SetAndWrite(section, "Information", value);
-        }
+        }        
     }
 }
 

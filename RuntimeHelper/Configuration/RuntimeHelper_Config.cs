@@ -53,7 +53,7 @@ namespace RuntimeHelper.Configuration
             }
             else
             {
-                CONFIG_VERSION = Helper.GetKeyValue(FILENAME, PROGRAM_NAME, "Version");
+                CONFIG_VERSION = ParserHelper.GetKeyValue(FILENAME, PROGRAM_NAME, "Version");
 
                 if (CONFIG_VERSION.Equals(PROGRAM_VERSION))
                 {
@@ -65,9 +65,9 @@ namespace RuntimeHelper.Configuration
                 }
             }
 
-            Section_hotkeys = Helper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[1], SECTION_HOTKEYS);
+            Section_hotkeys = ParserHelper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[1], SECTION_HOTKEYS);
 
-            string autostart = Helper.GetKeyValue(FILENAME, SECTIONS[0], SECTION_SETTINGS[0]);
+            string autostart = ParserHelper.GetKeyValue(FILENAME, SECTIONS[0], SECTION_SETTINGS[0]);
 
             if (!bool.TryParse(autostart, out AUTOSTART))
             {
@@ -83,7 +83,7 @@ namespace RuntimeHelper.Configuration
 
             try
             {
-                Helper.CreateDefaultConfigFile(FILENAME, PROGRAM_NAME, PROGRAM_VERSION, DEFAULT_CONFIG);                
+                ParserHelper.CreateDefaultConfigFile(FILENAME, PROGRAM_NAME, PROGRAM_VERSION, DEFAULT_CONFIG);                
             }
             catch
             {
@@ -100,8 +100,8 @@ namespace RuntimeHelper.Configuration
 
         internal static void WriteConfig()
         {
-            Helper.SetKeyValue(FILENAME, SECTIONS[0], SECTION_SETTINGS[0], AUTOSTART.ToString());
-            Helper.SetAllKeyValuesInSection(FILENAME, SECTIONS[1], Section_hotkeys);            
+            ParserHelper.SetKeyValue(FILENAME, SECTIONS[0], SECTION_SETTINGS[0], AUTOSTART.ToString());
+            ParserHelper.SetAllKeyValuesInSection(FILENAME, SECTIONS[1], Section_hotkeys);            
         }
 
         internal static void SyncConfig()

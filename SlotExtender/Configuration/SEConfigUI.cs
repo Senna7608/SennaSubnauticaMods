@@ -37,11 +37,10 @@ namespace SlotExtender.Configuration
             new GUIContent("9"),
             new GUIContent("10"),
             new GUIContent("11"),
-            new GUIContent("12")
+            new GUIContent("12"),
+            new GUIContent("SeamothArmLeft"),
+            new GUIContent("SeamothArmRight")
         };
-
-        
-
 
         public void Awake()
         {
@@ -52,7 +51,7 @@ namespace SlotExtender.Configuration
        
         private void InitItems()
         {
-            foreach (KeyValuePair<string, string> key in SEConfig.Section_hotkeys)
+            foreach (KeyValuePair<string, string> key in SEConfig.Hotkeys_Config)
             {
                 hotkeyLabels.Add(key.Key);
                 hotkeyButtons.Add(key.Value);
@@ -172,7 +171,7 @@ namespace SlotExtender.Configuration
         {            
             for (int i = 0; i < hotkeyButtons.Count; i++)
             {
-                SEConfig.Section_hotkeys[hotkeyLabels[i]] = hotkeyButtons[i];
+                SEConfig.Hotkeys_Config[hotkeyLabels[i]] = hotkeyButtons[i];
             }
 
             int.TryParse(dropDownContent[dropdownSelection].text, out int result);
@@ -183,8 +182,8 @@ namespace SlotExtender.Configuration
                 SEConfig.MAXSLOTS = result;
             }
 
-            SEConfig.WriteConfig();
-            SEConfig.SetKeyBindings();
+            SEConfig.Config_Write();
+            SEConfig.KEYBINDINGS_Set();
             Main.GameInput_OnBindingsChanged();
             Destroy(Instance);
         }
