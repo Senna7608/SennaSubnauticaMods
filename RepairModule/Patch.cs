@@ -1,5 +1,4 @@
-﻿using Common;
-using Harmony;
+﻿using HarmonyLib;
 
 namespace RepairModule
 {
@@ -10,7 +9,7 @@ namespace RepairModule
         [HarmonyPostfix]
         public static void Postfix(SeaMoth __instance)
         {
-            __instance.gameObject.AddIfNeedComponent<RepairModuleControl>();
+            __instance.gameObject.EnsureComponent<RepairModuleControl>();
         }
     }
 
@@ -21,7 +20,7 @@ namespace RepairModule
         [HarmonyPostfix]
         public static void Postfix(Exosuit __instance)
         {
-            __instance.gameObject.AddIfNeedComponent<RepairModuleControl>();
+            __instance.gameObject.EnsureComponent<RepairModuleControl>();
         }
     }
 }

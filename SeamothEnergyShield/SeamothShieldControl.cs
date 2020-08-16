@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using Common;
+using Common.Helpers;
 
 namespace SeamothEnergyShield
 {
@@ -18,8 +19,12 @@ namespace SeamothEnergyShield
         private FMODAsset shield_on_loop;
         private FMOD_CustomEmitter sfx;        
 
+        public ObjectHelper objectHelper { get; private set; }
+                    
         private void Start()
-        {            
+        {
+            objectHelper = new ObjectHelper();
+
             thisSeamoth = GetComponent<SeaMoth>();
             liveMixin = GetComponent<LiveMixin>();
             energyMixin = GetComponent<EnergyMixin>();
@@ -31,7 +36,7 @@ namespace SeamothEnergyShield
             sfx.asset = shield_on_loop;
             sfx.followParent = true;
 
-            GameObject CyclopsPrefab = GameHelper.GetRootGameObject("Cyclops", "Cyclops-MainPrefab");
+            GameObject CyclopsPrefab = objectHelper.GetRootGameObject("Cyclops", "Cyclops-MainPrefab");
 
             SubRoot subRoot = CyclopsPrefab.GetComponent<SubRoot>();
 
@@ -125,7 +130,15 @@ namespace SeamothEnergyShield
 
         private void ShieldIteration()
         {            
-            if (!energyMixin.ConsumeEnergy(shieldPowerCost))
+            if (energyMixin.charge < energyMixin.capacity * 0.2f)
+            {
+                ErrorMessage.AddDebug("Warning!\nLow Power!\nEnergy Shield Disabled!");
+
+                StopShield();
+
+                thisSeamoth.SlotKeyDown(GetShieldSlot());                
+            }
+            else if (!energyMixin.ConsumeEnergy(shieldPowerCost))
             {
                 StopShield();
             }
@@ -148,6 +161,21 @@ namespace SeamothEnergyShield
             sfx.Stop();
             CancelInvoke("ShieldIteration");
             EndSeamothShielded();
+        }
+
+        private int GetShieldSlot()
+        {
+            TechType[] modules = thisSeamoth.GetSlotBinding();
+
+            for (int i = 0; i < modules.Length; i++)
+            {
+                if (modules[i] == SeamothShieldPrefab.TechTypeID)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
         }
     }
 }

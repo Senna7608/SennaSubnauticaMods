@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System;
 
-namespace Common
+namespace Common.Helpers
 {
     public static class InputHelper
     {

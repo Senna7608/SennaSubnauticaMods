@@ -2,12 +2,9 @@
   "Id": "CheatManager",
   "DisplayName": "CheatManager",
   "Author": "Senna",
-  "Version": "2.3",
-  "Dependencies": ["SMLHelper"],
-  "LoadBefore": [],
-  "LoadAfter": [],
+  "Version": "2.4",
+  "Dependencies": ["SMLHelper"],  
   "Enable": true,
   "Game": "Subnautica",
-  "AssemblyName": "CheatManager.dll",
-  "EntryMethod": "CheatManager.Main.Load",  
+  "AssemblyName": "CheatManager.dll"  
 }

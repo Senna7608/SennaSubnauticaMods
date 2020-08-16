@@ -1,5 +1,5 @@
 ﻿using Common;
-using Harmony;
+using HarmonyLib;
 
 namespace SeamothArms.Patches
 {
@@ -10,9 +10,9 @@ namespace SeamothArms.Patches
         [HarmonyPostfix]
         public static void Postfix(SeaMoth __instance)
         {            
-            __instance.gameObject.AddIfNeedComponent<SeamothArmManager>();
+            __instance.gameObject.EnsureComponent<SeamothArmManager>();
 
-            SNLogger.Log($"[SeamothArms] Seamoth Arm Manager added in Awake -> Postfix Patch, ID: {__instance.GetInstanceID()}");
+            SNLogger.Log("SeamothArms", $"Seamoth Arm Manager added in Awake -> Postfix Patch, ID: {__instance.GetInstanceID()}");
         }
     }
     
@@ -23,6 +23,16 @@ namespace SeamothArms.Patches
         [HarmonyPostfix]
         internal static void Postfix(SeaMoth __instance, bool docked, Vehicle.DockType dockType)
         {
+            if (__instance.gameObject.TryGetComponent(out SeamothArmManager manager))
+            {
+                manager.onDockedChanged?.Trigger(docked);
+            }
+            else
+            {
+                SNLogger.Warn("SeamothArms", "Seamoth Arm Manager is not ready!");
+            }
+                       
+            /*
             SeamothArmManager control = null;
 
             try
@@ -31,12 +41,14 @@ namespace SeamothArms.Patches
             }
             catch
             {
-                SNLogger.Log("[SeamothArms] OnDockedChanged Patch Warning! Seamoth Arm Manager is not ready!");
+                SNLogger.Warn("SeamothArms", "Seamoth Arm Manager is not ready!");
                 return;
             }
             
             if (control != null && control.onDockedChanged != null)
-                control.onDockedChanged.Trigger(docked);                        
+                control.onDockedChanged.Trigger(docked);
+                
+    */
         }
     }
     
@@ -50,13 +62,28 @@ namespace SeamothArms.Patches
         {
             if (__instance.GetType() == typeof(SeaMoth))
             {
-                SeamothArmManager control = __instance.gameObject.GetComponent<SeamothArmManager>().Instance;
+                if (__instance.gameObject.TryGetComponent(out SeamothArmManager manager))
+                {
+                    if (manager.IsArmSlotSelected)
+                    {
+                        manager.SlotArmDown();
+                        return false;
+                    }
+                }
+                else
+                {
+                    SNLogger.Warn("SeamothArms", "Seamoth Arm Manager is not ready!");
+                }
+
+                /*
+                SeamothArmManager control = __instance.gameObject.GetComponent<SeamothArmManager>();
 
                 if (control.IsArmSlotSelected)
                 {
                     control.SlotArmDown();
                     return false;
-                }                
+                }
+                */
             }
 
             return true;
@@ -72,13 +99,28 @@ namespace SeamothArms.Patches
         {
             if (__instance.GetType() == typeof(SeaMoth))
             {
-                SeamothArmManager control = __instance.gameObject.GetComponent<SeamothArmManager>().Instance;
+                if (__instance.gameObject.TryGetComponent(out SeamothArmManager manager))
+                {
+                    if (manager.IsArmSlotSelected)
+                    {
+                        manager.SlotArmHeld();
+                        return false;
+                    }
+                }
+                else
+                {
+                    SNLogger.Warn("SeamothArms", "Seamoth Arm Manager is not ready!");
+                }
+
+                /*
+                SeamothArmManager control = __instance.gameObject.GetComponent<SeamothArmManager>();
 
                 if (control.IsArmSlotSelected)
                 {
                     control.SlotArmHeld();
                     return false;
-                }                
+                }
+                */
             }
 
             return true;
@@ -94,13 +136,28 @@ namespace SeamothArms.Patches
         {
             if (__instance.GetType() == typeof(SeaMoth))
             {
-                SeamothArmManager control = __instance.gameObject.GetComponent<SeamothArmManager>().Instance;
+                if (__instance.gameObject.TryGetComponent(out SeamothArmManager manager))
+                {
+                    if (manager.IsArmSlotSelected)
+                    {
+                        manager.SlotArmUp();
+                        return false;
+                    }
+                }
+                else
+                {
+                    SNLogger.Warn("SeamothArms", "Seamoth Arm Manager is not ready!");
+                }
+
+                /*
+                SeamothArmManager control = __instance.gameObject.GetComponent<SeamothArmManager>();
 
                 if (control.IsArmSlotSelected)
                 {
                     control.SlotArmUp();
                     return false;
-                }                
+                }
+                */
             }
 
             return true;

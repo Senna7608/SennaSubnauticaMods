@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using SMLHelper.V2.Crafting;
 using UnityEngine;
-using Common;
+using Common.Helpers.SMLHelpers;
 
 namespace SeamothEnergyShield
 {
@@ -11,13 +11,14 @@ namespace SeamothEnergyShield
 
         internal SeamothShieldPrefab()
             : base(nameID: "SeamothEnergyShield",
-                  iconFileName: "SeamothEnergyShield",
+                  iconFilePath: $"{Main.modFolder}/Assets/SeamothEnergyShield.png",
                   iconTechType: TechType.None,
                   friendlyName: "Seamoth Energy Shield",
                   description: "Allows Seamoth to use a miniaturized Cyclops energy shield.",
                   template: TechType.SeamothElectricalDefense,
-                  fabricatorType: CraftTree.Type.SeamothUpgrades,
-                  fabricatorTab: new string[] { "SeamothModules" },
+                  newTabNode: null,
+                  fabricatorTypes: new CraftTree.Type[] { CraftTree.Type.SeamothUpgrades },
+                  fabricatorTabs: new string[][] { new string[] { "SeamothModules" } },
                   requiredAnalysis: TechType.CyclopsShieldModule,
                   groupForPDA: TechGroup.VehicleUpgrades,
                   categoryForPDA: TechCategory.VehicleUpgrades,

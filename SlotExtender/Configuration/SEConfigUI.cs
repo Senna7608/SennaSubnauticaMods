@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using Common;
+using Common.Helpers;
 using Common.GUIHelper;
+using Common;
 
 namespace SlotExtender.Configuration
 {

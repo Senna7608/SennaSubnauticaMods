@@ -13,6 +13,7 @@ namespace RuntimeHelper
         private Rect ComponentWindow_drawRect;
 
         private List<Component> components = new List<Component>();
+        public List<UnityEngine.Object> objects = new List<UnityEngine.Object>();
         private List<GuiItem> guiItems_Components = new List<GuiItem>();               
         
         private Vector2 scrollPos_Components = Vector2.zero;
@@ -34,21 +35,28 @@ namespace RuntimeHelper
 
         private bool isColliderSelected = false;
 
-
-        private Dictionary<int, ComponentInfo> componentInfos = new Dictionary<int, ComponentInfo>();
+        //private Dictionary<int, ComponentInfo> componentInfos = new Dictionary<int, ComponentInfo>();
 
         private void RefreshComponentsList()
         {
             components.Clear();
             componentNames.Clear();
+            objects.Clear();
 
             try
             {
                 selectedObject.GetComponents(components);
 
+                objects.Add(selectedObject);
+
                 foreach (Component component in components)
                 {
-                    componentNames.Add(GetComponentShortType(component));
+                    objects.Add(component);
+                }
+
+                foreach (UnityEngine.Object _object in objects)
+                {
+                    componentNames.Add(GetComponentShortType(_object));
                 }
             }
             catch
@@ -66,7 +74,7 @@ namespace RuntimeHelper
         private void ComponentWindow_OnGUI()
         {
             if (isDirty)
-                return;            
+                return;
 
             ComponentWindow_drawRect = SNWindow.CreateWindow(ComponentWindow_Rect, "Component Window");
 
@@ -77,30 +85,31 @@ namespace RuntimeHelper
                 if (GUI.Button(new Rect(ComponentWindow_drawRect.x + 5, (ComponentWindow_drawRect.y + ComponentWindow_drawRect.height) - 27, 50, 22), enabledValue ? "Off" : "On", SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
                 {
                     enabledValue = !enabledValue;
-                    changeEnabledproperty.SetValue(components[selected_component], enabledValue, BindingFlags.Instance | BindingFlags.Public, null, null, null);
+                    changeEnabledproperty.SetValue(objects[selected_component], enabledValue, BindingFlags.Instance | BindingFlags.Public, null, null, null);
 
-                    showComponentInfoWindow = false;
-                    ComponentInfoWindow_Awake(components[selected_component]);
-                    showComponentInfoWindow = true;
+                    showObjectInfoWindow = false;
+                    ObjectInfoWindow_Awake(objects[selected_component]);
+                    showObjectInfoWindow = true;
 
-                    OutputWindow_Log(MESSAGE_TEXT[MESSAGES.COMPONENT_STATE_MODIFIED], LogType.Warning, GetComponentShortType(components[selected_component]), enabledValue);
+                    OutputWindow_Log(MESSAGE_TEXT[MESSAGES.COMPONENT_STATE_MODIFIED], LogType.Warning, GetComponentShortType(objects[selected_component]), enabledValue);
                 }
             }
 
             if (GUI.Button(new Rect(ComponentWindow_drawRect.x + 60, (ComponentWindow_drawRect.y + ComponentWindow_drawRect.height) - 27, 150, 22), ComponentWindow[0], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
-                showComponentInfoWindow = false;
-                RemoveComponent(components[selected_component]);
+                showObjectInfoWindow = false;
+                RemoveComponent(objects[selected_component]);
             }
 
             if (GUI.Button(new Rect(ComponentWindow_drawRect.x + 220, (ComponentWindow_drawRect.y + ComponentWindow_drawRect.height) - 27, 150, 22), ComponentWindow[1], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
                 showRendererWindow = false;
-                showComponentInfoWindow = false;
-                showAddComponentWindow = true;                
+                showObjectInfoWindow = false;
+                showAddComponentWindow = true;
             }
+
         }
-        
+
         private void ComponentWindow_Update()
         {
             if (ScrollView_components_event.ItemID != -1 && ScrollView_components_event.MouseButton == 0)
@@ -109,21 +118,15 @@ namespace RuntimeHelper
 
                 selected_component = ScrollView_components_event.ItemID;
 
-                int componentID = components[selected_component].GetInstanceID();
+                Type componentType = objects[selected_component].GetType();
 
-                if (!componentInfos.ContainsKey(componentID))
-                {
-                    componentInfos.Add(componentID, new ComponentInfo(components[selected_component]));
-                }
-
-                Type componentType = components[selected_component].GetType();
-                                
-                if (IsSupportedCollider(components[selected_component]))
+                if (IsSupportedCollider(objects[selected_component]))
                 {
                     isColliderSelected = true;
-                    GetColliderInfo();                    
-                    DrawColliderControl dcc = selectedObject.GetComponentInChildren<DrawColliderControl>();                    
-                    dcc.DrawSelectedCollider(componentID, true);                    
+                    GetColliderInfo();
+                    DrawColliderControl dcc = selectedObject.GetComponentInChildren<DrawColliderControl>();
+                    int componentID = objects[selected_component].GetInstanceID();
+                    dcc.DrawSelectedCollider(componentID, true);
                     RefreshEditModeList();
                 }
                 else
@@ -131,37 +134,37 @@ namespace RuntimeHelper
                     isColliderSelected = false;
                     RefreshEditModeList();
                 }
-               
-                if (IsSupportedRenderer(components[selected_component]))
+
+                if (IsSupportedRenderer(objects[selected_component]))
                 {
-                    showComponentInfoWindow = false;
+                    showObjectInfoWindow = false;
                     RendererWindow_Awake();
-                }                
+                }
                 else
                 {
-                    showRendererWindow = false;                    
-                    ComponentInfoWindow_Awake(components[selected_component]);
-                    showComponentInfoWindow = true;
-                }                
+                    showRendererWindow = false;
+                    ObjectInfoWindow_Awake(objects[selected_component]);
+                    showObjectInfoWindow = true;
+                }
 
-                if (IsComponentInBlacklist(components[selected_component]))
+                if (IsComponentInBlacklist(objects[selected_component]))
                 {
                     changeEnabledproperty = null;
                     return;
                 }
 
-                changeEnabledproperty = components[selected_component].GetType().GetProperty("enabled");
+                changeEnabledproperty = objects[selected_component].GetType().GetProperty("enabled");
 
                 if (changeEnabledproperty != null)
                 {
-                    enabledValue = (bool)changeEnabledproperty.GetValue(components[selected_component], BindingFlags.Instance | BindingFlags.Public, null, null, null);                    
+                    enabledValue = (bool)changeEnabledproperty.GetValue(objects[selected_component], BindingFlags.Instance | BindingFlags.Public, null, null, null);
                 }
 
             }
 
         }
 
-        private bool IsSupportedCollider(Component component)
+        private bool IsSupportedCollider(UnityEngine.Object component)
         {
             Type componentType = component.GetType();
 
@@ -180,7 +183,7 @@ namespace RuntimeHelper
             return false;
         }
 
-        private bool IsSupportedRenderer(Component component)
+        private bool IsSupportedRenderer(UnityEngine.Object component)
         {
             Type componentType = component.GetType();
 
@@ -197,7 +200,7 @@ namespace RuntimeHelper
         }
 
 
-        private void RemoveComponent(Component component)
+        private void RemoveComponent(UnityEngine.Object component)
         {
             if (IsComponentInBlacklist(component))
             {
@@ -228,7 +231,7 @@ namespace RuntimeHelper
 
         private void GetColliderInfo()
         {
-            Collider collider = (Collider)components[selected_component];
+            Collider collider = (Collider)objects[selected_component];
 
             switch (collider.GetColliderType())
             {
@@ -263,7 +266,7 @@ namespace RuntimeHelper
             typeof(RectTransform),
             typeof(CanvasRenderer),
             typeof(MeshRenderer),
-            typeof(SkinnedMeshRenderer),            
+            typeof(SkinnedMeshRenderer),
             typeof(Mesh),
             typeof(MeshFilter),
             typeof(Shader),
@@ -273,14 +276,14 @@ namespace RuntimeHelper
             typeof(TracePlayerPos)
         };
 
-        private bool IsComponentInBlacklist(Component component)
+        private bool IsComponentInBlacklist(UnityEngine.Object component)
         {
             Type componentType = component.GetType();
 
             foreach (Type type in Components_Blacklist)
             {
                 if (componentType == type)
-                {                    
+                {
                     return true;
                 }
                 else
@@ -291,8 +294,8 @@ namespace RuntimeHelper
 
             return false;
         }
-        
-        private string GetComponentShortType(Component component)
+
+        internal string GetComponentShortType(UnityEngine.Object component)
         {
             return component.GetType().ToString().Split('.').GetLast();
         }

@@ -34,7 +34,10 @@ namespace RuntimeHelper
         COMPONENT_CANNOT_REMOVED,
         GET_ROOTS,
         COMPONENT_STATE_MODIFIED,
-        COMPONENT_ADDED
+        COMPONENT_ADDED,
+        OBJECT_MARKED,
+        OBJECT_UNMARKED,
+        COMPONENT_INFORMATION_LOGGED
     }
 
 
@@ -49,16 +52,21 @@ namespace RuntimeHelper
         COMPONENT_IN_BLACKLIST,
         OBJECT_CANNOT_INSTANTIATE,
         EMERGENCY_METHOD_STARTED,
+        TEMP_OBJECT_EMPTY,
+        CANNOT_MARK,
+        CANNOT_SET_MARKED,
+        CANNOT_REMOVE_MARKED
     }
 
 
     public enum ERRORS
     {
         BASE_OBJECT_DESTROYED,
-        SELECTED_OBJECT_DESTROYED,        
+        SELECTED_OBJECT_DESTROYED,
         GET_OR_ADD_COMPONENT_ERROR,
+        CANNOT_SWITCH_TO_OBJECT
     }
-     
+
     public partial class RuntimeHelper
     {
         public static readonly Dictionary<MESSAGES, string> MESSAGE_TEXT = new Dictionary<MESSAGES, string>
@@ -94,8 +102,11 @@ namespace RuntimeHelper
             { MESSAGES.COMPONENT_CANNOT_REMOVED, "Component [{0}] cannot be removed from this gameobject [{1}]."},
             { MESSAGES.COMPONENT_STATE_MODIFIED, "Component [{0}] active state now {1}."},
             { MESSAGES.COMPONENT_ADDED, "Component [{0}] added to gameobject [{1}]."},
+            { MESSAGES.OBJECT_MARKED, "Gameobject [{0}] marked and added to list."},
+            { MESSAGES.OBJECT_UNMARKED, "Gameobject [{0}] unmarked and removed from list."},
+            { MESSAGES.COMPONENT_INFORMATION_LOGGED, "Component [{0}] information add to logfile."},
         };
-        
+
 
         public static readonly Dictionary<WARNINGS, string> WARNING_TEXT = new Dictionary<WARNINGS, string>
         {
@@ -108,14 +119,19 @@ namespace RuntimeHelper
             { WARNINGS.COMPONENT_IN_BLACKLIST, "Component [{0}] is in Blacklist and cannot be removed!"},
             { WARNINGS.OBJECT_CANNOT_INSTANTIATE, "The selected TechType [{0}][{1}] cannot be instantiated!"},
             { WARNINGS.EMERGENCY_METHOD_STARTED, "Emergency method started."},
+            { WARNINGS.TEMP_OBJECT_EMPTY, "Cannot paste. Temp object is empty."},
+            { WARNINGS.CANNOT_MARK, "Cannot mark. Gameobject is already in the list."},
+            { WARNINGS.CANNOT_SET_MARKED, "Cannot set. List is empty."},
+            { WARNINGS.CANNOT_REMOVE_MARKED, "Cannot remove. List is empty."},
         };
 
 
         public static readonly Dictionary<ERRORS, string> ERROR_TEXT = new Dictionary<ERRORS, string>
         {
             { ERRORS.BASE_OBJECT_DESTROYED, "*** Base gameobject unexpectedly destroyed!"},
-            { ERRORS.SELECTED_OBJECT_DESTROYED, "*** Selected gameobject unexpectedly destroyed!"},            
+            { ERRORS.SELECTED_OBJECT_DESTROYED, "*** Selected gameobject unexpectedly destroyed!"},
             { ERRORS.GET_OR_ADD_COMPONENT_ERROR, "*** Get or Add Component [{0}] to gameobject [{1}] has failed!"},
+            { ERRORS.CANNOT_SWITCH_TO_OBJECT, "*** Cannot swittch base to this gameobject [{0}]!"},
         };
 
     }

@@ -221,7 +221,7 @@ namespace SeamothArms
                     leftArm = null;
                 }
 
-                leftArm = SpawnArm(techType, leftArmAttach);                
+                leftArm = Main.graphics.SpawnArm(techType, leftArmAttach);                
                 leftArm.SetSide(Left);
                 leftArm.SetRotation(Left, seamoth.docked);
                 currentLeftArmType = techType;
@@ -234,7 +234,7 @@ namespace SeamothArms
                     rightArm = null;
                 }
 
-                rightArm = SpawnArm(techType, rightArmAttach);                
+                rightArm = Main.graphics.SpawnArm(techType, rightArmAttach);                
                 rightArm.SetSide(Right);
                 rightArm.SetRotation(Right, seamoth.docked);
                 currentRightArmType = techType;
@@ -244,6 +244,8 @@ namespace SeamothArms
             vfxConstructing.Regenerate();            
             armsDirty = false;
             UpdateColliders();
+
+            UpdateArmRenderers();
         }
 
         public void ResetArms()

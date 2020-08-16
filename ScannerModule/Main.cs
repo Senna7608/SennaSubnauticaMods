@@ -1,21 +1,30 @@
 ﻿using System;
 using System.Reflection;
-using Harmony;
 using UnityEngine;
-using Common;
+using HarmonyLib;
+using Common.Helpers;
+using System.IO;
+using QModManager.API.ModLoading;
 
 namespace ScannerModule
 {
+    [QModCore]
     public static class Main
     {
+        public static readonly string modFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+        public static ObjectHelper objectHelper { get; private set; }
+
+        [QModPatch]
         public static void Load()
         {
             try
             {
-                var scannermodule = new ScannerModulePrefab();
-                scannermodule.Patch();
+                objectHelper = new ObjectHelper();
 
-                HarmonyInstance.Create("Subnautica.ScannerModule.mod").PatchAll(Assembly.GetExecutingAssembly());                
+                new ScannerModulePrefab().Patch();
+
+                Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), "Subnautica.ScannerModule.mod");               
             }
             catch (Exception ex)
             {

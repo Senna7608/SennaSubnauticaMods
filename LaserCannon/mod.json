@@ -1,13 +1,10 @@
 ﻿{
   "Id": "LaserCannon",
-  "DisplayName": "LaserCannon",
+  "DisplayName": "Laser Cannon",
   "Author": "Senna",
-  "Version": "1.7",
-  "Dependencies": ["SMLHelper"],
-  "LoadBefore": [],
-  "LoadAfter": [],
+  "Version": "1.8",
+  "Dependencies": ["SMLHelper"],  
   "Enable": true,
   "Game": "Subnautica",
-  "AssemblyName": "LaserCannon.dll",
-  "EntryMethod": "LaserCannon.Main.Load"  
+  "AssemblyName": "LaserCannon.dll"  
 }

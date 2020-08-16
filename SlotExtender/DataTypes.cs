@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using Common.Helpers;
 using UnityEngine;
 
 namespace SlotExtender

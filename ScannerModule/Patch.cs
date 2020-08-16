@@ -1,5 +1,4 @@
-﻿using Common;
-using Harmony;
+﻿using HarmonyLib;
 
 namespace ScannerModule
 {
@@ -10,7 +9,7 @@ namespace ScannerModule
         [HarmonyPostfix]
         public static void Postfix(SeaMoth __instance)
         {            
-            __instance.gameObject.AddIfNeedComponent<ScannerModuleSeamoth>();           
+            __instance.gameObject.EnsureComponent<ScannerModuleSeamoth>();           
         }
     }
 
@@ -21,7 +20,7 @@ namespace ScannerModule
         [HarmonyPostfix]
         public static void Postfix(Exosuit __instance)
         {
-            __instance.gameObject.AddIfNeedComponent<ScannerModuleExosuit>();
+            __instance.gameObject.EnsureComponent<ScannerModuleExosuit>();
         }
     }    
 }

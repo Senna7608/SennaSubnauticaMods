@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using SMLHelper.V2.Crafting;
 using UnityEngine;
-using Common;
+using Common.Helpers.SMLHelpers;
 
 namespace SeamothArms.ArmPrefabs
 {
@@ -11,13 +11,14 @@ namespace SeamothArms.ArmPrefabs
 
         internal SeamothDrillArmPrefab()
             : base(nameID: "SeamothDrillArmModule",
-                  iconFileName: null,
+                  iconFilePath: null,
                   iconTechType: TechType.None,
                   friendlyName: "Seamoth Drill Arm",
                   description: "Allows Seamoth to use Drill Arm.",
                   template: TechType.ExosuitDrillArmModule,
-                  fabricatorType: CraftTree.Type.SeamothUpgrades,
-                  fabricatorTab: new string[] { "SeamothModules" },
+                  newTabNode: null,
+                  fabricatorTypes: new CraftTree.Type[] { CraftTree.Type.SeamothUpgrades },
+                  fabricatorTabs: new string[][] { new string[] { "SeamothModules" } },
                   requiredAnalysis: TechType.ExosuitDrillArmModule,
                   groupForPDA: TechGroup.VehicleUpgrades,
                   categoryForPDA: TechCategory.VehicleUpgrades,

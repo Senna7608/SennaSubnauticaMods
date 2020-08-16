@@ -130,74 +130,72 @@ namespace SlotExtender
             }
             else if (GameInput.GetButtonDown(GameInput.Button.Slot1))
             {
-                TryOpenSeamothStorage(0);
+                TryUseSlotItem(0);
+                return;
             }
             else if (GameInput.GetButtonDown(GameInput.Button.Slot2))
             {
-                TryOpenSeamothStorage(1);
+                TryUseSlotItem(1);
+                return;
             }
             else if (GameInput.GetButtonDown(GameInput.Button.Slot3))
             {
-                TryOpenSeamothStorage(2);
+                TryUseSlotItem(2);
+                return;
             }
             else if (GameInput.GetButtonDown(GameInput.Button.Slot4))
             {
-                TryOpenSeamothStorage(3);
+                TryUseSlotItem(3);
+                return;
+            }
+            else if (GameInput.GetButtonDown(GameInput.Button.Slot5))
+            {
+                TryUseSlotItem(4);
+                return;
             }
             else if (Input.GetKeyDown(SEConfig.KEYBINDINGS["Slot_6"]))
             {
-                ThisVehicle.SendMessage("SlotKeyDown", 5);
+                TryUseSlotItem(5);
                 return;
             }
             else if (Input.GetKeyDown(SEConfig.KEYBINDINGS["Slot_7"]))
             {
-                ThisVehicle.SendMessage("SlotKeyDown", 6);
+                TryUseSlotItem(6);
                 return;
             }
             else if (Input.GetKeyDown(SEConfig.KEYBINDINGS["Slot_8"]))
             {
-                ThisVehicle.SendMessage("SlotKeyDown", 7);
+                TryUseSlotItem(7);
                 return;
             }
             else if (Input.GetKeyDown(SEConfig.KEYBINDINGS["Slot_9"]))
             {
-                ThisVehicle.SendMessage("SlotKeyDown", 8);
+                TryUseSlotItem(8);
                 return;
             }
             else if (Input.GetKeyDown(SEConfig.KEYBINDINGS["Slot_10"]))
             {
-                ThisVehicle.SendMessage("SlotKeyDown", 9);
+                TryUseSlotItem(9);
                 return;
             }
             else if (Input.GetKeyDown(SEConfig.KEYBINDINGS["Slot_11"]))
             {
-                ThisVehicle.SendMessage("SlotKeyDown", 10);
+                TryUseSlotItem(10);
                 return;
             }
             else if (Input.GetKeyDown(SEConfig.KEYBINDINGS["Slot_12"]))
             {
-                ThisVehicle.SendMessage("SlotKeyDown", 11);
+                TryUseSlotItem(11);
                 return;
             }
             else if (Input.GetKeyDown(SEConfig.KEYBINDINGS["SeamothArmLeft"]))
             {
-                if (ThisVehicle.GetType() != typeof(SeaMoth))
-                    return;
-
-                int slotID = SlotHelper.GetSeamothSlotInt(SlotConfigID.SeamothArmLeft);
-
-                ThisVehicle.SendMessage("SlotKeyDown", slotID);
+                TryUseSeamothArm("SeamothArmLeft");
                 return;
             }
             else if (Input.GetKeyDown(SEConfig.KEYBINDINGS["SeamothArmRight"]))
             {
-                if (ThisVehicle.GetType() != typeof(SeaMoth))
-                    return;
-
-                int slotID = SlotHelper.GetSeamothSlotInt(SlotConfigID.SeamothArmRight);
-
-                ThisVehicle.SendMessage("SlotKeyDown", slotID);
-                
+                TryUseSeamothArm("SeamothArmRight");
                 return;
             }
         }        
@@ -209,23 +207,37 @@ namespace SlotExtender
 
             // destroying this SlotExtender instance
             Destroy(Instance);
-        }        
+        }
 
-        public void TryOpenSeamothStorage(int slotID)
+        public void TryUseSlotItem(int slotID)
         {
-            if (ThisVehicle.GetType() != typeof(SeaMoth))
-                return;
-            if (ThisVehicle.GetSlotBinding(slotID) != TechType.VehicleStorageModule)
-                return;
             if (PdaMain.isOpen)
             {
                 PdaMain.Close();
                 return;
             }
-            else
+
+            if (ThisVehicle.GetType() == typeof(SeaMoth))
             {
-                ThisVehicle.GetComponent<SeaMoth>().storageInputs[slotID].OpenFromExternal();
-                return;
+                if (ThisVehicle.GetSlotBinding(slotID) == TechType.VehicleStorageModule)
+                {
+                    int slot = slotID > 3 ? slotID - SEConfig.STORAGE_SLOTS_OFFSET : slotID;
+                    ThisVehicle.GetComponent<SeaMoth>().storageInputs[slot].OpenFromExternal();
+                    return;
+                }
+            }
+
+            if (slotID > 5)
+            {
+                ThisVehicle.SendMessage("SlotKeyDown", slotID);
+            }
+        }
+
+        public void TryUseSeamothArm(string seamothArmID)
+        {
+            if (ThisVehicle.GetType() == typeof(SeaMoth))
+            {
+                ThisVehicle.SlotKeyDown(ThisVehicle.GetSlotIndex(seamothArmID));
             }
         }
 

@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
-using SMLHelper.V2.Handlers;
-using Common.GUIHelper;
-using static Common.GameHelper;
+using Common;
+using Common.Helpers;
+using Common.Helpers.SMLHelpers;
 
 namespace CheatManager
 {
-    public enum CATEGORY
+    public enum TechCategory
     {
         Vehicles,
         Tools,
@@ -30,31 +29,7 @@ namespace CheatManager
         Blueprints,
         Warp,
         BaseModule,
-    };   
-
-    /*
-    public class TechTypeData : IComparable<TechTypeData>
-    {
-        public TechType TechType { get; set; }
-        public string Name { get; set; }
-
-        public TechTypeData(TechType techType, string name)
-        {
-            TechType = techType;
-            Name = name;
-        }
-
-        public int CompareTo(TechTypeData other)
-        {
-            return string.Compare(Name, other.Name);
-        }
-
-        public string GetTechName()
-        {
-            return Name;
-        }
-    }
-    */
+    };    
 
     public class TechnologyMatrix
     {
@@ -77,7 +52,7 @@ namespace CheatManager
         {
             int i = 0;
 
-            foreach (KeyValuePair<CATEGORY, TechType[]> kvp in baseTechMatrix)
+            foreach (KeyValuePair<TechCategory, TechType[]> kvp in baseTechMatrix)
             {
                 if (Enum.IsDefined(typeof(Categories), (int)kvp.Key))
                 {
@@ -113,73 +88,37 @@ namespace CheatManager
             {
                 item.Sort();
             }            
-        }
-        
-        public void IsExistsModdersTechTypes(ref List<TechTypeData>[] TechnologyMatrix, Dictionary<string, CATEGORY> dictionary)
-        {
-            foreach (KeyValuePair<string, CATEGORY> pair in dictionary)
-            {
-                if (pair.Value == CATEGORY.BaseModule)
-                {
-                    continue;
-                }
+        }                
 
-                if (TechTypeHandler.TryGetModdedTechType(pair.Key, out TechType techType))
+        public void GetModdedTechTypes(ref List<TechTypeData>[] TechnologyMatrix)
+        {
+            ModdedTechTypeHelper mHelper = new ModdedTechTypeHelper();
+
+            foreach (KeyValuePair<string, TechType> kvp in mHelper.FoundModdedTechTypes)
+            {
+                EquipmentType equipmentType = mHelper.TypeDefCache[kvp.Value];
+
+                switch (equipmentType)
                 {
-                    if (TechTypeExtensions.AsString(techType, false) == pair.Key)
-                    {
-                        TechnologyMatrix[(int)pair.Value].Add(new TechTypeData(techType, Language.main.Get(TechTypeExtensions.AsString(techType, false))));                        
-                    }
+                    case EquipmentType.CyclopsModule:
+                    case EquipmentType.ExosuitArm:
+                    case EquipmentType.ExosuitModule:                    
+                    case EquipmentType.SeamothModule:                    
+                    case EquipmentType.VehicleModule:
+                    case (EquipmentType)100:
+                        TechnologyMatrix[(int)TechCategory.Upgrades].Add(new TechTypeData(kvp.Value, Language.main.Get(TechTypeExtensions.AsString(kvp.Value, false))));
+                        break;
                 }
             }
-        } 
-        
-        
-        
-        public readonly Dictionary<string, CATEGORY> Known_Modded_TechTypes = new Dictionary<string, CATEGORY>
-        {            
-            { "SpeedModule", CATEGORY.Upgrades },            
-            { "CyclopsThermalChargerMk2", CATEGORY.Upgrades },
-            { "CyclopsSolarCharger", CATEGORY.Upgrades },
-            { "CyclopsSolarChargerMk2", CATEGORY.Upgrades },
-            { "PowerUpgradeModuleMk2", CATEGORY.Upgrades },
-            { "PowerUpgradeModuleMk3", CATEGORY.Upgrades },
-            { "CyclopsSpeedModule", CATEGORY.Upgrades },
-            { "CyclopsNuclearModule", CATEGORY.Upgrades },
-            { "DepletedCyclopsNuclearModule", CATEGORY.Upgrades },
-            { "CyclopsNuclearModuleRefil", CATEGORY.Upgrades },
-            { "NuclearFabricator", CATEGORY.BaseModule },
-            { "AuxCyUpgradeConsole", CATEGORY.BaseModule },
-            { "VModFabricator", CATEGORY.BaseModule },
-            { "SeamothHullModule4", CATEGORY.Upgrades },
-            { "SeamothHullModule5", CATEGORY.Upgrades },
-            { "SeamothDrillModule", CATEGORY.Upgrades },
-            { "SeamothThermalModule", CATEGORY.Upgrades },
-            { "SeamothClawModule", CATEGORY.Upgrades },
-            { "ScannerModule", CATEGORY.Upgrades },
-            { "RepairModule", CATEGORY.Upgrades },
-            { "LaserCannon", CATEGORY.Upgrades },
-            { "techpistol", CATEGORY.Tools },
-            { "AlienRifle", CATEGORY.Tools },
-            { "AncientSword", CATEGORY.Tools },
-            { "Crowbar", CATEGORY.Tools },
-            { "ExosuitPlasmaCannonArmModule", CATEGORY.Upgrades },
-            { "CyclopsLaserCannonModule", CATEGORY.Upgrades },
-            { "SeamothEnergyShield", CATEGORY.Upgrades },
-            { "ExosuitRepulsionCannonArmModule", CATEGORY.Upgrades },
-            { "SeamothDrillArmModule", CATEGORY.Upgrades },
-            { "SeamothClawArmModule", CATEGORY.Upgrades },
-            { "SeamothGrapplingArmModule", CATEGORY.Upgrades },
-            { "SeamothPropulsionArmModule", CATEGORY.Upgrades },
-            { "SeamothTorpedoArmModule", CATEGORY.Upgrades },            
 
-        };
+            SNLogger.Debug("CheatManager", "Modded TechTypes checked and added.");
+        }       
 
-        public readonly Dictionary<CATEGORY, TechType[]> baseTechMatrix = new Dictionary<CATEGORY, TechType[]>()
+        public readonly Dictionary<TechCategory, TechType[]> baseTechMatrix = new Dictionary<TechCategory, TechType[]>()
         {
             #region Vehicles
             {
-                CATEGORY.Vehicles,
+                TechCategory.Vehicles,
 
                 new TechType[]
                 {
@@ -193,7 +132,7 @@ namespace CheatManager
 
             #region Tools
             {
-                CATEGORY.Tools,
+                TechCategory.Tools,
 
                 new TechType[]
                 {                    
@@ -227,7 +166,7 @@ namespace CheatManager
 
             #region Equipment
             {
-                CATEGORY.Equipment,
+                TechCategory.Equipment,
 
                 new TechType[]
                 {
@@ -255,7 +194,7 @@ namespace CheatManager
 
             #region Materials
             {
-                CATEGORY.Materials,
+                TechCategory.Materials,
 
                 new TechType[]
                 {
@@ -295,14 +234,15 @@ namespace CheatManager
                     TechType.Kyanite,
                     TechType.Nickel,
                     TechType.HatchingEnzymes,
-                    TechType.SeaTreaderPoop
+                    TechType.SeaTreaderPoop,
+                    TechType.JeweledDiskPiece
                 }
             },
             #endregion
 
             #region Electronics
             {
-                CATEGORY.Electronics,
+                TechCategory.Electronics,
 
                 new TechType[]
                 {
@@ -328,7 +268,7 @@ namespace CheatManager
 
             #region Upgrades
             {
-                CATEGORY.Upgrades,
+                TechCategory.Upgrades,
 
                 new TechType[]
                 {
@@ -370,7 +310,7 @@ namespace CheatManager
 
             #region Food and Water
             {
-                CATEGORY.FoodAndWater,
+                TechCategory.FoodAndWater,
 
                 new TechType[]
                 {
@@ -418,7 +358,7 @@ namespace CheatManager
 
             #region Loot and Drill
             {
-                CATEGORY.LootAndDrill,
+                TechCategory.LootAndDrill,
 
                 new TechType[]
                 {
@@ -446,7 +386,7 @@ namespace CheatManager
 
             #region Herbivores
             {
-                CATEGORY.Herbivores,
+                TechCategory.Herbivores,
 
                 new TechType[]
                 {                   
@@ -478,7 +418,7 @@ namespace CheatManager
 
             #region Carnivores
             {
-                CATEGORY.Carnivores,
+                TechCategory.Carnivores,
 
                 new TechType[]
                 {                    
@@ -502,7 +442,7 @@ namespace CheatManager
 
             #region Parasites
             {
-                CATEGORY.Parasites,
+                TechCategory.Parasites,
 
                 new TechType[]
                 {
@@ -521,7 +461,7 @@ namespace CheatManager
 
             #region Leviathan
             {
-                CATEGORY.Leviathan,
+                TechCategory.Leviathan,
 
                 new TechType[]
                 {
@@ -540,7 +480,7 @@ namespace CheatManager
 
             #region Eggs
             {
-                CATEGORY.Eggs,
+                TechCategory.Eggs,
 
                 new TechType[]
                 {
@@ -566,7 +506,7 @@ namespace CheatManager
 
             #region Sea: Seed
             {
-                CATEGORY.SeaSeed,
+                TechCategory.SeaSeed,
 
                 new TechType[]
                 {
@@ -598,7 +538,7 @@ namespace CheatManager
 
             #region Land: Seed
             {
-                CATEGORY.LandSeed,
+                TechCategory.LandSeed,
 
                 new TechType[]
                 {
@@ -618,7 +558,7 @@ namespace CheatManager
 
             #region Flora: Item
             {
-                CATEGORY.FloraItem,
+                TechCategory.FloraItem,
 
                 new TechType[]
                 {
@@ -643,7 +583,7 @@ namespace CheatManager
 
             #region Sea: Spawn
             {
-                CATEGORY.SeaSpawn,
+                TechCategory.SeaSpawn,
 
                 new TechType[]
                 {
@@ -704,7 +644,7 @@ namespace CheatManager
 
             #region Land: Spawn
             {
-                CATEGORY.LandSpawn,
+                TechCategory.LandSpawn,
 
                 new TechType[]
                 {
@@ -723,7 +663,7 @@ namespace CheatManager
 
             #region Blueprints
             {
-                CATEGORY.Blueprints,
+                TechCategory.Blueprints,
 
                 new TechType[]
                 {       

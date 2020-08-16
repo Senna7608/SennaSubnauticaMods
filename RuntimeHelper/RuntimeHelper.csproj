@@ -33,8 +33,8 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony-1.2.0.1">
-      <HintPath>C:\Program Files\Epic Games\Subnautica\Subnautica_Data\Managed\0Harmony-1.2.0.1.dll</HintPath>
+    <Reference Include="0Harmony">
+      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\BepInEx\core\0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">
@@ -43,6 +43,10 @@
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
       <HintPath>C:\Program Files\Epic Games\Subnautica\Subnautica_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="QModInstaller">
+      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\BepInEx\plugins\QModManager\QModInstaller.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="SMLHelper">
@@ -95,6 +99,7 @@
     <Compile Include="Configuration\RuntimeHelper_Config.cs" />
     <Compile Include="EditModeStrings.cs" />
     <Compile Include="GUI\AddComponentWindow.cs" />
+    <Compile Include="GUI\MarkWindow.cs" />
     <Compile Include="Messages.cs" />
     <Compile Include="FileHelper\OpenFileName.cs" />
     <Compile Include="FileHelper\UnityFileDialog.cs" />
@@ -102,13 +107,15 @@
     <Compile Include="GUI\EditWindow.cs" />
     <Compile Include="GUI\GuiHelper.cs" />
     <Compile Include="GUI\ObjectWindow.cs" />
-    <Compile Include="GUI\ComponentInfoWindow.cs" />
+    <Compile Include="GUI\ObjectInfoWindow.cs" />
     <Compile Include="GUI\RendererWindow.cs" />
     <Compile Include="Handlers.cs" />
     <Compile Include="GUI\OutputWindow.cs" />
     <Compile Include="Logger\RHLogger.cs" />
     <Compile Include="Main.cs" />
-    <Compile Include="Objects\ObjectHelper.cs" />
+    <Compile Include="Objects\ClipboardHelper.cs" />
+    <Compile Include="Objects\FieldHelper.cs" />
+    <Compile Include="Objects\PropertyHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RaycastMode.cs" />
     <Compile Include="Renderers\RendererHelper.cs" />

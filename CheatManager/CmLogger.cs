@@ -1,6 +1,5 @@
 ﻿#define DEBUG_GAMELOG
 #define AUTOSCROLL
-//#define MAXMESSAGE_INFINITY
 
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,12 +10,12 @@ using System;
 
 namespace CheatManager
 {
-    public class CM_Logger : MonoBehaviour
+    public class CmLogger : MonoBehaviour
     {
-        public CM_Logger Instance { get; private set; }
+        public CmLogger Instance { get; private set; }
         private static GUIStyle logStyle;        
 
-        private static Rect windowRect = new Rect(Screen.width - (Screen.width / Config.ASPECT), Screen.height - (Screen.height / 4), Screen.width / Config.ASPECT, Screen.height / 4);
+        private static Rect windowRect = new Rect(Screen.width - (Screen.width / CmConfig.ASPECT), Screen.height - (Screen.height / 4), Screen.width / CmConfig.ASPECT, Screen.height / 4);
         private static Rect buttonRect = new Rect(windowRect.x + 5, windowRect.y + windowRect.height - 27, windowRect.width - 10, 22);
         private Rect drawRect, scrollRect;
         private float scrollWidth;
@@ -27,13 +26,10 @@ namespace CheatManager
         private List<LOG> logMessage = new List<LOG>();
         private int messageCount = 0;
 
-        private bool show = false;        
+        private bool show = false;
 
-#if MAXMESSAGE_INFINITY
-        private static readonly int MAXLOG = int.MaxValue;
-#else
         private readonly int MAXLOG = 100; 
-#endif         
+        
         private struct LOG
         {
             public string message;
@@ -49,21 +45,7 @@ namespace CheatManager
             { LogType.Log, GuiColor.Green },
             { LogType.Exception, GuiColor.Red },
 
-        };
-
-        public CM_Logger()
-        {
-            if (Instance == null)
-            {
-                Instance = FindObjectOfType(typeof(CM_Logger)) as CM_Logger;
-
-                if (Instance == null)
-                {
-                    GameObject cm_logger = new GameObject("CM_Logger");
-                    Instance = cm_logger.AddComponent<CM_Logger>();                    
-                }
-            }            
-        }
+        };        
         
         public void Awake()
         {
@@ -97,7 +79,7 @@ namespace CheatManager
                         
             logStyle = SNStyles.GetGuiItemStyle(GuiItemType.LABEL, GuiColor.Green, TextAnchor.MiddleLeft, wordWrap: true);            
 
-            SNWindow.CreateWindow(windowRect, $"CheatManager Console (Press {Config.KEYBINDINGS["ToggleConsole"]} to toggle)", true, true);            
+            SNWindow.CreateWindow(windowRect, $"CheatManager Console (Press {CmConfig.KEYBINDINGS["ToggleConsole"]} to toggle)", true, true);            
 
             scrollPos = GUI.BeginScrollView(scrollRect, scrollPos, new Rect(scrollRect.x, scrollRect.y, scrollWidth, drawingPos - scrollRect.y));
 
@@ -148,7 +130,7 @@ namespace CheatManager
             
         public void Update()
         {
-            if (Input.GetKeyDown(Config.KEYBINDINGS["ToggleConsole"]))
+            if (Input.GetKeyDown(CmConfig.KEYBINDINGS["ToggleConsole"]))
             {
                 show = !show;                
             }

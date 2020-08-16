@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Common.GUIHelper;
-using static Common.GameHelper;
+using Common.Helpers;
 
 namespace CheatManager
 {
-    internal class ButtonControl : CheatManager
+    public partial class CheatManager
     {
         internal static readonly float[] DayNightSpeed = { 0.1f, 0.25f, 0.5f, 0.75f, 1f, 2f };
         
@@ -30,8 +30,7 @@ namespace CheatManager
                     break;
                 case Commands.BackWarp:                    
                     Teleport("position", prevCwPos);
-                    Utils.PlayFMODAsset(warpSound, Player.main.transform, 20f);
-                    prevCwPos = null;
+                    Utils.PlayFMODAsset(warpSound, Player.main.transform, 20f);                    
                     Buttons[(int)Commands.BackWarp].Enabled = false;
                     break;
             }
@@ -99,7 +98,7 @@ namespace CheatManager
             switch (category)
             {
                 case Categories.Warp:
-                    selectedTech = warpTargets.Targets[selected][0];                    
+                    selectedTech = string.Empty;
                     break;
                 default:
                     selectedTech = tMatrix[categoryTabID][selected].TechType.ToString();
@@ -152,7 +151,8 @@ namespace CheatManager
                     ExecuteCommand($"Blueprint: {scrollItems[selected].Name} unlocked", $"unlock {selectedTech}");
                     break;
                 case Categories.Warp:
-                    prevCwPos = Teleport(scrollItems[selected].Name, selectedTech);
+                    Utils.PlayFMODAsset(warpSound, Player.main.transform, 20f);
+                    prevCwPos = Teleport(scrollItems[selected].Name, GetIntVector(selected));
                     commands[(int)Commands.BackWarp].Enabled = true;
                     break;
                 default:

@@ -18,9 +18,9 @@ namespace SNTestMOD
 
             RadiationTrigger.transform.SetParent(transform, false);
 
-            playerDistanceTracker = RadiationTrigger.GetOrAddComponent<PlayerDistanceTracker>();
-            radiatePlayerInRange = RadiationTrigger.GetOrAddComponent<RadiatePlayerInRange>();
-            damagePlayerInRadius = RadiationTrigger.GetOrAddComponent<DamagePlayerInRadius>();            
+            playerDistanceTracker = RadiationTrigger.EnsureComponent<PlayerDistanceTracker>();
+            radiatePlayerInRange = RadiationTrigger.EnsureComponent<RadiatePlayerInRange>();
+            damagePlayerInRadius = RadiationTrigger.EnsureComponent<DamagePlayerInRadius>();            
         }
         
         private void Start()

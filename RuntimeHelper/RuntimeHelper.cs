@@ -30,9 +30,7 @@ namespace RuntimeHelper
         private string sizeText = string.Empty;
         private bool showCollider = true;        
         
-        private bool isRootList = false;
-
-        private static readonly List<string> EDIT_MODE = new List<string>();
+        private bool isRootList = false;        
 
         private bool showLocal = true;        
 
@@ -45,9 +43,13 @@ namespace RuntimeHelper
                 if (Main.Instance == null)
                 {
                     GameObject runtimeHelper = new GameObject("RuntimeHelper");
-                    Main.Instance = runtimeHelper.GetOrAddComponent<RuntimeHelper>();
+                    Main.Instance = runtimeHelper.EnsureComponent<RuntimeHelper>();
                 }
-            }            
+            }
+            else
+            {
+                Main.Instance.Awake();
+            }
         }
 
         private void Awake()
@@ -67,6 +69,8 @@ namespace RuntimeHelper
             ObjectWindow_Awake();
 
             AddComponentWindow_Awake();
+
+            MarkWindow_Awake();
         }
 
         private void Start()
@@ -81,7 +85,7 @@ namespace RuntimeHelper
             if (isDirty)
             {
                 showRendererWindow = false;
-                showComponentInfoWindow = false;
+                showObjectInfoWindow = false;
             }
         }
 
@@ -166,7 +170,7 @@ namespace RuntimeHelper
 
             SafetyCheck();
 
-            Rect windowRect = SNWindow.CreateWindow(new Rect(0, 30, 298, 700), $"Runtime Helper v.{RuntimeHelper_Config.PROGRAM_VERSION}");                       
+            Rect windowRect = SNWindow.CreateWindow(new Rect(0, 30, 298, 700), RuntimeHelper_Config.TitleText);
 
             GUI.Label(new Rect(windowRect.x + 5, windowRect.y, 290, 25), $"Base : {baseObject.name}", SNStyles.GetGuiItemStyle(GuiItemType.LABEL, GuiColor.Green, TextAnchor.MiddleLeft));
 
@@ -192,7 +196,7 @@ namespace RuntimeHelper
 
             GUI.Label(new Rect(windowRect.x + 5, windowRect.y + 325, 40, 22), "Object :", SNStyles.GetGuiItemStyle(GuiItemType.LABEL, GuiColor.Green, TextAnchor.MiddleLeft));
 
-            if (GUI.Button(new Rect(windowRect.x + 60, windowRect.y + 325, 38, 22), selectedObject.activeSelf ? MainWindow[4] : MainWindow[3], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
+            if (GUI.Button(new Rect(windowRect.x + 60, windowRect.y + 325, 30, 22), selectedObject.activeSelf ? MainWindow[4] : MainWindow[3], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
                 if (selectedObject == gameObject)
                 {
@@ -201,10 +205,15 @@ namespace RuntimeHelper
                 }
 
                 selectedObject.SetActive(!selectedObject.activeSelf);
-                OutputWindow_Log(MESSAGE_TEXT[MESSAGES.ACTIVE_STATE_CHANGE] ,selectedObject.name, selectedObject.activeSelf.ToString());
+                OutputWindow_Log(MESSAGE_TEXT[MESSAGES.ACTIVE_STATE_CHANGE], selectedObject.name, selectedObject.activeSelf.ToString());
             }
 
-            if (GUI.Button(new Rect(windowRect.x + 100, windowRect.y + 325, 48, 22), MainWindow[5], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
+            if (GUI.Button(new Rect(windowRect.x + 95, windowRect.y + 325, 40, 22), MainWindow[17], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
+            {
+                AddToMarkList(selectedObject);
+            }
+
+            if (GUI.Button(new Rect(windowRect.x + 140, windowRect.y + 325, 40, 22), MainWindow[5], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
                 if (selectedObject == gameObject)
                 {
@@ -222,24 +231,30 @@ namespace RuntimeHelper
                 }
             }
 
-            if (tempObject)
+
+            if (GUI.Button(new Rect(windowRect.x + 185, windowRect.y + 325, 45, 22), MainWindow[6], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
-                if (GUI.Button(new Rect(windowRect.x + 150, windowRect.y + 325, 48, 22), MainWindow[6], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
+                if (tempObject)
                 {
                     OnPasteObject();
                 }
+                else
+                {
+                    OutputWindow_Log(WARNING_TEXT[WARNINGS.TEMP_OBJECT_EMPTY], LogType.Warning);
+                }
             }
 
-            if (GUI.Button(new Rect(windowRect.x + 200, windowRect.y + 325, 93, 22), MainWindow[7], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
+            if (GUI.Button(new Rect(windowRect.x + 235, windowRect.y + 325, 58, 22), MainWindow[7], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
                 if (selectedObject == gameObject)
                 {
                     OutputWindow_Log(WARNING_TEXT[WARNINGS.PROGRAM_OBJECT_CANNOT_DESTROY], LogType.Warning, selectedObject.name);
                 }
+                /*
                 else if (selectedObject.IsRoot())
                 {
                     OutputWindow_Log(WARNING_TEXT[WARNINGS.ROOT_OBJECT_CANNOT_DESTROY], LogType.Warning);
-                }
+                }*/
                 else
                 {
                     DestroyObject(true);
@@ -331,7 +346,7 @@ namespace RuntimeHelper
                 {
                     DrawColliderControl dcc = selectedObject.GetComponentInChildren<DrawColliderControl>();
 
-                    int colliderID = components[selected_component].GetInstanceID();
+                    int colliderID = objects[selected_component].GetInstanceID();
 
                     selectedObject.ResetCollider(dcc.ColliderBases[colliderID].ColliderBase, colliderID);
 
@@ -344,7 +359,7 @@ namespace RuntimeHelper
             if (GUI.Button(new Rect(windowRect.x + 5, (windowRect.y + windowRect.height) - 27, windowRect.width - 10, 22), MainWindow[16], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
                 OnDestroy();                               
-            }             
+            }
 
             OutputWindow_OnGUI();
 
@@ -356,11 +371,13 @@ namespace RuntimeHelper
 
             RendererWindow_OnGUI();
 
-            ComponentInfoWindow_OnGUI();
+            ObjectInfoWindow_OnGUI();
 
             AddComponentWindow_OnGUI();
 
-            
+            MarkWindow_OnGUI();
+
+
             if (GUI.tooltip != "")
             {
                 GUIStyle gUIStyle = SNStyles.GetGuiItemStyle(GuiItemType.TEXTAREA, GuiColor.Green, TextAnchor.MiddleLeft);
@@ -452,7 +469,7 @@ namespace RuntimeHelper
 
             if (Input.GetKeyDown(RuntimeHelper_Config.KEYBINDINGS["ToggleRaycastMode"]))
             {
-                if (!Player.main || uGUI.main.loading.IsLoading || GameHelper.IsPlayerInVehicle())
+                if (!Player.main || uGUI.main.loading.IsLoading || IsPlayerInVehicle())
                 {
                     isRayEnabled = false;
                     OutputWindow_Log(WARNING_TEXT[WARNINGS.UNABLE_TO_RAYCAST], LogType.Warning);
@@ -491,11 +508,13 @@ namespace RuntimeHelper
 
             AddComponentWindow_Update();
 
+            MarkWindow_Update();
+
             if (showRendererWindow)
                 RendererWindow_Update();
 
-            if (showComponentInfoWindow)
-                ComponentInfoWindow_Update();
+            if (showObjectInfoWindow)
+                ObjectInfoWindow_Update();
         }       
 
         private void GetObjectVectors()
@@ -630,6 +649,11 @@ namespace RuntimeHelper
                         break;
                 }                
             }            
-        }        
+        }
+
+        public bool IsPlayerInVehicle()
+        {
+            return Player.main.inSeamoth || Player.main.inExosuit ? true : false;
+        }
     }
 }

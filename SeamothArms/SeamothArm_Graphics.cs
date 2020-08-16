@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿/*
+using System.Collections.Generic;
 using UnityEngine;
 using Common;
 using SeamothArms.ArmControls;
@@ -58,16 +59,7 @@ namespace SeamothArms
                 GameObject prefab = exosuit.armPrefabs[i].prefab.GetPrefabClone(SeamothArmPrefabs.transform, false);
                 
                 prefab.FindChild("exosuit_01_armRight").name = "seamoth_armRight";
-
-                /*
-                GameObject bicepPivot = prefab.FindChildInMaxDepth("bicepPivot");
-                GameObject bicepPivot_collider_container = GameHelper.CreateGameObject("collider", bicepPivot.transform);
-                CapsuleCollider bicepPivot_collider = bicepPivot_collider_container.AddComponent<CapsuleCollider>();
-                bicepPivot_collider.center = new Vector3(0.34f, 0f, 0f);
-                bicepPivot_collider.radius = 0.16f;
-                bicepPivot_collider.height = 1.15f;
-                bicepPivot_collider.direction = 0;                
-                */
+                               
 
                 switch (exosuit.armPrefabs[i].techType)
                 {
@@ -93,16 +85,7 @@ namespace SeamothArms
                         drillGeo.name = "seamoth_drill_geo";
                         GeoCache.Add(drillGeo);
                         
-                        /*
-                        GameObject drill = prefab.FindChildInMaxDepth("drill");
-                        GameObject drill_collider_container = GameHelper.CreateGameObject("collider", drill.transform);                        
-                        CapsuleCollider drill_collider = drill_collider_container.AddComponent<CapsuleCollider>();
-                        drill_collider.direction = 0;
-                        drill_collider.center = new Vector3(-0.18f, 0f, 0f);
-                        drill_collider.radius = 0.20f;
-                        drill_collider.height = 1.92f;
-                        */
-
+                       
                         prefab.AddComponent<SeamothDrillArmControl>();
                         ArmsCache.Add(ArmTemplate.DrillArm, prefab);
                         break;
@@ -125,16 +108,6 @@ namespace SeamothArms
                         GameObject handGeo = prefab.FindChildInMaxDepth("exosuit_hand_geo");
                         handGeo.name = "seamoth_hand_geo";
                         GeoCache.Add(handGeo);                        
-
-                        /*
-                        GameObject wrist = prefab.FindChildInMaxDepth("wrist");
-                        GameObject wrist_collider_container = GameHelper.CreateGameObject("collider", wrist.transform);                        
-                        CapsuleCollider wrist_collider = wrist_collider_container.AddComponent<CapsuleCollider>();
-                        wrist_collider.direction = 0;
-                        wrist_collider.center = new Vector3(0.68f, 0f, 0f);
-                        wrist_collider.radius = 0.27f;
-                        wrist_collider.height = 1.49f;
-                        */
 
                         prefab.AddComponent<SeamothClawArmControl>();
                         ArmsCache.Add(ArmTemplate.ClawArm, prefab);
@@ -163,16 +136,6 @@ namespace SeamothArms
                         grapplingGeo.name = "semoth_grapplingHook_geo";
                         GeoCache.Add(grapplingGeo);                        
                         
-                        /*
-                        GameObject elbow = prefab.FindChildInMaxDepth("elbow");
-                        GameObject elbow_collider_container = GameHelper.CreateGameObject("collider", elbow.transform);                        
-                        CapsuleCollider elbow_collider = elbow_collider_container.AddComponent<CapsuleCollider>();
-                        elbow_collider.direction = 0;
-                        elbow_collider.center = new Vector3(-0.22f, 0f, 0f);
-                        elbow_collider.radius = 0.25f;
-                        elbow_collider.height = 0.95f; 
-                        */
-
                         prefab.AddComponent<SeamothGrapplingArmControl>();                        
 
                         ArmsCache.Add(ArmTemplate.GrapplingArm, prefab);
@@ -237,3 +200,4 @@ namespace SeamothArms
         }
     }
 }
+*/

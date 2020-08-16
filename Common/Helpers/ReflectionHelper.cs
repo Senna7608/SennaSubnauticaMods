@@ -1,28 +1,37 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
-namespace Common
+namespace Common.Helpers
 {
-    public static class RefHelp
+    public static class ReflectionHelper
     {
         public static object GetPrivateField<T>(this T instance, string fieldName, BindingFlags bindingFlags = BindingFlags.Default)
         {
-            return typeof(T).GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic | bindingFlags).GetValue(instance);
+            return instance.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic | bindingFlags).GetValue(instance);
+        }
+
+        public static object GetPrivateProperty<T>(this T instance, string propertyName, BindingFlags bindingFlags = BindingFlags.Default)
+        {
+            return instance.GetType().GetProperty(propertyName, BindingFlags.Instance | BindingFlags.NonPublic | bindingFlags).GetValue(instance, null);
+        }
+
+        public static object GetPublicField<T>(this T instance, string fieldName, BindingFlags bindingFlags = BindingFlags.Default)
+        {
+            return instance.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.Public | bindingFlags).GetValue(instance);
         }
 
         public static void SetPrivateField<T>(this T instance, string fieldName, object value, BindingFlags bindingFlags = BindingFlags.Default)
         {
-            typeof(T).GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic | bindingFlags).SetValue(instance, value);
+            instance.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.SetField | bindingFlags).SetValue(instance, value);
         }
 
         public static void InvokePrivateMethod<T>(this T instance, string methodName, BindingFlags bindingFlags = BindingFlags.Default, params object[] parms)
         {
-            typeof(T).GetMethod(methodName, BindingFlags.Instance | BindingFlags.NonPublic | bindingFlags).Invoke(instance, parms);
+            instance.GetType().GetMethod(methodName, BindingFlags.Instance | BindingFlags.NonPublic | bindingFlags).Invoke(instance, parms);
         }
 
         public static void CloneFieldsInto<T>(this T original, T copy)
@@ -97,6 +106,25 @@ namespace Common
                 return null;
             }
 
+            return null;
+        }
+
+        public static object GetAssemblyClassPublicField(string className, string fieldName)
+        {
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+            for (int i = 0; i < assemblies.Length; i++)
+            {
+                Type[] types = assemblies[i].GetTypes();
+
+                for (int j = 0; j < types.Length; j++)
+                {
+                    if (types[j].FullName == className)
+                    {
+                        return types[j].GetField(fieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static).GetValue(types[j]);
+                    }
+                }
+            }
             return null;
         }
 

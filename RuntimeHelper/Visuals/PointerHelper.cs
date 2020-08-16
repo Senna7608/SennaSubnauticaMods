@@ -35,7 +35,7 @@ namespace RuntimeHelper.Visuals
                     break;
             }
 
-            pointerLine.GetOrAddComponent<TracePlayerPos>().PointerType = pointerType;
+            pointerLine.EnsureComponent<TracePlayerPos>().PointerType = pointerType;
 
             return pointerLine;
         }

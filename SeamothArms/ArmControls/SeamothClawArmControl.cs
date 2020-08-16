@@ -31,7 +31,7 @@ namespace SeamothArms.ArmControls
         private bool shownNoRoomNotification = true;  
         private const float energyCost = 0.5f;
 
-        private void Start()
+        private void Awake()
         {                                         
             animator = GetComponent<Animator>();
             fxControl = GetComponent<VFXController>();
@@ -50,7 +50,7 @@ namespace SeamothArms.ArmControls
             }
 
 
-            front = gameObject.FindChildInMaxDepth("wrist").transform;
+            front = Main.graphics.objectHelper.FindDeepChild(gameObject, "wrist").transform;
         }        
 
         GameObject ISeamothArm.GetGameObject()

@@ -13,7 +13,7 @@ namespace QuickSlotExtender.Configuration
         {
             Instance = this;           
             DevConsole.RegisterConsoleCommand(this, "qseconfig", false, false);
-            SNLogger.Log($"[{QSEConfig.PROGRAM_NAME}] {Message}");
+            SNLogger.Log("QuickSlotExtender", Message);
         }
         
         private void OnConsoleCommand_qseconfig(NotificationCenter.Notification n)
@@ -29,10 +29,14 @@ namespace QuickSlotExtender.Configuration
 
                 if (Instance == null)
                 {
-                    GameObject qse_command = new GameObject("QSECommand");
-                    Instance = qse_command.GetOrAddComponent<QSECommand>();                    
+                    GameObject qsez_command = new GameObject("QSECommand");
+                    Instance = qsez_command.AddComponent<QSECommand>();
                 }
-            }            
+            }
+            else
+            {
+                Instance.Awake();
+            }
         }
-    }
+    }   
 }

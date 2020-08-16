@@ -5,30 +5,25 @@ namespace CheatManager.NewCommands
     public class AlwaysDayConsoleCommand : MonoBehaviour
     {
         public static AlwaysDayConsoleCommand main;
-        private bool AlwaysDayCheat;
+
+        private bool AlwaysDayCheat;        
 
         public void Awake()
         {
             main = this;
-            DontDestroyOnLoad(this);
-            DevConsole.RegisterConsoleCommand(this, "alwaysday", false, false);            
+            DevConsole.RegisterConsoleCommand(this, "alwaysday");
         }
 
         private void OnConsoleCommand_alwaysday(NotificationCenter.Notification n)
-        {
-            AlwaysDayCheat = !AlwaysDayCheat;
-            SetAlwaysDayCheat();
-            ErrorMessage.AddMessage($"alwaysday cheat is now {AlwaysDayCheat}");
+        {            
+            SetAlwaysDayCheat(!AlwaysDayCheat);            
         }
 
-        public bool GetAlwaysDayCheat()
-        {
-            return AlwaysDayCheat;
-        }
+        public bool GetAlwaysDayCheat() => AlwaysDayCheat;
 
-        public void SetAlwaysDayCheat()
+        public void SetAlwaysDayCheat(bool value)
         {
-            if (AlwaysDayCheat)
+            if (value)
             {                
                 DayNightCycle.main.sunRiseTime = 70F;
                 DayNightCycle.main.sunSetTime = 200F;
@@ -38,6 +33,10 @@ namespace CheatManager.NewCommands
                 DayNightCycle.main.sunRiseTime = 0.125F;
                 DayNightCycle.main.sunSetTime = 0.875F;
             }
-        }
+
+            AlwaysDayCheat = value;
+
+            ErrorMessage.AddMessage($"alwaysday cheat is now {AlwaysDayCheat}");
+        }        
     }
 }

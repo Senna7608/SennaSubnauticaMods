@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using SlotExtender.Configuration;
-using Common;
 using UnityEngine.UI;
+using Common.Helpers;
+using SlotExtender.Configuration;
 
 namespace SlotExtender
 {
@@ -10,7 +10,7 @@ namespace SlotExtender
     {
         public static uGUI_SlotTextHandler Instance { get; private set; }
         
-        private static Dictionary<string, Text> ALLSLOTS_Text = new Dictionary<string, Text>();
+        private Dictionary<string, Text> ALLSLOTS_Text = new Dictionary<string, Text>();
         
         public void Awake()
         {

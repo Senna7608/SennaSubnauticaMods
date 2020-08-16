@@ -5,9 +5,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UWE;
 using Common;
-using static Common.GameHelper;
 using SeamothArms.ArmPrefabs;
-using System.Collections;
+using Common.Helpers;
 
 namespace SeamothArms
 {
@@ -18,7 +17,7 @@ namespace SeamothArms
             get
             {
                 return isSeamothArmSlotsReady ? (this) : null;
-            }            
+            }
         }
 
         private EnergyMixin EnergySource
@@ -67,7 +66,8 @@ namespace SeamothArms
 
         private GameObject activeTarget;
 
-        private GameObject SeamothArmPrefabs;
+        //private GameObject SeamothArmPrefabs;
+        private readonly List<GameObject> GeoCache = new List<GameObject>();
         private List<IItemsContainer> containers = new List<IItemsContainer>();
         private Transform light_left, light_right;
 
@@ -84,47 +84,51 @@ namespace SeamothArms
 
         public Transform aimTargetLeft;
         public Transform aimTargetRight;
-        
+
         private bool isSeamothArmSlotsReady = false;
+
+        private ObjectHelper objectHelper;
 
         private void Awake()
         {
             seamoth = GetComponent<SeaMoth>();
 
+            objectHelper = Main.graphics.objectHelper;
+
             vfxConstructing = GetComponent<VFXConstructing>();
 
-            light_left = gameObject.FindChildInMaxDepth("light_left").transform;
+            light_left = objectHelper.FindDeepChild(gameObject, "light_left").transform;
             light_left_default = new PureTransform(light_left.localPosition, light_left.localRotation, light_left.localScale);
             light_left_UP = new PureTransform(new Vector3(0f, 0.68f, 1f), Quaternion.Euler(0, 0, 0), light_left.localScale);
 
-            light_right = gameObject.FindChildInMaxDepth("light_right").transform;
+            light_right = objectHelper.FindDeepChild(gameObject, "light_right").transform;
             light_right_default = new PureTransform(light_right.localPosition, light_right.localRotation, light_right.localScale);
             light_right_DOWN = new PureTransform(new Vector3(0f, -1.21f, 1.04f), Quaternion.Euler(35, 0, 0), light_left.localScale);
 
-            SeamothArmPrefabs = CreateGameObject("SeamothArmPrefabs", gameObject.transform);
+            //SeamothArmPrefabs = objectHelper.CreateGameObject("SeamothArmPrefabs", gameObject.transform);
 
-            SeamothArmPrefabs.SetActive(false);
+            //SeamothArmPrefabs.SetActive(false);
 
-            InitializeArmsCache();
+            //InitializeArmsCache();
 
-            GameObject leftArmAttachPoint = CreateGameObject("leftArmAttachPoint", seamoth.torpedoTubeLeft, new Vector3(-0.93f, 0f, -0.74f), new Vector3(346, 23, 0));
+            GameObject leftArmAttachPoint = objectHelper.CreateGameObject("leftArmAttachPoint", seamoth.torpedoTubeLeft, new Vector3(-0.93f, 0f, -0.74f), new Vector3(346, 23, 0));
             leftArmAttach = leftArmAttachPoint.transform;
 
-            GameObject rightArmAttachPoint = CreateGameObject("rightArmAttachPoint", seamoth.torpedoTubeRight, new Vector3(0.93f, 0f, -0.74f), new Vector3(346, 337, 360));
+            GameObject rightArmAttachPoint = objectHelper.CreateGameObject("rightArmAttachPoint", seamoth.torpedoTubeRight, new Vector3(0.93f, 0f, -0.74f), new Vector3(346, 337, 360));
             rightArmAttach = rightArmAttachPoint.transform;
 
-            GameObject leftAimForward = CreateGameObject("leftAimForward", seamoth.transform);
+            GameObject leftAimForward = objectHelper.CreateGameObject("leftAimForward", seamoth.transform);
             aimTargetLeft = leftAimForward.transform;
 
-            GameObject rightAimForward = CreateGameObject("rightAimForward", seamoth.transform);
+            GameObject rightAimForward = objectHelper.CreateGameObject("rightAimForward", seamoth.transform);
             aimTargetRight = rightAimForward.transform;
 
-            UpdateArmRenderers();            
+            //UpdateArmRenderers();            
         }
         
         public void WakeUp()
         {
-            SNLogger.Log("[SeamothArmManager] Received WakeUp message.");
+            SNLogger.Log("SeamothArmManager", "Received WakeUp message.");
 
             isSeamothArmSlotsReady = true;
 
@@ -437,10 +441,32 @@ namespace SeamothArms
                 light_right.transform.localPosition = light_right_default.pos;
                 light_right.transform.localRotation = light_right_default.rot;
             }
-        }                      
+        }
+               
+
+        private void GetArmModels()
+        {
+            GeoCache.Clear();
+
+            if (leftArm != null)
+            {
+                GameObject leftModel = objectHelper.FindDeepChild(leftArm.GetGameObject(), "ArmModel");
+
+                GeoCache.Add(leftModel);
+            }
+
+            if (rightArm != null)
+            {
+                GameObject rightModel = objectHelper.FindDeepChild(rightArm.GetGameObject(), "ArmModel");
+
+                GeoCache.Add(rightModel);
+            }
+        }
         
         private void UpdateArmRenderers()
         {
+            GetArmModels();
+
             SubName subName = seamoth.GetComponent<SubName>();
             
             List<Renderer> armRenderers = new List<Renderer>();

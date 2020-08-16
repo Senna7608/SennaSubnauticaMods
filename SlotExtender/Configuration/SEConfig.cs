@@ -6,6 +6,7 @@ using System.Reflection;
 using UnityEngine;
 using Common.ConfigurationParser;
 using Common;
+using Common.Helpers;
 
 namespace SlotExtender.Configuration
 {
@@ -20,6 +21,8 @@ namespace SlotExtender.Configuration
         public static Dictionary<string, string> Hotkeys_Config;
         public static Dictionary<SlotConfigID, string> SLOTKEYBINDINGS = new Dictionary<SlotConfigID, string>();
         public static Dictionary<string, KeyCode> KEYBINDINGS;
+
+        public static List<string> SLOTKEYSLIST = new List<string>();
 
         public static int MAXSLOTS;
         public static int EXTRASLOTS;
@@ -74,7 +77,8 @@ namespace SlotExtender.Configuration
         {
             SNLogger.Debug("SlotExtender", "Method call: SEConfig.Update_SLOTKEYBINDINGS()");
 
-            SLOTKEYBINDINGS.Clear();            
+            SLOTKEYBINDINGS.Clear();
+            SLOTKEYSLIST.Clear();
 
             SLOTKEYBINDINGS.Add(SlotConfigID.Slot_1, GameInput.GetBindingName(GameInput.Button.Slot1, GameInput.BindingSet.Primary));
             SLOTKEYBINDINGS.Add(SlotConfigID.Slot_2, GameInput.GetBindingName(GameInput.Button.Slot2, GameInput.BindingSet.Primary));
@@ -90,11 +94,16 @@ namespace SlotExtender.Configuration
             SLOTKEYBINDINGS.Add(SlotConfigID.Slot_12, Hotkeys_Config[SlotConfigID.Slot_12.ToString()]);
             SLOTKEYBINDINGS.Add(SlotConfigID.SeamothArmLeft, Hotkeys_Config[SlotConfigID.SeamothArmLeft.ToString()]);
             SLOTKEYBINDINGS.Add(SlotConfigID.SeamothArmRight, Hotkeys_Config[SlotConfigID.SeamothArmRight.ToString()]);
+
+            foreach (KeyValuePair<SlotConfigID, string> kvp in SLOTKEYBINDINGS)
+            {
+                SLOTKEYSLIST.Add(kvp.Value);
+            }
         }
 
         internal static void Config_Load()
         {
-            SNLogger.Debug("SlotExtender", "Method call: SEConfig.LoadConfig()");
+            SNLogger.Debug("SlotExtender", "Method call: SEConfig.Config_Load()");
 
             PROGRAM_VERSION = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
 
@@ -112,9 +121,9 @@ namespace SlotExtender.Configuration
 
                 EXTRASLOTS = SEConfig.MAXSLOTS - 4;
 
-                TEXTCOLOR = Modules.GetColor(ParserHelper.GetKeyValue(FILENAME, "Settings", SECTION_SETTINGS[1]));
+                TEXTCOLOR = ColorHelper.GetColor(ParserHelper.GetKeyValue(FILENAME, "Settings", SECTION_SETTINGS[1]));
 
-                if (RefHelp.IsNamespaceExists("SeamothStorageSlots"))
+                if (ReflectionHelper.IsNamespaceExists("SeamothStorageSlots"))
                 {
                     STORAGE_SLOTS_OFFSET = 0; // don't patch storages stuff if SeamothStorageSlots mod is active
                     const string msg = "<i>SeamothStorageSlots</i> mod is now merged into SlotExtender, you can safely delete it.";
@@ -131,7 +140,7 @@ namespace SlotExtender.Configuration
 
                 SLOT_LAYOUT = ParserHelper.GetKeyValue(FILENAME, "Settings", SECTION_SETTINGS[3]) == "Circle"? SlotLayout.Circle : SlotLayout.Grid;
 
-                isSeamothArmsExists = RefHelp.IsNamespaceExists("SeamothArms");
+                isSeamothArmsExists = ReflectionHelper.IsNamespaceExists("SeamothArms");
 
                 SNLogger.Log("SlotExtender", "Configuration loaded.");
             }
@@ -143,7 +152,7 @@ namespace SlotExtender.Configuration
 
         internal static void Config_CreateDefault()
         {
-            SNLogger.Debug("SlotExtender", "Method call: SEConfig.CreateDefaultConfigFile()");
+            SNLogger.Debug("SlotExtender", "Method call: SEConfig.Config_CreateDefault()");
 
             SNLogger.Warn("SlotExtender", "Configuration file is missing or wrong version. Trying to create a new one.");
 
@@ -152,7 +161,7 @@ namespace SlotExtender.Configuration
                 ParserHelper.CreateDefaultConfigFile(FILENAME, "SlotExtender", PROGRAM_VERSION, DEFAULT_CONFIG);
 
                 ParserHelper.AddInfoText(FILENAME, "MaxSlots possible values", "5 to 12");
-                ParserHelper.AddInfoText(FILENAME, "TextColor possible values", "Red, Green, Blue, Yellow, White, Magenta, Cyan, Orange, Lime, Amethyst, Default");
+                ParserHelper.AddInfoText(FILENAME, "TextColor possible values", "Red, Green, Blue, Yellow, White, Magenta, Cyan, Orange, Lime, Amethyst, LightBlue");
                 ParserHelper.AddInfoText(FILENAME, "SeamothStorageSlotsOffset possible values", "0 to 8");
                 ParserHelper.AddInfoText(FILENAME, "SlotLayout possible values", "Grid, Circle");
                 
@@ -184,7 +193,7 @@ namespace SlotExtender.Configuration
 
             ParserHelper.SetAllKeyValuesInSection(FILENAME, "Hotkeys", Hotkeys_Config);
             ParserHelper.SetKeyValue(FILENAME, "Settings", SECTION_SETTINGS[0], MAXSLOTS.ToString());
-            ParserHelper.SetKeyValue(FILENAME, "Settings", SECTION_SETTINGS[1], Modules.GetColorName(TEXTCOLOR));
+            ParserHelper.SetKeyValue(FILENAME, "Settings", SECTION_SETTINGS[1], ColorHelper.GetColorName(TEXTCOLOR));
             ParserHelper.SetKeyValue(FILENAME, "Settings", SECTION_SETTINGS[2], STORAGE_SLOTS_OFFSET.ToString());
             ParserHelper.SetKeyValue(FILENAME, "Settings", SECTION_SETTINGS[3], SLOT_LAYOUT.ToString());
 
@@ -260,7 +269,7 @@ namespace SlotExtender.Configuration
 
         private static bool Config_Check()
         {
-            SNLogger.Debug("SlotExtender", "Method call: SEConfig.CheckConfig()");
+            SNLogger.Debug("SlotExtender", "Method call: SEConfig.Config_Check()");
 
             if (!File.Exists(FILENAME))
             {

@@ -1,6 +1,6 @@
-﻿using UnityEngine;
-using Common;
+﻿using Common.Helpers;
 using CheatManager.Configuration;
+using UnityEngine;
 
 namespace CheatManager.NewCommands
 {
@@ -9,25 +9,30 @@ namespace CheatManager.NewCommands
         public static OverPowerConsoleCommand main;
         private bool OverPowerCheat;
         private float overPowerMultiplier;
-        private float hungerAndThristInterval;
-        private const float defaultOxygenCapacity = 45f;
-        private const float defaultHealth = 100f;
+        private float hungerAndThristInterval;        
 
         public void Awake()
         {
             main = this;
-            DontDestroyOnLoad(this);
-            DevConsole.RegisterConsoleCommand(this, "overpower", false, false);            
+            
+            DevConsole.RegisterConsoleCommand(this, "overpower");            
         }
 
         private void OnConsoleCommand_overpower(NotificationCenter.Notification n)
         {
-            OverPowerCheat = !OverPowerCheat;
+            SetOverPowerCheat(!OverPowerCheat);
+        }
 
-            if (OverPowerCheat)
+        public bool GetOverPowerCheat() => OverPowerCheat;
+
+        public void SetOverPowerCheat(bool value)
+        {
+            OverPowerCheat = value;
+
+            if (value)
             {
-                overPowerMultiplier = Config.overPowerMultiplier;
-                hungerAndThristInterval = Config.hungerAndThirstInterval;
+                overPowerMultiplier = CmConfig.overPowerMultiplier;
+                hungerAndThristInterval = CmConfig.hungerAndThirstInterval;
             }
             else
             {
@@ -35,31 +40,19 @@ namespace CheatManager.NewCommands
                 hungerAndThristInterval = 10;
             }
 
-            SetOverPowerCheat();
-            ErrorMessage.AddMessage($"overpower cheat is now {OverPowerCheat}\nOverPower Multiplier: {overPowerMultiplier}x\nHunger and thirst interval: {hungerAndThristInterval}");
-        }
-
-        public bool GetOverPowerCheat()
-        {
-            return OverPowerCheat;
-        }
-
-        internal void SetOverPowerCheat()
-        {
             Oxygen o2 = Player.main.GetComponent<OxygenManager>().GetComponent<Oxygen>();
-
             
-                Player.main.GetComponent<Survival>().SetPrivateField("kUpdateHungerInterval", hungerAndThristInterval);
+            Player.main.GetComponent<Survival>().SetPrivateField("kUpdateHungerInterval", hungerAndThristInterval);
 
-                if (o2.isPlayer)
-                {
-                    o2.oxygenCapacity = 45 * overPowerMultiplier;
-                }
+            if (o2.isPlayer)
+            {
+                o2.oxygenCapacity = 45 * overPowerMultiplier;
+            }
 
-                Player.main.liveMixin.data.maxHealth = 100 * overPowerMultiplier;
-                Player.main.liveMixin.health = 100 * overPowerMultiplier;            
-            
-        }
+            Player.main.liveMixin.data.maxHealth = 100 * overPowerMultiplier;
+            Player.main.liveMixin.health = 100 * overPowerMultiplier;
 
+            ErrorMessage.AddDebug($"overpower cheat is now {OverPowerCheat}\nOverPower Multiplier: {overPowerMultiplier}x\nHunger and thirst interval: {hungerAndThristInterval}");
+        }        
     }
 }

@@ -1,13 +1,13 @@
 ﻿using System;
-using Harmony;
 using UnityEngine;
+using HarmonyLib;
 using SlotExtender.Configuration;
 
 namespace SlotExtender.Patches
 {
     internal static class MQS_Patches
     {
-        internal static bool InitPatch(HarmonyInstance hInstance)
+        internal static bool InitPatch(Harmony hInstance)
         {
             try
             {

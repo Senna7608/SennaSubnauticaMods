@@ -1,4 +1,4 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 using Common;
 
 namespace SlotExtender.Patches
@@ -14,14 +14,14 @@ namespace SlotExtender.Patches
         }
     }    
     
-    [HarmonyPatch(typeof(Exosuit), "Start")]    
-    public class Exosuit_Start_Patch
+    [HarmonyPatch(typeof(Exosuit), "Awake")]    
+    public class Exosuit_Awake_Patch
     {
         [HarmonyPostfix]
         public static void Postfix(Exosuit __instance)
         {            
-            __instance.gameObject.AddIfNeedComponent<SlotExtender>();
-            SNLogger.Log("SlotExtender", $"Component added to instance: {__instance.name} ID: {__instance.GetInstanceID()}");           
+            __instance.gameObject.EnsureComponent<SlotExtender>();
+            SNLogger.Debug("SlotExtender", $"MonoBehaviour component added in Exosuit.Awake -> Postfix Patch. ID: {__instance.GetInstanceID()}");           
         }
     }
 }

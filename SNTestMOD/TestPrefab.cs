@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using SMLHelper.V2.Crafting;
 using UnityEngine;
-using Common;
+using Common.Helpers.SMLHelpers;
 
 namespace SNTestMOD
 {
@@ -11,13 +11,14 @@ namespace SNTestMOD
 
         internal TestPrefab()
             : base(nameID: "Test Item",
-                  iconFileName: null,
+                  iconFilePath: null,
                   iconTechType: TechType.WhirlpoolTorpedo,
                   friendlyName: "Test Item",
                   description: "Test description.",
                   template: TechType.WhirlpoolTorpedo,
-                  fabricatorType: CraftTree.Type.SeamothUpgrades,
-                  fabricatorTab: new string[] { "Torpedoes" },
+                  newTabNode: null,
+                  fabricatorTypes: new CraftTree.Type[] { CraftTree.Type.SeamothUpgrades },
+                  fabricatorTabs: new string[][] { new string[] { "Torpedoes" } },
                   requiredAnalysis: TechType.BaseUpgradeConsole,
                   groupForPDA: TechGroup.VehicleUpgrades,
                   categoryForPDA: TechCategory.VehicleUpgrades,

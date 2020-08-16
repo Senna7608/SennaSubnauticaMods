@@ -1,4 +1,5 @@
-﻿using Common;
+﻿/*
+using Common;
 using UnityEngine;
 
 namespace SeamothArms.ArmPrefabs
@@ -38,7 +39,7 @@ namespace SeamothArms.ArmPrefabs
             MeshRenderer mr = gameObject.GetComponentInChildren<MeshRenderer>();
             mr.materials = (Material[])smr.materials.Clone();
 
-            gameObject.FindChildInMaxDepth("exosuit_rig_armLeft:exosuit_drill_geo").name = "seamoth_claw_arm_geo";
+            Main.graphics.objectHelper.FindDeepChild(gameObject, "exosuit_rig_armLeft:exosuit_drill_geo").name = "seamoth_claw_arm_geo";
 
             Destroy(gameObject.GetComponentInChildren<CapsuleCollider>());
 
@@ -63,3 +64,4 @@ namespace SeamothArms.ArmPrefabs
 
     }
 }
+*/

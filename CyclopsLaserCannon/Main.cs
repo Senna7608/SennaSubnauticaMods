@@ -1,28 +1,33 @@
 ﻿using System;
 using System.Reflection;
-using Harmony;
+using HarmonyLib;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using Common;
 using UWE;
-using static Common.GameHelper;
+using static Common.Helpers.GraphicsHelper;
 using SMLHelper.V2.Utility;
 using MoreCyclopsUpgrades.API;
 using MoreCyclopsUpgrades.API.Upgrades;
+using System.IO;
+using QModManager.API.ModLoading;
 
 namespace CyclopsLaserCannonModule
 {
+    [QModCore]
     public static class Main
     {
+        public static readonly string modFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
         public static AssetBundle assetBundle;
         public static Material cannon_material;
-        public static Sprite buttonSprite;
-        public static TechType techTypeID;
+        public static Sprite buttonSprite;        
         public static bool isAssetsLoaded;
 
-        public static Event<string> onConfigurationChanged = new Event<string>();        
+        public static Event<string> onConfigurationChanged = new Event<string>();
 
+        [QModPatch]
         public static void Load()
         {
             try
@@ -31,13 +36,9 @@ namespace CyclopsLaserCannonModule
 
                 CannonConfig.LoadConfig();
 
-                var laserCannon = new CannonPrefab();
+                new CannonPrefab().Patch();               
 
-                laserCannon.Patch();
-
-                techTypeID = laserCannon.TechType;
-
-                HarmonyInstance.Create("Subnautica.CyclopsLaserCannonModule.mod").PatchAll(Assembly.GetExecutingAssembly());
+                Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), "Subnautica.CyclopsLaserCannonModule.mod");                
 
                 SceneManager.sceneLoaded += new UnityAction<Scene, LoadSceneMode>(OnSceneLoaded);                
 
@@ -61,9 +62,9 @@ namespace CyclopsLaserCannonModule
         {
             try
             {
-                assetBundle = AssetBundle.LoadFromFile("./QMods/CyclopsLaserCannonModule/Assets/laser_sounds");
+                assetBundle = AssetBundle.LoadFromFile($"{modFolder}/Assets/laser_sounds");
 
-                Texture2D cannon_Button = ImageUtils.LoadTextureFromFile("./QMods/CyclopsLaserCannonModule/Assets/cannon_Button.png");
+                Texture2D cannon_Button = ImageUtils.LoadTextureFromFile($"{modFolder}/Assets/cannon_Button.png");
 
                 buttonSprite = Sprite.Create(cannon_Button, new Rect(0, 0, cannon_Button.width, cannon_Button.height), new Vector2(cannon_Button.width * 0.5f, cannon_Button.height * 0.5f));
 
@@ -75,7 +76,7 @@ namespace CyclopsLaserCannonModule
             }
             catch
             {
-                SNLogger.Log("[CyclopsLaserCannon] Warning! Loading assets failed!");
+                SNLogger.Error("CyclopsLaserCannon", "Loading assets failed!");
                 return false;
             }
 
@@ -85,7 +86,7 @@ namespace CyclopsLaserCannonModule
         {
             MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
             {
-                return new UpgradeHandler(techTypeID, cyclops)
+                return new UpgradeHandler(CannonPrefab.TechTypeID, cyclops)
                 {
                     MaxCount = 1                    
                 };                

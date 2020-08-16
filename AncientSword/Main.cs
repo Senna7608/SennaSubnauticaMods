@@ -1,44 +1,30 @@
 ﻿using System;
-using UnityEngine;
-using Harmony;
+using System.IO;
 using System.Reflection;
+using UnityEngine;
+using HarmonyLib;
+using QModManager.API.ModLoading;
 
 namespace AncientSword
 {
+    [QModCore]
     public static class Main
     {
+        public static readonly string modFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+        [QModPatch]
         public static void Load()
         {
             try
-            { 
-                var ancientSword = new SwordPrefab();
+            {
+                new SwordPrefab().Patch();
 
-                ancientSword.Patch();
-
-                HarmonyInstance.Create("Subnautica.AncientSword.mod").PatchAll(Assembly.GetExecutingAssembly());
+                Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(),  "Subnautica.AncientSword.mod");                
             }
             catch (Exception ex)
             {
                 Debug.LogException(ex);
             }
-        }
-
-        [HarmonyPatch(typeof(PDAScanner))]
-        [HarmonyPatch("Unlock")]
-        public static class PDAScannerUnlockPatch
-        {
-            public static bool Prefix(PDAScanner.EntryData entryData)
-            {
-                if (entryData.key == TechType.PrecursorPrisonArtifact8)
-                {
-                    if (!KnownTech.Contains(SwordPrefab.TechTypeID))
-                    {
-                        KnownTech.Add(SwordPrefab.TechTypeID);
-                        ErrorMessage.AddMessage("Added blueprint for Ancient Sword fabrication to database");
-                    }
-                }
-                return true;
-            }
-        }        
+        }            
     }
 }

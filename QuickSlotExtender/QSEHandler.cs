@@ -1,10 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using QuickSlotExtender.Configuration;
 using UWE;
+using Common.Helpers;
+using QuickSlotExtender.Configuration;
+using Common;
 
 namespace QuickSlotExtender
 {
@@ -17,9 +19,7 @@ namespace QuickSlotExtender
         public static object slotextender_SLOTKEYSLIST;
         public List<string> SLOTEXTENDER_SLOTKEYSLIST;
         public Utils.MonitoredValue<bool> onConsoleInputFieldActive = new Utils.MonitoredValue<bool>();
-        private bool isConsoleActive = false;
-
-        private List<Text> slotTexts = new List<Text>();
+        private bool isConsoleActive = false;        
 
         public void Awake()
         {
@@ -46,6 +46,8 @@ namespace QuickSlotExtender
                 {
                     SLOTEXTENDER_SLOTKEYSLIST.Add(item);
                 }
+
+                SNLogger.Debug("QuickSlotExtender", $"SLOTEXTENDER_SLOTKEYSLIST.Count = [{SLOTEXTENDER_SLOTKEYSLIST.Count}]");
             }
             catch (Exception ex)
             {
@@ -65,14 +67,16 @@ namespace QuickSlotExtender
 
         public void OnDestroy()
         {
-            onConsoleInputFieldActive.changedEvent.RemoveHandler(this, OnConsoleInputFieldActive);
-            Destroy(Instance);
+            onConsoleInputFieldActive.changedEvent.RemoveHandler(this, OnConsoleInputFieldActive);            
         }       
 
         
         internal void Update()
         {
             if (isConsoleActive)
+                return;
+
+            if (Main.isKeyBindigsUpdate)
                 return;
 
             if (Player.main == null)
@@ -131,7 +135,7 @@ namespace QuickSlotExtender
                 return;
             }
 
-            icons = (uGUI_ItemIcon[])instance.GetType().GetField("icons", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(instance);
+            icons = (uGUI_ItemIcon[])instance.GetPrivateField("icons");
 
             if (icons == null)
             {
@@ -143,21 +147,38 @@ namespace QuickSlotExtender
                 return;
             }
 
+            SNLogger.Debug("QuickSlotExtender", $"icons.length = [{icons.Length}]");
+
+            SNLogger.Debug("QuickSlotExtender", $"SLOTKEYSLIST.Count = [{QSEConfig.SLOTKEYSLIST.Count}]");
+
+            SNLogger.Debug("QuickSlotExtender", $"Player.main.isPiloting = [{Player.main.isPiloting}]");
+
             for (int i = 0; i < icons.Length; i++)
             {
-                if (Main.isExists_SlotExtender && Player.main.inSeamoth && Player.main.GetPDA().state != PDA.State.Opening)
+                if (Main.isExists_SlotExtender)
                 {
-                    AddTextToSlot(icons[i].transform, SLOTEXTENDER_SLOTKEYSLIST[i], i);
-                }
-                else if (Main.isExists_SlotExtender && Player.main.inExosuit && Player.main.GetPDA().state != PDA.State.Opening)
-                {
-                    if (i < 2)
+
+                    if (Player.main.GetPDA().state != PDA.State.Opening)
                     {
-                        continue;
-                    }
-                    else
-                    {
-                        AddTextToSlot(icons[i].transform, SLOTEXTENDER_SLOTKEYSLIST[i - 2], i);
+                        if (Player.main.inSeamoth)
+                        {
+                            AddTextToSlot(icons[i].transform, SLOTEXTENDER_SLOTKEYSLIST[i]);
+                        }
+                        else if (Player.main.inExosuit)
+                        {
+                            if (i < 2)
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                AddTextToSlot(icons[i].transform, SLOTEXTENDER_SLOTKEYSLIST[i - 2]);
+                            }
+                        }                        
+                        else
+                        {
+                            AddTextToSlot(icons[i].transform, QSEConfig.SLOTKEYSLIST[i]);
+                        }
                     }
                 }
                 else if (Player.main.inExosuit && Player.main.GetPDA().state != PDA.State.Opening)
@@ -168,12 +189,12 @@ namespace QuickSlotExtender
                     }
                     else
                     {
-                        AddTextToSlot(icons[i].transform, QSEConfig.SLOTKEYSLIST[i - 2], i);
+                        AddTextToSlot(icons[i].transform, QSEConfig.SLOTKEYSLIST[i - 2]);
                     }
                 }
                 else
                 {
-                    AddTextToSlot(icons[i].transform, QSEConfig.SLOTKEYSLIST[i], i);
+                    AddTextToSlot(icons[i].transform, QSEConfig.SLOTKEYSLIST[i]);
                 }
             }
 
@@ -183,11 +204,11 @@ namespace QuickSlotExtender
         //based on RandyKnapp's Subnautica mod: MoreQuickSlots -> "CreateNewText()" method
         //found on GitHub:https://github.com/RandyKnapp/SubnauticaModSystem
 
-        private Text AddTextToSlot(Transform parent, string buttonText, int slotNum)
+        private Text AddTextToSlot(Transform parent, string buttonText)
         {
             Text text = Instantiate(HandReticle.main.interactPrimaryText);            
             text.gameObject.layer = parent.gameObject.layer;
-            text.gameObject.name = $"Slot_{slotNum}";
+            text.gameObject.name = "QSELabel";
             text.transform.SetParent(parent, false);
             text.transform.localScale = new Vector3(1, 1, 1);
             text.gameObject.SetActive(true);

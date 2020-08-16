@@ -1,5 +1,5 @@
-﻿using Common;
-using Harmony;
+﻿using Common.Helpers;
+using HarmonyLib;
 using System;
 using UnityEngine;
 
@@ -30,9 +30,10 @@ namespace RepulsionCannonArm
 
                     __instance.armPrefabs[arraySize] = new Exosuit.ExosuitArmPrefab()
                     {
-                        prefab = __instance.armPrefabs[i].prefab.GetPrefabClone(null, true, "ExosuitRepulsionCannonArm"),
+                        prefab = Main.objectHelper.GetPrefabClone(__instance.armPrefabs[i].prefab, null, true, "ExosuitRepulsionCannonArm"),
                         techType = RepulsionCannonArmPrefab.TechTypeID
-                    };                    
+                    };
+                    
                     break;
                 }
             }
@@ -47,29 +48,29 @@ namespace RepulsionCannonArm
             UnityEngine.Object.DestroyImmediate(RepulsionCannonPrefab.GetComponent<ExosuitPropulsionArm>());
             UnityEngine.Object.DestroyImmediate(RepulsionCannonPrefab.GetComponent<PropulsionCannon>());
 
-            GameObject elbow = RepulsionCannonPrefab.FindChildInMaxDepth("elbow");            
+            GameObject elbow = Main.objectHelper.FindDeepChild(RepulsionCannonPrefab, "elbow");            
 
             GameObject repulsion = elbow.FindChild("propulsion");            
 
             repulsion.name = "repulsion";
                         
-            GameObject ArmRig = RepulsionCannonPrefab.FindChildInMaxDepth("ArmRig");            
+            GameObject ArmRig = Main.objectHelper.FindDeepChild(RepulsionCannonPrefab, "ArmRig");            
 
             GameObject exosuit_repulsion_geo = ArmRig.FindChild("exosuit_propulsion_geo");           
 
             exosuit_repulsion_geo.name = "exosuit_repulsion_geo";
 
-            exosuit_repulsion_geo.ChangeObjectTexture(2, illumTex: Main.illumTex.GetObjectClone());            
+            GraphicsHelper.ChangeObjectTexture(exosuit_repulsion_geo, 2, illumTex: Main.objectHelper.GetObjectClone(Main.illumTex));                       
 
-            RepulsionCannonArmControl control = RepulsionCannonPrefab.GetOrAddComponent<RepulsionCannonArmControl>();
+            RepulsionCannonArmControl control = RepulsionCannonPrefab.AddComponent<RepulsionCannonArmControl>();
 
-            control.muzzle = RepulsionCannonPrefab.FindChildInMaxDepth("repulsion").FindChild("muzzle").transform;
+            control.muzzle = Main.objectHelper.FindDeepChild(RepulsionCannonPrefab, "muzzle").transform;            
 
-            var repulsionPrefab = Resources.Load<GameObject>("WorldEntities/Tools/RepulsionCannon").GetPrefabClone();            
+            var repulsionPrefab = Main.objectHelper.GetPrefabClone(Resources.Load<GameObject>("WorldEntities/Tools/RepulsionCannon"));            
 
             var repulsionCannon = repulsionPrefab.GetComponent<RepulsionCannon>();                        
 
-            control.fxControl = repulsionCannon.fxControl.GetComponentClone(control.transform);
+            control.fxControl = Main.objectHelper.GetComponentClone(repulsionCannon.fxControl, control.transform);
 
             for (int i = 0; i < control.fxControl.emitters.Length; i++)
             {
@@ -96,9 +97,9 @@ namespace RepulsionCannonArm
                 }
             }
 
-            control.bubblesFX = repulsionCannon.bubblesFX.GetPrefabClone(RepulsionCannonPrefab.transform, false);
+            control.bubblesFX = Main.objectHelper.GetPrefabClone(repulsionCannon.bubblesFX, RepulsionCannonPrefab.transform, false);
             
-            control.shootSound = repulsionCannon.shootSound.GetObjectClone();
+            control.shootSound = Main.objectHelper.GetObjectClone(repulsionCannon.shootSound);
 
             control.animator = RepulsionCannonPrefab.GetComponent<Animator>();
 

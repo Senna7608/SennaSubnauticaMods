@@ -25,13 +25,13 @@ namespace RuntimeHelper
         {
             ObjectWindow_drawRect = SNWindow.CreateWindow(ObjectWindow_Rect, "Object Window");
 
-            if (GUI.Button(new Rect(ObjectWindow_drawRect.x + 5, ObjectWindow_drawRect.y + 5, 120, 22), ObjectWindow[0]))
+            if (GUI.Button(new Rect(ObjectWindow_drawRect.x + 5, ObjectWindow_drawRect.y + 5, 120, 22), ObjectWindow[0], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
                 if (!isDirty)
                     AddNewEmptyObject();
             }
 
-            if (GUI.Button(new Rect(ObjectWindow_drawRect.x + 130, ObjectWindow_drawRect.y + 5, 163, 22), ObjectWindow[1]))
+            if (GUI.Button(new Rect(ObjectWindow_drawRect.x + 130, ObjectWindow_drawRect.y + 5, 163, 22), ObjectWindow[1], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
                 AddNewTechObject(techTypeDatas[selected_TechType].TechType);
             }

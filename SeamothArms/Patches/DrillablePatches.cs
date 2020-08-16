@@ -1,5 +1,4 @@
-﻿using Common;
-using Harmony;
+﻿using HarmonyLib;
 
 namespace SeamothArms.Patches
 {
@@ -9,7 +8,7 @@ namespace SeamothArms.Patches
     {
         static void Postfix(Drillable __instance)
         {            
-             __instance.gameObject.AddIfNeedComponent<SeamothDrillable>();                     
+             __instance.gameObject.EnsureComponent<SeamothDrillable>();                     
         }
     }
 
@@ -21,8 +20,7 @@ namespace SeamothArms.Patches
         {
             if (Player.main.inSeamoth)
             {
-                var seamothDrillable = __instance.GetComponent<SeamothDrillable>();
-                seamothDrillable.HoverDrillable();
+                __instance.GetComponent<SeamothDrillable>().HoverDrillable();
 
                 return false;
             }

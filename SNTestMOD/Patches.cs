@@ -1,5 +1,6 @@
 ﻿using Common;
-using Harmony;
+using Common.Helpers;
+using HarmonyLib;
 using System;
 using System.Reflection;
 using UnityEngine;
@@ -57,7 +58,7 @@ namespace SNTestMOD
 
             if (techType == TechType.UraniniteCrystal)
             {
-                __instance.gameObject.AddIfNeedComponent<Radiation_UraniniteCrystal>();
+                __instance.gameObject.EnsureComponent<Radiation_UraniniteCrystal>();
 
                 Main.PrintLOG($"Radiation_UraniniteCrystal component added to gameobject: {__instance.gameObject.name}");
             }            

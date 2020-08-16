@@ -1,18 +1,17 @@
-﻿using Harmony;
-using Common;
+﻿using System;
 using System.Reflection;
-using System;
 using UnityEngine;
+using HarmonyLib;
+using Common;
+using Common.Helpers;
 using QuickSlotExtender.Configuration;
 
-namespace QuickSlotExtender.Patchers
+namespace QuickSlotExtender.Patches
 {
     [HarmonyPatch(typeof(QuickSlots))]
     [HarmonyPatch(MethodType.Constructor, new Type[] { typeof(GameObject), typeof(Transform), typeof(Transform), typeof(Inventory), typeof(Transform), typeof(int) })]
     internal class QuickSlots_Constructor_Patch
     {
-        static bool isPatched = false;
-
         static readonly string[] ExpandedQuickSlotNames = new string[13]
         {
             "QuickSlot0",
@@ -33,18 +32,16 @@ namespace QuickSlotExtender.Patchers
         [HarmonyPrefix]
         internal static void Prefix(QuickSlots __instance, GameObject owner, Transform toolSocket, Transform cameraSocket, Inventory inv, Transform slotTr, ref int slotCount)
         {
-            if (isPatched)
-            {
+            if (Main.isPatched)
                 return;
-            }
-                        
-            __instance.GetType().GetField("slotNames", BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.GetField | BindingFlags.SetField).SetValue(__instance, ExpandedQuickSlotNames);
             
-            slotCount = QSEConfig.MAXSLOTS;           
+            __instance.SetPrivateField("slotNames", ExpandedQuickSlotNames, BindingFlags.Static);
 
-            isPatched = true;
+            slotCount = QSEConfig.MAXSLOTS;
 
-            SNLogger.Log($"[{QSEConfig.PROGRAM_NAME}] QuickSlots Constructor patched!");
+            SNLogger.Log("QuickSlotExtender", "QuickSlots constructor Patched.");
+
+            Main.isPatched = true;
         }
     }
 
@@ -56,8 +53,22 @@ namespace QuickSlotExtender.Patchers
         [HarmonyPostfix]
         internal static void Postfix(uGUI_QuickSlots __instance)
         {
-            Main.Instance = __instance.gameObject.GetOrAddComponent<QSEHandler>();
+            Main.Instance = __instance.gameObject.EnsureComponent<QSEHandler>();
             Main.Instance.AddQuickSlotText(__instance);
         }
-    }    
+    }
+
+    [HarmonyPatch(typeof(DevConsole))]
+    [HarmonyPatch("SetState")]
+    public class DevConsole_SetState_Patch
+    {
+        [HarmonyPrefix]
+        internal static void Prefix(DevConsole __instance, bool value)
+        {
+            if (Main.Instance != null)
+            {
+                Main.Instance.onConsoleInputFieldActive.Update(value);
+            }
+        }
+    }
 }

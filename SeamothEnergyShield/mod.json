@@ -3,11 +3,8 @@
   "DisplayName": "SeamothEnergyShield",
   "Author": "Senna",
   "Version": "1.2",
-  "Dependencies": ["SMLHelper"],
-  "LoadBefore": [],
-  "LoadAfter": [],
+  "Dependencies": ["SMLHelper"],  
   "Enable": true,
   "Game": "Subnautica",
-  "AssemblyName": "SeamothEnergyShield.dll",
-  "EntryMethod": "SeamothEnergyShield.Main.Load"  
+  "AssemblyName": "SeamothEnergyShield.dll"
 }

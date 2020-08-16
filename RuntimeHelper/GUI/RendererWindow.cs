@@ -71,7 +71,7 @@ namespace RuntimeHelper
                 }
             }
                         
-            Renderer renderer = (Renderer)components[selected_component];
+            Renderer renderer = (Renderer)objects[selected_component];
 
             if (GUI.Button(new Rect(windowrect.x + 70, windowrect.y + (windowrect.height - 50), 60, 22), renderer.enabled ? "Off" : "On"))
             {
@@ -214,7 +214,7 @@ namespace RuntimeHelper
 
             if (!undoDictionary.Keys.Contains(rendererID))
             {
-                undoDictionary.Add(components[selected_component].GetInstanceID(), (Material[])materials.Clone());
+                undoDictionary.Add(objects[selected_component].GetInstanceID(), (Material[])materials.Clone());
             }
             
             foreach (ShaderInfo shaderInfo in _materialInfos[materialIndex].ActiveShaders)

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace RuntimeHelper.Objects
 {
-    public static class ObjectHelper
+    public static class ClipboardHelper
     {
         public static int pasteCount = 0;
 

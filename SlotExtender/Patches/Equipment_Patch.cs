@@ -1,10 +1,35 @@
 ﻿using System;
-using Harmony;
 using UnityEngine;
+using HarmonyLib;
 using SlotExtender.Configuration;
+using Common;
 
 namespace SlotExtender.Patches
 {
+    [HarmonyPatch(typeof(Equipment))]
+    [HarmonyPatch("GetSlotType")]
+    public class Equipment_GetSlotType_Patch
+    {
+        public static bool isPatched = false;
+
+        [HarmonyPrefix]
+        public static void Prefix(string slot, ref EquipmentType __result)
+        {
+            if (!isPatched)
+            {
+                SNLogger.Debug("SlotExtender", $"Equipment.GetSlotType() Prefix patch start.\n" +
+                $"slot = [{slot}]");
+
+                SlotHelper.ExpandSlotMapping();
+
+                isPatched = true;
+
+                SNLogger.Debug("SlotExtender", "Equipment.GetSlotType() Prefix patch end.");
+            }
+        }
+    }
+
+    /*
     [HarmonyPatch(typeof(Equipment))]
     [HarmonyPatch(MethodType.Constructor)]
     [HarmonyPatch(new Type[] { typeof(GameObject), typeof(Transform) })]
@@ -23,6 +48,7 @@ namespace SlotExtender.Patches
             }
         }
     }
+    */
 
     [HarmonyPatch(typeof(Equipment), "AllowedToAdd")]    
     [HarmonyPatch(new Type[] { typeof(string), typeof(Pickupable), typeof(bool) })]

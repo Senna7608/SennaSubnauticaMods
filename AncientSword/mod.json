@@ -1,13 +1,10 @@
 ﻿{
   "Id": "AncientSword",
-  "DisplayName": "AncientSword",
+  "DisplayName": "Ancient Sword",
   "Author": "Senna",
-  "Version": "1.3",
-  "Dependencies": ["SMLHelper"],
-  "LoadBefore": [],
-  "LoadAfter": [],
+  "Version": "1.4",
+  "Dependencies": ["SMLHelper"],  
   "Enable": true,
   "Game": "Subnautica",
-  "AssemblyName": "AncientSword.dll",
-  "EntryMethod": "AncientSword.Main.Load"
+  "AssemblyName": "AncientSword.dll"  
 }

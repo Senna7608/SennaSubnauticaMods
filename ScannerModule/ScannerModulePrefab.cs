@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using SMLHelper.V2.Crafting;
-using Common;
+using Common.Helpers.SMLHelpers;
 
 namespace ScannerModule
 {
@@ -10,13 +10,14 @@ namespace ScannerModule
 
         internal ScannerModulePrefab()
             : base(nameID: "ScannerModule",
-                  iconFileName: "ScannerModule",
+                  iconFilePath: $"{Main.modFolder}/Assets/ScannerModule.png",
                   iconTechType: TechType.None,
                   friendlyName: "Scanner Module",
                   description: "Allows to scan objects within Vehicles.",
                   template: TechType.SeamothSonarModule,
-                  fabricatorType: CraftTree.Type.SeamothUpgrades,
-                  fabricatorTab: new string[] { "CommonModules" },
+                  newTabNode: null,
+                  fabricatorTypes: new CraftTree.Type[] { CraftTree.Type.SeamothUpgrades },
+                  fabricatorTabs: new string[][] { new string[] { "CommonModules" } },
                   requiredAnalysis: TechType.BaseUpgradeConsole,
                   groupForPDA: TechGroup.VehicleUpgrades,
                   categoryForPDA: TechCategory.VehicleUpgrades,

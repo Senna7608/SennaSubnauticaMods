@@ -1,26 +1,39 @@
 ﻿using System;
+using System.IO;
 using System.Reflection;
-using Harmony;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
-using Common;
+using HarmonyLib;
+using Common.Helpers;
+using UWE;
+using QModManager.API.ModLoading;
 
 namespace LaserCannon
 {
+    [QModCore]
     public static class Main
     {
-        public static LaserCannonControl Instance { get; internal set; }        
+        public static readonly string modFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
+        public static ObjectHelper objectHelper { get; private set; }
+
+        public static Event<bool> OnConfigChanged = new Event<bool>();
+
+        [QModPatch]
         public static void Load()
         {
             try
             {
-                LaserCannonConfig.LoadConfig();
-                var laserCannon = new LaserCannonPrefab();
-                laserCannon.Patch();
 
-                HarmonyInstance.Create("Subnautica.LaserCannon.mod").PatchAll(Assembly.GetExecutingAssembly());
+                objectHelper = new ObjectHelper();
+
+                LaserCannonConfig.Config_Load();
+
+                new LaserCannonPrefab().Patch();
+
+                Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), "Subnautica.LaserCannon.mod");                
+
                 SceneManager.sceneLoaded += new UnityAction<Scene, LoadSceneMode>(OnSceneLoaded);
             }
             catch (Exception ex)
@@ -36,21 +49,5 @@ namespace LaserCannon
                 Language.main.OnLanguageChanged += LaserCannonConfig.OnLanguageChanged;
             }
         }
-    }
-
-    [HarmonyPatch(typeof(SeaMoth))]
-    [HarmonyPatch("OnUpgradeModuleChange")]    
-    public class SeaMoth_OnUpgradeModuleChange_Patch
-    {
-        [HarmonyPostfix]
-        static void Postfix(SeaMoth __instance, int slotID, TechType techType, bool added)
-        {            
-            if (techType == LaserCannonPrefab.TechTypeID && added)
-            {
-                var control = __instance.gameObject.GetOrAddComponent<LaserCannonControl>();
-                control.moduleSlotID = slotID;
-                Main.Instance = control;               
-            }                                  
-        }
-    }
+    }    
 }

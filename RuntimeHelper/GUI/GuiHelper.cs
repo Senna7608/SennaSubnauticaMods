@@ -1,8 +1,7 @@
-﻿using Common;
-using Common.GUIHelper;
+﻿using Common.GUIHelper;
+using Common.Helpers;
 using System.Collections.Generic;
 using UnityEngine;
-using static Common.GameHelper;
 
 namespace RuntimeHelper
 {
@@ -13,7 +12,15 @@ namespace RuntimeHelper
             targetList.Clear();
            
             List<Rect> rects = new Rect(0, 0, width, itemNames.Count * 24).SetGridItemsRect(1, itemNames.Count, 22, 5, 2, false, false, true);
-            targetList.CreateGuiItemsGroup(itemNames, rects, GuiItemType.TAB, new GuiItemColor(), null, GuiItemState.NORMAL, textAnchor: TextAnchor.MiddleLeft);            
+            targetList.CreateGuiItemsGroup(itemNames, rects, GuiItemType.TAB, new GuiItemColor(), null, GuiItemState.NORMAL, textAnchor: TextAnchor.MiddleLeft);
+
+            foreach (GuiItem guiItem in targetList)
+            {
+                if (guiItem.Name == "Properties:" || guiItem.Name == "Fields:")
+                {
+                    guiItem.ItemColor = new GuiItemColor(GuiColor.Green);
+                }
+            }
         }
 
         public static List<string> InitTransformNamesList(this List<Transform> transformsList)
@@ -21,28 +28,21 @@ namespace RuntimeHelper
             List<string> names = new List<string>();
 
             for (int i = 0; i < transformsList.Count; i++)
-            {                
+            {
                 if (i == 0 && !transformsList[0].IsRoot())
-                {                   
-                    names.Add(transformsList[0].name + " (Parent)");                    
-                    continue;                   
-                }
-
-                if (i == 1 && !transformsList[0].IsRoot())
-                {                    
-                    names.Add(transformsList[1].name + " (Base)");
+                {
+                    names.Add(transformsList[0].name + " (Parent)");
                     continue;
                 }
-
                 if (transformsList[i].IsRoot())
                 {
-                    names.Add(transformsList[i].name + " (Root)");                    
-                }                
+                    names.Add(transformsList[i].name + " (Root)");
+                }
                 else
                 {
                     names.Add(transformsList[i].name + $" ({transformsList[i].childCount})");
-                }                
-            }            
+                }
+            }
 
             return names;
         }

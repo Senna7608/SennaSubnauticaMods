@@ -1,5 +1,5 @@
-﻿using Common;
-using Harmony;
+﻿using Common.Helpers;
+using HarmonyLib;
 using UnityEngine;
 
 namespace MAC.Fahrenheit
@@ -56,7 +56,7 @@ namespace MAC.Fahrenheit
         public static void Postfix(ThermalPlant __instance)
         {            
             int fahrenheit = Mathf.CeilToInt(__instance.temperature * 1.8f + 32);
-            __instance.temperatureText.text = IntStringCache.GetStringForInt(fahrenheit);                       
+            __instance.temperatureText.text = $"{IntStringCache.GetStringForInt(fahrenheit)}\u00b0F";            
         }
     }        
 }

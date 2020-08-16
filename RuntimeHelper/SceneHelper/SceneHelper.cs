@@ -39,6 +39,50 @@ namespace RuntimeHelper.SceneHelper
                     transforms.Add(rootObject.transform);
                 }
             }
+
+            SearchDefaultObjects(ref transforms);
         }
+
+        private static void SearchDefaultObjects(ref List<Transform> transforms)
+        {
+
+            if (uGUI.main != null)
+            {
+                if (!transforms.Contains(uGUI.main.transform))
+                    transforms.Add(uGUI.main.transform);
+            }
+
+            if (uGUI_PDA.main != null)
+            {
+                if (!transforms.Contains(uGUI_PDA.main.transform))
+                    transforms.Add(uGUI_PDA.main.transform);
+            }
+
+            if (Player.main != null)
+            {
+                if (!transforms.Contains(Player.main.transform))
+                    transforms.Add(Player.main.transform);
+            }
+
+            if (uGUI_PopupNotification.main != null)
+            {
+                if (!transforms.Contains(uGUI_PopupNotification.main.transform))
+                    transforms.Add(uGUI_PopupNotification.main.transform);
+            }
+
+            if (NotificationManager.main != null)
+            {
+                if (!transforms.Contains(NotificationManager.main.transform))
+                    transforms.Add(NotificationManager.main.transform);
+            }
+
+            if (Language.main != null)
+            {
+                if (!transforms.Contains(Language.main.transform))
+                    transforms.Add(Language.main.transform);
+            }
+
+        }
+
     }
 }

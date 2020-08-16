@@ -11,9 +11,11 @@ namespace RuntimeHelper
         private int current_editmode_index = 0;
         private List<GuiItem> guiItems_editmode = new List<GuiItem>();
         private Vector2 scrollpos_editmode = Vector2.zero;
-        private static Rect EditWindow_Rect = new Rect(300, 30, 248, 300);
+        private static Rect EditWindow_Rect = new Rect(300, 30, 248, 270);
         private Rect EditWindow_drawRect;
         private float value = 0.01f;
+
+        private static readonly List<string> EDIT_MODE = new List<string>();
 
         private Event<object> onScaleFactorChanged = new Event<object>();
 

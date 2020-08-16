@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Common.Helpers;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -35,7 +36,7 @@ namespace Common
                 {
                     if (command.AvailableInStartScreen)
                     {
-                        command.RegisterCommand();
+                        command.RegisterCommand();                        
                     }
                 }
 
@@ -43,7 +44,7 @@ namespace Common
                 {
                     if (command.AvailableInGame)
                     {
-                        command.RegisterCommand();
+                        command.RegisterCommand();                        
                     }
                 }
             }
@@ -59,7 +60,7 @@ namespace Common
             }
             else
             {
-                throw new Exception("Requested command component cannot add!");
+                throw new Exception("Requested console command cannot add!");
             }            
         }        
     }

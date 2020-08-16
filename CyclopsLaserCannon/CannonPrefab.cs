@@ -1,23 +1,26 @@
 ﻿using System.Collections.Generic;
 using SMLHelper.V2.Crafting;
 using SMLHelper.V2.Handlers;
-using Common;
+using Common.Helpers.SMLHelpers;
 
 namespace CyclopsLaserCannonModule
 {
     internal class CannonPrefab : CraftableModItem
-    {              
+    {
+        public static TechType TechTypeID { get; private set; }
+
         public static CannonOptions Config { get; } = new CannonOptions();       
 
         internal CannonPrefab()
             : base(nameID: "CyclopsLaserCannonModule",
-                  iconFileName: "CyclopsLaserCannonModule",
+                  iconFilePath: $"{Main.modFolder}/Assets/CyclopsLaserCannonModule.png",
                   iconTechType: TechType.None,
                   friendlyName: CannonConfig.language_settings["Item_Name"],
                   description: CannonConfig.language_settings["Item_Description"],
                   template: TechType.CyclopsHullModule1,
-                  fabricatorType: CraftTree.Type.CyclopsFabricator,
-                  fabricatorTab: new string[] { "Root" },
+                  newTabNode: null,
+                  fabricatorTypes: new CraftTree.Type[] { CraftTree.Type.CyclopsFabricator },
+                  fabricatorTabs: null,
                   requiredAnalysis: TechType.PrecursorPrisonArtifact7,
                   groupForPDA: TechGroup.VehicleUpgrades,
                   categoryForPDA: TechCategory.VehicleUpgrades,
@@ -32,7 +35,8 @@ namespace CyclopsLaserCannonModule
                
         public override void Patch()
         {
-            base.Patch();                   
+            base.Patch();
+            TechTypeID = TechType;
             OptionsPanelHandler.RegisterModOptions(Config);
         }
         

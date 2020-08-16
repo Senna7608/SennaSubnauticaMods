@@ -1,5 +1,5 @@
 ﻿using Common;
-using Harmony;
+using HarmonyLib;
 using UnityEngine;
 
 namespace CyclopsLaserCannonModule.Patch
@@ -18,9 +18,9 @@ namespace CyclopsLaserCannonModule.Patch
                 return;
             }            
 
-            CyclopsRoot.AddIfNeedComponent<CannonControl>();
+            CyclopsRoot.EnsureComponent<CannonControl>();
 
-            SNLogger.Log($"[CyclopsLaserCannonModule] Patch injected on class [CyclopsExternalCams] for this Cyclops instance: {CyclopsRoot.GetInstanceID()}. CannonControl component added.");                       
+            SNLogger.Debug("CyclopsLaserCannonModule", $"Patch injected on class [CyclopsExternalCams] for this Cyclops instance: {CyclopsRoot.GetInstanceID()}. CannonControl component added.");                       
         }
     }
 }

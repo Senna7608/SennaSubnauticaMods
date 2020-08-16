@@ -1,25 +1,34 @@
-﻿using Harmony;
-using System;
+﻿using System;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using HarmonyLib;
+using SMLHelper.V2.Handlers;
 using Common;
-using SlotExtender.Patches;
 using SlotExtender.Configuration;
-using System.Reflection;
+using SlotExtender.Patches;
+using Common.Helpers;
+using QModManager.API.ModLoading;
 
 namespace SlotExtender
 {
+    [QModCore]
     public static class Main
     {
         public static CommandRoot commandRoot = null;
-        public static HarmonyInstance hInstance;
-        public static SECommand sEConfig;
-
+        public static Harmony hInstance;
         internal static InputFieldListener ListenerInstance { get; set; }
+
         public static bool isConsoleActive;
         public static bool isKeyBindigsUpdate = false;
 
+        public static bool uGUI_PrefixComplete = false;
+        public static bool uGUI_PostfixComplete = false;
+        public static bool EquipmentPatched = false;
+        public static bool SeatruckUpgradesPatched = false;
+
+        [QModPatch]
         public static void Load()
         {
             SNLogger.Debug("SlotExtender", "Method call: Main.Load()");
@@ -28,8 +37,8 @@ namespace SlotExtender
             {
                 SEConfig.Config_Load();
                 SlotHelper.InitSlotIDs();
-
-                hInstance = HarmonyInstance.Create("Subnautica.SlotExtender.mod");
+                
+                hInstance = new Harmony("Subnautica.SlotExtender.mod");
 
                 SNLogger.Debug("SlotExtender", $"Main.Load(): Harmony Instance created, Name = [{hInstance.Id}]");
 
@@ -42,15 +51,16 @@ namespace SlotExtender
                 //add console commad for configuration window
                 commandRoot = new CommandRoot("SEConfigGO");                
                 commandRoot.AddCommand<SECommand>();
-                
+
+                IngameMenuHandler.Main.RegisterOnQuitEvent(OnQuitEvent);
             }
             catch (Exception ex)
             {
-                UnityEngine.Debug.LogException(ex);
+                Debug.LogException(ex);
             }
 
             // check MoreQuickSlots namespace is exists
-            if (RefHelp.IsNamespaceExists("MoreQuickSlots"))
+            if (ReflectionHelper.IsNamespaceExists("MoreQuickSlots"))
             {
                 SNLogger.Log("SlotExtender", " -> MoreQuickSlots namespace is exist! Trying to install a Cross-MOD patch...");
 
@@ -62,12 +72,20 @@ namespace SlotExtender
             }
         }
 
+        private static void OnQuitEvent()
+        {
+            uGUI_PrefixComplete = false;
+            uGUI_PostfixComplete = false;
+            EquipmentPatched = false;
+            SeatruckUpgradesPatched = false;
+        }
+
         private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
             if (scene.name == "StartScreen")
             {
                 // enabling game console
-                GameHelper.EnableConsole();
+                DevConsole.disableConsole = false;
 
                 // init config
                 SEConfig.Config_Init();

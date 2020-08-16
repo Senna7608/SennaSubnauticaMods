@@ -1,6 +1,6 @@
 ﻿using System;
 using UnityEngine;
-using Harmony;
+using HarmonyLib;
 using System.Reflection;
 
 namespace SNTestMOD
@@ -16,9 +16,7 @@ namespace SNTestMOD
             {
                 //TestPrefab testPrefab = new TestPrefab();
                 //testPrefab.Patch();
-
-                HarmonyInstance.Create("Subnautica.SNTestMOD.mod").PatchAll(Assembly.GetExecutingAssembly());               
-
+                Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), "Subnautica.SNTestMOD.mod");                
             }
             catch (Exception ex)
             {

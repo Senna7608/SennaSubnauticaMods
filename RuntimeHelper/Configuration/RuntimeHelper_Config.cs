@@ -10,12 +10,14 @@ using System.Diagnostics;
 namespace RuntimeHelper.Configuration
 {
     public static class RuntimeHelper_Config
-    {
-        public const string PROGRAM_NAME = "RuntimeHelper";
+    {        
         internal static string PROGRAM_VERSION = string.Empty;
         internal static string CONFIG_VERSION = string.Empty;
         public static bool AUTOSTART = false;
-        private static readonly string FILENAME = $"{Environment.CurrentDirectory}/QMods/{PROGRAM_NAME}/config.txt";
+        private static readonly string modFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        private static readonly string FILENAME = $"{modFolder}/config.txt";
+
+        public static string TitleText;
 
         private static readonly string[] SECTIONS = { "Settings", "Hotkeys"};
 
@@ -47,17 +49,19 @@ namespace RuntimeHelper.Configuration
         {
             PROGRAM_VERSION = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
 
+            TitleText = $"Runtime Helper v.{PROGRAM_VERSION}";
+
             if (!File.Exists(FILENAME))
             {
                 CreateDefaultConfigFile();
             }
             else
             {
-                CONFIG_VERSION = ParserHelper.GetKeyValue(FILENAME, PROGRAM_NAME, "Version");
+                CONFIG_VERSION = ParserHelper.GetKeyValue(FILENAME, "RuntimeHelper", "Version");
 
                 if (CONFIG_VERSION.Equals(PROGRAM_VERSION))
                 {
-                    SNLogger.Log($"[{PROGRAM_NAME}] Configuration file version match with program version.");
+                    SNLogger.Log("RuntimeHelper", "Configuration file version match with program version.");
                 }
                 else
                 {
@@ -74,20 +78,21 @@ namespace RuntimeHelper.Configuration
                 AUTOSTART = false;
             }
 
-            SNLogger.Log($"[{PROGRAM_NAME}] Configuration loaded.");
+            SNLogger.Log("RuntimeHelper", "Configuration loaded.");
         }
 
         internal static void CreateDefaultConfigFile()
         {
-            SNLogger.Log($"[{PROGRAM_NAME}] Warning! Configuration file is missing or wrong version. Creating a new one.");
+            SNLogger.Warn("RuntimeHelper", "Configuration file is missing or wrong version. Trying to create a new one.");
 
             try
             {
-                ParserHelper.CreateDefaultConfigFile(FILENAME, PROGRAM_NAME, PROGRAM_VERSION, DEFAULT_CONFIG);                
+                ParserHelper.CreateDefaultConfigFile(FILENAME, "RuntimeHelper", PROGRAM_VERSION, DEFAULT_CONFIG);
+                SNLogger.Log("RuntimeHelper", "The new configuration file was successfully created.");
             }
             catch
             {
-                SNLogger.Log($"[{PROGRAM_NAME}] Error! Creating new configuration file has failed!");
+                SNLogger.Error("RuntimeHelper", "An error occured while creating the new configuration file!");
             }
         }
 
@@ -95,7 +100,7 @@ namespace RuntimeHelper.Configuration
         {
             SetKeyBindings();
 
-            SNLogger.Log($"[{PROGRAM_NAME}] Configuration initialized.");
+            SNLogger.Log("RuntimeHelper", "Configuration initialized.");
         }
 
         internal static void WriteConfig()
@@ -129,7 +134,7 @@ namespace RuntimeHelper.Configuration
                 }
                 catch (ArgumentException)
                 {
-                    SNLogger.Log($"[{PROGRAM_NAME}] Warning! ({kvp.Value}) is not a valid KeyCode! Setting default value!");
+                    SNLogger.Warn("RuntimeHelper", $"({kvp.Value}) is not a valid KeyCode! Setting default value!");
 
                     for (int i = 0; i < DEFAULT_CONFIG.Count; i++)
                     {

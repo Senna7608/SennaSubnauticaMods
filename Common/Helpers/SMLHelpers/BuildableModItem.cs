@@ -4,7 +4,7 @@ using SMLHelper.V2.Handlers;
 using SMLHelper.V2.Utility;
 using UnityEngine;
 
-namespace Common
+namespace Common.Helpers.SMLHelpers
 {
     internal abstract class BuildableModItem : Buildable
     {

@@ -1,14 +1,14 @@
 ﻿using System.Linq;
 using System.Reflection.Emit;
 using System.Collections.Generic;
-using Harmony;
+using HarmonyLib;
 using Common;
 using SlotExtender.Configuration;
 
 namespace SlotExtender.Patches
 {
-    [HarmonyPatch(typeof(SeaMoth), "slotIDs", MethodType.Getter)]    
-    internal class Seamoth_slotIDs_Patch
+    [HarmonyPatch(typeof(SeaMoth), "slotIDs", MethodType.Getter)]
+    public static class Seamoth_slotIDs_Patch
     {
         [HarmonyPrefix]
         internal static bool Prefix(ref string[] __result)
@@ -18,16 +18,18 @@ namespace SlotExtender.Patches
         }
     }    
 
-    [HarmonyPatch(typeof(SeaMoth), "Start")]    
-    internal class SeaMoth_Start_Patch
+    [HarmonyPatch(typeof(SeaMoth), "Start")]
+    public static class Seamoth_Start_Patch
     {
         [HarmonyPostfix]
-        internal static void Postfix(SeaMoth __instance)
-        {
-            __instance.gameObject.AddIfNeedComponent<SlotExtender>();
-            SNLogger.Log("SlotExtender", $"Component added to instance: {__instance.name} ID: {__instance.GetInstanceID()}");
+        public static void Postfix(SeaMoth __instance)
+        {           
+            __instance.gameObject.EnsureComponent<SlotExtender>();
+
+            SNLogger.Log("SlotExtender", $"Component added to instance: {__instance.name} ID: {__instance.GetInstanceID()}");                      
         }
     }
+
 
     internal static class SeamothStorageInputPatches
     {
@@ -38,8 +40,9 @@ namespace SlotExtender.Patches
         private static IEnumerable<CodeInstruction> SubstSlotGetter(IEnumerable<CodeInstruction> cins)
         {
             var list = cins.ToList();
-
-            int index = list.FindIndex(ci => ci.opcode == OpCodes.Callvirt);
+            var Vehicle_GetStorageInSlot = AccessTools.Method(typeof(Vehicle), "GetStorageInSlot");
+            int index = list.FindIndex(ci => ci.opcode == OpCodes.Callvirt && Equals(ci.operand, Vehicle_GetStorageInSlot));
+            
             if (index > 0)
                 list[index] = new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(SeamothStorageInputPatches), nameof(GetStorageInSlot)));
 
@@ -48,7 +51,7 @@ namespace SlotExtender.Patches
 
         [HarmonyPatch(typeof(SeamothStorageInput), "OpenPDA")]
         private static class OpenPDA_Patch
-        {
+        {            
             internal static bool Prepare() => SEConfig.STORAGE_SLOTS_OFFSET > 0;
             internal static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> cins) => SubstSlotGetter(cins);
         }
@@ -59,8 +62,15 @@ namespace SlotExtender.Patches
             internal static bool Prepare() => SEConfig.STORAGE_SLOTS_OFFSET > 0;
             internal static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> cins) => SubstSlotGetter(cins);
         }
+        
+        [HarmonyPatch(typeof(SeamothStorageInput), "OpenFromExternal")]
+        private static class OpenFromExternal_Patch
+        {
+            internal static bool Prepare() => SEConfig.STORAGE_SLOTS_OFFSET > 0;
+            internal static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> cins) => SubstSlotGetter(cins);
+        }
     }
-
+    
     [HarmonyPatch(typeof(Vehicle), "OnUpgradeModuleChange")]
     internal static class Vehicle_OnUpgradeModuleChange_Patch
     {
@@ -70,7 +80,7 @@ namespace SlotExtender.Patches
         {
             if (__instance is SeaMoth seamoth)
             {
-                //any non-storage module added in seamoth slots 1-4 disables corresponding storage, checking if we need to enable it again
+                // any non-storage module added in seamoth slots 1-4 disables corresponding storage, checking if we need to enable it again
                 if (slotID < 4 && techType != TechType.VehicleStorageModule)
                 {
                     if (__instance.GetSlotItem(slotID + SEConfig.STORAGE_SLOTS_OFFSET)?.item.GetTechType() == TechType.VehicleStorageModule)
@@ -84,4 +94,5 @@ namespace SlotExtender.Patches
             }
         }
     }
+    
 }

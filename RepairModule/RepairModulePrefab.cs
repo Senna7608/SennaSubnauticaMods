@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using SMLHelper.V2.Crafting;
-using Common;
+using Common.Helpers.SMLHelpers;
 
 namespace RepairModule
 {
@@ -10,13 +10,14 @@ namespace RepairModule
 
         internal RepairModulePrefab()
             : base(nameID: "RepairModule",
-                  iconFileName: "RepairModule",
+                  iconFilePath: $"{Main.modFolder}/Assets/RepairModule.png",
                   iconTechType: TechType.None,
                   friendlyName: "Repair Module",
                   description: "Allows to repair damaged Vehicles from inside.",
                   template: TechType.SeamothSonarModule,
-                  fabricatorType: CraftTree.Type.SeamothUpgrades,
-                  fabricatorTab: new string[] { "CommonModules" },
+                  newTabNode: null,
+                  fabricatorTypes: new CraftTree.Type[] { CraftTree.Type.SeamothUpgrades },
+                  fabricatorTabs: new string[][] { new string[] { "CommonModules" } },                  
                   requiredAnalysis: TechType.BaseUpgradeConsole,
                   groupForPDA: TechGroup.VehicleUpgrades,
                   categoryForPDA: TechCategory.VehicleUpgrades,

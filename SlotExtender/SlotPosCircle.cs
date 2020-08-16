@@ -36,8 +36,8 @@ namespace SlotExtender
 
         public override Vector2[] ArmSlotPos => new Vector2[2]
         {
-            new Vector2(col4, -Unit * 0.1f), // arm slot left
-            new Vector2(col1, -Unit * 0.1f)  // arm slot right
+            new Vector2(col1, -Unit * 0.1f), // arm slot left
+            new Vector2(col4, -Unit * 0.1f)  // arm slot right
         };        
     }
 }

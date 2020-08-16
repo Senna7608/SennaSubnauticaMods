@@ -1,26 +1,24 @@
-﻿//#define DEBUG_PROGRAM
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UWE;
 using Common;
 using Common.GUIHelper;
-using static Common.GameHelper;
 using CheatManager.Configuration;
 using CheatManager.NewCommands;
-using System;
+using Common.Helpers;
+using System.Linq;
 
 namespace CheatManager
 {
-    public class CheatManager : MonoBehaviour
-    {  
-        internal CheatManager Instance { get; private set; }
-        internal static WarpTargets warpTargets = new WarpTargets();
-        internal ButtonControl buttonControl;
+    public partial class CheatManager : MonoBehaviour
+    {
+        public ObjectHelper objectHelper = new ObjectHelper();
+                
         internal ButtonText buttonText;
         internal TechnologyMatrix techMatrix;        
         private Vector2 scrollPos;
 
-        private static Rect windowRect = new Rect(Screen.width - (Screen.width / Config.ASPECT), 0, Screen.width / Config.ASPECT, (Screen.height / 4 * 3) - 2);
+        private static Rect windowRect = new Rect(Screen.width - (Screen.width / CmConfig.ASPECT), 0, Screen.width / CmConfig.ASPECT, (Screen.height / 4 * 3) - 2);
         private Rect drawRect;
         private Rect scrollRect;
 
@@ -43,11 +41,13 @@ namespace CheatManager
         internal List<GuiItem> categoriesTab = new List<GuiItem>();
         internal List<GuiItem> vehicleSettings = new List<GuiItem>();
         internal List<GuiItem> sliders = new List<GuiItem>();
+        internal List<GuiItem> warpExtras = new List<GuiItem>();
 
-        internal bool isActive;        
+        internal bool isActive;
+        internal bool isDirty = false;
         internal bool initToggleButtons = false;
-               
-        internal string prevCwPos = null;
+
+        internal IntVector prevCwPos;
         internal string seamothName;
         internal string exosuitName;
         internal string cyclopsName;
@@ -56,8 +56,8 @@ namespace CheatManager
         internal float exosuitSpeedMultiplier;
         internal float cyclopsSpeedMultiplier;        
 
-        private const int SPACE = 5;
-        private const int ITEMSIZE = 24;
+        private const int SPACE = 4;
+        private const int ITEMSIZE = 23;
         private const int SLIDERHEIGHT = 34;
         private const int MAXSHOWITEMS = 4;
 
@@ -69,41 +69,51 @@ namespace CheatManager
         private GuiItemEvent CategoriesGroup = new GuiItemEvent(-1, -1, false);
         private GuiItemEvent ScrollViewGroup = new GuiItemEvent(-1, -1, false);
         private GuiItemEvent VehicleSettingsGroup = new GuiItemEvent(-1, -1, false);
+        private GuiItemEvent WarpExtrasGroup = new GuiItemEvent(-1, -1, false);
 
         private int currentdaynightTab = 4;
         private int currentTab = 0;
         private bool filterFast;
-
-#if DEBUG_PROGRAM
-            internal static float crTimer = 10;
-#endif
-
+        
         public void Awake()
         {
-            Instance = this;
-            useGUILayout = false;            
+            SNLogger.Debug("CheatManager", "Awake started.");
 
-#if DEBUG
-            isActive = true;
-#endif
-            UpdateTitle();            
+            DontDestroyOnLoad(this);
+            useGUILayout = false;
+
+            gameObject.AddComponent<AlwaysDayConsoleCommand>();
+            gameObject.AddComponent<OverPowerConsoleCommand>();
+            gameObject.AddComponent<NoInfectConsoleCommand>();
+
+            SNLogger.Debug("CheatManager", "Console commands added.");
+
+            UpdateTitle();
+            
             warpSound = ScriptableObject.CreateInstance<FMODAsset>();
             warpSound.path = "event:/tools/gravcannon/fire";
 
+            SNLogger.Debug("CheatManager", "Warpsound created.");
+
             techMatrix = new TechnologyMatrix();
             tMatrix = new List<TechTypeData>[techMatrix.baseTechMatrix.Count];
-            techMatrix.InitTechMatrixList(ref tMatrix);           
+            techMatrix.InitTechMatrixList(ref tMatrix);
+
+            SNLogger.Debug("CheatManager", "Base Tech matrix created.");
 
             
-            if (Main.isExistsSMLHelperV2)
+            if (CmConfig.Section_userWarpTargets.Count > 0)
             {
-                techMatrix.IsExistsModdersTechTypes(ref tMatrix, techMatrix.Known_Modded_TechTypes);
-            }
-            else
-            {
-                SNLogger.Log($"[{Config.PROGRAM_NAME}] Warning: 'SMLHelper.V2' not found! Some functions are not available!");
-            }
-            
+                foreach (KeyValuePair<string, string> kvp in CmConfig.Section_userWarpTargets)
+                {
+                    WarpTargets_User.Add(new IntVector(kvp.Key), kvp.Value);
+                }
+
+                SNLogger.Debug("CheatManager", "User warp targets added.");
+            }            
+
+            techMatrix.GetModdedTechTypes(ref tMatrix);
+
             techMatrix.SortTechLists(ref tMatrix);
             
             buttonText = new ButtonText();                        
@@ -138,13 +148,15 @@ namespace CheatManager
                 if (i == 0 && tMatrix[0].Count > MAXSHOWITEMS)
                     width -= 20;
 
-                if (tMatrix[i].Count * 26 > scrollRect.height)
+                if (tMatrix[i].Count * (ITEMSIZE + SPACE) > scrollRect.height)
                     width -= 20;                
                 
                 scrollItemRects[i] = SNWindow.SetGridItemsRect(new Rect(0, 0, width, tMatrix[i].Count * (ITEMSIZE + SPACE)), 1, tMatrix[i].Count, ITEMSIZE, SPACE, 2, false, false, true);
             }
 
-            scrollItemRects[tMatrix.Length] = SNWindow.SetGridItemsRect(new Rect(0, 0, drawRect.width - 20, warpTargets.Targets.Count * (ITEMSIZE + SPACE)), 1, warpTargets.Targets.Count, ITEMSIZE, SPACE, 2, false, false, true);
+            int warpCounts = WarpTargets_Internal.Count + WarpTargets_User.Count;
+
+            scrollItemRects[tMatrix.Length] = SNWindow.SetGridItemsRect(new Rect(0, 0, drawRect.width - 20, warpCounts * (ITEMSIZE + SPACE)), 1, warpCounts, ITEMSIZE, SPACE, 2, false, false, true);
             
             scrollItemsList = new List<GuiItem>[tMatrix.Length + 1];
             
@@ -155,7 +167,7 @@ namespace CheatManager
             }
             
             scrollItemsList[tMatrix.Length] = new List<GuiItem>();
-            AddListToGroup(warpTargets.Targets, scrollItemRects[tMatrix.Length], GuiItemType.NORMALBUTTON, ref scrollItemsList[tMatrix.Length], new GuiItemColor(GuiColor.Gray, GuiColor.Green, GuiColor.White), GuiItemState.NORMAL, true, FontStyle.Normal, TextAnchor.MiddleLeft);
+            AddListToGroup(GetWarpTargetNames(), scrollItemRects[tMatrix.Length], GuiItemType.NORMALBUTTON, ref scrollItemsList[tMatrix.Length], new GuiItemColor(GuiColor.Gray, GuiColor.Green, GuiColor.White), GuiItemState.NORMAL, true, FontStyle.Normal, TextAnchor.MiddleLeft);
             
             var searchSeaGlide = new TechnologyMatrix.TechTypeSearch(TechType.Seaglide);
             string seaglideName = tMatrix[1][tMatrix[1].FindIndex(searchSeaGlide.EqualsWith)].Name;
@@ -187,6 +199,12 @@ namespace CheatManager
             sliders[1].OnChangedEvent = onExosuitSpeedValueChanged;
             sliders[2].OnChangedEvent = onCyclopsSpeedValueChanged;
 
+            string[] warpExtrasButtons = { "Add current position to list", "Remove selected from list" };
+            scrollRectheight = 11 * (scrollItemsList[0][0].Rect.height + 2);
+            y = scrollRect.y + scrollRectheight + SPACE + 2;
+            List<Rect> warpExtrasRects = new Rect(drawRect.x, y, drawRect.width, drawRect.height).SetGridItemsRect(2, 1, ITEMSIZE, SPACE, SPACE, false, false);
+            warpExtras.CreateGuiItemsGroup(warpExtrasButtons, warpExtrasRects, GuiItemType.NORMALBUTTON, new GuiItemColor());
+
             commands[(int)Commands.BackWarp].Enabled = false;
             commands[(int)Commands.BackWarp].State = GuiItemState.PRESSED;
 
@@ -196,12 +214,11 @@ namespace CheatManager
             seamothSpeedMultiplier = 1;
             exosuitSpeedMultiplier = 1;
             cyclopsSpeedMultiplier = 1;
-            
-            buttonControl = new ButtonControl();           
-            
+
+            SNLogger.Debug("CheatManager", "Awake completed.");
         }
 
-        public void AddListToGroup(List<string[]> names, List<Rect> rects, GuiItemType type, ref List<GuiItem> guiItems, GuiItemColor itemColor,
+        public void AddListToGroup(List<string> names, List<Rect> rects, GuiItemType type, ref List<GuiItem> guiItems, GuiItemColor itemColor,
                                                GuiItemState state = GuiItemState.NORMAL, bool enabled = true, FontStyle fontStyle = FontStyle.Normal,
                                                TextAnchor textAnchor = TextAnchor.MiddleCenter)
         {            
@@ -209,7 +226,7 @@ namespace CheatManager
             {
                 guiItems.Add(new GuiItem()
                 {
-                    Name = names[i][1],
+                    Name = names[i],
                     Type = type,
                     Enabled = enabled,
                     Rect = rects[i],
@@ -244,15 +261,15 @@ namespace CheatManager
         }
      
         public void OnDestroy()
-        {            
+        {
+            CmConfig.WriteConfig();
             commands = null;            
             toggleCommands = null;
             daynightTab = null;
             categoriesTab = null;
             vehicleSettings = null;
             tMatrix = null;
-            initToggleButtons = false;
-            prevCwPos = null;
+            initToggleButtons = false;            
             warpSound = null;            
             isActive = false;            
             onConsoleCommandEntered.RemoveHandler(this, OnConsoleCommandEntered);
@@ -263,10 +280,6 @@ namespace CheatManager
         {                       
             onConsoleCommandEntered.AddHandler(this, new Event<string>.HandleFunction(OnConsoleCommandEntered));
             onFilterFastChanged.AddHandler(this, new Event<bool>.HandleFunction(OnFilterFastChanged));
-
-#if DEBUG_PROGRAM
-            StartCoroutine(DebugProgram());
-#endif
         }        
 
         private void OnFilterFastChanged(bool enabled)
@@ -279,25 +292,16 @@ namespace CheatManager
             UpdateButtonsState();                     
         }
 
-#if DEBUG_PROGRAM
-        private IEnumerator DebugProgram()
-        {
-            yield return new WaitForSeconds(crTimer);
-            print($"[CheatManager] Coroutine Debugger, recall every {crTimer} seconds\n");
-            if (isActive)
-                StartCoroutine(DebugProgram());
-        }
-#endif
         internal void UpdateTitle()
         {
-            windowTitle = $"CheatManager v.{Config.VERSION}, {Config.KEYBINDINGS["ToggleWindow"]} Toggle Window, {Config.KEYBINDINGS["ToggleMouse"]} Toggle Mouse";
+            windowTitle = $"CheatManager v.{CmConfig.PROGRAM_VERSION}, {CmConfig.KEYBINDINGS["ToggleWindow"]} Toggle Window, {CmConfig.KEYBINDINGS["ToggleMouse"]} Toggle Mouse";
         }
 
         public void Update()
         {
             if (Player.main != null)
             {                
-                if (Input.GetKeyDown(Config.KEYBINDINGS["ToggleWindow"]))
+                if (Input.GetKeyDown(CmConfig.KEYBINDINGS["ToggleWindow"]))
                 {
                     isActive = !isActive;
                 }
@@ -305,7 +309,7 @@ namespace CheatManager
                 if (!isActive)
                     return;
                 
-                if (Input.GetKeyDown(Config.KEYBINDINGS["ToggleMouse"]))
+                if (Input.GetKeyDown(CmConfig.KEYBINDINGS["ToggleMouse"]))
                 {
                     UWE.Utils.lockCursor = !UWE.Utils.lockCursor;
                 }
@@ -319,17 +323,17 @@ namespace CheatManager
                 
                 if (CommandsGroup.ItemID != -1 && CommandsGroup.MouseButton == 0)
                 {
-                    buttonControl.NormalButtonControl(CommandsGroup.ItemID, ref commands, ref toggleCommands);
+                    NormalButtonControl(CommandsGroup.ItemID, ref commands, ref toggleCommands);
                 }
 
                 if (ToggleCommandsGroup.ItemID != -1 && ToggleCommandsGroup.MouseButton == 0)
                 {
-                    buttonControl.ToggleButtonControl(ToggleCommandsGroup.ItemID, ref toggleCommands);
+                    ToggleButtonControl(ToggleCommandsGroup.ItemID, ref toggleCommands);
                 }
 
                 if (DayNightGroup.ItemID != -1 && DayNightGroup.MouseButton == 0)
                 {
-                    buttonControl.DayNightButtonControl(DayNightGroup.ItemID, ref currentdaynightTab, ref daynightTab);
+                    DayNightButtonControl(DayNightGroup.ItemID, ref currentdaynightTab, ref daynightTab);
                 }
 
                 if (CategoriesGroup.ItemID != -1 && CategoriesGroup.MouseButton == 0)
@@ -343,9 +347,23 @@ namespace CheatManager
                     }
                 }
 
-                if (ScrollViewGroup.ItemID != -1 && ScrollViewGroup.MouseButton == 0)
+                if (ScrollViewGroup.ItemID != -1)
                 {
-                    buttonControl.ScrollViewControl(currentTab, ScrollViewGroup.ItemID, ref scrollItemsList[currentTab], ref tMatrix, ref commands);
+                    if (ScrollViewGroup.MouseButton == 0)
+                    {
+                        ScrollViewControl(currentTab, ScrollViewGroup.ItemID, ref scrollItemsList[currentTab], ref tMatrix, ref commands);
+                    }
+                    else if (currentTab == 19 && ScrollViewGroup.MouseButton == 1)
+                    {
+                        if (ScrollViewGroup.ItemID < WarpTargets_Internal.Count)
+                        {
+                            ErrorMessage.AddMessage($"CheatManager Warning!\nInternal list items cannot be selected!");
+                            return;
+                        }
+
+                        scrollItemsList[currentTab].UnmarkAll();
+                        scrollItemsList[currentTab][ScrollViewGroup.ItemID].SetStateInverse();
+                    }
                 }
 
                 if (VehicleSettingsGroup.ItemID != -1 && VehicleSettingsGroup.MouseButton == 0)
@@ -362,14 +380,61 @@ namespace CheatManager
                         vehicleSettings[1].State = SNGUI.ConvertBoolToState(isSeaglideFast.value);
                     }
                 }
-                
+
+                if (WarpExtrasGroup.ItemID != -1 && WarpExtrasGroup.MouseButton == 0)
+                {
+                    if (WarpExtrasGroup.ItemID == 0)
+                    {
+                        IntVector position = new IntVector(Player.main.transform.position);
+
+                        if (IsPositionWithinRange(position, out string nearestWarpName))
+                        {
+                            ErrorMessage.AddMessage($"CheatManagerZero Warning!\nThis position cannot be added to the Warp list\nbecause it is very close to:\n{nearestWarpName} warp point!");
+                        }
+                        else
+                        {
+                            AddToList(position);
+                        }
+                    }
+
+                    if (WarpExtrasGroup.ItemID == 1)
+                    {
+                        int item = scrollItemsList[currentTab].GetMarkedItem();
+
+                        if (item == -1)
+                        {
+                            ErrorMessage.AddMessage("CheatManagerZero Error!\nNo item selected from the user Warp list!");
+                            return;
+                        }
+
+                        isDirty = true;
+
+                        int userIndex = item - WarpTargets_Internal.Count;
+
+                        IntVector intVector = WarpTargets_User.Keys.ElementAt(userIndex);
+
+
+                        //WarpTargets_User.TryGetValue(intVector, out string value);
+
+                        //print($"item: {item}, userIndex: {userIndex}, Internal.Count: {WarpTargets_Internal.Count}, User.Count: {WarpTargets_User.Count}");
+                        //print($"Key: {intVector}, Value: {value}");
+                        //print($"scrollItemsList[currentTab].Count: {scrollItemsList[currentTab].Count}");
+
+                        RemoveFormList(intVector);
+
+                        scrollItemsList[currentTab].RemoveGuiItemFromGroup(item);
+
+                        isDirty = false;
+                    }
+                }
+
             }
         }
         
 
         private void SetToggleButtons()
         {
-            foreach (KeyValuePair<string, string> kvp in Config.Section_toggleButtons)
+            foreach (KeyValuePair<string, string> kvp in CmConfig.Section_toggleButtons)
             {
                 bool.TryParse(kvp.Value, out bool result);
 
@@ -413,8 +478,8 @@ namespace CheatManager
         
         public void OnGUI()
         {
-            if (!isActive)
-                return;            
+            if (!isActive || isDirty)
+                return;
 
             SNWindow.CreateWindow(windowRect, windowTitle);
 
@@ -433,11 +498,36 @@ namespace CheatManager
                 SNHorizontalSlider.CreateHorizontalSlider(sliders[1].Rect, ref exosuitSpeedMultiplier, 1f, 5f, sliders[1].Name, sliders[1].OnChangedEvent);
                 SNHorizontalSlider.CreateHorizontalSlider(sliders[2].Rect, ref cyclopsSpeedMultiplier, 1f, 5f, sliders[2].Name, sliders[2].OnChangedEvent);
             }
+            else if (currentTab == 19)
+            {
+                ScrollViewGroup = SNScrollView.CreateScrollView(scrollRect, ref scrollPos, ref scrollItemsList[currentTab], "Select Item in Category:", categoriesTab[currentTab].Name, 10);
+
+                WarpExtrasGroup = warpExtras.DrawGuiItemsGroup();
+            }
             else
             {
                 ScrollViewGroup = SNScrollView.CreateScrollView(scrollRect, ref scrollPos, ref scrollItemsList[currentTab], "Select Item in Category:", categoriesTab[currentTab].Name);
             }
-        }        
+        }
+
+        public void ExecuteCommand(object message, object command)
+        {
+            if (message != null)
+            {
+                ErrorMessage.AddMessage(message.ToString());
+            }
+
+            if (command != null)
+            {
+                SNLogger.Log((string)command);
+                DevConsole.SendConsoleCommand(command.ToString());
+            }
+        }
+
+        public bool IsPlayerInVehicle()
+        {
+            return Player.main.inSeamoth || Player.main.inExosuit ? true : false;
+        }
     }
 }
 

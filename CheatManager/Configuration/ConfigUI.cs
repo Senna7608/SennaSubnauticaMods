@@ -33,13 +33,13 @@ namespace CheatManager.Configuration
 
         private void InitItems()
         {
-            foreach (KeyValuePair<string, string> key in Config.Section_hotkeys)
+            foreach (KeyValuePair<string, string> key in CmConfig.Section_hotkeys)
             {
                 HotkeyLabels.Add(key.Key);
                 HotkeyButtons.Add(key.Value);
             }
 
-            foreach (KeyValuePair<string, string> key in Config.Section_settings)
+            foreach (KeyValuePair<string, string> key in CmConfig.Section_settings)
             {
                 SettingLabels.Add(key.Key);                
             }
@@ -118,7 +118,7 @@ namespace CheatManager.Configuration
 
             if (keyCount > 0 && isFirst != selected)
             {
-                SNLogger.Log($"[{Config.PROGRAM_NAME}] Error! Duplicate keybind found, swapping keys...");
+                SNLogger.Log("CheatManager", "Error! Duplicate keybind found, swapping keys...");
                 HotkeyButtons[isFirst] = HotkeyButtons[selected];
                 buttonInfo[isFirst].Name = HotkeyButtons[selected];
             }
@@ -139,11 +139,11 @@ namespace CheatManager.Configuration
         {
             for (int i = 0; i < HotkeyLabels.Count; i++)
             {
-                Config.Section_hotkeys[HotkeyLabels[i]] = HotkeyButtons[i];
+                CmConfig.Section_hotkeys[HotkeyLabels[i]] = HotkeyButtons[i];
             }
 
-            Config.WriteConfig();
-            Config.SetKeyBindings();            
+            CmConfig.WriteConfig();
+            CmConfig.SetKeyBindings();            
             Destroy(Instance);
         }
 

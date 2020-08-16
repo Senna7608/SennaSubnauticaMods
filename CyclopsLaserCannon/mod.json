@@ -1,13 +1,10 @@
 ﻿{
   "Id": "CyclopsLaserCannonModule",
-  "DisplayName": "CyclopsLaserCannonModule",
+  "DisplayName": "Cyclops Laser Cannon Module",
   "Author": "Senna",
-  "Version": "1.7",
-  "Dependencies": ["SMLHelper","MoreCyclopsUpgrades"],  
-  "LoadBefore": [],
-  "LoadAfter": [],
+  "Version": "1.8",
+  "Dependencies": ["SMLHelper","MoreCyclopsUpgrades"], 
   "Enable": true,
   "Game": "Subnautica",
-  "AssemblyName": "CyclopsLaserCannonModule.dll",
-  "EntryMethod": "CyclopsLaserCannonModule.Main.Load"  
+  "AssemblyName": "CyclopsLaserCannonModule.dll" 
 }

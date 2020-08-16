@@ -22,7 +22,7 @@ namespace SNTestMOD
             sphereCollider.isTrigger = true;
             sphereCollider.radius = radiateRadius;
 
-            tracker = gameObject.GetOrAddComponent<PlayerDistanceTracker>();
+            tracker = gameObject.EnsureComponent<PlayerDistanceTracker>();
             tracker.maxDistance = radiateRadius + 5f;
         }
 

@@ -6,13 +6,12 @@ namespace CheatManager.NewCommands
     {
         public static NoInfectConsoleCommand main;
         private bool NoInfectCheat;
-        private float playerPrevInfectionLevel = 0f;
+        private float playerPrevInfectionLevel = 0f;               
 
         public void Awake()
         {
-            main = this;
-            DontDestroyOnLoad(this);
-            DevConsole.RegisterConsoleCommand(this, "noinfect", false, false);            
+            main = this;            
+            DevConsole.RegisterConsoleCommand(this, "noinfect");            
         }
 
         private void OnConsoleCommand_noinfect(NotificationCenter.Notification n)
@@ -39,12 +38,12 @@ namespace CheatManager.NewCommands
             }
         }
 
-        public void Update()
+        private void Update()
         {
             if (NoInfectCheat)
             {
                 Player.main.infectedMixin.SetInfectedAmount(0f);
             }
-        }
+        }        
     }
 }

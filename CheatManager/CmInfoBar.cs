@@ -6,11 +6,11 @@ using CheatManager.Configuration;
 
 namespace CheatManager
 {
-    public class CM_InfoBar : MonoBehaviour
+    public class CmInfoBar : MonoBehaviour
     {
-        public CM_InfoBar Instance { get; private set; }
+        public CmInfoBar Instance { get; private set; }
 
-        private Rect windowRect = new Rect(0, 0, Screen.width - (Screen.width / Config.ASPECT) - 2 , Screen.height / 45);
+        private Rect windowRect = new Rect(0, 0, Screen.width - (Screen.width / CmConfig.ASPECT) - 2 , Screen.height / 45);
         private Rect drawRect;
         internal bool isShow;
         private Int3 currentBatch = new Int3();
@@ -106,8 +106,22 @@ namespace CheatManager
                     $"   Fixed Updates: {avgFixedUpdatesPerFrame}");
 
                 infoText = stringBuilder.ToString();
-            }            
-            
+            }
+            else
+            {
+                timeCount = 0.0f;
+
+                stringBuilder.Remove(0, stringBuilder.Length);
+
+                stringBuilder.AppendFormat(
+                    $"   {string.Format("FPS: {0,3:N0}", FPS)}" +
+                    $"   {string.Format("MEM: {0,3:N0} MB (+{1,6:N2} MB/s)", totalmem, diffTotalmem)}" +
+                    $"   {string.Format("GC: {0,2:N0} ms (Total:{1,3})", timeBetweenCollections, numCollections)}" +
+                    $"   Fixed Updates: {avgFixedUpdatesPerFrame}");
+
+                infoText = stringBuilder.ToString();
+            }
+
         }
 
         public void OnGUI()
@@ -119,21 +133,7 @@ namespace CheatManager
 
             SNWindow.CreateWindow(windowRect, null);
             GUI.Label(drawRect, infoText, SNStyles.GetGuiItemStyle(GuiItemType.LABEL, textColor: GuiColor.Green, textAnchor: TextAnchor.MiddleLeft));
-        }
-
-        public CM_InfoBar()
-        {
-            if (Instance == null)
-            {
-                Instance = FindObjectOfType(typeof(CM_InfoBar)) as CM_InfoBar;
-
-                if (Instance == null)
-                {
-                    GameObject cm_infobar = new GameObject("CM_InfoBar");                    
-                    Instance = cm_infobar.AddComponent<CM_InfoBar>();                    
-                }
-            }            
-        }        
+        }          
 
         private void LateUpdate()
         {

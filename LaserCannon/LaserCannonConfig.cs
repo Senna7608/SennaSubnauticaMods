@@ -5,16 +5,16 @@ using Common.ConfigurationParser;
 using Common;
 using System.Diagnostics;
 using System.Reflection;
+using Common.Helpers;
 
 namespace LaserCannon
 {
     internal static class LaserCannonConfig
-    {
-        public const string PROGRAM_NAME = "LaserCannon";
+    {        
         internal static string PROGRAM_VERSION = string.Empty;
-        internal static string CONFIG_VERSION = string.Empty;                
-
-        internal static readonly string FILENAME = $"{Environment.CurrentDirectory}/QMods/{PROGRAM_NAME}/config.txt";
+        internal static string CONFIG_VERSION = string.Empty;
+        
+        private static readonly string FILENAME = $"{Main.modFolder}/config.txt";
 
         internal static Dictionary<string, string> program_settings;
         internal static Dictionary<string, string> language_settings;
@@ -93,7 +93,7 @@ namespace LaserCannon
             "Option_Color_Orange",
             "Option_Color_Lime",
             "Option_Color_Amethyst",
-            "Option_Color_Default",
+            "Option_Color_LightBlue",
             "LowPower_Title",
             "LowPower_Message",
         };
@@ -101,7 +101,7 @@ namespace LaserCannon
         private static readonly List<ConfigData> DEFAULT_CONFIG = new List<ConfigData>
         {
             new ConfigData(SECTIONS[0], SECTION_PROGRAM[0], false.ToString()),
-            new ConfigData(SECTIONS[0], SECTION_PROGRAM[1], "Default"),
+            new ConfigData(SECTIONS[0], SECTION_PROGRAM[1], "LightBlue"),
             new ConfigData(SECTIONS[0], SECTION_PROGRAM[2], 50.ToString()),
             new ConfigData(SECTIONS[0], SECTION_PROGRAM[3], Languages[6]),
 
@@ -121,7 +121,7 @@ namespace LaserCannon
             new ConfigData(SECTIONS[1], SECTION_LANGUAGE[13], "Orange"),
             new ConfigData(SECTIONS[1], SECTION_LANGUAGE[14], "Lime green"),
             new ConfigData(SECTIONS[1], SECTION_LANGUAGE[15], "Purple"),
-            new ConfigData(SECTIONS[1], SECTION_LANGUAGE[16], "Default"),
+            new ConfigData(SECTIONS[1], SECTION_LANGUAGE[16], "LightBlue"),
             new ConfigData(SECTIONS[1], SECTION_LANGUAGE[17], "Warning! Low Power!"),
             new ConfigData(SECTIONS[1], SECTION_LANGUAGE[18], "Laser Cannon Disabled!"),
 
@@ -141,7 +141,7 @@ namespace LaserCannon
             new ConfigData(SECTIONS[2], SECTION_LANGUAGE[13], "Orange"),
             new ConfigData(SECTIONS[2], SECTION_LANGUAGE[14], "Lindgrün"),
             new ConfigData(SECTIONS[2], SECTION_LANGUAGE[15], "Lila"),
-            new ConfigData(SECTIONS[2], SECTION_LANGUAGE[16], "Standard"),
+            new ConfigData(SECTIONS[2], SECTION_LANGUAGE[16], "Hellblau"),
             new ConfigData(SECTIONS[2], SECTION_LANGUAGE[17], "Warnung! Geringer Strom!"),
             new ConfigData(SECTIONS[2], SECTION_LANGUAGE[18], "Laserkanone Deaktiviert!"),
 
@@ -161,7 +161,7 @@ namespace LaserCannon
             new ConfigData(SECTIONS[3], SECTION_LANGUAGE[13], "Narancssárga"),
             new ConfigData(SECTIONS[3], SECTION_LANGUAGE[14], "Limezöld"),
             new ConfigData(SECTIONS[3], SECTION_LANGUAGE[15], "Lila"),
-            new ConfigData(SECTIONS[3], SECTION_LANGUAGE[16], "Alapbeállítás"),
+            new ConfigData(SECTIONS[3], SECTION_LANGUAGE[16], "Világoskék"),
             new ConfigData(SECTIONS[3], SECTION_LANGUAGE[17], "Vigyázat! Kevés az Energia!"),
             new ConfigData(SECTIONS[3], SECTION_LANGUAGE[18], "Lézerágyú letiltva!"),
 
@@ -181,64 +181,22 @@ namespace LaserCannon
             new ConfigData(SECTIONS[4], SECTION_LANGUAGE[13], "Orange"),
             new ConfigData(SECTIONS[4], SECTION_LANGUAGE[14], "Vert Lime"),
             new ConfigData(SECTIONS[4], SECTION_LANGUAGE[15], "Violet"),
-            new ConfigData(SECTIONS[4], SECTION_LANGUAGE[16], "Par Défaut"),
+            new ConfigData(SECTIONS[4], SECTION_LANGUAGE[16], "Bleu Clair"),
             new ConfigData(SECTIONS[4], SECTION_LANGUAGE[17], "Attention! Niveau d'énergie critique!"),
             new ConfigData(SECTIONS[4], SECTION_LANGUAGE[18], "Canon Laser désactivé!"),
         };
 
-        internal static void LoadConfig()
+        internal static void Config_Load()
         {
             PROGRAM_VERSION = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
 
-            if (!File.Exists(FILENAME))
+            if (!Config_Check())
             {
-                CreateDefaultConfigFile();
-            }
-            else
-            {
-                CONFIG_VERSION = ParserHelper.GetKeyValue(FILENAME, PROGRAM_NAME, "Version");
-
-                if (CONFIG_VERSION.Equals(PROGRAM_VERSION))
-                {
-                    SNLogger.Log($"[{PROGRAM_NAME}] Configuration file version match with program version.");
-                }
-                else
-                {
-                    CreateDefaultConfigFile();
-                }
-            }
+                Config_CreateDefault();
+            }                                  
 
             ReadConfig();            
-        }
-
-        internal static void CreateDefaultConfigFile()
-        {
-            SNLogger.Log($"[{PROGRAM_NAME}] Warning! Configuration file is missing or wrong version. Trying to create a new one.");
-
-            try
-            {
-                ParserHelper.CreateDefaultConfigFile(FILENAME, PROGRAM_NAME, PROGRAM_VERSION, DEFAULT_CONFIG);
-
-                var configParser = new Parser(FILENAME);
-
-                foreach (string language in Languages)
-                {
-                    if (!configParser.AddNewSection(language))
-                        continue;
-
-                    foreach (string item in SECTION_LANGUAGE)
-                    {
-                        configParser.SetKeyValueInSection(language, item, "");
-                    }
-                }
-
-                SNLogger.Log($"[{PROGRAM_NAME}] The new configuration file was successfully created.");
-            }
-            catch
-            {
-                SNLogger.Log($"[{PROGRAM_NAME}] An error occured while creating the new configuration file!");
-            }
-        }
+        }        
 
         internal static void OnLanguageChanged()
         {            
@@ -255,7 +213,7 @@ namespace LaserCannon
                 ParserHelper.SetKeyValue(FILENAME, "Program", item.Key, item.Value);
             }
 
-            SNLogger.Log($"[{PROGRAM_NAME}] Configuration saved.");
+            SNLogger.Log("LaserCannon", "Configuration saved.");
         }        
 
         internal static void ReadConfig()
@@ -264,9 +222,9 @@ namespace LaserCannon
             {
                 program_settings = ParserHelper.GetAllKeyValuesFromSection(FILENAME, "Program", SECTION_PROGRAM);
 
-                for (int i = 0; i < Modules.Colors.ColorNames.Length; i++)
+                for (int i = 0; i < ColorHelper.ColorNames.Length; i++)
                 {
-                    if (Modules.Colors.ColorNames[i].Equals(program_settings["BeamColor"]))
+                    if (ColorHelper.ColorNames[i].Equals(program_settings["BeamColor"]))
                         beamColor = i;
                 }
 
@@ -280,12 +238,83 @@ namespace LaserCannon
                         colorNames.Add(item.Value.ToString());
                 }
 
-                SNLogger.Log($"[{PROGRAM_NAME}] Configuration loaded.");
+                SNLogger.Log("LaserCannon", "Configuration loaded.");
             }
             catch
             {
-                SNLogger.Log($"[{PROGRAM_NAME}] An error occurred while loading the configuration file!");
+                SNLogger.Error("LaserCannon", "An error occurred while loading the configuration file!");
             }
-        }          
+        }
+
+
+
+
+        internal static void Config_CreateDefault()
+        {
+            SNLogger.Debug("LaserCannon", "Method call: LaserCannonConfig.Config_CreateDefault()");
+
+            SNLogger.Warn("LaserCannon", "Configuration file is missing or wrong version. Trying to create a new one.");
+            
+            try
+            {
+                ParserHelper.CreateDefaultConfigFile(FILENAME, "LaserCannon", PROGRAM_VERSION, DEFAULT_CONFIG);
+
+                var configParser = new Parser(FILENAME);
+
+                foreach (string language in Languages)
+                {
+                    if (!configParser.AddNewSection(language))
+                        continue;
+
+                    foreach (string item in SECTION_LANGUAGE)
+                    {
+                        configParser.SetKeyValueInSection(language, item, "");
+                    }
+                }                
+
+                SNLogger.Log("LaserCannon", "The new configuration file was successfully created.");
+            }
+            catch
+            {
+                SNLogger.Error("LaserCannon", "An error occured while creating the new configuration file!");
+            }            
+        }
+
+        private static bool Config_Check()
+        {
+            SNLogger.Debug("LaserCannon", "Method call: LaserCannonConfig.Config_Check()");
+
+            if (!File.Exists(FILENAME))
+            {
+                SNLogger.Error("LaserCannon", "Configuration file open error!");
+                return false;
+            }
+
+            CONFIG_VERSION = ParserHelper.GetKeyValue(FILENAME, "LaserCannon", "Version");
+
+            if (!CONFIG_VERSION.Equals(PROGRAM_VERSION))
+            {
+                SNLogger.Error("LaserCannon", "Configuration file version error!");
+                return false;
+            }
+
+            if (!ParserHelper.CheckSectionKeys(FILENAME, "Program", SECTION_PROGRAM))
+            {
+                SNLogger.Error("LaserCannon", "Configuration file [Program] section error!");
+                return false;
+            }
+
+            foreach (string lang in Languages)
+            {
+                if (!ParserHelper.CheckSectionKeys(FILENAME, lang, SECTION_LANGUAGE))
+                {
+                    SNLogger.Error("LaserCannon", "Configuration file [Language] section error!");
+                    return false;
+                }
+            }
+            
+
+            return true;
+        }
     }
 }

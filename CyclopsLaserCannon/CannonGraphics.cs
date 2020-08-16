@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using Common;
-using static Common.GameHelper;
+using static Common.Helpers.GraphicsHelper;
+using Common.Helpers;
 
 namespace CyclopsLaserCannonModule
 {
@@ -32,7 +32,7 @@ namespace CyclopsLaserCannonModule
 
         private void CreateCannonButton()
         {
-            GameObject Abilities = This_Cyclops_Root.FindChild("HelmHUD").FindChild("Canvas_RightHUD").FindChild("Abilities");
+            GameObject Abilities = This_Cyclops_Root.transform.Find("HelmHUD/Canvas_RightHUD/Abilities").gameObject;
             GameObject Button_Camera = Abilities.FindChild("Button_Camera");
 
             Button_Cannon = Instantiate(Button_Camera, Abilities.transform, false);
@@ -42,13 +42,13 @@ namespace CyclopsLaserCannonModule
             Button_Cannon.name = "Button_Cannon";
             Button_Cannon.transform.localPosition = new Vector3(-300f, 432f, 0);
 
-            CannonButton button_instance = Button_Cannon.GetOrAddComponent<CannonButton>();
+            CannonButton button_instance = Button_Cannon.EnsureComponent<CannonButton>();
             button_instance.control_instance = this;            
         }
 
         public void CreateCannonCamera()
         {
-            CamPosition_Keel = This_Cyclops_Root.FindChild("ExternalCams").FindChild("CamPosition_Keel");
+            CamPosition_Keel = This_Cyclops_Root.transform.Find("ExternalCams/CamPosition_Keel").gameObject;
 
             CannonCamPosition = new GameObject("CannonCamPosition");
             CannonCamPosition.transform.SetParent(transform, false);
@@ -66,7 +66,7 @@ namespace CyclopsLaserCannonModule
 
             Cannon_Camera.name = "Cannon_Camera";
 
-            GameObject Canvas_CenterHUD = This_Cyclops_Root.FindChild("HelmHUD").FindChild("Canvas_CenterHUD");
+            GameObject Canvas_CenterHUD = This_Cyclops_Root.transform.Find("HelmHUD/Canvas_CenterHUD").gameObject;
             GameObject PowerStatus = Canvas_CenterHUD.FindChild("PowerStatus");            
             GameObject PowerIcon = PowerStatus.FindChild("PowerIcon");
 
@@ -91,7 +91,7 @@ namespace CyclopsLaserCannonModule
             LowPowerText.transform.localScale = new Vector3(0.40f, 0.40f, 0.40f);
 
             LowPowerText.name = "LowPowerText";
-            camera_instance = Cannon_Camera.GetOrAddComponent<CannonCamera>();
+            camera_instance = Cannon_Camera.EnsureComponent<CannonCamera>();
             camera_instance.control_instance = this;
 
             camera_instance.PowerText = PowerTextCopy.GetComponent<Text>();
@@ -107,7 +107,6 @@ namespace CyclopsLaserCannonModule
             cannon_base_right.transform.localPosition = new Vector3(-3.55f, -7.19f, 0.81f);
             cannon_base_right.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
 
-            //GameObject cannon_right_circuit_box = Instantiate(CraftData.GetPrefabForTechType(TechType.StarshipCircuitBox), Vector3.zero, Quaternion.identity, cannon_base_right.transform);
             GameObject cannon_right_circuit_box = CraftData.InstantiateFromPrefab(TechType.StarshipCircuitBox);
             cannon_right_circuit_box.transform.SetParent(cannon_base_right.transform, false);
 
@@ -117,7 +116,6 @@ namespace CyclopsLaserCannonModule
             cannon_right_circuit_box.transform.localScale = new Vector3(0.72f, -0.72f, 0.72f);
             cannon_right_circuit_box.transform.localRotation = Quaternion.Euler(78f, 270f, 180f);
 
-            //GameObject cannon_pylon_right = Instantiate(CraftData.GetPrefabForTechType(TechType.PowerTransmitter), Vector3.zero, Quaternion.identity, cannon_base_right.transform);
             GameObject cannon_pylon_right = CraftData.InstantiateFromPrefab(TechType.PowerTransmitter);
             cannon_pylon_right.transform.SetParent(cannon_base_right.transform, false);
             Utils.ZeroTransform(cannon_pylon_right.transform);
@@ -143,24 +141,25 @@ namespace CyclopsLaserCannonModule
             cannon_right_rotation_point.transform.localPosition = new Vector3(0.00f, 0.98f, 0.00f);
             cannon_right_rotation_point.transform.localRotation = Quaternion.Euler(25f, 180f, 0f);
 
-            GameObject cannon_right = Instantiate(CraftData.GetPrefabForTechType(TechType.ExosuitTorpedoArmModule), Vector3.zero, Quaternion.identity, cannon_right_rotation_point.transform);
+            GameObject cannon_right = CraftData.InstantiateFromPrefab(TechType.ExosuitTorpedoArmModule);
+            cannon_right.transform.SetParent(cannon_right_rotation_point.transform, false);
             Destroy(cannon_right.FindChild("GameObject"));
-            cannon_right.FindChild("model").FindChild("exosuit_rig_armLeft:exosuit_torpedoLauncher_geo").name = "cannon_model";
+            cannon_right.transform.Find("model/exosuit_rig_armLeft:exosuit_torpedoLauncher_geo").name = "cannon_model";
 
             cannon_right.CleanObject();
             cannon_right.name = "cannon_right";
             cannon_right.transform.localPosition = new Vector3(0f, 0.14f, -0.66f);
             cannon_right.transform.localRotation = Quaternion.Euler(0f, 270f, 180f);
                         
-            cannon_right.FindChild("model").FindChild("cannon_model").SetMeshMaterial(Main.cannon_material, 1);
+            SetMeshMaterial(cannon_right.transform.Find("model/cannon_model").gameObject, Main.cannon_material, 1);
 
-            cannon_right_tube_right = Instantiate(laserBeam, Vector3.zero, Quaternion.identity, cannon_right.transform);
+            cannon_right_tube_right = Instantiate(laserBeam, cannon_right.transform, Vector3.zero, Quaternion.identity, false);
             cannon_right_tube_right.name = "cannon_right_tube_right";
             cannon_right_tube_right.transform.localPosition = new Vector3(0.68f, 0.0f, -0.17f);
             cannon_right_tube_right.transform.localRotation = Quaternion.Euler(0f, 90f, 0f);
             right_right = cannon_right_tube_right.GetComponent<LineRenderer>();
 
-            cannon_right_tube_left = Instantiate(laserBeam, Vector3.zero, Quaternion.identity, cannon_right.transform);
+            cannon_right_tube_left = Instantiate(laserBeam, cannon_right.transform, Vector3.zero, Quaternion.identity, false);
             cannon_right_tube_left.name = "cannon_right_tube_left";
             cannon_right_tube_left.transform.localPosition = new Vector3(0.68f, 0.0f, 0.17f);
             cannon_right_tube_left.transform.localRotation = Quaternion.Euler(0f, 90f, 0f);
@@ -176,7 +175,6 @@ namespace CyclopsLaserCannonModule
             cannon_base_left.transform.localPosition = new Vector3(3.55f, -7.19f, 0.81f);
             cannon_base_left.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
 
-            //GameObject cannon_left_circuit_box = Instantiate(CraftData.GetPrefabForTechType(TechType.StarshipCircuitBox), Vector3.zero, Quaternion.identity, cannon_base_left.transform);
             GameObject cannon_left_circuit_box = CraftData.InstantiateFromPrefab(TechType.StarshipCircuitBox);
             cannon_left_circuit_box.transform.SetParent(cannon_base_left.transform, false);
 
@@ -185,9 +183,7 @@ namespace CyclopsLaserCannonModule
             cannon_left_circuit_box.transform.localPosition = new Vector3(0.56f, 0.48f, -0.66f);
             cannon_left_circuit_box.transform.localScale = new Vector3(0.72f, 0.72f, 0.72f);
             cannon_left_circuit_box.transform.localRotation = Quaternion.Euler(72f, 90f, 0f);
-
-            //GameObject cannon_pylon_left = Instantiate(CraftData.GetPrefabForTechType(TechType.PowerTransmitter), Vector3.zero, Quaternion.identity, cannon_base_left.transform);
-
+            
             GameObject cannon_pylon_left = CraftData.InstantiateFromPrefab(TechType.PowerTransmitter);
             cannon_pylon_left.transform.SetParent(cannon_base_left.transform, false);
             Utils.ZeroTransform(cannon_pylon_left.transform);
@@ -213,24 +209,26 @@ namespace CyclopsLaserCannonModule
             cannon_left_rotation_point.transform.localPosition = new Vector3(0.00f, 0.98f, 0.00f);
             cannon_left_rotation_point.transform.localRotation = Quaternion.Euler(25f, 180f, 0f);
 
-            GameObject cannon_left = Instantiate(CraftData.GetPrefabForTechType(TechType.ExosuitTorpedoArmModule), Vector3.zero, Quaternion.identity, cannon_left_rotation_point.transform);
+            GameObject cannon_left = CraftData.InstantiateFromPrefab(TechType.ExosuitTorpedoArmModule);
+            cannon_left.transform.SetParent(cannon_left_rotation_point.transform, false);
+
             Destroy(cannon_left.FindChild("GameObject"));
-            cannon_left.FindChild("model").FindChild("exosuit_rig_armLeft:exosuit_torpedoLauncher_geo").name = "cannon_model";
+            cannon_left.transform.Find("model/exosuit_rig_armLeft:exosuit_torpedoLauncher_geo").name = "cannon_model";
 
             cannon_left.CleanObject();
             cannon_left.name = "cannon_left";
             cannon_left.transform.localPosition = new Vector3(0.00f, 0.14f, -0.66f);
             cannon_left.transform.localRotation = Quaternion.Euler(0f, 270f, 180f);
 
-            cannon_left.FindChild("model").FindChild("cannon_model").SetMeshMaterial(Main.cannon_material, 1);
+            SetMeshMaterial(cannon_left.transform.Find("model/cannon_model").gameObject, Main.cannon_material, 1);
 
-            cannon_left_tube_right = Instantiate(laserBeam, Vector3.zero, Quaternion.identity, cannon_left.transform);
+            cannon_left_tube_right = Instantiate(laserBeam, cannon_left.transform, Vector3.zero, Quaternion.identity, false);
             cannon_left_tube_right.name = "cannon_left_tube_right";
             cannon_left_tube_right.transform.localPosition = new Vector3(0.68f, 0.0f, -0.17f);
             cannon_left_tube_right.transform.localRotation = Quaternion.Euler(0f, 90f, 0f);
             left_right = cannon_left_tube_right.GetComponent<LineRenderer>();
 
-            cannon_left_tube_left = Instantiate(laserBeam, Vector3.zero, Quaternion.identity, cannon_left.transform);
+            cannon_left_tube_left = Instantiate(laserBeam, cannon_left.transform, Vector3.zero, Quaternion.identity, false);
             cannon_left_tube_left.name = "cannon_left_tube_left";
             cannon_left_tube_left.transform.localPosition = new Vector3(0.68f, 0.0f, 0.17f);
             cannon_left_tube_left.transform.localRotation = Quaternion.Euler(0f, 90f, 0f);
@@ -238,6 +236,5 @@ namespace CyclopsLaserCannonModule
 
             Destroy(laserBeam);
         }
-
     }
 }

@@ -63,18 +63,38 @@ namespace Common.ConfigurationParser
                 Console.WriteLine($"Parser Error! Section [{section}] or Key [{key}] is missing from file: '{_reader.FilePath}'");
                 return false;
             }            
-        }        
+        }
+
+        public Section GetSection(string section)
+        {
+            if (IsExists(section))
+            {
+                return _sections[section];
+            }
+
+            return null;
+        }
+
+        public void ClearAndWrite(string section)
+        {
+            _sections[section].Clear();
+            var sb = new StringBuilder();
+
+            _sections.All(kvp => { sb.AppendFormat("{0}\r\n", kvp.Value.ToString()); return true; });
+            File.WriteAllText(_reader.FilePath, sb.ToString());
+        }
 
         public bool AddNewSection(string section)
         {
             try
             {
                 _sections.Add(section, new Section(section));
+
                 return true;
             }
             catch
             {
-                Console.WriteLine($"Parser warning! The [{section}] section already exists in file: '{_reader.FilePath}'");
+                Console.WriteLine($"Parser Error! Section [{section}] creation error!");
                 return false;
             }
         }

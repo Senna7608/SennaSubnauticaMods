@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Common.Helpers;
+using System;
 using System.Collections.Generic;
-using static Common.GameHelper;
 
 namespace RuntimeHelper
 {

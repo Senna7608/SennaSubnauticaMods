@@ -55,7 +55,7 @@ namespace CyclopsLaserCannonModule
         
         private void OnFinishedUpgrades()
         {            
-            if (upgradeHandler.TechType == Main.techTypeID && upgradeHandler.Count > 0)
+            if (upgradeHandler.TechType == CannonPrefab.TechTypeID && upgradeHandler.Count > 0)
             {
                 isModuleInserted = true;
                 LaserCannonSetActive(isModuleInserted);
@@ -70,7 +70,7 @@ namespace CyclopsLaserCannonModule
 
         private void OnFirstTimeCheckModuleIsExists()
         {
-            SNLogger.Log($"[CyclopsLaserCannonModule] Trying to enable module...");
+            SNLogger.Log("CyclopsLaserCannonModule", "Trying to enable module...");
 
             if (upgradeHandler.Count > 0)
             {

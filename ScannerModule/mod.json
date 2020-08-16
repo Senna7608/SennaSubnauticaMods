@@ -1,13 +1,10 @@
 ﻿{
   "Id": "ScannerModule",
-  "DisplayName": "ScannerModule",
+  "DisplayName": "Scanner Module",
   "Author": "Senna",
-  "Version": "1.8",
-  "Dependencies": ["SMLHelper"],
-  "LoadBefore": [],
-  "LoadAfter": [],
+  "Version": "1.9",
+  "Dependencies": ["SMLHelper"],  
   "Enable": true,
   "Game": "Subnautica",
-  "AssemblyName": "ScannerModule.dll",
-  "EntryMethod": "ScannerModule.Main.Load"  
+  "AssemblyName": "ScannerModule.dll"
 }

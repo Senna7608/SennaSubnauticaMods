@@ -183,6 +183,8 @@ namespace SlotExtender
         {
             SNLogger.Debug("SlotExtender", $"Method call: SlotHelper.InitSessionAllSlots()");
 
+            ALLSLOTS.Clear();
+
             foreach (SlotData slotData in SessionSeamothSlots)
             {
                 SEConfig.SLOTKEYBINDINGS.TryGetValue(slotData.SlotConfigID, out string result);

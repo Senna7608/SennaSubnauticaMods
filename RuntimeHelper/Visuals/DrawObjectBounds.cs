@@ -38,7 +38,7 @@ namespace RuntimeHelper.Visuals
             if (gameObject.GetComponentInParent<Collider>() != null)
             {
                 GameObject colliderContainerBase = gameObject.GetOrAddVisualBase(BaseType.Collider);
-                colliderContainerBase.GetOrAddComponent<DrawColliderControl>();                
+                colliderContainerBase.EnsureComponent<DrawColliderControl>();                
             }
 
         }

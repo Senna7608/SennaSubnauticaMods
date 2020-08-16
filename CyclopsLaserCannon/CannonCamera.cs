@@ -21,12 +21,12 @@ namespace CyclopsLaserCannonModule
 
         private void Start()
         {  
-            arrow = gameObject.FindChild("DirectionIndicator").FindChild("Arrow").GetComponent<RectTransform>();
+            arrow = gameObject.transform.Find("DirectionIndicator/Arrow").gameObject.GetComponent<RectTransform>();
 
             Crosshair = gameObject.FindChild("Crosshair").GetComponent<Image>();
             Crosshair.color = Color.red;
 
-            Title = gameObject.FindChild("Title").FindChild("TitleText").GetComponent<Text>();
+            Title = gameObject.transform.Find("Title/TitleText").gameObject.GetComponent<Text>();
             Title.text = CannonConfig.language_settings["Item_Name"];
 
             LowPowerText.text = $"{CannonConfig.language_settings["LowPower_Title"]}\n{CannonConfig.language_settings["LowPower_Message"]}";

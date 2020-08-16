@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UWE;
-using static Common.Modules;
-using static Common.GameHelper;
+using static Common.Helpers.GraphicsHelper;
+using static Common.Helpers.GameHelper;
 using Common;
 
 namespace ScannerModule
@@ -50,7 +50,7 @@ namespace ScannerModule
             leftTorpedoSlot = thisSeamoth.torpedoTubeLeft.transform;
             energyMixin = thisSeamoth.GetComponent<EnergyMixin>();            
 
-            GameObject scannerPrefab = Instantiate(CraftData.GetPrefabForTechType(TechType.Scanner));
+            GameObject scannerPrefab = CraftData.InstantiateFromPrefab(TechType.Scanner);
 
             scannerPrefab.SetActive(false);
             Utils.ZeroTransform(scannerPrefab.transform);
@@ -71,12 +71,12 @@ namespace ScannerModule
             completeSound.name = "scan_complete";
             completeSound.path = "event:/tools/scanner/scan_complete";
 
-            fxControl = scannerTool.fxControl.GetComponentClone(ScannerModuleGO.transform);            
+            fxControl = Main.objectHelper.GetComponentClone(scannerTool.fxControl, ScannerModuleGO.transform);                      
 
-            scanBeam = scannerPrefab.FindChild("x_ScannerBeam").GetPrefabClone(ScannerModuleGO.transform, false);
-            
-            scanCircuitTex = scannerTool.scanCircuitTex.CreateRWTextureFromNonReadableTexture();
-            scanOrganicTex = scannerTool.scanOrganicTex.CreateRWTextureFromNonReadableTexture();
+            scanBeam = Main.objectHelper.GetPrefabClone(scannerPrefab.FindChild("x_ScannerBeam"), ScannerModuleGO.transform, false);
+
+            scanCircuitTex = CreateRWTextureFromNonReadableTexture(scannerTool.scanCircuitTex);            
+            scanOrganicTex = CreateRWTextureFromNonReadableTexture(scannerTool.scanOrganicTex);
 
             scanCircuitColor = scannerTool.scanCircuitColor;
             scanOrganicColor = scannerTool.scanOrganicColor;
@@ -86,9 +86,7 @@ namespace ScannerModule
             scanBeam.transform.localRotation = Quaternion.Euler(280, 184, 185);                        
 
             Destroy(scannerPrefab);
-            Destroy(ScannerModuleGO.FindChild("Scanner(Clone)(Clone)"));
-
-            
+            Destroy(ScannerModuleGO.FindChild("Scanner(Clone)(Clone)"));            
         
             SetFXActive(false);
 
@@ -186,8 +184,8 @@ namespace ScannerModule
             scanSound.Stop();
             SetFXActive(false);           
             stateCurrent = ScanState.None;
-            SetProgressColor(Colors.White);
-            SetInteractColor(Colors.White);
+            SetProgressColor(Color.white);
+            SetInteractColor(Color.white);
         }
 
 
@@ -308,7 +306,7 @@ namespace ScannerModule
                 {                    
                     main.SetIcon(HandReticle.IconType.Progress, 4f);
                     main.progressText.text = Mathf.RoundToInt(PDAScanner.scanTarget.progress * 100f) + "%";
-                    SetProgressColor(Colors.Green);                    
+                    SetProgressColor(Color.green);                    
                     main.progressImage.fillAmount = Mathf.Clamp01(PDAScanner.scanTarget.progress);                    
                     main.SetProgress(PDAScanner.scanTarget.progress);
                 }                

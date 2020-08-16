@@ -1,64 +1,76 @@
-﻿using Harmony;
-using System;
-using UnityEngine;
+﻿using System;
 using System.Reflection;
+using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using HarmonyLib;
 using Common;
+using Common.Helpers;
 using QuickSlotExtender.Configuration;
+using QModManager.API.ModLoading;
 
 namespace QuickSlotExtender
 {
+    [QModCore]
     public static class Main
-    {        
-        private static QSECommand qseCommand;
+    {
         public static bool isExists_SlotExtender = false;
-        public static QSEHandler Instance { get; internal set; }        
+        public static bool isKeyBindigsUpdate = false;
+        public static QSEHandler Instance { get; internal set; }
+        public static bool isPatched;
 
+        [QModPatch]
         public static void Load()
         {
-            isExists_SlotExtender = RefHelp.IsNamespaceExists("SlotExtender");
+            //load and init config from file   
+            QSEConfig.LoadConfig();
+
+            isExists_SlotExtender = ReflectionHelper.IsNamespaceExists("SlotExtender");
 
             if (isExists_SlotExtender)
-                SNLogger.Log($"[{QSEConfig.PROGRAM_NAME}] SlotExtender found! trying to work together..");
+                SNLogger.Log("QuickSlotExtender", "SlotExtender found! trying to work together..");
 
             try
             {
-                HarmonyInstance.Create("Subnautica.QuickSlotExtender.mod").PatchAll(Assembly.GetExecutingAssembly());
-                SNLogger.Log($"[{QSEConfig.PROGRAM_NAME}] Patches installed");
+                Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), "Subnautica.QuickSlotExtender.mod");
+
+                SNLogger.Debug("QuickSlotExtender", "Harmony Patches installed");
+
                 SceneManager.sceneLoaded += new UnityAction<Scene, LoadSceneMode>(OnSceneLoaded);
             }
             catch (Exception ex)
             {
                 Debug.LogException(ex);
-            }                        
+            }
         }
 
         private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
             if (scene.name == "StartScreen")
             {
+                isPatched = false;
                 //enabling game console
-                GameHelper.EnableConsole();
-                //loading config from file
-                QSEConfig.LoadConfig();
+                DevConsole.disableConsole = false;
+                //init config
                 QSEConfig.InitConfig();
                 //add console commad for configuration window
-                qseCommand = new QSECommand();
+                new QSECommand();
                 //add an action if changed controls
                 GameInput.OnBindingsChanged += GameInput_OnBindingsChanged;
             }
         }
 
         internal static void GameInput_OnBindingsChanged()
-        {            
+        {
+            isKeyBindigsUpdate = true;
+
             //input changed, refreshing key bindings
             QSEConfig.InitSLOTKEYS();
 
             if (Instance != null)
-            {
                 Instance.ReadSlotExtenderConfig();
-            }
+
+            isKeyBindigsUpdate = false;
         }
 
         public static object GetAssemblyClassPublicField(string className, string fieldName, BindingFlags bindingFlags = BindingFlags.Default)

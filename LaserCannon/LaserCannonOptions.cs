@@ -1,12 +1,13 @@
 ﻿using SMLHelper.V2.Options;
 using UnityEngine;
 using Common;
+using Common.Helpers;
 
 namespace LaserCannon
 {
     public class LaserCannonOptions : ModOptions
     {
-        public LaserCannonOptions() :base(LaserCannonConfig.language_settings["Option_Title"])        
+        public LaserCannonOptions() : base(LaserCannonConfig.language_settings["Option_Title"])        
         {            
             ToggleChanged += HostileOnly;
             ChoiceChanged += BeamColorChanged;
@@ -28,10 +29,7 @@ namespace LaserCannon
             LaserCannonConfig.program_settings["OnlyHostile"] = args.Value.ToString();
             LaserCannonConfig.WriteConfig();
 
-            if (Main.Instance != null)
-            {
-                Main.Instance.SendMessage("ShootOnlyHostile", SendMessageOptions.DontRequireReceiver);
-            }
+            Main.OnConfigChanged.Trigger(true);
         }
 
         private void BeamColorChanged(object sender, ChoiceChangedEventArgs args)
@@ -39,15 +37,12 @@ namespace LaserCannon
             if (args.Id != LaserCannonConfig.SECTION_PROGRAM[1])
                 return;            
 
-            LaserCannonConfig.program_settings["BeamColor"] = Modules.Colors.ColorNames[args.Index];
+            LaserCannonConfig.program_settings["BeamColor"] = ColorHelper.ColorNames[args.Index];
             LaserCannonConfig.beamColor = args.Index;
 
             LaserCannonConfig.WriteConfig();
 
-            if (Main.Instance != null)
-            {
-                Main.Instance.SendMessage("SetBeamColor", SendMessageOptions.DontRequireReceiver);
-            }
+            Main.OnConfigChanged.Trigger(true);
         }
 
         private void LaserDamageChanged(object sender, SliderChangedEventArgs args)
@@ -58,10 +53,7 @@ namespace LaserCannon
             LaserCannonConfig.program_settings["Damage"] = args.Value.ToString();
             LaserCannonConfig.WriteConfig();
 
-            if (Main.Instance != null)
-            {
-                Main.Instance.SendMessage("SetLaserStrength", SendMessageOptions.DontRequireReceiver);
-            }
+            Main.OnConfigChanged.Trigger(true);
         }
     }
 }

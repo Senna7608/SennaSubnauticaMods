@@ -1,4 +1,4 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 
 namespace CyclopsLaserCannonModule.Patch
 {
@@ -10,9 +10,9 @@ namespace CyclopsLaserCannonModule.Patch
         {
             if (entryData.key == TechType.PrecursorPrisonArtifact7)
             {
-                if (!KnownTech.Contains(Main.techTypeID))
+                if (!KnownTech.Contains(CannonPrefab.TechTypeID))
                 {
-                    KnownTech.Add(Main.techTypeID);
+                    KnownTech.Add(CannonPrefab.TechTypeID);
                     ErrorMessage.AddMessage(CannonConfig.language_settings["Item_Unlock_Message"]);
                 }
             }

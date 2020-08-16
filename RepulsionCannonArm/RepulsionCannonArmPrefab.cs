@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using SMLHelper.V2.Crafting;
 using UnityEngine;
+using Common.Helpers.SMLHelpers;
+using Common.Helpers;
 using Common;
 
 namespace RepulsionCannonArm
@@ -11,19 +13,20 @@ namespace RepulsionCannonArm
 
         internal RepulsionCannonArmPrefab()
             : base(nameID: "ExosuitRepulsionCannonArmModule",
-                  iconFileName: "RepulsionCannonArm",
+                  iconFilePath: $"{Main.modFolder}/Assets/RepulsionCannonArm.png",
                   iconTechType: TechType.None,
                   friendlyName: "P.R.A.W.N Repulsion Cannon Arm",
                   description: "Allows P.R.A.W.N suit to use Repulsion Cannon Arm.",
                   template: TechType.ExosuitPropulsionArmModule,
-                  fabricatorType: CraftTree.Type.SeamothUpgrades,
-                  fabricatorTab: new string[] { "ExosuitModules" },
+                  newTabNode: null,
+                  fabricatorTypes: new CraftTree.Type[] { CraftTree.Type.SeamothUpgrades },
+                  fabricatorTabs: new string[][] { new string[] { "ExosuitModules" } },
                   requiredAnalysis: TechType.ExosuitPropulsionArmModule,
                   groupForPDA: TechGroup.VehicleUpgrades,
                   categoryForPDA: TechCategory.VehicleUpgrades,
                   equipmentType: EquipmentType.ExosuitArm,
-                  backgroundType: CraftData.BackgroundType.ExosuitArm,
                   quickSlotType: QuickSlotType.Selectable,
+                  backgroundType: CraftData.BackgroundType.ExosuitArm,                 
                   itemSize: new Vector2int(1,1),                  
                   gamerResourceFileName: null
                   )
@@ -57,15 +60,15 @@ namespace RepulsionCannonArm
 
             try
             {
-                GameObject model = _GameObject.FindChild("model").FindChild("exosuit_rig_armLeft:exosuit_propulsion_geo");
+                GameObject model = _GameObject.transform.Find("model/exosuit_rig_armLeft:exosuit_propulsion_geo").gameObject;
 
                 model.name = "exosuit_rig_armLeft:exosuit_repulsion_geo";
 
-                model.ChangeObjectTexture(2, illumTex: Main.illumTex.GetObjectClone());
+                GraphicsHelper.ChangeObjectTexture(model, 2, illumTex: Main.objectHelper.GetObjectClone(Main.illumTex));                
             }
             catch
             {
-                Debug.Log("[RepulsionCannonArm] ***ERROR: child [model] not found in game object!");
+                SNLogger.Error("RepulsionCannonArm", "child [model] not found in game object!");
             }           
 
             return _GameObject;

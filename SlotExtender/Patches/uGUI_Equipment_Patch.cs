@@ -1,15 +1,18 @@
-﻿using Common;
-using Harmony;
-using UnityEngine;
+﻿using UnityEngine;
+using HarmonyLib;
+using Common;
 
 namespace SlotExtender.Patches
 {
     [HarmonyPatch(typeof(uGUI_Equipment), "Awake")]    
-    public class uGUI_Equipment_Awake_Patch
+    public static class uGUI_Equipment_Awake_Patch
     {
         [HarmonyPrefix]
         public static void Prefix(uGUI_Equipment __instance)
         {
+            if (Main.uGUI_PrefixComplete)
+                return;
+
             GameObject Equipment = __instance.gameObject;
 
             void _setSlotPos(GameObject slot, Vector2 pos)
@@ -75,7 +78,9 @@ namespace SlotExtender.Patches
                         
             // repositioning Seamoth background picture
             Equipment.transform.Find("SeamothModule1/Seamoth").localPosition = SlotHelper.VehicleImgPos;
-            
+
+            Main.uGUI_PrefixComplete = true;
+
             SNLogger.Log("SlotExtender", "uGUI_Equipment Slots Patched!");
         }
 
@@ -83,7 +88,12 @@ namespace SlotExtender.Patches
         [HarmonyPostfix]
         public static void Postfix(ref uGUI_Equipment __instance)
         {
-            __instance.gameObject.AddComponent<uGUI_SlotTextHandler>();
+            if (Main.uGUI_PostfixComplete)
+                return;
+
+            __instance.gameObject.EnsureComponent<uGUI_SlotTextHandler>();
+
+            Main.uGUI_PostfixComplete = true;
         }
         
     }

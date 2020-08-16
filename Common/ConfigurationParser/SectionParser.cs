@@ -24,7 +24,7 @@ namespace Common.ConfigurationParser
         private void InitSections()
         {
             Sections = new Dictionary<string, Section>();
-            _reader.Lines.All(l => { ParseLine(l); return true; });
+            _reader.Lines.All(line => { ParseLine(line); return true; });
         }
 
         private void ParseLine(string line)

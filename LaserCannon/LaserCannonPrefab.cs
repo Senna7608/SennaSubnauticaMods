@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using SMLHelper.V2.Crafting;
 using SMLHelper.V2.Handlers;
-using Common;
+using Common.Helpers.SMLHelpers;
 
 namespace LaserCannon
 {
@@ -12,13 +12,14 @@ namespace LaserCannon
 
         internal LaserCannonPrefab()
             : base(nameID: "LaserCannon",
-                  iconFileName: "LaserCannon",
+                  iconFilePath: $"{Main.modFolder}/Assets/LaserCannon.png",
                   iconTechType: TechType.None,
                   friendlyName: LaserCannonConfig.language_settings["Item_Name"].ToString(),
                   description: LaserCannonConfig.language_settings["Item_Description"].ToString(),
                   template: TechType.SeamothSonarModule,
-                  fabricatorType: CraftTree.Type.SeamothUpgrades,
-                  fabricatorTab: new string[] { "SeamothModules" },
+                  newTabNode: null,
+                  fabricatorTypes: new CraftTree.Type[] { CraftTree.Type.SeamothUpgrades },
+                  fabricatorTabs: new string[][] { new string[] { "SeamothModules" } },
                   requiredAnalysis: TechType.BaseUpgradeConsole,
                   groupForPDA: TechGroup.VehicleUpgrades,
                   categoryForPDA: TechCategory.VehicleUpgrades,

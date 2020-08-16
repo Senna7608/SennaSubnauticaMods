@@ -32,7 +32,7 @@ namespace CyclopsLaserCannonModule
         public CannonCamera camera_instance;        
 
         private AudioSource audioSource;
-        private readonly TechType laserCannon = Main.techTypeID;        
+        private readonly TechType laserCannon = CannonPrefab.TechTypeID;        
         
         private readonly float fireRate = 0.5f;
         private float nextFire;        
@@ -85,23 +85,23 @@ namespace CyclopsLaserCannonModule
 
         private IEnumerator GetMCUHandler()
         {
-            SNLogger.Log($"[CyclopsLaserCannonModule] GetMCUHandler coroutine started for this Cyclops: {This_Cyclops_Root.GetInstanceID()}");
+            SNLogger.Debug("CyclopsLaserCannonModule", $"GetMCUHandler coroutine started for this Cyclops: {This_Cyclops_Root.GetInstanceID()}");
 
             while (upgradeHandler == null)
             {
-                upgradeHandler = MCUServices.Find.CyclopsUpgradeHandler(subroot, Main.techTypeID);
-                SNLogger.Log($"[CyclopsLaserCannonModule] MCU UpgradeHandler is not ready for this Cyclops: {This_Cyclops_Root.GetInstanceID()}");
+                upgradeHandler = MCUServices.Find.CyclopsUpgradeHandler(subroot, CannonPrefab.TechTypeID);
+                SNLogger.Debug("CyclopsLaserCannonModule", $"MCU UpgradeHandler is not ready for this Cyclops: {This_Cyclops_Root.GetInstanceID()}");
                 yield return null;
             }
 
-            SNLogger.Log($"[CyclopsLaserCannonModule] MCU UpgradeHandler is ready for this Cyclops: {This_Cyclops_Root.GetInstanceID()}");
+            SNLogger.Debug("CyclopsLaserCannonModule", $"MCU UpgradeHandler is ready for this Cyclops: {This_Cyclops_Root.GetInstanceID()}");
 
             upgradeHandler.OnFinishedUpgrades = OnFinishedUpgrades;
             upgradeHandler.OnClearUpgrades = OnClearUpgrades;
 
             OnFirstTimeCheckModuleIsExists();
 
-            SNLogger.Log($"[CyclopsLaserCannonModule] GetMCUHandler coroutine stopped for this Cyclops: {This_Cyclops_Root.GetInstanceID()}");
+            SNLogger.Debug("CyclopsLaserCannonModule", $"GetMCUHandler coroutine stopped for this Cyclops: {This_Cyclops_Root.GetInstanceID()}");
 
             yield break;
         }

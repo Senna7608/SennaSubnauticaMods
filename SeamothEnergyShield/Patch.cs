@@ -1,5 +1,4 @@
-﻿using Common;
-using Harmony;
+﻿using HarmonyLib;
 
 namespace SeamothEnergyShield
 {
@@ -10,7 +9,7 @@ namespace SeamothEnergyShield
         [HarmonyPostfix]
         static void Postfix(SeaMoth __instance)
         {            
-            __instance.gameObject.GetOrAddComponent<SeamothShieldControl>();           
+            __instance.gameObject.EnsureComponent<SeamothShieldControl>();           
         }
     }
 }

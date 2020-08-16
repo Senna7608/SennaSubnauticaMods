@@ -30,7 +30,7 @@ namespace RuntimeHelper.Visuals
                 childContainer.transform.localPosition = Vector3.zero;
                 childContainer.transform.localRotation = Quaternion.identity;
 
-                var dcb = childContainer.GetOrAddComponent<DrawColliderBounds>();
+                var dcb = childContainer.EnsureComponent<DrawColliderBounds>();
 
                 dcb.cInstanceID = cInstanceID;                
                 dcb.collider = collider;
@@ -87,7 +87,7 @@ namespace RuntimeHelper.Visuals
                     childContainer.transform.localPosition = Vector3.zero;
                     childContainer.transform.localRotation = Quaternion.identity;
 
-                    var dcb = childContainer.GetOrAddComponent<DrawColliderBounds>();
+                    var dcb = childContainer.EnsureComponent<DrawColliderBounds>();
 
                     dcb.cInstanceID = cInstanceID;
                     dcb.collider = collider;

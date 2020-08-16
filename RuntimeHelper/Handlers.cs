@@ -3,8 +3,8 @@ using Common.GUIHelper;
 using RuntimeHelper.Visuals;
 using RuntimeHelper.Components;
 using static RuntimeHelper.SceneHelper.SceneHelper;
-using Common;
 using RuntimeHelper.Objects;
+using Common.Helpers;
 
 namespace RuntimeHelper
 {
@@ -84,7 +84,9 @@ namespace RuntimeHelper
 
             if (selectedObject)
             {
-                OutputWindow_Log(MESSAGE_TEXT[MESSAGES.OBJECT_DESTROY],  selectedObject.name, selectedObject.transform.parent.name, selectedObject.transform.root.name);
+                string parentName = selectedObject.IsRoot() ? "(Root)" : selectedObject.transform.parent.name;
+
+                OutputWindow_Log(MESSAGE_TEXT[MESSAGES.OBJECT_DESTROY], selectedObject.name, parentName, selectedObject.transform.root.name);
 
                 if (immediate)
                     DestroyImmediate(selectedObject);
@@ -228,7 +230,7 @@ namespace RuntimeHelper
             try
             {
                 GameObject containerBase = selectedObject.GetOrAddVisualBase(BaseType.Object);
-                DrawObjectBounds dob = containerBase.GetOrAddComponent<DrawObjectBounds>();
+                DrawObjectBounds dob = containerBase.EnsureComponent<DrawObjectBounds>();
                 dob.IsDraw(value);               
             }
             catch

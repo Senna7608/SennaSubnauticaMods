@@ -17,9 +17,9 @@ namespace SeamothArms.ArmControls
                 
         private bool usingTool;       
 
-        private void Start()
+        private void Awake()
         {
-            ThisSeamoth.gameObject.AddIfNeedComponent<ImmuneToPropulsioncannon>();
+            ThisSeamoth.gameObject.EnsureComponent<ImmuneToPropulsioncannon>();
             propulsionCannon = GetComponent<PropulsionCannon>();
             propulsionCannon.energyInterface = ThisSeamoth.GetComponent<EnergyInterface>();
             propulsionCannon.shootForce = 60f;

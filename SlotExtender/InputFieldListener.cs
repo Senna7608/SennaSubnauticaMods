@@ -1,6 +1,6 @@
-﻿using Common;
-using UnityEngine;
+﻿using UnityEngine;
 using UWE;
+using Common;
 
 namespace SlotExtender
 {

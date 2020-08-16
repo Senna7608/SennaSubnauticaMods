@@ -1,31 +1,39 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
+using System.Diagnostics;
 using System.Reflection;
+using System.Collections.Generic;
 using UnityEngine;
-using Common.ConfigurationParser;
 using Common;
+using Common.ConfigurationParser;
+using Common.Helpers;
 
 namespace QuickSlotExtender.Configuration
 {
     internal static class QSEConfig
     {
-        public const string PROGRAM_NAME = "QuickSlotExtender";
         internal static string PROGRAM_VERSION = string.Empty;
         internal static string CONFIG_VERSION = string.Empty;
 
-        internal static Dictionary<string,KeyCode> KEYBINDINGS;        
-        private static readonly string[] SECTIONS = { "Hotkeys", "Settings" };
-        private static readonly string FILENAME = $"{Environment.CurrentDirectory}/QMods/{PROGRAM_NAME}/config.txt";
+        internal static Dictionary<string, KeyCode> KEYBINDINGS;
+
+        private static readonly string modFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        private static readonly string FILENAME = $"{modFolder}/config.txt";
+
         internal static Dictionary<string, string> Section_hotkeys;
-        internal static Dictionary<string, string> SLOTKEYS = new Dictionary<string, string>();
-        internal static List<string> SLOTKEYSLIST = new List<string>();
+        public static Dictionary<string, string> SLOTKEYS = new Dictionary<string, string>();
+        public static List<string> SLOTKEYSLIST = new List<string>();
         public static int MAXSLOTS;
         public static Color TEXTCOLOR;
 
-        private static readonly string[] SECTION_HOTKEYS =
-        {            
+        private static readonly string[] SECTIONS =
+        {
+            "Hotkeys",
+            "Settings"
+        };
+
+        private static readonly string[] SECTION_Hotkeys =
+        {
             "Slot_6",
             "Slot_7",
             "Slot_8",
@@ -35,7 +43,7 @@ namespace QuickSlotExtender.Configuration
             "Slot_12"
         };
 
-        private static readonly string[] SECTION_SETTINGS =
+        private static readonly string[] SECTION_Settings =
         {
             "MaxSlots",
             "TextColor"
@@ -43,16 +51,16 @@ namespace QuickSlotExtender.Configuration
 
         private static readonly List<ConfigData> DEFAULT_CONFIG = new List<ConfigData>
         {
-            new ConfigData(SECTIONS[1], SECTION_SETTINGS[0], 12.ToString()),
-            new ConfigData(SECTIONS[1], SECTION_SETTINGS[1], COLORS.Green.ToString()),
-            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[0], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha6)),
-            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[1], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha7)),
-            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[2], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha8)),
-            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[3], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha9)),
-            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[4], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha0)),
-            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[5], InputHelper.GetKeyCodeAsInputName(KeyCode.Slash)),
-            new ConfigData(SECTIONS[0], SECTION_HOTKEYS[6], InputHelper.GetKeyCodeAsInputName(KeyCode.Equals))
-        };        
+            new ConfigData(SECTIONS[1], SECTION_Settings[0], 12.ToString()),
+            new ConfigData(SECTIONS[1], SECTION_Settings[1], COLORS.Green.ToString()),
+            new ConfigData(SECTIONS[0], SECTION_Hotkeys[0], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha6)),
+            new ConfigData(SECTIONS[0], SECTION_Hotkeys[1], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha7)),
+            new ConfigData(SECTIONS[0], SECTION_Hotkeys[2], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha8)),
+            new ConfigData(SECTIONS[0], SECTION_Hotkeys[3], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha9)),
+            new ConfigData(SECTIONS[0], SECTION_Hotkeys[4], InputHelper.GetKeyCodeAsInputName(KeyCode.Alpha0)),
+            new ConfigData(SECTIONS[0], SECTION_Hotkeys[5], InputHelper.GetKeyCodeAsInputName(KeyCode.Slash)),
+            new ConfigData(SECTIONS[0], SECTION_Hotkeys[6], InputHelper.GetKeyCodeAsInputName(KeyCode.Equals))
+        };
 
         internal static void InitSLOTKEYS()
         {
@@ -64,87 +72,83 @@ namespace QuickSlotExtender.Configuration
             SLOTKEYS.Add("Slot3", GameInput.GetBindingName(GameInput.Button.Slot3, GameInput.BindingSet.Primary));
             SLOTKEYS.Add("Slot4", GameInput.GetBindingName(GameInput.Button.Slot4, GameInput.BindingSet.Primary));
             SLOTKEYS.Add("Slot5", GameInput.GetBindingName(GameInput.Button.Slot5, GameInput.BindingSet.Primary));
-            SLOTKEYS.Add("Slot6", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_HOTKEYS[0]]));
-            SLOTKEYS.Add("Slot7", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_HOTKEYS[1]]));
-            SLOTKEYS.Add("Slot8", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_HOTKEYS[2]]));
-            SLOTKEYS.Add("Slot9", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_HOTKEYS[3]]));
-            SLOTKEYS.Add("Slot10", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_HOTKEYS[4]]));
-            SLOTKEYS.Add("Slot11", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_HOTKEYS[5]]));
-            SLOTKEYS.Add("Slot12", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_HOTKEYS[6]]));
+            SLOTKEYS.Add("Slot6", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_Hotkeys[0]]));
+            SLOTKEYS.Add("Slot7", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_Hotkeys[1]]));
+            SLOTKEYS.Add("Slot8", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_Hotkeys[2]]));
+            SLOTKEYS.Add("Slot9", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_Hotkeys[3]]));
+            SLOTKEYS.Add("Slot10", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_Hotkeys[4]]));
+            SLOTKEYS.Add("Slot11", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_Hotkeys[5]]));
+            SLOTKEYS.Add("Slot12", InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[SECTION_Hotkeys[6]]));
+
 
             foreach (KeyValuePair<string, string> kvp in SLOTKEYS)
             {
                 SLOTKEYSLIST.Add(kvp.Value);
             }
         }
-               
+
         internal static void LoadConfig()
         {
             PROGRAM_VERSION = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
 
-            if (!File.Exists(FILENAME))
+            if (!CheckConfig())
             {
                 CreateDefaultConfigFile();
             }
-            else
+
+            try
             {
-                CONFIG_VERSION = ParserHelper.GetKeyValue(FILENAME, PROGRAM_NAME, "Version");
+                Section_hotkeys = ParserHelper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[0], SECTION_Hotkeys);
 
-                if (CONFIG_VERSION.Equals(PROGRAM_VERSION))
-                {
-                    SNLogger.Log($"[{PROGRAM_NAME}] Configuration version match with program version.");
-                }
-                else
-                {
-                    CreateDefaultConfigFile();
-                }
+                int.TryParse(ParserHelper.GetKeyValue(FILENAME, SECTIONS[1], SECTION_Settings[0]), out int result);
+                MAXSLOTS = result < 5 || result > 12 ? 12 : result;
+
+                TEXTCOLOR = ColorHelper.GetColor(ParserHelper.GetKeyValue(FILENAME, SECTIONS[1], SECTION_Settings[1]));
+
+                SNLogger.Log("QuickSlotExtender", "Configuration loaded.");
             }
-
-            Section_hotkeys = ParserHelper.GetAllKeyValuesFromSection(FILENAME, SECTIONS[0], SECTION_HOTKEYS);
-
-            int.TryParse(ParserHelper.GetKeyValue(FILENAME, SECTIONS[1], SECTION_SETTINGS[0]), out int result);
-            MAXSLOTS = result < 5 || result > 12 ? 12 : result;
-
-            TEXTCOLOR = Modules.GetColor(ParserHelper.GetKeyValue(FILENAME, SECTIONS[1], SECTION_SETTINGS[1]));
-
-            SNLogger.Log($"[{PROGRAM_NAME}] Configuration loaded.");
+            catch
+            {
+                SNLogger.Log("QuickSlotExtender", "An error occurred while loading the configuration file!");
+            }
         }
 
         internal static void CreateDefaultConfigFile()
         {
-            SNLogger.Log($"[{PROGRAM_NAME}] Warning! Configuration file is missing or wrong version. Creating a new one.");
+            SNLogger.Warn("QuickSlotExtender", "Configuration file is missing or wrong version. Trying to create a new one.");
 
             try
             {
-                ParserHelper.CreateDefaultConfigFile(FILENAME, PROGRAM_NAME, PROGRAM_VERSION, DEFAULT_CONFIG);
-                ParserHelper.AddInfoText(FILENAME, SECTIONS[1], "TextColor possible values: Red, Green, Blue, Yellow, White, Magenta, Cyan, Orange, Lime, Amethyst, Default");
+                ParserHelper.CreateDefaultConfigFile(FILENAME, "QuickSlotExtender", PROGRAM_VERSION, DEFAULT_CONFIG);
+                ParserHelper.AddInfoText(FILENAME, "TextColor possible values", "LightBlue, Red, Green, Blue, Yellow, White, Magenta, Cyan, Orange, Lime, Amethyst");
+
+                SNLogger.Log("QuickSlotExtender", "The new configuration file was successfully created.");
             }
             catch
             {
-                SNLogger.Log($"[{PROGRAM_NAME}] Error! Creating new configuration file has failed!");
+                SNLogger.Error("QuickSlotExtender", "An error occured while creating the new configuration file!");
             }
         }
 
         internal static void InitConfig()
         {
             SetKeyBindings();
-            
-            SNLogger.Log($"[{PROGRAM_NAME}] Configuration initialized.");
+            InitSLOTKEYS();
+            SNLogger.Log("QuickSlotExtender", "Configuration initialized.");
         }
 
         internal static void WriteConfig()
         {
-            if (ParserHelper.SetAllKeyValuesInSection(FILENAME, SECTIONS[0], Section_hotkeys))
-            {
-                SNLogger.Log($"[{PROGRAM_NAME}] Configuration saved.");
-            }
+            ParserHelper.SetAllKeyValuesInSection(FILENAME, SECTIONS[0], Section_hotkeys);
+            ParserHelper.SetKeyValue(FILENAME, SECTIONS[1], SECTION_Settings[0], MAXSLOTS.ToString());
+            ParserHelper.SetKeyValue(FILENAME, SECTIONS[1], SECTION_Settings[1], ColorHelper.GetColorName(TEXTCOLOR));
         }
 
         internal static void SyncConfig()
         {
-            foreach (string key in SECTION_HOTKEYS)
+            foreach (string key in SECTION_Hotkeys)
             {
-                Section_hotkeys[key] = InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[key]);                
+                Section_hotkeys[key] = InputHelper.GetKeyCodeAsInputName(KEYBINDINGS[key]);
             }
 
             WriteConfig();
@@ -159,12 +163,12 @@ namespace QuickSlotExtender.Configuration
             foreach (KeyValuePair<string, string> kvp in Section_hotkeys)
             {
                 try
-                {                    
+                {
                     KEYBINDINGS.Add(kvp.Key, InputHelper.GetInputNameAsKeyCode(kvp.Value));
                 }
                 catch (ArgumentException)
                 {
-                    SNLogger.Log($"[{PROGRAM_NAME}] Warning! ({kvp.Value}) is not a valid KeyCode! Setting default value!");
+                    SNLogger.Warn("QuickSlotExtender", $"({kvp.Value}) is not a valid KeyCode! Setting default value!");
 
                     for (int i = 0; i < DEFAULT_CONFIG.Count; i++)
                     {
@@ -182,5 +186,38 @@ namespace QuickSlotExtender.Configuration
                 SyncConfig();
             }
         }
+
+        private static bool CheckConfig()
+        {
+            if (!File.Exists(FILENAME))
+            {
+                SNLogger.Error("QuickSlotExtender", "Configuration file open error!");
+                return false;
+            }
+
+            CONFIG_VERSION = ParserHelper.GetKeyValue(FILENAME, "QuickSlotExtender", "Version");
+
+            if (!CONFIG_VERSION.Equals(PROGRAM_VERSION))
+            {
+                SNLogger.Error("QuickSlotExtender", "Configuration file version error!");
+                return false;
+            }
+
+            if (!ParserHelper.CheckSectionKeys(FILENAME, SECTIONS[0], SECTION_Hotkeys))
+            {
+                SNLogger.Error("QuickSlotExtender", $"Configuration {SECTIONS[0]} section error!");
+                return false;
+            }
+
+            if (!ParserHelper.CheckSectionKeys(FILENAME, SECTIONS[1], SECTION_Settings))
+            {
+                SNLogger.Error("QuickSlotExtender", $"Configuration {SECTIONS[1]} section error!");
+                return false;
+            }
+
+            return true;
+        }
+
+
     }
 }

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Common
+namespace Common.Helpers
 {
     public class Indestructible : MonoBehaviour
     {

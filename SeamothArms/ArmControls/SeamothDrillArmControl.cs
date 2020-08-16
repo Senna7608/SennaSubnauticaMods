@@ -31,12 +31,12 @@ namespace SeamothArms.ArmControls
         private GameObject drillTarget;
         private Quaternion smoothedDirection = Quaternion.identity;
 
-        private void Start()
+        private void Awake()
         {                          
             animator = GetComponent<Animator>();            
             fxControl = GetComponent<VFXController>();
             vfxEventType = VFXEventTypes.exoDrill;
-            fxSpawnPoint = gameObject.FindChildInMaxDepth("FXSpawnPoint").transform;
+            fxSpawnPoint = Main.graphics.objectHelper.FindDeepChild(gameObject, "FXSpawnPoint").transform;
 
             FMOD_CustomLoopingEmitter[] emitters = GetComponents<FMOD_CustomLoopingEmitter>();
 

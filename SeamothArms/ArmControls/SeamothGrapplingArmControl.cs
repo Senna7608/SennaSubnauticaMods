@@ -1,4 +1,5 @@
 ﻿using Common;
+using Common.Helpers;
 using UnityEngine;
 
 namespace SeamothArms.ArmControls
@@ -33,14 +34,18 @@ namespace SeamothArms.ArmControls
         private const float targetGrapplingAccel = 400f;
         private Vector3 grapplingStartPos = Vector3.zero;
 
+        public ObjectHelper objectHelper { get; private set; }
+
         private void Awake()
         {
+            objectHelper = Main.graphics.objectHelper;
+
             animator = GetComponent<Animator>();
 
-            front = gameObject.FindChildInMaxDepth("hook").transform;
+            front = objectHelper.FindDeepChild(gameObject, "hook").transform;
             ExosuitGrapplingArm component = GetComponent<ExosuitGrapplingArm>();
             hookPrefab = Instantiate(component.hookPrefab);
-            rope = component.rope.GetObjectClone();
+            rope = objectHelper.GetObjectClone(component.rope);
 
             DestroyImmediate(hookPrefab.GetComponent<GrapplingHook>());
             DestroyImmediate(component);            

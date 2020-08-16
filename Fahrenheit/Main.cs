@@ -1,17 +1,20 @@
 ﻿using System;
 using UnityEngine;
-using Harmony;
+using HarmonyLib;
 using System.Reflection;
+using QModManager.API.ModLoading;
 
 namespace MAC.Fahrenheit
 {
+    [QModCore]
     public static class Main
     {
+        [QModPatch]
         public static void Load()
         {
             try
             {
-                HarmonyInstance.Create("com.MAC.Fahrenheit").PatchAll(Assembly.GetExecutingAssembly());
+                Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), "com.MAC.Fahrenheit");                
             }
             catch (Exception ex)
             {

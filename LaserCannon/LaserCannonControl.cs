@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UWE;
-using static Common.Modules;
-using static Common.GameHelper;
-using UnityEngine.Rendering;
 using System.Collections;
+using Common.Helpers;
+using static Common.Helpers.GameHelper;
+using System;
 
 namespace LaserCannon
 {
@@ -46,8 +46,12 @@ namespace LaserCannon
         private string lowPower_title;
         private string lowPower_message;
 
-        public void Awake()
+        private ObjectHelper objectHelper;
+
+        private void Awake()
         {
+            objectHelper = Main.objectHelper;
+
             Instance = gameObject.GetComponent<LaserCannonControl>();
             thisSeamoth = Instance.GetComponent<SeaMoth>();
             energyMixin = thisSeamoth.GetComponent<EnergyMixin>();
@@ -58,7 +62,8 @@ namespace LaserCannon
 
             GameObject repulsionCannonPrefab = Instantiate(Resources.Load<GameObject>("WorldEntities/Tools/RepulsionCannon"));            
 
-            shootSound = repulsionCannonPrefab.GetComponent<RepulsionCannon>().shootSound.GetObjectClone();
+            shootSound = objectHelper.GetObjectClone(repulsionCannonPrefab.GetComponent<RepulsionCannon>().shootSound);
+
             DestroyImmediate(repulsionCannonPrefab);
 
             loopingEmitter = gameObject.AddComponent<FMOD_CustomLoopingEmitter>();
@@ -66,7 +71,7 @@ namespace LaserCannon
 
             GameObject powerTransmitterPrefab = Instantiate(Resources.Load<GameObject>("Submarine/Build/PowerTransmitter"));
 
-            GameObject laserBeam = powerTransmitterPrefab.GetComponent<PowerFX>().vfxPrefab.GetPrefabClone(null, false);            
+            GameObject laserBeam = objectHelper.GetPrefabClone(powerTransmitterPrefab.GetComponent<PowerFX>().vfxPrefab, null, false); 
 
             LineRenderer lineRenderer = laserBeam.GetComponent<LineRenderer>();
             lineRenderer.startWidth = 0.2f;
@@ -75,30 +80,43 @@ namespace LaserCannon
             lineRenderer.receiveShadows = false;
             lineRenderer.loop = false;           
 
-            laserRight = laserBeam.GetPrefabClone(thisSeamoth.torpedoTubeRight, false);
+            laserRight = objectHelper.GetPrefabClone(laserBeam, thisSeamoth.torpedoTubeRight, false);
             laserRight.name = "laserRight";
             laserRight.transform.localPosition = Vector3.zero;
             laserRight.transform.localRotation = Quaternion.identity;
             rightBeam = laserRight.GetComponent<LineRenderer>();                      
 
-            laserLeft = laserBeam.GetPrefabClone(thisSeamoth.torpedoTubeLeft, false);
+            laserLeft = objectHelper.GetPrefabClone(laserBeam, thisSeamoth.torpedoTubeLeft, false);
             laserLeft.name = "laserLeft";
             laserLeft.transform.localPosition = Vector3.zero;
             laserLeft.transform.localRotation = Quaternion.identity;
             leftBeam = laserLeft.GetComponent<LineRenderer>();
 
             DestroyImmediate(laserBeam);
-            DestroyImmediate(powerTransmitterPrefab);            
+            DestroyImmediate(powerTransmitterPrefab);
 
-            SetBeamColor();
-            ShootOnlyHostile();
-            SetLaserStrength();
-            SetWarningMessage();            
-       
+            OnConfigChanged(true);
+
             thisSeamoth.onToggle += OnToggle;
             thisSeamoth.modules.onAddItem += OnAddItem;
             thisSeamoth.modules.onRemoveItem += OnRemoveItem;
-            playerMain.playerModeChanged.AddHandler(gameObject, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));            
+            playerMain.playerModeChanged.AddHandler(this, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
+
+            Main.OnConfigChanged.AddHandler(this, new Event<bool>.HandleFunction(OnConfigChanged));
+        }
+
+        private void OnConfigChanged(bool parms)
+        {
+            rightBeam.material.color = ColorHelper.Colors[LaserCannonConfig.beamColor];
+            leftBeam.material.color = ColorHelper.Colors[LaserCannonConfig.beamColor];
+
+            isOnlyHostile = bool.Parse(LaserCannonConfig.program_settings["OnlyHostile"].ToString());
+
+            laserDamage = float.Parse(LaserCannonConfig.program_settings["Damage"].ToString()) * 0.1f;
+            powerConsumption = 1 + laserDamage * 1f;
+
+            lowPower_title = LaserCannonConfig.language_settings[LaserCannonConfig.SECTION_LANGUAGE[17]];
+            lowPower_message = LaserCannonConfig.language_settings[LaserCannonConfig.SECTION_LANGUAGE[18]];
         }
 
         private void OnRemoveItem(InventoryItem item)
@@ -126,76 +144,42 @@ namespace LaserCannon
             thisSeamoth.onToggle -= OnToggle;
             thisSeamoth.modules.onAddItem -= OnAddItem;
             thisSeamoth.modules.onRemoveItem -= OnRemoveItem;
-            playerMain.playerModeChanged.RemoveHandler(gameObject, OnPlayerModeChanged);
-            SetInteractColor(Colors.White);
+            playerMain.playerModeChanged.RemoveHandler(this, OnPlayerModeChanged);
+            Main.OnConfigChanged.RemoveHandler(this, OnConfigChanged);
+            SetInteractColor(Color.white);
             Destroy(Instance);
         }
 
-        public void SetBeamColor()
-        {
-            rightBeam.material.color = Colors.ColorArray[LaserCannonConfig.beamColor];
-            leftBeam.material.color = Colors.ColorArray[LaserCannonConfig.beamColor];            
-        }
 
-        public void ShootOnlyHostile()
-        {
-            isOnlyHostile = bool.Parse(LaserCannonConfig.program_settings["OnlyHostile"].ToString());
-        }
-
-        public void SetLaserStrength()
-        {
-            laserDamage = float.Parse(LaserCannonConfig.program_settings["Damage"].ToString()) * 0.1f;
-            powerConsumption = 1 + laserDamage * 1f;            
-        }
-
-        public void SetWarningMessage()
-        {
-            lowPower_title = LaserCannonConfig.language_settings[LaserCannonConfig.SECTION_LANGUAGE[17]];
-            lowPower_message = LaserCannonConfig.language_settings[LaserCannonConfig.SECTION_LANGUAGE[18]];
-        }
-
-        internal void OnPlayerModeChanged(Player.Mode newMode)
+        private void OnPlayerModeChanged(Player.Mode newMode)
         {
             if (newMode == Player.Mode.LockedPiloting)
-            {
-                //the player is in one of the vehicles but at this point Player.main.currentMountedVehicle is null.
-                //therefore starting a coroutine while currentMountedVehicle is not null.
+            {                
                 StartCoroutine(WaitForPlayerModeChangeFinished(newMode));
             }
             else
-            {
-                //player not in any Vehicle: this Slot Extender now disabled
+            {                
                 isActive = false;
             }
         }
 
         private IEnumerator WaitForPlayerModeChangeFinished(Player.Mode newMode)
         {
-            //print($"[{SEConfig.PROGRAM_NAME}] WaitForPlayerModeChangeFinished coroutine started for this Vehicle: {ThisVehicle.GetInstanceID()}");
-
             while (Player.main.currentMountedVehicle == null)
-            {
-                //print($"[{SEConfig.PROGRAM_NAME}] Player.main.currentMountedVehicle is NULL!");
+            {                
                 yield return null;
-            }
-
-            //print($"[{SEConfig.PROGRAM_NAME}] Player.main.currentMountedVehicle is {Player.main.currentMountedVehicle.GetInstanceID()}");
-            //print($"[{SEConfig.PROGRAM_NAME}] WaitForPlayerModeChangeFinished coroutine stopped for this Vehicle: {ThisVehicle.GetInstanceID()}");
+            }            
 
             if (Player.main.currentMountedVehicle == thisSeamoth)
-            {
-                //player in this Vehicle: this Slot Extender now enabled
+            {                
                 isPlayerInThisVehicle = true;
                 OnEnable();
             }
             else
-            {
-                //player not in this Vehicle: this Slot Extender now disabled
+            {                
                 isPlayerInThisVehicle = false;
                 OnDisable();
-            }
-
-            //print($"[{SEConfig.PROGRAM_NAME}] isActive now {isActive}, Player mode now {newMode}");
+            }           
 
             yield break;
         }
@@ -235,7 +219,7 @@ namespace LaserCannon
             isActive = false;
             isShoot = false;
             isRepeat = false;
-            SetInteractColor(Colors.White);
+            SetInteractColor(Color.white);
         }
 
         private void AddDamageToTarget(GameObject gameObject)
@@ -344,7 +328,7 @@ namespace LaserCannon
                         isShoot = false;
                         isRepeat = false;
                         idleTimer = Mathf.Max(0f, idleTimer - Time.deltaTime);
-                        SetInteractColor(Colors.Red);
+                        SetInteractColor(Color.red);
                         HandReticle.main.SetInteractText(lowPower_title, lowPower_message, false, false, HandReticle.Hand.None);                        
                     }
                     else

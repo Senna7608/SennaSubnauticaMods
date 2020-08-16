@@ -5,12 +5,16 @@ namespace RuntimeHelper.Logger
 {
     public static class RHLogger
     {
-        public static void RH_Log(this string message)
+        public const string prefixLOG = "[Rh [Log] ";
+        public const string prefixWARNING = "[Rh [Warning] ";
+        public const string prefixERROR = "[Rh [Error] ";
+
+        public static void RH_Log(string message)
         {
-            Console.WriteLine("[RuntimeHelper] " + message);
+            Console.WriteLine(prefixLOG + message);
         }
 
-        public static void RH_Log(this string message, LogType type)
+        public static void RH_Log(string message, LogType type)
         {
             switch (type)
             {
@@ -30,7 +34,7 @@ namespace RuntimeHelper.Logger
             }
         }
 
-        public static void RH_Log(this string message, LogType type, params object[] args)
+        public static void RH_Log(string message, LogType type, params object[] args)
         {
             switch (type)
             {
@@ -50,29 +54,29 @@ namespace RuntimeHelper.Logger
             }
         }
 
-        public static void RH_Log(this string format, params object[] args)
+        public static void RH_Log(string format, params object[] args)
         {
-            Console.WriteLine("[RuntimeHelper] " + string.Format(format, args));
+            Console.WriteLine(prefixLOG + string.Format(format, args));
         }
 
-        public static void RH_Warning(this string message)
+        public static void RH_Warning(string message)
         {
-            Console.WriteLine("[RuntimeHelper] WARNING! " + message);
+            Console.WriteLine(prefixWARNING + message);
         }
 
-        public static void RH_Warning(this string format, params object[] args)
+        public static void RH_Warning(string format, params object[] args)
         {
-            Console.WriteLine("[RuntimeHelper] WARNING! " + string.Format(format, args));
+            Console.WriteLine(prefixWARNING + string.Format(format, args));
         }
 
-        public static void RH_Error(this string message)
+        public static void RH_Error(string message)
         {
-            Console.WriteLine("[RuntimeHelper] *** ERROR " + message);
+            Console.WriteLine(prefixERROR + message);
         }
 
-        public static void RH_Error(this string format, params object[] args)
+        public static void RH_Error(string format, params object[] args)
         {
-            Console.WriteLine("[RuntimeHelper] *** ERROR " + string.Format(format, args));
+            Console.WriteLine(prefixERROR + string.Format(format, args));
         }
     }
 }

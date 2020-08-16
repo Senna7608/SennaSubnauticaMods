@@ -2,12 +2,9 @@
   "Id": "Fahrenheit",
   "DisplayName": "Fahrenheit",
   "Author": "Senna",
-  "Version": "1.2",
-  "Dependencies": ["SMLHelper"],
-  "LoadBefore": [],
-  "LoadAfter": [],
+  "Version": "1.3",
+  "Dependencies": ["SMLHelper"],  
   "Enable": true,
   "Game": "Subnautica",
-  "AssemblyName": "Fahrenheit.dll",
-  "EntryMethod": "MAC.Fahrenheit.Main.Load"  
+  "AssemblyName": "Fahrenheit.dll"   
 }

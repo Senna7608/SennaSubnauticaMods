@@ -1,20 +1,25 @@
 ﻿using System;
+using System.IO;
 using System.Reflection;
-using Harmony;
+using HarmonyLib;
+using QModManager.API.ModLoading;
 using UnityEngine;
 
 namespace RepairModule
 {
+    [QModCore]
     public static class Main
-    {        
+    {
+        public static readonly string modFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+        [QModPatch]
         public static void Load()
         {
             try
             {
-                var repairModule = new RepairModulePrefab();
-                repairModule.Patch();
+                new RepairModulePrefab().Patch();
 
-                HarmonyInstance.Create("Subnautica.RepairModule.mod").PatchAll(Assembly.GetExecutingAssembly());                
+                Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), "Subnautica.RepairModule.mod");                
             }
             catch (Exception ex)
             {

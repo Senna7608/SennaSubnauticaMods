@@ -210,6 +210,76 @@ namespace Common.GUIHelper
             return true;
         }
 
+        public static bool AddGuiItemToGroup(this List<GuiItem> guiItems, string name)
+        {
+            int itemsCount = guiItems.Count;
+
+            GuiItem lastItem1 = guiItems[itemsCount - 1];
+            GuiItem lastItem2 = guiItems[itemsCount - 2];
+
+            Rect lastRect1 = lastItem1.Rect;
+            Rect lastRect2 = lastItem2.Rect;
+
+            Rect nextRect = new Rect(lastRect1.x, lastRect1.y + (lastRect1.y - lastRect2.y), lastRect1.width, lastRect1.height);
+
+            guiItems.Add(new GuiItem()
+            {
+                Name = name,
+                Tooltip = null,
+                Type = lastItem1.Type,
+                Enabled = true,
+                Rect = nextRect,
+                ItemColor = lastItem1.ItemColor,
+                State = GuiItemState.NORMAL,
+                FontStyle = lastItem1.FontStyle,
+                TextAnchor = lastItem1.TextAnchor,
+                OnChangedEvent = null
+            });
+
+            return true;
+        }
+
+        public static bool RemoveGuiItemFromGroup(this List<GuiItem> guiItems, int index)
+        {
+            int itemsCount = guiItems.Count;
+
+            if (index >= itemsCount)
+            {
+                return false;
+            }
+
+            if (itemsCount < 2 || index == itemsCount - 1)
+            {
+                guiItems.RemoveAt(index);
+                return true;
+            }
+
+            GuiItem firstItem = guiItems[0];
+            GuiItem secondItem = guiItems[1];
+
+            float distanceY = secondItem.Rect.y - firstItem.Rect.y;
+
+            float x = guiItems[index].Rect.x;
+            float y = guiItems[index].Rect.y;
+            float width = guiItems[index].Rect.width;
+            float height = guiItems[index].Rect.height;
+
+            guiItems.RemoveAt(index);
+
+            int i = index;
+            int j = 0;
+
+            do
+            {
+                guiItems[i].Rect = new Rect(x, y + (j * distanceY), width, height);
+                i++;
+                j++;
+            }
+            while (i < guiItems.Count);
+
+            return true;
+        }
+
         public static void SetGuiItemsGroupLabel(this List<GuiItem> guiItems, string name, Rect rect, GuiItemColor itemColor,
                                                  FontStyle fontStyle = FontStyle.Normal, TextAnchor textAnchor = TextAnchor.MiddleLeft)
         {
@@ -241,7 +311,7 @@ namespace Common.GUIHelper
                 {
                     case GuiItemType.NORMALBUTTON:
                     
-                        if (GUI.Button(guiItems[i].Rect, guiItems[i].Content, SNStyles.GetGuiItemStyle(guiItems[i])) && e.button == 0)
+                        if (GUI.Button(guiItems[i].Rect, guiItems[i].Content, SNStyles.GetGuiItemStyle(guiItems[i])))
                         {                            
                             return new GuiItemEvent(i, e.button, false);
                         }
@@ -249,9 +319,9 @@ namespace Common.GUIHelper
 
                     case GuiItemType.TOGGLEBUTTON:
 
-                        if (GUI.Button(guiItems[i].Rect, guiItems[i].Content, SNStyles.GetGuiItemStyle(guiItems[i])) && e.button == 0)
+                        if (GUI.Button(guiItems[i].Rect, guiItems[i].Content, SNStyles.GetGuiItemStyle(guiItems[i])))
                         {                            
-                            guiItems[i].State = SetStateInverse(guiItems[i].State);
+                            //guiItems[i].State = SetStateInverse(guiItems[i].State);
                             return new GuiItemEvent(i, e.button, false);
                         }
                         break;
@@ -294,7 +364,33 @@ namespace Common.GUIHelper
             }            
         }
 
-        public static GuiItemState SetStateInverse(GuiItemState state)
+        public static int GetMarkedItem(this List<GuiItem> guiItems)
+        {
+            for (int i = 0; i < guiItems.Count; i++)
+            {
+                if (guiItems[i].State == GuiItemState.PRESSED)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        public static void SetStateInverse(this GuiItem guiItem)
+        {
+            guiItem.State = InvertState(guiItem.State);
+        }
+
+        public static void UnmarkAll(this List<GuiItem> guiItems)
+        {
+            for (int i = 0; i < guiItems.Count; i++)
+            {
+                guiItems[i].State = GuiItemState.NORMAL;
+            }
+        }
+
+        public static GuiItemState InvertState(GuiItemState state)
         {
             return state == GuiItemState.NORMAL ? GuiItemState.PRESSED : GuiItemState.NORMAL;
         }

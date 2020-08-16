@@ -1,7 +1,7 @@
-﻿using static Common.GameHelper;
+﻿using Common.Helpers;
 using UnityEngine;
 using UWE;
-using static Common.Modules;
+using static Common.Helpers.GameHelper;
 
 namespace ScannerModule
 {
@@ -119,8 +119,8 @@ namespace ScannerModule
             isActive = false;
             isToggle = false;
             stateCurrent = ScanState.None;
-            SetInteractColor(Colors.White);
-            SetProgressColor(Colors.White);
+            SetInteractColor(Color.white);
+            SetProgressColor(Color.white);
         }
 
         public void Update()
@@ -142,7 +142,7 @@ namespace ScannerModule
                     handReticleMain.SetInteractText(PDAScanner.scanTarget.techType.AsString(false), true, HandReticle.Hand.None);
                     handReticleMain.SetIcon(HandReticle.IconType.Progress, 10f);
                     handReticleMain.progressText.text = Mathf.RoundToInt(PDAScanner.scanTarget.progress * 100f) + "%";
-                    SetProgressColor(Colors.Orange);
+                    SetProgressColor(ColorHelper.Orange);
                     handReticleMain.progressImage.fillAmount = Mathf.Clamp01(PDAScanner.scanTarget.progress);
                     handReticleMain.SetProgress(PDAScanner.scanTarget.progress);                    
                 }

@@ -2,6 +2,7 @@
 using UnityEngine;
 using SeamothArms.ArmPrefabs;
 using System.Collections;
+using Common.Helpers;
 
 namespace SeamothArms.ArmControls
 {
@@ -33,16 +34,20 @@ namespace SeamothArms.ArmControls
         private float timeFirstShot = float.NegativeInfinity;
         private float timeSecondShot = float.NegativeInfinity;
 
+        public ObjectHelper objectHelper { get; private set; }
+
         private void Awake()
-        {            
+        {     
+            objectHelper = Main.graphics.objectHelper;
+
             animator = GetComponent<Animator>();
 
-            siloFirst = gameObject.FindChildInMaxDepth("TorpedoSiloFirst").transform;
-            siloSecond = gameObject.FindChildInMaxDepth("TorpedoSiloSecond").transform;
+            siloFirst = objectHelper.FindDeepChild(gameObject, "TorpedoSiloFirst").transform;
+            siloSecond = objectHelper.FindDeepChild(gameObject, "TorpedoSiloSecond").transform;
 
-            visualTorpedoFirst = gameObject.FindChildInMaxDepth("TorpedoFirst");
-            visualTorpedoSecond = gameObject.FindChildInMaxDepth("TorpedoSecond");
-            visualTorpedoReload = gameObject.FindChildInMaxDepth("TorpedoReload");
+            visualTorpedoFirst = objectHelper.FindDeepChild(gameObject, "TorpedoFirst");
+            visualTorpedoSecond = objectHelper.FindDeepChild(gameObject, "TorpedoSecond");
+            visualTorpedoReload = objectHelper.FindDeepChild(gameObject, "TorpedoReload");
 
             handTarget = gameObject.GetComponentInChildren<GenericHandTarget>(true);
             handTarget.onHandHover.AddListener(OnHoverTorpedoStorage);

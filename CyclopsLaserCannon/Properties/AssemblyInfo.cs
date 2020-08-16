@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Cyclops Laser Cannon for Subnautica QMod Manager")]
-[assembly: AssemblyDescription("Subnautica Cyclops Laser Cannon. QMod external module")]
+[assembly: AssemblyDescription("Subnautica Cyclops Laser Cannon. QMM mod")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Senna")]
 [assembly: AssemblyProduct("Cyclops Laser Cannon")]
-[assembly: AssemblyCopyright("Copyright ©  2019")]
+[assembly: AssemblyCopyright("Copyright ©  2020")]
 [assembly: AssemblyTrademark("Senna")]
 [assembly: AssemblyCulture("")]
 
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.7.0")]
-[assembly: AssemblyFileVersion("1.7.0")]
+[assembly: AssemblyVersion("1.8.0")]
+[assembly: AssemblyFileVersion("1.8.0")]

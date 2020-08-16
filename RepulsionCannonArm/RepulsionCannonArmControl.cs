@@ -1,5 +1,4 @@
-﻿using Common;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace RepulsionCannonArm
@@ -159,7 +158,7 @@ namespace RepulsionCannonArm
 
             rb.velocity = velocity;
 
-            PropulseCannonAmmoHandler propulseCannonAmmoHandler = rb.gameObject.GetOrAddComponent<PropulseCannonAmmoHandler>();            
+            PropulseCannonAmmoHandler propulseCannonAmmoHandler = rb.gameObject.EnsureComponent<PropulseCannonAmmoHandler>();            
 
             propulseCannonAmmoHandler.ResetHandler(false, false);
 

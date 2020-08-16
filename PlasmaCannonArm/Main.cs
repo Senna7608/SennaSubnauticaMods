@@ -1,37 +1,39 @@
 ﻿using System;
-using UnityEngine;
-using Harmony;
+using System.IO;
 using System.Reflection;
-using static Common.GameHelper;
+using UnityEngine;
+using HarmonyLib;
+using Common.Helpers;
+using static Common.Helpers.GraphicsHelper;
+using QModManager.API.ModLoading;
 
 namespace PlasmaCannonArm
 {
+    [QModCore]
     public static class Main
     {
+        public static readonly string modFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        public static ObjectHelper objectHelper = new ObjectHelper();
+
         public static AssetBundle assetBundle;        
         public static Material cannon_material;
         public static Material plasma_Material;
         public static GameObject plasmaShootSFX;
 
-        public static TechType techTypeID;
-
+        [QModPatch]
         public static void Load()
         {
             try
             {
-                assetBundle = AssetBundle.LoadFromFile("./QMods/PlasmaCannonArm/Assets/plasmasfx");
+                new PlasmaCannonArmPrefab().Patch();
+
+                assetBundle = AssetBundle.LoadFromFile($"{modFolder}/Assets/plasmasfx");
 
                 plasmaShootSFX = assetBundle.LoadAsset<GameObject>("plasmaShootSFX");                               
 
-                cannon_material = GetResourceMaterial("worldentities/doodads/precursor/precursorteleporter", "precursor_interior_teleporter_02_01", 0);
-                
-                var plasmaCannon = new PlasmaCannonArmPrefab();
-                
-                plasmaCannon.Patch();
+                cannon_material = GetResourceMaterial("worldentities/doodads/precursor/precursorteleporter", "precursor_interior_teleporter_02_01", 0);                                
 
-                techTypeID = plasmaCannon.TechType;
-
-                HarmonyInstance.Create("Subnautica.ExosuitPlasmaCannonArm.mod").PatchAll(Assembly.GetExecutingAssembly());
+                Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), "Subnautica.ExosuitPlasmaCannonArm.mod");                
             }
             catch (Exception ex)
             {
@@ -41,15 +43,15 @@ namespace PlasmaCannonArm
 
         public static Material GetPlasmaMaterial()
         {
-            GameObject powerTransmitter = UnityEngine.Object.Instantiate(CraftData.GetPrefabForTechType(TechType.PowerTransmitter));
+            GameObject powerTransmitter = CraftData.InstantiateFromPrefab(TechType.PowerTransmitter);            
 
-            GameObject laserBeam = UnityEngine.Object.Instantiate(powerTransmitter.GetComponent<PowerFX>().vfxPrefab, null, false);
-
-            UnityEngine.Object.Destroy(powerTransmitter);
+            GameObject laserBeam = UnityEngine.Object.Instantiate(powerTransmitter.GetComponent<PowerFX>().vfxPrefab, null, false);            
 
             LineRenderer lineRenderer = laserBeam.GetComponent<LineRenderer>();
 
             Material plasma = UnityEngine.Object.Instantiate(lineRenderer.material) as Material;
+
+            UnityEngine.Object.Destroy(powerTransmitter);
 
             UnityEngine.Object.Destroy(laserBeam);
 

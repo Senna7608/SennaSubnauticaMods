@@ -1,13 +1,10 @@
 ﻿{
   "Id": "RepairModule",
-  "DisplayName": "RepairModule",
+  "DisplayName": "Repair Module",
   "Author": "Senna",
-  "Version": "2.5",
-  "Dependencies": ["SMLHelper"],
-  "LoadBefore": [],
-  "LoadAfter": [],
+  "Version": "2.6",
+  "Dependencies": ["SMLHelper"],  
   "Enable": true,
   "Game": "Subnautica",
-  "AssemblyName": "RepairModule.dll",
-  "EntryMethod": "RepairModule.Main.Load"  
+  "AssemblyName": "RepairModule.dll"  
 }

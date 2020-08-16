@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Common.ConfigurationParser
 {
@@ -17,14 +19,43 @@ namespace Common.ConfigurationParser
         }
     }
 
+    
+    public class ConfigDataNew
+    {
+        public string Section { get; private set; }
+        public Dictionary<string, string> KeyValues { get; private set; }
+
+        public string[] Keys { get; private set; }
+        public string[] Values { get; private set; }
+
+        public ConfigDataNew(string section, Dictionary<string, string> keyValues)
+        {
+            Section = section;
+            KeyValues = keyValues;
+            
+            Keys = new string[keyValues.Count];
+            Values = new string[keyValues.Count];
+
+            int i = 0;
+
+            foreach (KeyValuePair<string, string> kvp in keyValues)
+            {
+                Keys[i] = kvp.Key;
+                Values[i] = kvp.Value;
+                i++;
+            }
+        }
+    }
+    
+
     public class ParserHelper
     {
         public static void CreateDefaultConfigFile(string filename, string programName, string version, List<ConfigData> configData)
         {            
             File.WriteAllText(filename,$"[{programName}]\r\nVersion: {version}\r\n");
 
-            Parser parser = new Parser(filename);
-            
+            Parser parser = new Parser(filename);           
+
             foreach (ConfigData data in configData)
             {
                 if (!parser.IsExists(data.Section))
@@ -81,6 +112,32 @@ namespace Common.ConfigurationParser
             return result;
         }
 
+        public static Dictionary<string, string> GetAllKVPFromSection(string filename, string section)
+        {
+            Parser parser = new Parser(filename);
+
+            Dictionary<string, string> result = new Dictionary<string, string>();
+
+            if (!parser.IsExists(section))
+            {
+                return result;
+            }
+
+            Section _section = parser.GetSection(section);
+            /*
+            if (_section == null)
+            {
+                return result;
+            }
+            */
+            foreach (KeyValuePair<string, string> kvp in _section)
+            {
+                result.Add(kvp.Key, kvp.Value);
+            }
+
+            return result;
+        }
+
         public static void SetKeyValue(string filename, string section, string key, string value)
         {
             Parser parser = new Parser(filename);
@@ -116,6 +173,20 @@ namespace Common.ConfigurationParser
             }
 
             return true;
+        }
+
+        public static bool CheckSectionKey(string filename, string section, string key)
+        {
+            Parser parser = new Parser(filename);
+
+            return parser.IsExists(section, key) ? true : false;
+        }
+
+        public static void ClearSection(string filename, string section)
+        {
+            Parser parser = new Parser(filename);
+
+            parser.ClearAndWrite(section);
         }
 
     }

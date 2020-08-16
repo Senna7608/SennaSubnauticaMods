@@ -1,13 +1,9 @@
 ﻿{
   "Id": "QuickSlotExtender",
-  "DisplayName": "QuickSlotExtender",
+  "DisplayName": "QuickSlot Extender",
   "Author": "Senna",
-  "Version": "1.0",
-  "Dependencies": [],
-  "LoadBefore": [],
-  "LoadAfter": [],
+  "Version": "1.0", 
   "Enable": true,
   "Game": "Subnautica",
-  "AssemblyName": "QuickSlotExtender.dll",
-  "EntryMethod": "QuickSlotExtender.Main.Load"  
+  "AssemblyName": "QuickSlotExtender.dll"
 }

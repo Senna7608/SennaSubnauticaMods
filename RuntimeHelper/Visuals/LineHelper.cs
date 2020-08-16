@@ -34,7 +34,7 @@ namespace RuntimeHelper.Visuals
             lineMaterial.SetInt(ShaderPropertyID._SrcBlend, 5);
             lineMaterial.SetInt(ShaderPropertyID._DstBlend, 10);
 
-            LineRenderer lineRenderer = linecontainer.GetOrAddComponent<LineRenderer>();
+            LineRenderer lineRenderer = linecontainer.EnsureComponent<LineRenderer>();
 
             lineRenderer.material = lineMaterial;
             lineRenderer.useWorldSpace = useWorldSpace;
