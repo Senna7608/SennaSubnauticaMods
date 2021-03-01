@@ -39,7 +39,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fahrenheit", "Fahrenheit\Fa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RotateMoonPool", "RotateMoonPool\RotateMoonPool.csproj", "{09E321ED-57FA-42EC-A5AA-A41CFD45E4B4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModdedArmsHelper", "ModdedExoArmsAPI\ModdedArmsHelper.csproj", "{D569F78F-0516-4ECE-B36C-D3FC2294C87C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModdedArmsHelper", "ModdedArmsHelper\ModdedArmsHelper.csproj", "{D569F78F-0516-4ECE-B36C-D3FC2294C87C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APIBasedExosuitArms", "APIBasedExosuitArm\APIBasedExosuitArms.csproj", "{29F99660-60AE-422E-9DC4-29C3C02E87E7}"
 	ProjectSection(ProjectDependencies) = postProject

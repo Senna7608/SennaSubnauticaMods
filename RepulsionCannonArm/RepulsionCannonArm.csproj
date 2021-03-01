@@ -135,7 +135,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ModdedExoArmsAPI\ModdedArmsHelper.csproj">
+    <ProjectReference Include="..\ModdedArmsHelper\ModdedArmsHelper.csproj">
       <Project>{d569f78f-0516-4ece-b36c-d3fc2294c87c}</Project>
       <Name>ModdedArmsHelper</Name>
       <Private>False</Private>
