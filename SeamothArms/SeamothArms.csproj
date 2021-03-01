@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SeamothArms</RootNamespace>
     <AssemblyName>SeamothArms</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -32,10 +33,11 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\BepInEx\core\0Harmony.dll</HintPath>
+      <HintPath>C:\Program Files\Epic Games\Subnautica\BepInEx\core\0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -49,7 +51,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="QModInstaller">
-      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\BepInEx\plugins\QModManager\QModInstaller.dll</HintPath>
+      <HintPath>C:\Program Files\Epic Games\Subnautica\BepInEx\plugins\QModManager\QModInstaller.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="SMLHelper">
@@ -112,27 +114,23 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArmControls\SeamothGrapplingHook.cs" />
-    <Compile Include="ArmControls\SeamothPropulsionArmControl.cs" />
-    <Compile Include="ArmControls\SeamothTorpedoArmControl.cs" />
-    <Compile Include="ArmPrefabs\SeamothClawArmPrefabFixer.cs" />
+    <Compile Include="ArmPrefabs\SeamothClawArmFragmentPrefab.cs" />
+    <Compile Include="ArmPrefabs\SeamothDrillArmFragmentPrefab.cs" />
+    <Compile Include="InternalArmHandlers\InternalPropulsionArmHandler.cs" />
+    <Compile Include="InternalArmHandlers\InternalTorpedoArmHandler.cs" />
+    <Compile Include="ArmHandlerRequesters\SeamothClawArmModdingRequest.cs" />
+    <Compile Include="ArmHandlerRequesters\SeamothDrillArmModdingRequest.cs" />
+    <Compile Include="ArmHandlerRequesters\SeamothGrapplingArmModdingRequest.cs" />
+    <Compile Include="ArmHandlerRequesters\SeamothPropulsionArmModdingRequest.cs" />
+    <Compile Include="ArmHandlerRequesters\SeamothTorpedoArmModdingRequest.cs" />
     <Compile Include="ArmPrefabs\SeamothTorpedoArmPrefab.cs" />
-    <Compile Include="SeamothArms_Graphics.cs" />
-    <Compile Include="SeamothArm_SlotControl.cs" />
-    <Compile Include="ISeamothArm.cs" />
-    <Compile Include="Patches\DrillablePatches.cs" />
-    <Compile Include="SeamothArm_Graphics.cs" />
-    <Compile Include="SeamothArm_Public.cs" />
-    <Compile Include="SeamothDrillable.cs" />
     <Compile Include="Main.cs" />
-    <Compile Include="Patches\SeamothPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SeamothArmManager.cs" />
-    <Compile Include="ArmControls\SeamothClawArmControl.cs" />
-    <Compile Include="ArmControls\SeamothDrillArmControl.cs" />
+    <Compile Include="InternalArmHandlers\InternalClawArmHandler.cs" />
+    <Compile Include="InternalArmHandlers\InternalDrillArmHandler.cs" />
     <Compile Include="ArmPrefabs\SeamothClawArmPrefab.cs" />
     <Compile Include="ArmPrefabs\SeamothPropulsionArmPrefab.cs" />
-    <Compile Include="ArmControls\SeamothGrapplingArmControl.cs" />
+    <Compile Include="InternalArmHandlers\InternalGrapplingArmHandler.cs" />
     <Compile Include="ArmPrefabs\SeamothGrapplingArmPrefab.cs" />
     <Compile Include="ArmPrefabs\SeamothDrillArmPrefab.cs" />
   </ItemGroup>
@@ -141,7 +139,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup />
-  <Import Project="..\Common\Common.projitems" Label="Shared" />
+  <ItemGroup>
+    <ProjectReference Include="..\ModdedExoArmsAPI\ModdedArmsHelper.csproj">
+      <Project>{d569f78f-0516-4ece-b36c-d3fc2294c87c}</Project>
+      <Name>ModdedArmsHelper</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using SeamothArms.API;
+using UnityEngine;
 
 namespace SeamothArms
 {
-    public partial class SeamothArmManager
+    internal partial class SeamothArmManager
     {
         private bool leftButtonDownProcessed;
         private bool rightButtonDownProcessed;
@@ -25,7 +26,7 @@ namespace SeamothArms
                 return;
             }
             
-            if (currentSelectedArm == Arm.Left)
+            if (currentSelectedArm == SeamothArm.Left)
             {
                 leftButtonDownProcessed = true;
 
@@ -47,7 +48,7 @@ namespace SeamothArms
                     quickSlotCooldown[LeftArmSlotID] = coolDown;
                 }
             }
-            else if (currentSelectedArm == Arm.Right)
+            else if (currentSelectedArm == SeamothArm.Right)
             {
                 rightButtonDownProcessed = true;
 
@@ -86,7 +87,7 @@ namespace SeamothArms
                 return;
             }
 
-            if (currentSelectedArm == Arm.Left)
+            if (currentSelectedArm == SeamothArm.Left)
             {
                 if (!leftButtonDownProcessed)
                 {
@@ -106,7 +107,7 @@ namespace SeamothArms
                     quickSlotCooldown[LeftArmSlotID] = coolDown;
                 }
             }
-            else if (currentSelectedArm == Arm.Right)
+            else if (currentSelectedArm == SeamothArm.Right)
             {
                 if (!rightButtonDownProcessed)
                 {
@@ -139,7 +140,7 @@ namespace SeamothArms
                 return;
             }
 #endif
-            if (currentSelectedArm == Arm.Left)
+            if (currentSelectedArm == SeamothArm.Left)
             {
                 leftButtonDownProcessed = false;
                 
@@ -170,7 +171,7 @@ namespace SeamothArms
                     quickSlotCharge[LeftArmSlotID] = 0f;
                 }
             }
-            else if (currentSelectedArm == Arm.Right)
+            else if (currentSelectedArm == SeamothArm.Right)
             {
                 rightButtonDownProcessed = false;
                 

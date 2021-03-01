@@ -5,7 +5,7 @@ using Common.Helpers.SMLHelpers;
 
 namespace CyclopsLaserCannonModule
 {
-    internal class CannonPrefab : CraftableModItem
+    internal class CannonPrefab : ModPrefab_Craftable
     {
         public static TechType TechTypeID { get; private set; }
 
@@ -28,7 +28,8 @@ namespace CyclopsLaserCannonModule
                   quickSlotType: QuickSlotType.None,
                   backgroundType: CraftData.BackgroundType.Normal,
                   itemSize: new Vector2int(1, 1),                  
-                  gamerResourceFileName: null
+                  gamerResourceFileName: null,
+                  fragment: null
                   )
         {
         }
@@ -53,6 +54,11 @@ namespace CyclopsLaserCannonModule
                     new Ingredient(TechType.ComputerChip, 2)
                 })
             };
-        }        
+        }
+
+        protected override EncyData GetEncyclopediaData()
+        {
+            return null;
+        }
     }
 }

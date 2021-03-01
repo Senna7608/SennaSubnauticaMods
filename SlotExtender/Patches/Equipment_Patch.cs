@@ -6,50 +6,6 @@ using Common;
 
 namespace SlotExtender.Patches
 {
-    [HarmonyPatch(typeof(Equipment))]
-    [HarmonyPatch("GetSlotType")]
-    public class Equipment_GetSlotType_Patch
-    {
-        public static bool isPatched = false;
-
-        [HarmonyPrefix]
-        public static void Prefix(string slot, ref EquipmentType __result)
-        {
-            if (!isPatched)
-            {
-                SNLogger.Debug("SlotExtender", $"Equipment.GetSlotType() Prefix patch start.\n" +
-                $"slot = [{slot}]");
-
-                SlotHelper.ExpandSlotMapping();
-
-                isPatched = true;
-
-                SNLogger.Debug("SlotExtender", "Equipment.GetSlotType() Prefix patch end.");
-            }
-        }
-    }
-
-    /*
-    [HarmonyPatch(typeof(Equipment))]
-    [HarmonyPatch(MethodType.Constructor)]
-    [HarmonyPatch(new Type[] { typeof(GameObject), typeof(Transform) })]
-    public class Equipment_Constructor_Patch
-    {
-        public static bool isPatched = false;
-
-        [HarmonyPostfix]
-        public static void Postfix(GameObject owner, Transform tr)
-        {
-            if (!isPatched && owner.name == "Player")
-            {
-                SlotHelper.ExpandSlotMapping();
-
-                isPatched = true;
-            }
-        }
-    }
-    */
-
     [HarmonyPatch(typeof(Equipment), "AllowedToAdd")]    
     [HarmonyPatch(new Type[] { typeof(string), typeof(Pickupable), typeof(bool) })]
     internal class Equipment_AllowedToAdd_Patch

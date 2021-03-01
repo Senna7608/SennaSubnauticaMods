@@ -6,7 +6,7 @@ using Common.Helpers.SMLHelpers;
 
 namespace AncientSword
 {
-    internal class SwordPrefab : CraftableModItem
+    internal class SwordPrefab : ModPrefab_Craftable
     {
         public static TechType TechTypeID { get; private set; }
 
@@ -27,7 +27,8 @@ namespace AncientSword
                   quickSlotType: QuickSlotType.Passive,
                   backgroundType: CraftData.BackgroundType.Normal,
                   itemSize: new Vector2int(1,1),                  
-                  gamerResourceFileName: "worldentities/doodads/precursor/prison/relics/alien_relic_08"
+                  gamerResourceFileName: "worldentities/doodads/precursor/prison/relics/alien_relic_08",
+                  fragment: null
                   )
         {
         }
@@ -125,6 +126,11 @@ namespace AncientSword
             component.surfaceMissSound = Object.Instantiate(knife.surfaceMissSound, _GameObject.transform);
 
             return _GameObject;
-        }        
+        }
+
+        protected override EncyData GetEncyclopediaData()
+        {
+            return null;
+        }
     }
 }

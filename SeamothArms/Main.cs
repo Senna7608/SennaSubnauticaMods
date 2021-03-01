@@ -1,37 +1,32 @@
 ﻿using System;
-using UnityEngine;
-using HarmonyLib;
+using System.IO;
 using System.Reflection;
-using SeamothArms.ArmPrefabs;
-using SMLHelper.V2.Handlers;
+using UnityEngine;
 using QModManager.API.ModLoading;
+using SeamothArms.ArmPrefabs;
 
 namespace SeamothArms
 {
     [QModCore]
     public static class Main
     {
-        public static SeamothArms_Graphics graphics;
-
-        public static bool isGraphicsReady = false;
+        public static readonly string modFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);        
 
         [QModPatch]
         public static void Load()
         {
             try
             {
-                if (!isGraphicsReady)
-                {
-                    graphics = new SeamothArms_Graphics();
-                }
-
-                new SeamothDrillArmPrefab().Patch();
-                new SeamothClawArmPrefab().Patch();                
-                new SeamothGrapplingArmPrefab().Patch();
-                new SeamothPropulsionArmPrefab().Patch();
-                new SeamothTorpedoArmPrefab().Patch();
-
-                Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), "Subnautica.SeamothArms.mod");                
+                SeamothClawArmFragmentPrefab seamothClawArmFragment = new SeamothClawArmFragmentPrefab();
+                seamothClawArmFragment.Patch();
+                new SeamothClawArmPrefab(seamothClawArmFragment).Patch();
+                                
+                SeamothDrillArmFragmentPrefab seamothDrillArmFragment = new SeamothDrillArmFragmentPrefab();
+                seamothDrillArmFragment.Patch();
+                new SeamothDrillArmPrefab(seamothDrillArmFragment).Patch();                
+                new SeamothGrapplingArmPrefab(null).Patch();
+                new SeamothPropulsionArmPrefab(null).Patch();                
+                new SeamothTorpedoArmPrefab(null).Patch();               
             }
             catch (Exception ex)
             {

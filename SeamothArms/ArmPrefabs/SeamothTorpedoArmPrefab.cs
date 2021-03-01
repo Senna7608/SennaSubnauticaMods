@@ -1,42 +1,31 @@
 ﻿using System.Collections.Generic;
 using SMLHelper.V2.Crafting;
-using UnityEngine;
 using Common.Helpers.SMLHelpers;
+using ModdedArmsHelper.API;
+using SeamothArms.ArmHandlerRequesters;
 
 namespace SeamothArms.ArmPrefabs
 {
-    internal class SeamothTorpedoArmPrefab : CraftableModItem
+    internal class SeamothTorpedoArmPrefab : CraftableModdedArm
     {
-        public static TechType TechTypeID { get; private set; }
+        internal SeamothTorpedoArmPrefab(SpawnableArmFragment fragment)
+           : base(
+                 techTypeName: "SeamothTorpedoArmModule",
+                 friendlyName: "Seamoth torpedo arm",
+                 description: "A standard payload delivery system adapted to fire torpedoes.",
+                 armType: ArmType.SeamothArm,
+                 armTemplate: ArmTemplate.TorpedoArm,
+                 requiredForUnlock: TechType.ExosuitTorpedoArmModule,
+                 fragment: fragment
+                 )
+        {
+        }
 
-        internal SeamothTorpedoArmPrefab()
-            : base(nameID: "SeamothTorpedoArmModule",
-                  iconFilePath: null,
-                  iconTechType: TechType.None,
-                  friendlyName: "Seamoth Torpedo Arm",
-                  description: "Allows Seamoth to use Torpedo Arm.",
-                  template: TechType.ExosuitTorpedoArmModule,
-                  newTabNode: null,
-                  fabricatorTypes: new CraftTree.Type[] { CraftTree.Type.SeamothUpgrades },
-                  fabricatorTabs: new string[][] { new string[] { "SeamothModules" } },
-                  requiredAnalysis: TechType.ExosuitTorpedoArmModule,
-                  groupForPDA: TechGroup.VehicleUpgrades,
-                  categoryForPDA: TechCategory.VehicleUpgrades,
-                  equipmentType: (EquipmentType) 100,
-                  quickSlotType: QuickSlotType.Selectable,
-                  backgroundType: CraftData.BackgroundType.ExosuitArm,
-                  itemSize: new Vector2int(1,1),                  
-                  gamerResourceFileName: null
-                  )
+        protected override void RegisterArm()
         {
+            ArmServices.main.RegisterArm(this, new SeamothTorpedoArmModdingRequest());
         }
-               
-        public override void Patch()
-        {
-            base.Patch();
-            TechTypeID = TechType;
-        }
-        
+
         protected override TechData GetRecipe()
         {
             return new TechData()
@@ -44,22 +33,33 @@ namespace SeamothArms.ArmPrefabs
                 craftAmount = 1,
                 Ingredients = new List<Ingredient>(new Ingredient[3]
                 {
-                    new Ingredient(TechType.ExosuitTorpedoArmModule, 1),                                        
-                    new Ingredient(TechType.AdvancedWiringKit, 1),
-                    new Ingredient(TechType.ComputerChip, 1)
+                    new Ingredient(TechType.Titanium, 5),
+                    new Ingredient(TechType.Lithium, 1),
+                    new Ingredient(TechType.Aerogel, 1)
                 })
             };
-        }
-        
-        
-        public override GameObject GetGameObject()
+        }        
+
+        protected override void ModifyGameObject()
         {
-            base.GetGameObject();
+            SeamothStorageContainer container = PrefabClone.GetComponent<SeamothStorageContainer>();
 
-            _GameObject.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
-
-            return _GameObject;
+            container.width = 4;
+            container.height = 4;
         }
-        
+
+        protected override Atlas.Sprite GetItemSprite()
+        {
+            return SpriteManager.Get(TechType.ExosuitTorpedoArmModule);
+        }
+
+        protected override EncyData GetEncyclopediaData()
+        {
+            return null;
+        }        
+
+        protected override void SetCustomLanguageText()
+        {
+        }
     }
 }

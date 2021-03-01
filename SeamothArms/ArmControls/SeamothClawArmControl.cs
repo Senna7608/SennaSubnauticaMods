@@ -1,10 +1,13 @@
-﻿using Common;
+﻿using SeamothArms.API;
+using SeamothArms.API.ArmControl;
 using UnityEngine;
 
 namespace SeamothArms.ArmControls
 {
-    public class SeamothClawArmControl : MonoBehaviour, ISeamothArm
-    {
+    internal class SeamothClawArmControl : ClawArmControl, ISeamothArmControl
+    {       
+
+        /*
         public SeaMoth ThisSeamoth
         {
             get
@@ -49,18 +52,18 @@ namespace SeamothArms.ArmControls
                     pickupSound = asset;
             }
 
-
             front = Main.graphics.objectHelper.FindDeepChild(gameObject, "wrist").transform;
         }        
+        */
 
-        GameObject ISeamothArm.GetGameObject()
+        GameObject ISeamothArmControl.GetGameObject()
         {
             return gameObject;
         }
         
-        void ISeamothArm.SetSide(Arm arm)
+        void ISeamothArmControl.SetSide(SeamothArm arm)
         {
-            if (arm == Arm.Right)
+            if (arm == SeamothArm.Right)
             {
                 transform.localScale = new Vector3(-0.8f, 0.8f, 0.8f);                
             }
@@ -70,32 +73,32 @@ namespace SeamothArms.ArmControls
             }            
         }
         
-        bool ISeamothArm.OnUseDown(out float cooldownDuration)
+        bool ISeamothArmControl.OnUseDown(out float cooldownDuration)
         {
             return TryUse(out cooldownDuration);
         }
         
-        bool ISeamothArm.OnUseHeld(out float cooldownDuration)
+        bool ISeamothArmControl.OnUseHeld(out float cooldownDuration)
         {
             return TryUse(out cooldownDuration);
         }
         
-        bool ISeamothArm.OnUseUp(out float cooldownDuration)
+        bool ISeamothArmControl.OnUseUp(out float cooldownDuration)
         {
             cooldownDuration = 0f;
             return true;
         }
         
-        bool ISeamothArm.OnAltDown()
+        bool ISeamothArmControl.OnAltDown()
         {
             return false;
         }
 
-        void ISeamothArm.Update(ref Quaternion aimDirection)
+        void ISeamothArmControl.Update(ref Quaternion aimDirection)
         {
         }
         
-        void ISeamothArm.Reset()
+        void ISeamothArmControl.Reset()
         {
         }
         
@@ -149,8 +152,6 @@ namespace SeamothArms.ArmControls
             cooldownDuration = 0f;
             return false;
         }
-
-
 
         public void OnHit()
         {            
@@ -216,22 +217,22 @@ namespace SeamothArms.ArmControls
             }
         }
                 
-        bool ISeamothArm.HasClaw()
+        bool ISeamothArmControl.HasClaw()
         {
             return true;
         }
 
-        bool ISeamothArm.HasDrill()
+        bool ISeamothArmControl.HasDrill()
         {
             return false;
         }
 
-        float ISeamothArm.GetEnergyCost()
+        float ISeamothArmControl.GetEnergyCost()
         {
             return energyCost;
         }
 
-        void ISeamothArm.SetRotation(Arm arm, bool isDocked)
+        void ISeamothArmControl.SetRotation(SeamothArm arm, bool isDocked)
         {
             if (ThisSeamoth == null)
             {
@@ -244,7 +245,7 @@ namespace SeamothArms.ArmControls
                 
                 if (subRoot.isCyclops)
                 {
-                    if (arm == Arm.Right)
+                    if (arm == SeamothArm.Right)
                     {
                         transform.localRotation = Quaternion.Euler(37, 327, 300);
                     }
@@ -255,7 +256,7 @@ namespace SeamothArms.ArmControls
                 }
                 else
                 {
-                    if (arm == Arm.Right)
+                    if (arm == SeamothArm.Right)
                     {
                         transform.localRotation = Quaternion.Euler(20, 352, 20);
                     }
@@ -267,7 +268,7 @@ namespace SeamothArms.ArmControls
             }
             else                
             {
-                if (arm == Arm.Right)
+                if (arm == SeamothArm.Right)
                 {
                     transform.localRotation = Quaternion.Euler(355, 343, 19);
                 }

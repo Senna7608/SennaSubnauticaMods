@@ -21,7 +21,7 @@ namespace SlotExtender.Patches
         public static void Postfix(Exosuit __instance)
         {            
             __instance.gameObject.EnsureComponent<SlotExtender>();
-            SNLogger.Debug("SlotExtender", $"MonoBehaviour component added in Exosuit.Awake -> Postfix Patch. ID: {__instance.GetInstanceID()}");           
+            SNLogger.Debug($"Component added in Exosuit.Awake -> Postfix Patch. ID: {__instance.GetInstanceID()}");           
         }
     }
 }

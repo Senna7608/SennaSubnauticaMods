@@ -31,7 +31,7 @@ namespace Common.Helpers
         public static Color Orange => new Color32(byte.MaxValue, 146, 71, byte.MaxValue);
         public static Color Lime => new Color(0.749f, 1f, 0f, 1f);
         public static Color Amethyst => new Color(0.6f, 0.4f, 0.8f, 1f);
-        public static Color LightBlue = new Color(0.338f, 0.475f, 0.978f, 1f);
+        public static Color LightBlue => new Color(0.338f, 0.475f, 0.978f, 1f);
 
         public static Color[] Colors => new Color[] { Red, Green, Blue, Yellow, White, Magenta, Cyan, Orange, Lime, Amethyst, LightBlue };
 

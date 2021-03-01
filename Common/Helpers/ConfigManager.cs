@@ -27,9 +27,7 @@ namespace Common.Helpers
             if (!CheckConfig())
             {
                CreateDefault();
-            }
-
-            
+            }            
         }
 
         private bool CheckConfig()

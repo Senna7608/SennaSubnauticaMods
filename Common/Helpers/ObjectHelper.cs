@@ -10,15 +10,7 @@ namespace Common.Helpers
         {
             return Object.Instantiate(uEobject);
         }
-
-        public T GetComponentClone<T>(T uEcomponent, Transform newParent) where T : Component
-        {
-            T clone = Object.Instantiate(uEcomponent);
-            clone.transform.SetParent(newParent, false);
-            Utils.ZeroTransform(clone.transform);
-            return clone;
-        }
-
+                
         public GameObject FindDeepChild(Transform parent, string childName)
         {
             Queue<Transform> queue = new Queue<Transform>();
@@ -63,7 +55,7 @@ namespace Common.Helpers
                 }
             }
             return null;
-        }
+        }        
 
         public GameObject GetRootGameObject(string sceneName, string startsWith)
         {
@@ -92,86 +84,86 @@ namespace Common.Helpers
             return null;
         }
 
-        public GameObject GetPrefabClone(GameObject prefab)
+        public GameObject GetGameObjectClone(GameObject go)
         {
-            bool isActive = prefab.activeSelf;
+            bool isActive = go.activeSelf;
 
             if (isActive)
             {
-                prefab.SetActive(false);
+                go.SetActive(false);
             }
 
-            GameObject clone = Object.Instantiate(prefab);
+            GameObject clone = Object.Instantiate(go);
             Utils.ZeroTransform(clone.transform);
             return clone;
         }
 
-        public GameObject GetPrefabClone(GameObject prefab, Transform newParent)
+        public GameObject GetGameObjectClone(GameObject go, Transform newParent)
         {
-            bool isActive = prefab.activeSelf;
+            bool isActive = go.activeSelf;
 
             if (isActive)
             {
-                prefab.SetActive(false);
+                go.SetActive(false);
             }
 
-            GameObject clone = Object.Instantiate(prefab);
+            GameObject clone = Object.Instantiate(go);
             clone.transform.SetParent(newParent, false);
             Utils.ZeroTransform(clone.transform);
-            prefab.SetActive(isActive);
+            go.SetActive(isActive);
             return clone;
         }
 
-        public GameObject GetPrefabClone(GameObject prefab, Transform newParent, bool setActive)
+        public GameObject GetGameObjectClone(GameObject go, Transform newParent, bool setActive)
         {
-            bool isActive = prefab.activeSelf;
+            bool isActive = go.activeSelf;
 
             if (isActive)
             {
-                prefab.SetActive(false);
+                go.SetActive(false);
             }
 
-            GameObject clone = Object.Instantiate(prefab);
+            GameObject clone = Object.Instantiate(go);
             clone.SetActive(setActive);
             clone.transform.SetParent(newParent, false);
             Utils.ZeroTransform(clone.transform);
-            prefab.SetActive(isActive);
+            go.SetActive(isActive);
             return clone;
         }
 
-        public GameObject GetPrefabClone(GameObject prefab, Transform newParent, bool setActive, string newName)
+        public GameObject GetGameObjectClone(GameObject go, Transform newParent, bool setActive, string newName)
         {
-            bool isActive = prefab.activeSelf;
+            bool isActive = go.activeSelf;
 
             if (isActive)
             {
-                prefab.SetActive(false);
+                go.SetActive(false);
             }
 
-            GameObject clone = Object.Instantiate(prefab);
-            clone.SetActive(setActive);
-            clone.transform.SetParent(newParent, false);
-            clone.name = newName;
-            Utils.ZeroTransform(clone.transform);
-            prefab.SetActive(isActive);
-            return clone;
-        }
-
-        public void GetPrefabClone(ref GameObject prefab, Transform newParent, bool setActive, string newName, out GameObject clone)
-        {
-            bool isActive = prefab.activeSelf;
-
-            if (isActive)
-            {
-                prefab.SetActive(false);
-            }
-
-            clone = Object.Instantiate(prefab);
+            GameObject clone = Object.Instantiate(go);
             clone.SetActive(setActive);
             clone.transform.SetParent(newParent, false);
             clone.name = newName;
             Utils.ZeroTransform(clone.transform);
-            prefab.SetActive(isActive);
+            go.SetActive(isActive);
+            return clone;
+        }
+
+        public void GetGameObjectClone(ref GameObject go, Transform newParent, bool setActive, string newName, out GameObject clone)
+        {
+            bool isActive = go.activeSelf;
+
+            if (isActive)
+            {
+                go.SetActive(false);
+            }
+
+            clone = Object.Instantiate(go);
+            clone.SetActive(setActive);
+            clone.transform.SetParent(newParent, false);
+            clone.name = newName;
+            Utils.ZeroTransform(clone.transform);
+            go.SetActive(isActive);
         }
 
         public GameObject GetModelCloneFromPrefab(TechType techType, string model, Transform newParent, bool setActive, string newName)
@@ -206,6 +198,15 @@ namespace Common.Helpers
             GameObject newObject = new GameObject(name);
             newObject.transform.SetParent(parent, false);
             Utils.ZeroTransform(newObject.transform);
+            return newObject;
+        }
+
+        public GameObject CreateGameObject(string name, Transform parent, bool active)
+        {
+            GameObject newObject = new GameObject(name);
+            newObject.transform.SetParent(parent, false);
+            Utils.ZeroTransform(newObject.transform);
+            newObject.SetActive(active);
             return newObject;
         }
 

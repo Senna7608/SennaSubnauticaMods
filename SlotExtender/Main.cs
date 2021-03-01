@@ -24,29 +24,28 @@ namespace SlotExtender
         public static bool isKeyBindigsUpdate = false;
 
         public static bool uGUI_PrefixComplete = false;
-        public static bool uGUI_PostfixComplete = false;
-        public static bool EquipmentPatched = false;
-        public static bool SeatruckUpgradesPatched = false;
+        public static bool uGUI_PostfixComplete = false;        
 
         [QModPatch]
         public static void Load()
         {
-            SNLogger.Debug("SlotExtender", "Method call: Main.Load()");
+            SNLogger.Debug("Method call: Main.Load()");
 
             try
             {
                 SEConfig.Config_Load();
                 SlotHelper.InitSlotIDs();
-                
+                SlotHelper.ExpandSlotMapping();
+
                 hInstance = new Harmony("Subnautica.SlotExtender.mod");
 
-                SNLogger.Debug("SlotExtender", $"Main.Load(): Harmony Instance created, Name = [{hInstance.Id}]");
+                SNLogger.Debug($"Main.Load(): Harmony Instance created, Name = [{hInstance.Id}]");
 
-                hInstance.PatchAll(Assembly.GetExecutingAssembly());
+                hInstance.PatchAll(Assembly.GetExecutingAssembly());                
 
                 SceneManager.sceneLoaded += new UnityAction<Scene, LoadSceneMode>(OnSceneLoaded);
                 
-                SNLogger.Debug("SlotExtender", "Main.Load(): Added OnSceneLoaded method to SceneManager.sceneLoaded event.");
+                SNLogger.Debug("Main.Load(): Added OnSceneLoaded method to SceneManager.sceneLoaded event.");
 
                 //add console commad for configuration window
                 commandRoot = new CommandRoot("SEConfigGO");                
@@ -62,22 +61,20 @@ namespace SlotExtender
             // check MoreQuickSlots namespace is exists
             if (ReflectionHelper.IsNamespaceExists("MoreQuickSlots"))
             {
-                SNLogger.Log("SlotExtender", " -> MoreQuickSlots namespace is exist! Trying to install a Cross-MOD patch...");
+                SNLogger.Log("MoreQuickSlots namespace is exist! Trying to install a Cross-MOD patch...");
 
                 // if yes construct a Harmony patch
                 if (MQS_Patches.InitPatch(hInstance))
-                    SNLogger.Log("SlotExtender", " -> MoreQuickSlots Cross-MOD patch installed!");
+                    SNLogger.Log("MoreQuickSlots Cross-MOD patch installed!");
                 else
-                    SNLogger.Error("SlotExtender", " -> MoreQuickSlots Cross-MOD patch install failed!");
+                    SNLogger.Error("MoreQuickSlots Cross-MOD patch install failed!");
             }
         }
 
         private static void OnQuitEvent()
         {
             uGUI_PrefixComplete = false;
-            uGUI_PostfixComplete = false;
-            EquipmentPatched = false;
-            SeatruckUpgradesPatched = false;
+            uGUI_PostfixComplete = false;            
         }
 
         private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -104,7 +101,7 @@ namespace SlotExtender
 
         internal static void GameInput_OnBindingsChanged()
         {
-            SNLogger.Debug("SlotExtender", "Method call: Main.GameInput_OnBindingsChanged()");
+            SNLogger.Debug("Method call: Main.GameInput_OnBindingsChanged()");
 
             // SlotExtender Update() method now disabled until all keybinding updates are complete
             isKeyBindigsUpdate = true;
@@ -142,7 +139,7 @@ namespace SlotExtender
             }
 
             return ListenerInstance;
-        }
+        }        
     }
 }
 

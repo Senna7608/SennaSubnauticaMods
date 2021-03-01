@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 using Common;
+using SeamothArms.API;
 
 namespace SeamothArms.ArmControls
 {
-    public class SeamothDrillArmControl : MonoBehaviour, ISeamothArm
+    internal class SeamothDrillArmControl : MonoBehaviour, ISeamothArmControl
     {
         public SeaMoth ThisSeamoth
         {
@@ -15,7 +16,7 @@ namespace SeamothArms.ArmControls
 
         public Animator animator;
         
-        public Transform front;        
+        //public Transform front;        
         public Transform fxSpawnPoint;
         public VFXController fxControl;
         public VFXEventTypes vfxEventType;
@@ -56,15 +57,15 @@ namespace SeamothArms.ArmControls
             }
         }         
 
-        GameObject ISeamothArm.GetGameObject()
+        GameObject ISeamothArmControl.GetGameObject()
         {                       
             return gameObject;
         }
 
 
-        public void SetSide(Arm arm)
+        public void SetSide(SeamothArm arm)
         {
-            if (arm == Arm.Right)
+            if (arm == SeamothArm.Right)
             {
                 transform.localScale = new Vector3(-0.80f, 0.80f, 0.80f);                
             }
@@ -75,7 +76,7 @@ namespace SeamothArms.ArmControls
         }
 
 
-        bool ISeamothArm.OnUseDown(out float cooldownDuration)
+        bool ISeamothArmControl.OnUseDown(out float cooldownDuration)
         {
             animator.SetBool("use_tool", true);
             drilling = true;
@@ -86,14 +87,14 @@ namespace SeamothArms.ArmControls
         }
             
 
-        bool ISeamothArm.OnUseHeld(out float cooldownDuration)
+        bool ISeamothArmControl.OnUseHeld(out float cooldownDuration)
         {
             cooldownDuration = 0f;
             return false;
         }            
 
 
-        bool ISeamothArm.OnUseUp(out float cooldownDuration)
+        bool ISeamothArmControl.OnUseUp(out float cooldownDuration)
         {
             animator.SetBool("use_tool", false);
             drilling = false;
@@ -103,14 +104,14 @@ namespace SeamothArms.ArmControls
         }
             
 
-        bool ISeamothArm.OnAltDown()
+        bool ISeamothArmControl.OnAltDown()
         {
             return false;
         }
 
         private bool isResetted = false;
                        
-        void ISeamothArm.Update(ref Quaternion aimDirection)
+        void ISeamothArmControl.Update(ref Quaternion aimDirection)
         {
             if (ThisSeamoth.docked && !isResetted)
             {
@@ -133,7 +134,7 @@ namespace SeamothArms.ArmControls
             }            
         }
         
-        void ISeamothArm.Reset()
+        void ISeamothArmControl.Reset()
         {
             animator.SetBool("use_tool", false);
             drilling = false;
@@ -239,22 +240,22 @@ namespace SeamothArms.ArmControls
             loopHit.Stop();
         }
         
-        bool ISeamothArm.HasClaw()
+        bool ISeamothArmControl.HasClaw()
         {
             return false;
         }
 
-        bool ISeamothArm.HasDrill()
+        bool ISeamothArmControl.HasDrill()
         {
             return true;
         }
 
-        float ISeamothArm.GetEnergyCost()
+        float ISeamothArmControl.GetEnergyCost()
         {
             return energyCost;
         }
 
-        void ISeamothArm.SetRotation(Arm arm, bool isDocked)
+        void ISeamothArmControl.SetRotation(SeamothArm arm, bool isDocked)
         {
             if (ThisSeamoth == null)
             {
@@ -267,7 +268,7 @@ namespace SeamothArms.ArmControls
 
                 if (subRoot.isCyclops)
                 {
-                    if (arm == Arm.Right)
+                    if (arm == SeamothArm.Right)
                     {
                         
                         transform.localRotation = Quaternion.Euler(32, 336, 310);

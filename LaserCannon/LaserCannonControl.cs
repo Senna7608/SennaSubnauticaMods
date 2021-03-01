@@ -71,7 +71,7 @@ namespace LaserCannon
 
             GameObject powerTransmitterPrefab = Instantiate(Resources.Load<GameObject>("Submarine/Build/PowerTransmitter"));
 
-            GameObject laserBeam = objectHelper.GetPrefabClone(powerTransmitterPrefab.GetComponent<PowerFX>().vfxPrefab, null, false); 
+            GameObject laserBeam = objectHelper.GetGameObjectClone(powerTransmitterPrefab.GetComponent<PowerFX>().vfxPrefab, null, false); 
 
             LineRenderer lineRenderer = laserBeam.GetComponent<LineRenderer>();
             lineRenderer.startWidth = 0.2f;
@@ -80,13 +80,13 @@ namespace LaserCannon
             lineRenderer.receiveShadows = false;
             lineRenderer.loop = false;           
 
-            laserRight = objectHelper.GetPrefabClone(laserBeam, thisSeamoth.torpedoTubeRight, false);
+            laserRight = objectHelper.GetGameObjectClone(laserBeam, thisSeamoth.torpedoTubeRight, false);
             laserRight.name = "laserRight";
             laserRight.transform.localPosition = Vector3.zero;
             laserRight.transform.localRotation = Quaternion.identity;
             rightBeam = laserRight.GetComponent<LineRenderer>();                      
 
-            laserLeft = objectHelper.GetPrefabClone(laserBeam, thisSeamoth.torpedoTubeLeft, false);
+            laserLeft = objectHelper.GetGameObjectClone(laserBeam, thisSeamoth.torpedoTubeLeft, false);
             laserLeft.name = "laserLeft";
             laserLeft.transform.localPosition = Vector3.zero;
             laserLeft.transform.localRotation = Quaternion.identity;

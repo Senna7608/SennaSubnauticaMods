@@ -9,7 +9,7 @@ namespace SlotExtender.Configuration
 
         public void Awake()
         {
-            SNLogger.Log("SlotExtender", "Information: Enter 'seconfig' command in main menu for configuration window.");
+            SNLogger.Log("Information: Enter 'seconfig' command in main menu for configuration window.");
         }
 
         public override void RegisterCommand()

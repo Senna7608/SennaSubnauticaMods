@@ -75,7 +75,7 @@ namespace SlotExtender.Configuration
 
         internal static void SLOTKEYBINDINGS_Update()
         {
-            SNLogger.Debug("SlotExtender", "Method call: SEConfig.Update_SLOTKEYBINDINGS()");
+            SNLogger.Debug("Method call: SEConfig.Update_SLOTKEYBINDINGS()");
 
             SLOTKEYBINDINGS.Clear();
             SLOTKEYSLIST.Clear();
@@ -103,7 +103,7 @@ namespace SlotExtender.Configuration
 
         internal static void Config_Load()
         {
-            SNLogger.Debug("SlotExtender", "Method call: SEConfig.Config_Load()");
+            SNLogger.Debug("Method call: SEConfig.Config_Load()");
 
             PROGRAM_VERSION = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
 
@@ -142,19 +142,19 @@ namespace SlotExtender.Configuration
 
                 isSeamothArmsExists = ReflectionHelper.IsNamespaceExists("SeamothArms");
 
-                SNLogger.Log("SlotExtender", "Configuration loaded.");
+                SNLogger.Log("Configuration loaded.");
             }
             catch
             {
-                SNLogger.Error("SlotExtender", "An error occurred while loading the configuration file!");
+                SNLogger.Error("An error occurred while loading the configuration file!");
             }
         }
 
         internal static void Config_CreateDefault()
         {
-            SNLogger.Debug("SlotExtender", "Method call: SEConfig.Config_CreateDefault()");
+            SNLogger.Debug("Method call: SEConfig.Config_CreateDefault()");
 
-            SNLogger.Warn("SlotExtender", "Configuration file is missing or wrong version. Trying to create a new one.");
+            SNLogger.Warn("Configuration file is missing or wrong version. Trying to create a new one.");
 
             try
             {
@@ -166,17 +166,17 @@ namespace SlotExtender.Configuration
                 ParserHelper.AddInfoText(FILENAME, "SlotLayout possible values", "Grid, Circle");
                 
 
-                SNLogger.Log("SlotExtender", "The new configuration file was successfully created.");
+                SNLogger.Log("The new configuration file was successfully created.");
             }
             catch
             {
-                SNLogger.Error("SlotExtender", "An error occured while creating the new configuration file!");
+                SNLogger.Error("An error occured while creating the new configuration file!");
             }
         }
 
         internal static void Config_Init()
         {
-            SNLogger.Debug("SlotExtender", "Method call: SEConfig.InitConfig()");
+            SNLogger.Debug("Method call: SEConfig.InitConfig()");
 
             SLOTKEYBINDINGS_Update();
 
@@ -184,12 +184,12 @@ namespace SlotExtender.Configuration
 
             SLOTKEYBINDINGS_SyncToAll();
 
-            SNLogger.Log("SlotExtender", "Configuration initialized.");
+            SNLogger.Log("Configuration initialized.");
         }
 
         internal static void Config_Write()
         {
-            SNLogger.Debug("SlotExtender", "Method call: SEConfig.WriteConfig()");
+            SNLogger.Debug("Method call: SEConfig.WriteConfig()");
 
             ParserHelper.SetAllKeyValuesInSection(FILENAME, "Hotkeys", Hotkeys_Config);
             ParserHelper.SetKeyValue(FILENAME, "Settings", SECTION_SETTINGS[0], MAXSLOTS.ToString());
@@ -197,12 +197,12 @@ namespace SlotExtender.Configuration
             ParserHelper.SetKeyValue(FILENAME, "Settings", SECTION_SETTINGS[2], STORAGE_SLOTS_OFFSET.ToString());
             ParserHelper.SetKeyValue(FILENAME, "Settings", SECTION_SETTINGS[3], SLOT_LAYOUT.ToString());
 
-            SNLogger.Log("SlotExtender", "Configuration saved.");
+            SNLogger.Log("Configuration saved.");
         }
 
         internal static void KEYBINDINGS_ToConfig()
         {
-            SNLogger.Debug("SlotExtender", "Method call: SEConfig.SyncConfig()");
+            SNLogger.Debug("Method call: SEConfig.SyncConfig()");
 
             foreach (string key in SECTION_HOTKEYS)
             {
@@ -214,11 +214,11 @@ namespace SlotExtender.Configuration
 
         internal static void SLOTKEYBINDINGS_SyncToAll()
         {
-            SNLogger.Debug("SlotExtender", "Method call: SEConfig.SyncSlotKeyBindings()");            
+            SNLogger.Debug("Method call: SEConfig.SyncSlotKeyBindings()");            
 
             foreach (KeyValuePair<SlotConfigID, string> kvp in SLOTKEYBINDINGS)
             {
-                SNLogger.Debug("SlotExtender", $"key: {kvp.Key.ToString()}, Value: {kvp.Value}");
+                SNLogger.Debug($"key: {kvp.Key.ToString()}, Value: {kvp.Value}");
 
                 string key = kvp.Key.ToString();
                 
@@ -234,7 +234,7 @@ namespace SlotExtender.Configuration
 
         internal static void KEYBINDINGS_Set()
         {
-            SNLogger.Debug("SlotExtender", "Method call: SEConfig.SetKeyBindings()");
+            SNLogger.Debug("Method call: SEConfig.SetKeyBindings()");
 
             KEYBINDINGS = new Dictionary<string, KeyCode>();
 
@@ -248,7 +248,7 @@ namespace SlotExtender.Configuration
                 }
                 catch (ArgumentException)
                 {
-                    SNLogger.Warn("SlotExtender", $"[{kvp.Value}] is not a valid KeyCode! Setting default value!");
+                    SNLogger.Warn($"[{kvp.Value}] is not a valid KeyCode! Setting default value!");
 
                     for (int i = 0; i < DEFAULT_CONFIG.Count; i++)
                     {
@@ -269,11 +269,11 @@ namespace SlotExtender.Configuration
 
         private static bool Config_Check()
         {
-            SNLogger.Debug("SlotExtender", "Method call: SEConfig.Config_Check()");
+            SNLogger.Debug("Method call: SEConfig.Config_Check()");
 
             if (!File.Exists(FILENAME))
             {
-                SNLogger.Error("SlotExtender", "Configuration file open error!");
+                SNLogger.Error("Configuration file open error!");
                 return false;
             }
 
@@ -281,19 +281,19 @@ namespace SlotExtender.Configuration
 
             if (!CONFIG_VERSION.Equals(PROGRAM_VERSION))
             {
-                SNLogger.Error("SlotExtender", "Configuration file version error!");
+                SNLogger.Error("Configuration file version error!");
                 return false;
             }
 
             if (!ParserHelper.CheckSectionKeys(FILENAME, "Hotkeys", SECTION_HOTKEYS))
             {
-                SNLogger.Error("SlotExtender", "Configuration file [Hotkeys] section error!");
+                SNLogger.Error("Configuration file [Hotkeys] section error!");
                 return false;
             }
 
             if (!ParserHelper.CheckSectionKeys(FILENAME, "Settings", SECTION_SETTINGS))
             {
-                SNLogger.Error("SlotExtender", "Configuration file [Settings] section error!");
+                SNLogger.Error("Configuration file [Settings] section error!");
                 return false;
             }
 

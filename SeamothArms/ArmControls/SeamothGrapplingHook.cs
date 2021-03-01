@@ -2,7 +2,7 @@
 
 namespace SeamothArms.ArmControls
 {
-    public class SeamothGrapplingHook : MonoBehaviour
+    internal class SeamothGrapplingHook : MonoBehaviour
     {
         public Rigidbody rb;
         public Collider collision;

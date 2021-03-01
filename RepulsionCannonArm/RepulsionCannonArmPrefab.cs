@@ -2,43 +2,45 @@
 using SMLHelper.V2.Crafting;
 using UnityEngine;
 using Common.Helpers.SMLHelpers;
-using Common.Helpers;
-using Common;
+using ModdedArmsHelper.API;
+using SMLHelper.V2.Utility;
 
 namespace RepulsionCannonArm
 {
-    internal class RepulsionCannonArmPrefab : CraftableModItem
+    internal class RepulsionCannonArmPrefab : CraftableModdedArm
     {
-        public static TechType TechTypeID { get; private set; }
-
         internal RepulsionCannonArmPrefab()
-            : base(nameID: "ExosuitRepulsionCannonArmModule",
-                  iconFilePath: $"{Main.modFolder}/Assets/RepulsionCannonArm.png",
-                  iconTechType: TechType.None,
+            : base(
+                  techTypeName: "ExosuitRepulsionCannonArm",                  
                   friendlyName: "P.R.A.W.N Repulsion Cannon Arm",
                   description: "Allows P.R.A.W.N suit to use Repulsion Cannon Arm.",
-                  template: TechType.ExosuitPropulsionArmModule,
-                  newTabNode: null,
-                  fabricatorTypes: new CraftTree.Type[] { CraftTree.Type.SeamothUpgrades },
-                  fabricatorTabs: new string[][] { new string[] { "ExosuitModules" } },
-                  requiredAnalysis: TechType.ExosuitPropulsionArmModule,
-                  groupForPDA: TechGroup.VehicleUpgrades,
-                  categoryForPDA: TechCategory.VehicleUpgrades,
-                  equipmentType: EquipmentType.ExosuitArm,
-                  quickSlotType: QuickSlotType.Selectable,
-                  backgroundType: CraftData.BackgroundType.ExosuitArm,                 
-                  itemSize: new Vector2int(1,1),                  
-                  gamerResourceFileName: null
+                  armType: ArmType.ExosuitArm,
+                  armTemplate: ArmTemplate.PropulsionArm,
+                  requiredForUnlock: TechType.ExosuitPropulsionArmModule,
+                  fragment: null                  
                   )
         {
         }
-               
-        public override void Patch()
+
+        protected override void RegisterArm()
         {
-            base.Patch();
-            TechTypeID = TechType;
+            ArmServices.main.RegisterArm(this, new RepulsionCannonArmModdingRequest());
         }
-        
+
+        protected override EncyData GetEncyclopediaData()
+        {
+            return null;
+        }
+
+        protected override void SetCustomLanguageText()
+        {
+        }
+
+        protected override Atlas.Sprite GetItemSprite()
+        {
+            return ImageUtils.LoadSpriteFromFile($"{Main.modFolder}/Assets/RepulsionCannonArm.png");
+        }
+
         protected override TechData GetRecipe()
         {
             return new TechData()
@@ -52,27 +54,13 @@ namespace RepulsionCannonArm
                 })
             };
         }
-        
-        
-        public override GameObject GetGameObject()
-        {
-            base.GetGameObject();
 
-            try
-            {
-                GameObject model = _GameObject.transform.Find("model/exosuit_rig_armLeft:exosuit_propulsion_geo").gameObject;
 
-                model.name = "exosuit_rig_armLeft:exosuit_repulsion_geo";
+        protected override void ModifyGameObject()
+        {            
+            GameObject model = PrefabClone.transform.Find("model/exosuit_rig_armLeft:exosuit_propulsion_geo").gameObject;                
 
-                GraphicsHelper.ChangeObjectTexture(model, 2, illumTex: Main.objectHelper.GetObjectClone(Main.illumTex));                
-            }
-            catch
-            {
-                SNLogger.Error("RepulsionCannonArm", "child [model] not found in game object!");
-            }           
-
-            return _GameObject;
-        }
-        
+            Common.Helpers.GraphicsHelper.ChangeObjectTexture(model, 2, illumTex: Main.illumTex);            
+        }        
     }
 }

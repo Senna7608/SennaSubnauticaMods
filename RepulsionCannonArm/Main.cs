@@ -2,9 +2,7 @@
 using System.IO;
 using System.Reflection;
 using UnityEngine;
-using HarmonyLib;
 using SMLHelper.V2.Utility;
-using Common.Helpers;
 using QModManager.API.ModLoading;
 
 namespace RepulsionCannonArm
@@ -12,9 +10,7 @@ namespace RepulsionCannonArm
     [QModCore]
     public static class Main
     {
-        public static readonly string modFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-        public static ObjectHelper objectHelper = new ObjectHelper();        
+        public static readonly string modFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);                
 
         public static Texture2D illumTex;
 
@@ -23,11 +19,9 @@ namespace RepulsionCannonArm
         {
             try
             {
-                new RepulsionCannonArmPrefab().Patch();
-                
                 illumTex = ImageUtils.LoadTextureFromFile($"{modFolder}/Assets/Exosuit_Arm_Repulsion_Cannon_illum.png");
 
-                Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), "Subnautica.ExosuitRepulsionCannonArm.mod");                
+                new RepulsionCannonArmPrefab().Patch();                                             
             }
             catch (Exception ex)
             {
@@ -35,5 +29,4 @@ namespace RepulsionCannonArm
             }
         }          
     }    
-    
 }

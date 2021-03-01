@@ -1,42 +1,33 @@
 ﻿using System.Collections.Generic;
 using SMLHelper.V2.Crafting;
-using UnityEngine;
 using Common.Helpers.SMLHelpers;
+using ModdedArmsHelper.API;
+using SeamothArms.ArmHandlerRequesters;
 
 namespace SeamothArms.ArmPrefabs
 {
-    internal class SeamothDrillArmPrefab : CraftableModItem
+    internal class SeamothDrillArmPrefab : CraftableModdedArm
     {
         public static TechType TechTypeID { get; private set; }
 
-        internal SeamothDrillArmPrefab()
-            : base(nameID: "SeamothDrillArmModule",
-                  iconFilePath: null,
-                  iconTechType: TechType.None,
-                  friendlyName: "Seamoth Drill Arm",
-                  description: "Allows Seamoth to use Drill Arm.",
-                  template: TechType.ExosuitDrillArmModule,
-                  newTabNode: null,
-                  fabricatorTypes: new CraftTree.Type[] { CraftTree.Type.SeamothUpgrades },
-                  fabricatorTabs: new string[][] { new string[] { "SeamothModules" } },
-                  requiredAnalysis: TechType.ExosuitDrillArmModule,
-                  groupForPDA: TechGroup.VehicleUpgrades,
-                  categoryForPDA: TechCategory.VehicleUpgrades,
-                  equipmentType: (EquipmentType) 100,
-                  quickSlotType: QuickSlotType.Selectable,
-                  backgroundType: CraftData.BackgroundType.ExosuitArm,
-                  itemSize: new Vector2int(1,1),                  
-                  gamerResourceFileName: null
-                  )
+        internal SeamothDrillArmPrefab(SpawnableArmFragment fragment)
+           : base(
+                 techTypeName: "SeamothDrillArmModule",
+                 friendlyName: "Seamoth drill arm",
+                 description: "Enables the mining of large resource deposits.",
+                 armType: ArmType.SeamothArm,
+                 armTemplate: ArmTemplate.DrillArm,
+                 requiredForUnlock: TechType.None,
+                 fragment: fragment
+                 )
         {
         }
-               
-        public override void Patch()
+
+        protected override void RegisterArm()
         {
-            base.Patch();
-            TechTypeID = TechType;
+            ArmServices.main.RegisterArm(this, new SeamothDrillArmModdingRequest());
         }
-        
+
         protected override TechData GetRecipe()
         {
             return new TechData()
@@ -44,22 +35,29 @@ namespace SeamothArms.ArmPrefabs
                 craftAmount = 1,
                 Ingredients = new List<Ingredient>(new Ingredient[3]
                 {
-                    new Ingredient(TechType.ExosuitDrillArmModule, 1),                                        
-                    new Ingredient(TechType.AdvancedWiringKit, 1),
-                    new Ingredient(TechType.ComputerChip, 1)
+                    new Ingredient(TechType.Titanium, 5),
+                    new Ingredient(TechType.Lithium, 1),
+                    new Ingredient(TechType.Diamond, 4)
                 })
             };
-        }
-        
-        
-        public override GameObject GetGameObject()
+        }        
+
+        protected override Atlas.Sprite GetItemSprite()
         {
-            base.GetGameObject();
-
-            _GameObject.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
-
-            return _GameObject;
+            return SpriteManager.Get(TechType.ExosuitDrillArmModule);
         }
-        
+
+        protected override EncyData GetEncyclopediaData()
+        {
+            return null;
+        }
+
+        protected override void ModifyGameObject()
+        {
+        }
+
+        protected override void SetCustomLanguageText()
+        {
+        }
     }
 }

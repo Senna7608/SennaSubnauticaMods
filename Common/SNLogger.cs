@@ -1,55 +1,49 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace Common
 {
+    public enum SNLogType
+    {
+        LOG,
+        WARNING,
+        ERROR,
+        DEBUG
+    }
+
     public static class SNLogger
     {
-        public static void Log(string message)
+        public static readonly Dictionary<SNLogType, string> logTypeCache = new Dictionary<SNLogType, string>(4)
         {
-            Console.WriteLine(message);
+            { SNLogType.LOG, "LOG" },
+            { SNLogType.WARNING, "WARNING" },
+            { SNLogType.ERROR, "ERROR" },
+            { SNLogType.DEBUG, "DEBUG" },
+        };            
+
+        private static void WriteLog(SNLogType logType, string message)
+        {
+            Console.WriteLine($"[{Assembly.GetCallingAssembly().GetName().Name}/{logTypeCache[logType]}] {message}");
         }
 
-        public static void Log(string moduleName, string message)
-        {
-            Console.WriteLine($"[{moduleName}] [LOG] {message}");
-        }
+        public static void Log(string message) => WriteLog(SNLogType.LOG, message);
 
-        public static void Log(string moduleName, string format, params object[] args)
-        {
-            Console.WriteLine($"[{moduleName}] [LOG] {string.Format(format, args)}");
-        }
-        
-        public static void Error(string moduleName, string message)
-        {
-            Console.WriteLine($"[{moduleName}] [ERROR] {message}");
-        }
+        public static void Log(string format, params object[] args) => WriteLog(SNLogType.LOG, string.Format(format, args));
 
-        public static void Error(string moduleName, string format, params object[] args)
-        {
-            Console.WriteLine($"[{moduleName}] [ERROR] {string.Format(format, args)}");
-        }
+        public static void Warn(string moduleName, string message) => WriteLog(SNLogType.WARNING, message);
 
-        public static void Warn(string moduleName, string message)
-        {
-            Console.WriteLine($"[{moduleName}] [WARNING] {message}");
-        }
+        public static void Warn(string format, params object[] args) => WriteLog(SNLogType.WARNING, string.Format(format, args));
 
-        public static void Warn(string moduleName, string format, params object[] args)
-        {
-            Console.WriteLine($"[{moduleName}] [WARNING] {string.Format(format, args)}");
-        }
+        public static void Error(string message) => WriteLog(SNLogType.ERROR, message);        
+
+        public static void Error(string format, params object[] args) => WriteLog(SNLogType.ERROR, string.Format(format, args));                   
 
         [Conditional("DEBUG")]
-        public static void Debug(string moduleName, string message)
-        {
-            Console.WriteLine($"[{moduleName}] [DEBUG] {message}");
-        }
+        public static void Debug(string message) => WriteLog(SNLogType.DEBUG, message);
 
         [Conditional("DEBUG")]
-        public static void Debug(string moduleName, string format, params object[] args)
-        {
-            Console.WriteLine($"[{moduleName}] [DEBUG] {string.Format(format, args)}");
-        }
+        public static void Debug(string format, params object[] args) => WriteLog(SNLogType.DEBUG, string.Format(format, args));        
     }
 }

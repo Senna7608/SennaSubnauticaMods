@@ -13,7 +13,7 @@ namespace QuickSlotExtender.Configuration
         {
             Instance = this;           
             DevConsole.RegisterConsoleCommand(this, "qseconfig", false, false);
-            SNLogger.Log("QuickSlotExtender", Message);
+            SNLogger.Log(Message);
         }
         
         private void OnConsoleCommand_qseconfig(NotificationCenter.Notification n)

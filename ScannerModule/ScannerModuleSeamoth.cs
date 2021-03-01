@@ -71,9 +71,9 @@ namespace ScannerModule
             completeSound.name = "scan_complete";
             completeSound.path = "event:/tools/scanner/scan_complete";
 
-            fxControl = Main.objectHelper.GetComponentClone(scannerTool.fxControl, ScannerModuleGO.transform);                      
+            fxControl = Instantiate(scannerTool.fxControl) as VFXController;                      
 
-            scanBeam = Main.objectHelper.GetPrefabClone(scannerPrefab.FindChild("x_ScannerBeam"), ScannerModuleGO.transform, false);
+            scanBeam = Main.objectHelper.GetGameObjectClone(scannerPrefab.FindChild("x_ScannerBeam"), ScannerModuleGO.transform, false);
 
             scanCircuitTex = CreateRWTextureFromNonReadableTexture(scannerTool.scanCircuitTex);            
             scanOrganicTex = CreateRWTextureFromNonReadableTexture(scannerTool.scanOrganicTex);

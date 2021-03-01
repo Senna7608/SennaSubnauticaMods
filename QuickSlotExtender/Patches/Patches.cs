@@ -39,7 +39,7 @@ namespace QuickSlotExtender.Patches
 
             slotCount = QSEConfig.MAXSLOTS;
 
-            SNLogger.Log("QuickSlotExtender", "QuickSlots constructor Patched.");
+            SNLogger.Log("QuickSlots constructor Patched.");
 
             Main.isPatched = true;
         }

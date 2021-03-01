@@ -1,65 +1,62 @@
 ﻿using System.Collections.Generic;
 using SMLHelper.V2.Crafting;
-using UnityEngine;
 using Common.Helpers.SMLHelpers;
+using ModdedArmsHelper.API;
+using SeamothArms.ArmHandlerRequesters;
 
 namespace SeamothArms.ArmPrefabs
 {
-    internal class SeamothGrapplingArmPrefab : CraftableModItem
+    internal class SeamothGrapplingArmPrefab : CraftableModdedArm
     {
-        public static TechType TechTypeID { get; private set; }
+        internal SeamothGrapplingArmPrefab(SpawnableArmFragment fragment)
+           : base(
+                 techTypeName: "SeamothGrapplingArmModule",
+                 friendlyName: "Seamoth Grappling Arm",
+                 description: "Fires a grappling hook for enhanced environment traversal.",
+                 armType: ArmType.SeamothArm,
+                 armTemplate: ArmTemplate.GrapplingArm,
+                 requiredForUnlock: TechType.ExosuitGrapplingArmModule,
+                 fragment: fragment                 
+                 )
+        {
+        }
 
-        internal SeamothGrapplingArmPrefab()
-            : base(nameID: "SeamothGrapplingArmModule",
-                  iconFilePath: null,
-                  iconTechType: TechType.None,
-                  friendlyName: "Seamoth Grappling Arm",
-                  description: "Allows Seamoth to use Grappling Arm.",
-                  template: TechType.ExosuitGrapplingArmModule,
-                  newTabNode: null,
-                  fabricatorTypes: new CraftTree.Type[] { CraftTree.Type.SeamothUpgrades },
-                  fabricatorTabs: new string[][] { new string[] { "SeamothModules" } },
-                  requiredAnalysis: TechType.ExosuitGrapplingArmModule,
-                  groupForPDA: TechGroup.VehicleUpgrades,
-                  categoryForPDA: TechCategory.VehicleUpgrades,
-                  equipmentType: (EquipmentType) 100,
-                  quickSlotType: QuickSlotType.Selectable,
-                  backgroundType: CraftData.BackgroundType.ExosuitArm,
-                  itemSize: new Vector2int(1,1),                  
-                  gamerResourceFileName: null
-                  )
+        protected override void RegisterArm()
         {
+            ArmServices.main.RegisterArm(this, new SeamothGrapplingArmModdingRequest());
         }
-               
-        public override void Patch()
-        {
-            base.Patch();
-            TechTypeID = TechType;
-        }
-        
+
         protected override TechData GetRecipe()
         {
             return new TechData()
             {
                 craftAmount = 1,
-                Ingredients = new List<Ingredient>(new Ingredient[3]
+                Ingredients = new List<Ingredient>(new Ingredient[4]
                 {
-                    new Ingredient(TechType.ExosuitGrapplingArmModule, 1),                                        
                     new Ingredient(TechType.AdvancedWiringKit, 1),
-                    new Ingredient(TechType.ComputerChip, 1)
+                    new Ingredient(TechType.Benzene, 1),
+                    new Ingredient(TechType.Titanium, 2),
+                    new Ingredient(TechType.Lithium, 1)
                 })
             };
-        }
-        
-        
-        public override GameObject GetGameObject()
+        }        
+
+        protected override Atlas.Sprite GetItemSprite()
         {
-            base.GetGameObject();
-
-            _GameObject.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
-
-            return _GameObject;
+            return SpriteManager.Get(TechType.ExosuitGrapplingArmModule);
         }
-        
+
+        protected override EncyData GetEncyclopediaData()
+        {
+            return null;
+        }
+
+        protected override void ModifyGameObject()
+        {
+        }
+
+        protected override void SetCustomLanguageText()
+        {
+        }
     }
 }

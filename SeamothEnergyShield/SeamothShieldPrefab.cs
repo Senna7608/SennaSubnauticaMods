@@ -5,7 +5,7 @@ using Common.Helpers.SMLHelpers;
 
 namespace SeamothEnergyShield
 {
-    internal class SeamothShieldPrefab : CraftableModItem
+    internal class SeamothShieldPrefab : ModPrefab_Craftable
     {
         public static TechType TechTypeID { get; private set; }
 
@@ -26,7 +26,8 @@ namespace SeamothEnergyShield
                   quickSlotType: QuickSlotType.Toggleable,
                   backgroundType: CraftData.BackgroundType.Normal,
                   itemSize: new Vector2int(1,1),                  
-                  gamerResourceFileName: null
+                  gamerResourceFileName: null,
+                  fragment: null
                   )
         {
         }
@@ -57,6 +58,11 @@ namespace SeamothEnergyShield
             base.GetGameObject();            
 
             return _GameObject;
-        }        
+        }
+
+        protected override EncyData GetEncyclopediaData()
+        {
+            return null;
+        }
     }
 }

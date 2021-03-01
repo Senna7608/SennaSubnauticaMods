@@ -2,7 +2,7 @@
   "Id": "SlotExtender",
   "DisplayName": "SlotExtender",
   "Author": "Senna, PrimeSonic, Zorgesho",
-  "Version": "2.6.2",
+  "Version": "2.6.3",
   "Dependencies": ["SMLHelper"],  
   "Enable": true,
   "Game": "Subnautica",

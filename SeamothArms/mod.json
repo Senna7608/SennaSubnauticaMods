@@ -2,7 +2,7 @@
   "Id": "SeamothArms",
   "DisplayName": "Seamoth Arms",
   "Author": "Senna",
-  "Version": "1.5",
+  "Version": "1.6",
   "Dependencies": ["SMLHelper"],  
   "Enable": true,
   "Game": "Subnautica",

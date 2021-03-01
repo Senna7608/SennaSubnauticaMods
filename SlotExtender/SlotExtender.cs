@@ -44,7 +44,7 @@ namespace SlotExtender
 
             isActive = Player.main.currentMountedVehicle == ThisVehicle ? true : false;
 
-            SNLogger.Log("SlotExtender", $"Broadcasting message: 'WakeUp', Vehicle Name: {ThisVehicle.GetName()}, Instance ID: {ThisVehicle.GetInstanceID()}");
+            SNLogger.Log($"Broadcasting message: 'WakeUp', Vehicle Name: {ThisVehicle.GetName()}, Instance ID: {ThisVehicle.GetInstanceID()}");
 
             gameObject.BroadcastMessage("WakeUp", SendMessageOptions.DontRequireReceiver);
         }        
@@ -188,14 +188,14 @@ namespace SlotExtender
                 TryUseSlotItem(11);
                 return;
             }
-            else if (Input.GetKeyDown(SEConfig.KEYBINDINGS["SeamothArmLeft"]))
+            else if (Input.GetKeyDown(SEConfig.KEYBINDINGS[SlotHelper.slotStringCache[SlotName.SeamothArmLeft]]))
             {
-                TryUseSeamothArm("SeamothArmLeft");
+                TryUseSeamothArm(SlotHelper.slotStringCache[SlotName.SeamothArmLeft]);
                 return;
             }
-            else if (Input.GetKeyDown(SEConfig.KEYBINDINGS["SeamothArmRight"]))
+            else if (Input.GetKeyDown(SEConfig.KEYBINDINGS[SlotHelper.slotStringCache[SlotName.SeamothArmRight]]))
             {
-                TryUseSeamothArm("SeamothArmRight");
+                TryUseSeamothArm(SlotHelper.slotStringCache[SlotName.SeamothArmRight]);
                 return;
             }
         }        

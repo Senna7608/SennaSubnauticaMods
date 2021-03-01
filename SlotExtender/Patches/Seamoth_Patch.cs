@@ -26,7 +26,7 @@ namespace SlotExtender.Patches
         {           
             __instance.gameObject.EnsureComponent<SlotExtender>();
 
-            SNLogger.Log("SlotExtender", $"Component added to instance: {__instance.name} ID: {__instance.GetInstanceID()}");                      
+            SNLogger.Log($"Component added to instance: {__instance.name} ID: {__instance.GetInstanceID()}");                      
         }
     }
 

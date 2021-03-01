@@ -148,7 +148,7 @@ namespace SlotExtender.Configuration
 
             if (keyCount > 0 && isFirst != selected)
             {
-                SNLogger.Warn("SlotExtender", "Duplicate keybind found, swapping keys...");
+                SNLogger.Warn("Duplicate keybind found, swapping keys...");
                 hotkeyButtons[isFirst] = hotkeyButtons[selected];
                 guiItem_Buttons[isFirst].Name = hotkeyButtons[selected];
             }

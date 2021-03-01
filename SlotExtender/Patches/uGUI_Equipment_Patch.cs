@@ -13,7 +13,7 @@ namespace SlotExtender.Patches
             if (Main.uGUI_PrefixComplete)
                 return;
 
-            GameObject Equipment = __instance.gameObject;
+            Transform transform = __instance.gameObject.transform;
 
             void _setSlotPos(GameObject slot, Vector2 pos)
             {
@@ -24,6 +24,9 @@ namespace SlotExtender.Patches
             {
                 switch (slotData.SlotType)
                 {
+                    case SlotType.CloneChip:
+                        _processCloneSlot(slotData, normal);
+                        break;
                     case SlotType.OriginalNormal:
                     case SlotType.OriginalArmLeft:
                     case SlotType.OriginalArmRight:
@@ -46,14 +49,14 @@ namespace SlotExtender.Patches
 
             void _processOriginalSlot(SlotData slotData)
             {
-                GameObject originalSlot = Equipment.FindChild(slotData.SlotID);                
+                GameObject originalSlot = transform.Find(slotData.SlotID).gameObject;
 
                 _setSlotPos(originalSlot, slotData.SlotPos);                
             }
 
             void _processCloneSlot(SlotData slotData, GameObject prefab)
             {
-                GameObject temp_slot = Object.Instantiate(prefab, Equipment.transform, false);
+                GameObject temp_slot = Object.Instantiate(prefab, transform, false);
 
                 temp_slot.name = slotData.SlotID;
 
@@ -63,25 +66,29 @@ namespace SlotExtender.Patches
             }
 
             // initializing GameObject variables for cloning
-            GameObject NormalModuleSlot = Equipment.FindChild("SeamothModule2");            
-            GameObject ArmLeftSlot = Equipment.FindChild("ExosuitArmLeft");
-            GameObject ArmRightSlot = Equipment.FindChild("ExosuitArmRight");
-            
-            // repositioning Exosuit background picture
-            Equipment.transform.Find("ExosuitModule1/Exosuit").localPosition = SlotHelper.VehicleImgPos;
+            GameObject NormalModuleSlot = transform.Find("SeamothModule2").gameObject;
+            GameObject ArmLeftSlot = transform.Find("ExosuitArmLeft").gameObject;
+            GameObject ArmRightSlot = transform.Find("ExosuitArmRight").gameObject;
+            GameObject ChipSlot = transform.Find("Chip1").gameObject;
+
+            // processing player chip slots            
+            SlotHelper.NewChipSlots.ForEach(slotData => _processSlot(slotData, ChipSlot, null, null));
+
+            // processing seamoth slots            
+            SlotHelper.SessionSeamothSlots.ForEach(slotData => _processSlot(slotData, NormalModuleSlot, ArmLeftSlot, ArmRightSlot));
+
+            // repositioning Seamoth background picture
+            transform.Find("SeamothModule1/Seamoth").localPosition = SlotHelper.VehicleImgPos;
 
             // processing exosuit slots
             SlotHelper.SessionExosuitSlots.ForEach(slotData => _processSlot(slotData, NormalModuleSlot, ArmLeftSlot, ArmRightSlot));
 
-            // processing seamoth slots            
-            SlotHelper.SessionSeamothSlots.ForEach(slotData => _processSlot(slotData, NormalModuleSlot, ArmLeftSlot, ArmRightSlot));            
-                        
-            // repositioning Seamoth background picture
-            Equipment.transform.Find("SeamothModule1/Seamoth").localPosition = SlotHelper.VehicleImgPos;
+            // repositioning Exosuit background picture
+            transform.Find("ExosuitModule1/Exosuit").localPosition = SlotHelper.VehicleImgPos;            
 
             Main.uGUI_PrefixComplete = true;
 
-            SNLogger.Log("SlotExtender", "uGUI_Equipment Slots Patched!");
+            SNLogger.Log("uGUI_Equipment Slots Patched!");
         }
 
         

@@ -34,26 +34,39 @@ namespace Common.Helpers
             instance.GetType().GetMethod(methodName, BindingFlags.Instance | BindingFlags.NonPublic | bindingFlags).Invoke(instance, parms);
         }
 
-        public static void CloneFieldsInto<T>(this T original, T copy)
+        public static void CloneFieldsInto<T>(this T original, T copy, BindingFlags bindingFlags = BindingFlags.Default)
         {
-            FieldInfo[] fieldsInfo = typeof(T).GetFields(BindingFlags.Instance);
+            FieldInfo[] fieldsInfo = original.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | bindingFlags);
 
             foreach (FieldInfo fieldInfo in fieldsInfo)
             {
                 if (fieldInfo.GetType().IsClass)
                 {
-                    var origValue = fieldInfo.GetValue(original);
-                    var copyValue = fieldInfo.GetValue(copy);
-
-                    origValue.CloneFieldsInto(copyValue);                    
+                    fieldInfo.GetValue(original).CloneFieldsInto(fieldInfo.GetValue(copy));
+                    SNLogger.Debug($"Cloned class: [{fieldInfo.Name}], type: [{fieldInfo.GetType()}]");
                 }
                 else
                 {
                     var value = fieldInfo.GetValue(original);
                     fieldInfo.SetValue(copy, value);
+                    SNLogger.Debug($"Cloned field: [{fieldInfo.Name}], type: [{fieldInfo.GetType()}]");
                 }                
             }
         }
+        
+        public static T CopyComponent<T>(this T original, GameObject destination) where T : Component
+        {
+            Type type = original.GetType();
+            Component copy = destination.AddComponent(type);
+            FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
+            foreach (FieldInfo field in fields)
+            {
+                field.SetValue(copy, field.GetValue(original));
+            }
+
+            return copy as T;
+        }
+
 
         public static bool IsNamespaceExists(string desiredNamespace)
         {

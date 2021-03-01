@@ -4,7 +4,7 @@ using Common.Helpers.SMLHelpers;
 
 namespace ScannerModule
 {
-    internal class ScannerModulePrefab : CraftableModItem
+    internal class ScannerModulePrefab : ModPrefab_Craftable
     {
         public static TechType TechTypeID { get; private set; }        
 
@@ -25,7 +25,8 @@ namespace ScannerModule
                   quickSlotType: QuickSlotType.Selectable,
                   backgroundType: CraftData.BackgroundType.Normal,
                   itemSize: new Vector2int(1, 1),
-                  gamerResourceFileName: null
+                  gamerResourceFileName: null,
+                  fragment: null
                   )
         {
         }
@@ -47,6 +48,11 @@ namespace ScannerModule
                     new Ingredient(TechType.AdvancedWiringKit, 1)                    
                 })
             };
+        }
+
+        protected override EncyData GetEncyclopediaData()
+        {
+            return null;
         }
     }
 }

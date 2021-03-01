@@ -10,7 +10,7 @@ namespace SlotExtender
 
         public void Awake()
         {
-            SNLogger.Debug("SlotExtender", "Method call: InputFieldListener.Awake()");
+            SNLogger.Debug("Method call: InputFieldListener.Awake()");
 
             onConsoleInputFieldActive.changedEvent.AddHandler(this, new Event<Utils.MonitoredValue<bool>>.HandleFunction(OnConsoleInputFieldActive));
         }

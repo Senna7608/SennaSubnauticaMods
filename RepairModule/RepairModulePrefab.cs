@@ -4,7 +4,7 @@ using Common.Helpers.SMLHelpers;
 
 namespace RepairModule
 {
-    internal class RepairModulePrefab : CraftableModItem
+    internal class RepairModulePrefab : ModPrefab_Craftable
     {
         public static TechType TechTypeID { get; private set; }
 
@@ -25,7 +25,8 @@ namespace RepairModule
                   quickSlotType: QuickSlotType.Toggleable,
                   backgroundType: CraftData.BackgroundType.Normal,
                   itemSize: new Vector2int(1, 1),
-                  gamerResourceFileName: null
+                  gamerResourceFileName: null,
+                  fragment: null
                   )
         {
         }
@@ -48,6 +49,11 @@ namespace RepairModule
                     new Ingredient(TechType.AdvancedWiringKit, 1)                    
                 })
             };
+        }
+
+        protected override EncyData GetEncyclopediaData()
+        {
+            return null;
         }
     }
 }

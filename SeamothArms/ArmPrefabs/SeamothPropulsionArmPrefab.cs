@@ -1,65 +1,65 @@
 ﻿using System.Collections.Generic;
 using SMLHelper.V2.Crafting;
-using UnityEngine;
 using Common.Helpers.SMLHelpers;
+using ModdedArmsHelper.API;
+using SeamothArms.ArmHandlerRequesters;
+using SMLHelper.V2.Handlers;
 
 namespace SeamothArms.ArmPrefabs
 {
-    internal class SeamothPropulsionArmPrefab : CraftableModItem
+    internal class SeamothPropulsionArmPrefab : CraftableModdedArm
     {
-        public static TechType TechTypeID { get; private set; }
+        internal SeamothPropulsionArmPrefab(SpawnableArmFragment fragment)
+           : base(
+                 techTypeName: "SeamothPropulsionArmModule",
+                 friendlyName: "Seamoth Propulsion Arm",
+                 description: "Allows Seamoth to use Propulsion Arm.",
+                 armType: ArmType.SeamothArm,
+                 armTemplate: ArmTemplate.PropulsionArm,
+                 requiredForUnlock: TechType.ExosuitPropulsionArmModule,
+                 fragment: fragment
+                 )
+        {
+        }
 
-        internal SeamothPropulsionArmPrefab()
-            : base(nameID: "SeamothPropulsionArmModule",
-                  iconFilePath: null,
-                  iconTechType: TechType.None,
-                  friendlyName: "Seamoth Propulsion Arm",
-                  description: "Allows Seamoth to use Propulsion Arm.",
-                  template: TechType.ExosuitPropulsionArmModule,
-                  newTabNode: null,
-                  fabricatorTypes: new CraftTree.Type[] { CraftTree.Type.SeamothUpgrades },
-                  fabricatorTabs: new string[][] { new string[] { "SeamothModules" } },
-                  requiredAnalysis: TechType.ExosuitPropulsionArmModule,
-                  groupForPDA: TechGroup.VehicleUpgrades,
-                  categoryForPDA: TechCategory.VehicleUpgrades,
-                  equipmentType: (EquipmentType) 100,
-                  quickSlotType: QuickSlotType.Selectable,
-                  backgroundType: CraftData.BackgroundType.ExosuitArm,
-                  itemSize: new Vector2int(1,1),                  
-                  gamerResourceFileName: null
-                  )
+        protected override void RegisterArm()
         {
+            ArmServices.main.RegisterArm(this, new SeamothPropulsionArmModdingRequest());
         }
-               
-        public override void Patch()
-        {
-            base.Patch();
-            TechTypeID = TechType;
-        }
-        
+
         protected override TechData GetRecipe()
         {
             return new TechData()
             {
                 craftAmount = 1,
-                Ingredients = new List<Ingredient>(new Ingredient[3]
+                Ingredients = new List<Ingredient>(new Ingredient[4]
                 {
-                    new Ingredient(TechType.ExosuitPropulsionArmModule, 1),                                        
-                    new Ingredient(TechType.AdvancedWiringKit, 1),
-                    new Ingredient(TechType.ComputerChip, 1)
+                    new Ingredient(TechType.ComputerChip, 1),
+                    new Ingredient(TechType.Titanium, 1),
+                    new Ingredient(TechType.Magnetite, 2),
+                    new Ingredient(TechType.Lithium, 1)
                 })
             };
         }
-        
-        
-        public override GameObject GetGameObject()
+
+        protected override Atlas.Sprite GetItemSprite()
         {
-            base.GetGameObject();
-
-            _GameObject.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
-
-            return _GameObject;
+            return SpriteManager.Get(TechType.ExosuitPropulsionArmModule);
         }
-        
+
+        protected override void SetCustomLanguageText()
+        {
+            LanguageHandler.Main.SetLanguageLine("SeamothPropulsionCannonNoItems", "No suitable items found in seamoth storage containers.");
+            LanguageHandler.Main.SetLanguageLine("SeamothPropulsionCannonNoContainers", "This seamoth does not contain storage container(s).");
+        }
+
+        protected override EncyData GetEncyclopediaData()
+        {
+            return null;
+        }
+
+        protected override void ModifyGameObject()
+        {
+        }
     }
 }

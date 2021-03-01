@@ -46,7 +46,7 @@ namespace SNTestMOD
     }
 
         */
-    
+    /*
     [HarmonyPatch(typeof(ResourceTracker))]
     [HarmonyPatch("Register")]    
     public class ResourceTracker_Register_Patch
@@ -65,7 +65,7 @@ namespace SNTestMOD
             
         }
     }
-
+    */
 
     /*
 [HarmonyPatch(typeof(Drillable))]
@@ -101,7 +101,7 @@ public class Drillable_GetDominantResourceType_Patch
     }
     */
 
-
+        /*
     [HarmonyPatch(typeof(Builder))]
     [HarmonyPatch("CreateGhost")]
     public class Builder_CreateGhost_Patch
@@ -164,5 +164,5 @@ public class Drillable_GetDominantResourceType_Patch
         }
 
     }
-
+    */
     }

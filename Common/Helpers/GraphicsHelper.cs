@@ -1,28 +1,38 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 using UnityEngine;
 
 namespace Common.Helpers
 {
     public static class GraphicsHelper
     {
-        public static Material GetResourceMaterial(string gameObjectPath, string meshName, int materialIndex)
+        public static void GetResourceMaterial(string gameObjectPath, string meshName, int materialIndex, out Material material)
         {
             GameObject gameObject = Resources.Load<GameObject>(gameObjectPath);
+
+            if (gameObject == null)
+            {
+                material = null;
+
+                SNLogger.Error(Assembly.GetCallingAssembly().GetName().Name, $"GameObject not found in Resources at path [{gameObjectPath}]");
+
+                return;
+            }
 
             foreach (MeshRenderer meshRenderer in gameObject.GetComponentsInChildren<MeshRenderer>(true))
             {
                 if (meshRenderer.name.Equals(meshName, StringComparison.CurrentCultureIgnoreCase))
                 {
-                    Material material = UnityEngine.Object.Instantiate(meshRenderer.materials[materialIndex]) as Material;
+                    material = UnityEngine.Object.Instantiate(meshRenderer.materials[materialIndex]) as Material;                   
 
-                    UnityEngine.Object.Destroy(gameObject);
-
-                    return material;
+                    return;
                 }
             }
 
-            return null;
+            SNLogger.Error(Assembly.GetCallingAssembly().GetName().Name, $"Mesh not found in gameobject [{meshName}]");
+
+            material = null;
         }
 
 

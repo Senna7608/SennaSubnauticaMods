@@ -105,28 +105,28 @@ namespace QuickSlotExtender.Configuration
 
                 TEXTCOLOR = ColorHelper.GetColor(ParserHelper.GetKeyValue(FILENAME, SECTIONS[1], SECTION_Settings[1]));
 
-                SNLogger.Log("QuickSlotExtender", "Configuration loaded.");
+                SNLogger.Log("Configuration loaded.");
             }
             catch
             {
-                SNLogger.Log("QuickSlotExtender", "An error occurred while loading the configuration file!");
+                SNLogger.Log("An error occurred while loading the configuration file!");
             }
         }
 
         internal static void CreateDefaultConfigFile()
         {
-            SNLogger.Warn("QuickSlotExtender", "Configuration file is missing or wrong version. Trying to create a new one.");
+            SNLogger.Warn("Configuration file is missing or wrong version. Trying to create a new one.");
 
             try
             {
                 ParserHelper.CreateDefaultConfigFile(FILENAME, "QuickSlotExtender", PROGRAM_VERSION, DEFAULT_CONFIG);
                 ParserHelper.AddInfoText(FILENAME, "TextColor possible values", "LightBlue, Red, Green, Blue, Yellow, White, Magenta, Cyan, Orange, Lime, Amethyst");
 
-                SNLogger.Log("QuickSlotExtender", "The new configuration file was successfully created.");
+                SNLogger.Log("The new configuration file was successfully created.");
             }
             catch
             {
-                SNLogger.Error("QuickSlotExtender", "An error occured while creating the new configuration file!");
+                SNLogger.Error("An error occured while creating the new configuration file!");
             }
         }
 
@@ -134,7 +134,7 @@ namespace QuickSlotExtender.Configuration
         {
             SetKeyBindings();
             InitSLOTKEYS();
-            SNLogger.Log("QuickSlotExtender", "Configuration initialized.");
+            SNLogger.Log("Configuration initialized.");
         }
 
         internal static void WriteConfig()
@@ -168,7 +168,7 @@ namespace QuickSlotExtender.Configuration
                 }
                 catch (ArgumentException)
                 {
-                    SNLogger.Warn("QuickSlotExtender", $"({kvp.Value}) is not a valid KeyCode! Setting default value!");
+                    SNLogger.Warn($"({kvp.Value}) is not a valid KeyCode! Setting default value!");
 
                     for (int i = 0; i < DEFAULT_CONFIG.Count; i++)
                     {
@@ -191,7 +191,7 @@ namespace QuickSlotExtender.Configuration
         {
             if (!File.Exists(FILENAME))
             {
-                SNLogger.Error("QuickSlotExtender", "Configuration file open error!");
+                SNLogger.Error("Configuration file open error!");
                 return false;
             }
 
@@ -199,19 +199,19 @@ namespace QuickSlotExtender.Configuration
 
             if (!CONFIG_VERSION.Equals(PROGRAM_VERSION))
             {
-                SNLogger.Error("QuickSlotExtender", "Configuration file version error!");
+                SNLogger.Error("Configuration file version error!");
                 return false;
             }
 
             if (!ParserHelper.CheckSectionKeys(FILENAME, SECTIONS[0], SECTION_Hotkeys))
             {
-                SNLogger.Error("QuickSlotExtender", $"Configuration {SECTIONS[0]} section error!");
+                SNLogger.Error($"Configuration {SECTIONS[0]} section error!");
                 return false;
             }
 
             if (!ParserHelper.CheckSectionKeys(FILENAME, SECTIONS[1], SECTION_Settings))
             {
-                SNLogger.Error("QuickSlotExtender", $"Configuration {SECTIONS[1]} section error!");
+                SNLogger.Error($"Configuration {SECTIONS[1]} section error!");
                 return false;
             }
 

@@ -1,21 +1,15 @@
 ﻿using UnityEngine;
 using System;
+using System.Reflection;
 
 namespace Common.Helpers
-{
+{    
     public static class InputHelper
     {
         public static string GetKeyCodeAsInputName(KeyCode keyCode)
         {
             switch (keyCode)
             {
-                case KeyCode.Mouse0:
-                    return "MouseButtonLeft";
-                case KeyCode.Mouse1:
-                    return "MouseButtonRight";
-                case KeyCode.Mouse2:
-                    return "MouseButtonMiddle";
-
                 case KeyCode.Alpha0:
                     return "0";
                 case KeyCode.Alpha1:
@@ -72,7 +66,12 @@ namespace Common.Helpers
                     return ".";
                 case KeyCode.Greater:
                     return ">";
-
+                case KeyCode.Mouse0:
+                    return "MouseButtonLeft";
+                case KeyCode.Mouse1:
+                    return "MouseButtonRight";
+                case KeyCode.Mouse2:
+                    return "MouseButtonMiddle";
                 case KeyCode.JoystickButton0:
                     return "ControllerButtonA";
                 case KeyCode.JoystickButton1:
@@ -100,15 +99,13 @@ namespace Common.Helpers
 
         public static KeyCode GetInputNameAsKeyCode(string input)
         {
+            if (string.IsNullOrEmpty(input))
+            {
+                return 0;
+            }
+
             switch (input)
             {
-                case "MouseButtonLeft":
-                    return KeyCode.Mouse0;
-                case "MouseButtonRight":
-                    return KeyCode.Mouse1;
-                case "MouseButtonMiddle":
-                    return KeyCode.Mouse2;
-
                 case "0":
                     return KeyCode.Alpha0;
                 case "1":
@@ -165,7 +162,12 @@ namespace Common.Helpers
                     return KeyCode.Period;
                 case ">":
                     return KeyCode.Greater;
-
+                case "MouseButtonLeft":
+                    return KeyCode.Mouse0;
+                case "MouseButtonRight":
+                    return KeyCode.Mouse1;
+                case "MouseButtonMiddle":
+                    return KeyCode.Mouse2;
                 case "ControllerButtonA":
                     return KeyCode.JoystickButton0;
                 case "ControllerButtonB":
@@ -187,7 +189,14 @@ namespace Common.Helpers
                 case "ControllerButtonRightStick":
                     return KeyCode.JoystickButton9;
                 default:
-                    return (KeyCode)Enum.Parse(typeof(KeyCode), input);
+                    try
+                    {
+                        return (KeyCode)Enum.Parse(typeof(KeyCode), input);
+                    }
+                    catch
+                    {                        
+                        return 0;
+                    }
             }
         }
 

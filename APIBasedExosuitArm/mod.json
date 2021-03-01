@@ -1,0 +1,10 @@
+﻿{
+  "Id": "APIBasedExosuitArms",
+  "DisplayName": "APIBasedExosuitArms",
+  "Author": "Senna",
+  "Version": "1.0",
+  "Dependencies": ["SMLHelper"],  
+  "Enable": true,
+  "Game": "Subnautica",
+  "AssemblyName": "APIBasedExosuitArms.dll" 
+}

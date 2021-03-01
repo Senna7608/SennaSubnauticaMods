@@ -28,13 +28,13 @@ namespace QuickSlotExtender
             isExists_SlotExtender = ReflectionHelper.IsNamespaceExists("SlotExtender");
 
             if (isExists_SlotExtender)
-                SNLogger.Log("QuickSlotExtender", "SlotExtender found! trying to work together..");
+                SNLogger.Log("SlotExtender found! trying to work together..");
 
             try
             {
                 Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), "Subnautica.QuickSlotExtender.mod");
 
-                SNLogger.Debug("QuickSlotExtender", "Harmony Patches installed");
+                SNLogger.Debug("Harmony Patches installed");
 
                 SceneManager.sceneLoaded += new UnityAction<Scene, LoadSceneMode>(OnSceneLoaded);
             }

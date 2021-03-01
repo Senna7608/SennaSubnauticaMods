@@ -5,7 +5,7 @@ using Common.Helpers.SMLHelpers;
 
 namespace LaserCannon
 {
-    internal class LaserCannonPrefab : CraftableModItem
+    internal class LaserCannonPrefab : ModPrefab_Craftable
     {
         public static TechType TechTypeID { get; private set; }        
         public static LaserCannonOptions Config { get; } = new LaserCannonOptions();       
@@ -27,7 +27,8 @@ namespace LaserCannon
                   quickSlotType: QuickSlotType.Selectable,
                   backgroundType: CraftData.BackgroundType.Normal,
                   itemSize: new Vector2int(1, 1),
-                  gamerResourceFileName: null
+                  gamerResourceFileName: null,
+                  fragment: null
                   )
         {
         }
@@ -53,6 +54,11 @@ namespace LaserCannon
                     
                 })
             };
-        }        
+        }
+
+        protected override EncyData GetEncyclopediaData()
+        {
+            return null;
+        }
     }
 }

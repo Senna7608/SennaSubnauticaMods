@@ -21,11 +21,14 @@ namespace SlotExtender
         OriginalArmRight,
         CloneNormal,
         CloneArmLeft,
-        CloneArmRight
+        CloneArmRight,
+        Chip,
+        CloneChip
     };
 
     public enum SlotConfigID
     {
+        Chip = -2,
         ExosuitArmLeft = -1,
         ExosuitArmRight,        
         Slot_1,
@@ -42,6 +45,44 @@ namespace SlotExtender
         Slot_12,
         SeamothArmLeft,
         SeamothArmRight        
+    };
+
+    public enum SlotName
+    {
+        Chip1,
+        Chip2,
+        Chip3,
+        Chip4,        
+
+        ExosuitModule1,
+        ExosuitModule2,
+        ExosuitModule3,
+        ExosuitModule4,
+        ExosuitModule5,
+        ExosuitModule6,
+        ExosuitModule7,
+        ExosuitModule8,
+        ExosuitModule9,
+        ExosuitModule10,
+        ExosuitModule11,
+        ExosuitModule12,
+        ExosuitArmLeft,
+        ExosuitArmRight,
+
+        SeamothModule1,
+        SeamothModule2,
+        SeamothModule3,
+        SeamothModule4,
+        SeamothModule5,
+        SeamothModule6,
+        SeamothModule7,
+        SeamothModule8,
+        SeamothModule9,
+        SeamothModule10,
+        SeamothModule11,
+        SeamothModule12,
+        SeamothArmLeft,
+        SeamothArmRight
     };
 
     public class SlotData
