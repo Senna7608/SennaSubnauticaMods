@@ -34,12 +34,12 @@ namespace APIBasedExosuitArms.Handlers
             if (arm == Exosuit.Arm.Right)
             {
                 transform.localScale = new Vector3(-1f, 1f, 1f);
-                container = Exosuit.GetStorageInSlot(Exosuit.GetSlotIndex("ExosuitArmRight"), ArmTag.techType);
+                container = Exosuit.GetStorageInSlot(Exosuit.GetSlotIndex("ExosuitArmRight"), armTag.techType);
             }
             else
             {
                 transform.localScale = new Vector3(1f, 1f, 1f);
-                container = Exosuit.GetStorageInSlot(Exosuit.GetSlotIndex("ExosuitArmLeft"), ArmTag.techType);
+                container = Exosuit.GetStorageInSlot(Exosuit.GetSlotIndex("ExosuitArmLeft"), armTag.techType);
             }
 
             if (container != null)
@@ -63,7 +63,7 @@ namespace APIBasedExosuitArms.Handlers
         
         bool IExosuitArm.OnUseUp(out float cooldownDuration)
         {
-            Animator.SetBool("use_tool", false);
+            animator.SetBool("use_tool", false);
             cooldownDuration = 0f;
             return true;
         }
@@ -79,12 +79,12 @@ namespace APIBasedExosuitArms.Handlers
         
         void IExosuitArm.Reset()
         {
-            Animator.SetBool("use_tool", false);
+            animator.SetBool("use_tool", false);
         }
         
         private bool TryShoot(out float cooldownDuration, bool verbose)
         {            
-            TorpedoType[] torpedoTypes = Vehicle.torpedoTypes;
+            TorpedoType[] torpedoTypes = vehicle.torpedoTypes;
             TorpedoType torpedoType = null;
 
             for (int i = 0; i < torpedoTypes.Length; i++)
@@ -131,7 +131,7 @@ namespace APIBasedExosuitArms.Handlers
                 }
             }
 
-            Animator.SetBool("use_tool", false);
+            animator.SetBool("use_tool", false);
             cooldownDuration = 0f;
             return false;
         }
@@ -141,7 +141,7 @@ namespace APIBasedExosuitArms.Handlers
             if (Vehicle.TorpedoShot(container, torpedoType, siloTransform))
             {
                 Utils.PlayFMODAsset(fireSound, siloTransform, 20f);
-                Animator.SetBool("use_tool", true);
+                animator.SetBool("use_tool", true);
 
                 if (container.count == 0)
                 {
@@ -169,7 +169,7 @@ namespace APIBasedExosuitArms.Handlers
         private void UpdateVisuals()
         {            
             int num = 0;
-            TorpedoType[] torpedoTypes = Vehicle.torpedoTypes;
+            TorpedoType[] torpedoTypes = vehicle.torpedoTypes;
 
             for (int i = 0; i < torpedoTypes.Length; i++)
             {

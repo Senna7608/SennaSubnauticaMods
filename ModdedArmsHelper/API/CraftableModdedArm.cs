@@ -20,7 +20,8 @@ namespace ModdedArmsHelper.API
             { ArmTemplate.PropulsionArm, TechType.ExosuitPropulsionArmModule },
             { ArmTemplate.TorpedoArm, TechType.ExosuitTorpedoArmModule },
         };
-                
+
+#pragma warning disable CS1591
         protected readonly string TechTypeName;                
         protected readonly string FriendlyName;
         protected readonly string Description;
@@ -28,7 +29,7 @@ namespace ModdedArmsHelper.API
         protected readonly TechType PrefabForClone;
         protected readonly TechType RequiredForUnlock;
         protected readonly ModPrefab_Fragment _Fragment;
-
+#pragma warning restore CS1591
         private bool isEncyExists = false;
         
         /// <summary>
@@ -41,13 +42,15 @@ namespace ModdedArmsHelper.API
         public ArmTemplate ArmTemplate { get; private set; }
 
         /// <summary>
-		/// Initializes a new instance of the <see cref="T:ModdedArmsHelper.API.ModdedExosuitArm"/> class, the basic class for any arm that can be crafted at a Vehicle Upgrade Console.
-        /// </summary>
-		/// <param name="techTypeName">The main internal identifier for this item. Your item's <see cref="T:TechType"/> will be created using this name.</param>
+		/// Initializes a new instance of the <see cref="ModdedArmsHelper.API.CraftableModdedArm"/> class, the basic class for any arm that can be crafted at a Vehicle Upgrade Console.        
+		/// </summary>
+        /// <param name="techTypeName">The main internal identifier for this item. Your item's <see cref="TechType"/> will be created using this name.</param>
         /// <param name="friendlyName">The name displayed in-game for this item whether in the open world or in the inventory.</param>
-        /// <param name="description">The description for this item; Typically seen in the PDA, inventory, or crafting screens.</param>        
-        /// <param name="armTemplate">The <see cref="T:ModdedArmsHelper.API.ArmTemplate"/> for cloning.</param>
-        /// <param name="requiredForUnlock">The required <see cref="T:TechType"/> that must first be scanned or picked up to unlock the blueprint for this item.</param>
+        /// <param name="description">The description for this item; Typically seen in the PDA, inventory, or crafting screens.</param>
+        /// <param name="armType">The <see cref="ModdedArmsHelper.API.ArmType"/> parameter (Exosuit or Seamoth).</param>
+        /// <param name="armTemplate">The base <see cref="ModdedArmsHelper.API.ArmTemplate"/> for cloning.</param>
+        /// <param name="requiredForUnlock">The required <see cref="TechType"/> that must first be scanned or picked up to unlock the blueprint for this item. If you use fragment set this one to TechType.None</param>
+        /// <param name="fragment">The <see cref="ModdedArmsHelper.API.SpawnableArmFragment"/> parameter. If you not used fragment set this one to null.</param>
         protected CraftableModdedArm(
             string techTypeName,                       
             string friendlyName,
@@ -76,6 +79,9 @@ namespace ModdedArmsHelper.API
             RegisterArm();
         }
 
+        /// <summary>
+		/// Call this from the MOD main class to execute the patch.        
+		/// </summary>
         public virtual void Patch()
         {
             Atlas.Sprite sprite = GetItemSprite();
@@ -151,11 +157,13 @@ namespace ModdedArmsHelper.API
             RegisterArm();
         }
 
-        
+
         /// <summary>
         /// Initializes the cloned arm for the inventory item.
+        /// </summary>
         /// <remarks>
-        /// If you want to set the visual appearance of the arm in the open world or in the inventory, you can implement 'ModifyGameObject' method!        
+        /// If you want to set the visual appearance of the arm in the open world or in the inventory, you can implement 'ModifyGameObject' method!
+        /// </remarks>
         public override GameObject GetGameObject()
         {            
             PrefabClone = Object.Instantiate(CraftData.GetPrefabForTechType(PrefabForClone));                               
@@ -205,21 +213,33 @@ namespace ModdedArmsHelper.API
         }  
 
         /// <summary>
-		/// This provides the <see cref="T:SMLHelper.V2.Crafting.TechData" /> instance used to designate how this arm is crafted.
+		/// This provides the <see cref="SMLHelper.V2.Crafting.TechData"/> instance used to designate how this arm is crafted.
 		/// </summary>
         protected abstract TechData GetRecipe();
 
+        /// <summary>
+		/// If you want to set up an encyclopedia data, you can do it here. See <see cref="Common.Helpers.SMLHelpers.EncyData"/>. If not, simply return null.
+		/// </summary>
         protected abstract EncyData GetEncyclopediaData();
 
+        /// <summary>
+		/// In this method, you must call the armservices.main.RegisterArm function/>.
+		/// </summary>
         protected abstract void RegisterArm();
 
+        /// <summary>
+		/// Use this if You want to add custom language lines. See 'SMLHelper.V2.Handlers.<see cref="SMLHelper.V2.Handlers.LanguageHandler"/>'
+		/// </summary>
         protected abstract void SetCustomLanguageText();
 
         /// <summary>
-		/// Use this if You want modify the visual appearance of the arm in the open world.
+		/// Use this if You want modify the visual appearance of the arm in the open world. Use the '<see cref="ModdedArmsHelper.API.CraftableModdedArm.PrefabClone"/>' parameter to access the cloned arm.
 		/// </summary>
         protected abstract void ModifyGameObject();
 
+        /// <summary>
+		/// Use this to set up the sprite of the arm.
+		/// </summary>
         protected abstract Atlas.Sprite GetItemSprite();
     }
 }

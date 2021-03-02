@@ -74,7 +74,7 @@ namespace APIBasedExosuitArms.Handlers
 
                     if (Exosuit.storageContainer.container.HasRoomFor(pickupable))
                     {
-                        Animator.SetTrigger("use_tool");
+                        animator.SetTrigger("use_tool");
                         cooldownTime = (cooldownDuration = cooldownPickup);
                         shownNoRoomNotification = false;
                         return true;
@@ -90,11 +90,11 @@ namespace APIBasedExosuitArms.Handlers
                 {
                     if (x != null)
                     {
-                        Animator.SetTrigger("use_tool");
+                        animator.SetTrigger("use_tool");
                         cooldownTime = (cooldownDuration = cooldownPickup);
                         return true;
                     }
-                    Animator.SetTrigger("bash");
+                    animator.SetTrigger("bash");
                     cooldownTime = (cooldownDuration = cooldownPunch);
                     fxControl.Play(0);
                     return true;

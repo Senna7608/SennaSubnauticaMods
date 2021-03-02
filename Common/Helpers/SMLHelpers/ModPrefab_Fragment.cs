@@ -3,6 +3,7 @@ using SMLHelper.V2.Handlers;
 using System.Collections.Generic;
 using UnityEngine;
 using UWE;
+#pragma warning disable CS1591
 
 namespace Common.Helpers.SMLHelpers
 {

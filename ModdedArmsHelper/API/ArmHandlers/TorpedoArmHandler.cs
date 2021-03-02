@@ -44,11 +44,11 @@ namespace ModdedArmsHelper.API.ArmHandlers
 
         public TechType[] GetTorpedoTypes()
         {
-            TechType[] techTypes = new TechType[Vehicle.torpedoTypes.Length];
+            TechType[] techTypes = new TechType[vehicle.torpedoTypes.Length];
 
-            for (int i = 0; i < Vehicle.torpedoTypes.Length; i++)
+            for (int i = 0; i < vehicle.torpedoTypes.Length; i++)
             {
-                techTypes[i] = Vehicle.torpedoTypes[i].techType;
+                techTypes[i] = vehicle.torpedoTypes[i].techType;
             }
 
             return techTypes;

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UWE;
+#pragma warning disable CS1591
 
 namespace Common.GUIHelper
 {

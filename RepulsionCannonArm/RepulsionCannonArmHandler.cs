@@ -50,7 +50,7 @@ namespace RepulsionCannonArm
         bool IExosuitArm.OnUseDown(out float cooldownDuration)
         {
             OnShoot();
-            Animator.SetBool("cangrab_propulsioncannon", true);
+            animator.SetBool("cangrab_propulsioncannon", true);
             cooldownDuration = 1f;
             return true;
         }
@@ -63,7 +63,7 @@ namespace RepulsionCannonArm
         
         bool IExosuitArm.OnUseUp(out float cooldownDuration)
         {
-            Animator.SetBool("cangrab_propulsioncannon", false);
+            animator.SetBool("cangrab_propulsioncannon", false);
             cooldownDuration = 0f;
             return true;
         }
@@ -84,12 +84,12 @@ namespace RepulsionCannonArm
         
         void IExosuitArm.Reset()
         {
-            Animator.SetBool("cangrab_propulsioncannon", false);
+            animator.SetBool("cangrab_propulsioncannon", false);
         }
 
         public void OnShoot()
         {
-            EnergyInterface.GetValues(out float charge, out float capacity);
+            energyInterface.GetValues(out float charge, out float capacity);
 
             if (charge > 0f)
             {
@@ -149,7 +149,7 @@ namespace RepulsionCannonArm
                     }
                 }
 
-                EnergyInterface.ConsumeEnergy(4f);
+                energyInterface.ConsumeEnergy(4f);
 
                 fxControl.Play();
 

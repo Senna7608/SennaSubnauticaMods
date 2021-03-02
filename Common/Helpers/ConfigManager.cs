@@ -6,6 +6,8 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 
+#pragma warning disable CS1591
+
 namespace Common.Helpers
 {
     public abstract class ConfigManager

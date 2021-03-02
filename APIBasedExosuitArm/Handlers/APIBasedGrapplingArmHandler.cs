@@ -24,7 +24,7 @@ namespace APIBasedExosuitArms.Handlers
         
         bool IExosuitArm.OnUseDown(out float cooldownDuration)
         {
-            Animator.SetBool("use_tool", true);
+            animator.SetBool("use_tool", true);
 
             if (!rope.isLaunching)
             {
@@ -44,7 +44,7 @@ namespace APIBasedExosuitArms.Handlers
         
         bool IExosuitArm.OnUseUp(out float cooldownDuration)
         {
-            Animator.SetBool("use_tool", false);
+            animator.SetBool("use_tool", false);
             ResetHook();
             cooldownDuration = 0f;
             return true;
@@ -61,7 +61,7 @@ namespace APIBasedExosuitArms.Handlers
         
         void IExosuitArm.Reset()
         {
-            Animator.SetBool("use_tool", false);
+            animator.SetBool("use_tool", false);
             ResetHook();
         }
         

@@ -20,8 +20,8 @@
 
         public override void Awake()
         {
-            Vehicle.gameObject.EnsureComponent<ImmuneToPropulsioncannon>();            
-            propulsionCannon.energyInterface = EnergyInterface;
+            vehicle.gameObject.EnsureComponent<ImmuneToPropulsioncannon>();            
+            propulsionCannon.energyInterface = energyInterface;
             propulsionCannon.shootForce = 60f;
             propulsionCannon.attractionForce = 145f;
             propulsionCannon.massScalingFactor = 0.005f;

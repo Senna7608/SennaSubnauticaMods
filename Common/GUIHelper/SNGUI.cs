@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UWE;
 using System.Runtime.CompilerServices;
+#pragma warning disable CS1591
 
 namespace Common.GUIHelper
 {

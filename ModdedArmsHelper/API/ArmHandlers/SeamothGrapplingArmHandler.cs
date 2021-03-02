@@ -46,7 +46,7 @@ namespace ModdedArmsHelper.API.ArmHandlers
 
         public override void Start()
         {
-            worldForces = Vehicle.GetComponent<WorldForces>();
+            worldForces = vehicle.GetComponent<WorldForces>();
         }
 
     }

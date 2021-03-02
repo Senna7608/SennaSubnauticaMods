@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using UnityEngine;
+#pragma warning disable CS1591
 
 namespace Common.Helpers
 {
@@ -226,7 +227,6 @@ namespace Common.Helpers
                     SNLogger.Debug("", $"ctor parameter[{pInfo.Position}] = [{pInfo.ToString()}]");
                 }
             }
-        }
-        
+        }        
     }
 }

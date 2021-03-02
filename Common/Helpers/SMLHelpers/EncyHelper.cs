@@ -2,6 +2,9 @@
 
 namespace Common.Helpers.SMLHelpers
 {
+    /// <summary>
+    /// The defining helper class for the encyclopedia.
+    /// </summary>
     public static class EncyHelper
     {
         private static readonly Dictionary<EncyNode, string> EncyNodes = new Dictionary<EncyNode, string>()
@@ -41,19 +44,23 @@ namespace Common.Helpers.SMLHelpers
             { EncyNode.Codes,             "DownloadedData/Codes" },            
         };
 
-        public static string[] GetEncyNodes(EncyNode node)
-        {
-            return EncyNodes[node].Split('/');
-        }
+        /// <summary>
+        /// This method returning the full path of encyclopedia tab in splitted form.
+        /// </summary>
+        public static string[] GetEncyNodes(EncyNode node) => EncyNodes[node].Split('/');
 
-        public static string GetEncyPath(EncyNode node)
-        {
-            return EncyNodes[node];
-        }
+        /// <summary>
+        /// This method returning the full path of encyclopedia tab.
+        /// </summary>
+        public static string GetEncyPath(EncyNode node) => EncyNodes[node];
     }
 
+    /// <summary>
+    /// Eumeration for the encyclopedia paths.
+    /// </summary>
     public enum EncyNode
     {
+#pragma warning disable CS1591
         Welcome,
         StartGear,
         Advanced,
@@ -81,5 +88,6 @@ namespace Common.Helpers.SMLHelpers
         Artifacts,
         Scan,
         Codes
+#pragma warning restore CS1591
     }
 }

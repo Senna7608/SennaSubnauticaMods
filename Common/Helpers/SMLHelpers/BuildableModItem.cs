@@ -3,6 +3,7 @@ using SMLHelper.V2.Crafting;
 using SMLHelper.V2.Handlers;
 using SMLHelper.V2.Utility;
 using UnityEngine;
+#pragma warning disable CS1591
 
 namespace Common.Helpers.SMLHelpers
 {

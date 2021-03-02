@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
+#pragma warning disable CS1591
 namespace Common.ConfigurationParser
 {
     public class ConfigData : List<ConfigData>
@@ -188,6 +188,5 @@ namespace Common.ConfigurationParser
 
             parser.ClearAndWrite(section);
         }
-
     }
 }

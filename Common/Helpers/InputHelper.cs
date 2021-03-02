@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System;
-using System.Reflection;
+#pragma warning disable CS1591
 
 namespace Common.Helpers
-{    
+{
     public static class InputHelper
     {
         public static string GetKeyCodeAsInputName(KeyCode keyCode)
@@ -199,6 +199,5 @@ namespace Common.Helpers
                     }
             }
         }
-
     }
 }

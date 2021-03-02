@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-
+#pragma warning disable CS1591
 namespace Common.ConfigurationParser
 {
     public class FileReader

@@ -107,14 +107,14 @@ namespace SeamothArms.InternalArmHandlers
 
         void ISeamothArm.SetRotation(SeamothArm arm, bool isDocked)
         {
-            if (Seamoth == null)
+            if (seamoth == null)
             {
                 return;
             }
 
             if (isDocked)
             {
-                SubRoot subRoot = Seamoth.GetComponentInParent<SubRoot>();
+                SubRoot subRoot = seamoth.GetComponentInParent<SubRoot>();
 
                 if (subRoot.isCyclops)
                 {

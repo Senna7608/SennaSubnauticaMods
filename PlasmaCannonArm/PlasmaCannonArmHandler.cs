@@ -63,7 +63,7 @@ namespace PlasmaCannonArm
         
         bool IExosuitArm.OnUseUp(out float cooldownDuration)
         {
-            Animator.SetBool("use_tool", false);
+            animator.SetBool("use_tool", false);
             cooldownDuration = 0f;
             return true;
         }        
@@ -74,7 +74,7 @@ namespace PlasmaCannonArm
 
         void IExosuitArm.Reset()
         {
-            Animator.SetBool("use_tool", false);
+            animator.SetBool("use_tool", false);
         }
 
         public bool OnAltDown()
@@ -110,7 +110,7 @@ namespace PlasmaCannonArm
             
             audioSource.Play();
 
-            Animator.SetBool("use_tool", true);
+            animator.SetBool("use_tool", true);
 
             Exosuit.GetComponent<EnergyInterface>().ConsumeEnergy(energyCosumption);
 
@@ -158,7 +158,7 @@ namespace PlasmaCannonArm
                 }
             }
 
-            Animator.SetBool("use_tool", false);
+            animator.SetBool("use_tool", false);
             cooldownDuration = 0f;
             return false;
         }

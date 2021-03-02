@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+#pragma warning disable CS1591
 
 namespace Common
 {

@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+#pragma warning disable CS1591
 
 namespace Common.ConfigurationParser
 {
@@ -113,4 +114,5 @@ namespace Common.ConfigurationParser
         }        
     }
 }
+
 

@@ -29,7 +29,7 @@ namespace APIBasedExosuitArms.Handlers
 
         bool IExosuitArm.OnUseDown(out float cooldownDuration)
         {
-            Animator.SetBool("use_tool", true);
+            animator.SetBool("use_tool", true);
             drilling = true;
             loop.Play();
             cooldownDuration = 0f;
@@ -45,7 +45,7 @@ namespace APIBasedExosuitArms.Handlers
 
         bool IExosuitArm.OnUseUp(out float cooldownDuration)
         {
-            Animator.SetBool("use_tool", false);
+            animator.SetBool("use_tool", false);
             drilling = false;
             StopEffects();
             cooldownDuration = 0f;
@@ -72,7 +72,7 @@ namespace APIBasedExosuitArms.Handlers
 
         void IExosuitArm.Reset()
         {
-            Animator.SetBool("use_tool", false);
+            animator.SetBool("use_tool", false);
             drilling = false;
             StopEffects();
         }

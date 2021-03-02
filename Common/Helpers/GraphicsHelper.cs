@@ -2,6 +2,7 @@
 using System.IO;
 using System.Reflection;
 using UnityEngine;
+#pragma warning disable CS1591
 
 namespace Common.Helpers
 {

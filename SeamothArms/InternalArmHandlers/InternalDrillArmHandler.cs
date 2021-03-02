@@ -30,7 +30,7 @@ namespace SeamothArms.InternalArmHandlers
 
         bool ISeamothArm.OnUseDown(out float cooldownDuration)
         {
-            Animator.SetBool("use_tool", true);
+            animator.SetBool("use_tool", true);
             drilling = true;
             loop.Play();
             cooldownDuration = 0f;
@@ -48,7 +48,7 @@ namespace SeamothArms.InternalArmHandlers
 
         bool ISeamothArm.OnUseUp(out float cooldownDuration)
         {
-            Animator.SetBool("use_tool", false);
+            animator.SetBool("use_tool", false);
             drilling = false;
             StopEffects();
             cooldownDuration = 0f;
@@ -65,9 +65,9 @@ namespace SeamothArms.InternalArmHandlers
                        
         void ISeamothArm.Update(ref Quaternion aimDirection)
         {
-            if (Seamoth.docked && !isResetted)
+            if (seamoth.docked && !isResetted)
             {
-                Animator.SetBool("use_tool", false);
+                animator.SetBool("use_tool", false);
                 drilling = false;
                 StopEffects();
                 isResetted = true;
@@ -88,7 +88,7 @@ namespace SeamothArms.InternalArmHandlers
         
         void ISeamothArm.Reset()
         {
-            Animator.SetBool("use_tool", false);
+            animator.SetBool("use_tool", false);
             drilling = false;
             StopEffects();
         }            
@@ -98,14 +98,14 @@ namespace SeamothArms.InternalArmHandlers
 #if DEBUG
             if (true)
 #else
-            if (Seamoth.CanPilot() && Seamoth.GetPilotingMode())
+            if (seamoth.CanPilot() && seamoth.GetPilotingMode())
 #endif
             {
                 Vector3 pos = Vector3.zero;
                 GameObject hitObject = null;
                 drillTarget = null;
 
-                UWE.Utils.TraceFPSTargetPosition(Seamoth.gameObject, attackDist, ref hitObject, ref pos, true);
+                UWE.Utils.TraceFPSTargetPosition(seamoth.gameObject, attackDist, ref hitObject, ref pos, true);
 
                 if (hitObject == null)
                 {
@@ -124,7 +124,7 @@ namespace SeamothArms.InternalArmHandlers
                     
                     if (drillable)
                     {
-                        drillable.OnDrill(fxSpawnPoint.position, Seamoth, out GameObject gameObject2);
+                        drillable.OnDrill(fxSpawnPoint.position, seamoth, out GameObject gameObject2);
 
                         if (!gameObject2)
                         {
@@ -214,14 +214,14 @@ namespace SeamothArms.InternalArmHandlers
 
         void ISeamothArm.SetRotation(SeamothArm arm, bool isDocked)
         {
-            if (Seamoth == null)
+            if (seamoth == null)
             {
                 return;
             }
 
             if (isDocked)
             {
-                SubRoot subRoot = Seamoth.GetComponentInParent<SubRoot>();
+                SubRoot subRoot = seamoth.GetComponentInParent<SubRoot>();
 
                 if (subRoot.isCyclops)
                 {

@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Linq;
+#pragma warning disable CS1591
 
 namespace Common.ConfigurationParser
 {

@@ -26,7 +26,7 @@ namespace SeamothArms.InternalArmHandlers
         
         bool ISeamothArm.OnUseDown(out float cooldownDuration)
         {
-            Animator.SetBool("use_tool", true);
+            animator.SetBool("use_tool", true);
 
             if (!rope.isLaunching)
             {
@@ -46,7 +46,7 @@ namespace SeamothArms.InternalArmHandlers
         
         bool ISeamothArm.OnUseUp(out float cooldownDuration)
         {
-            Animator.SetBool("use_tool", false);
+            animator.SetBool("use_tool", false);
             ResetHook();
             cooldownDuration = 0f;
             return true;
@@ -63,7 +63,7 @@ namespace SeamothArms.InternalArmHandlers
         
         void ISeamothArm.Reset()
         {
-            Animator.SetBool("use_tool", false);
+            animator.SetBool("use_tool", false);
             ResetHook();
         }
         
@@ -97,7 +97,7 @@ namespace SeamothArms.InternalArmHandlers
             GameObject x = null;
             Vector3 a = default(Vector3);
 
-            UWE.Utils.TraceFPSTargetPosition(Seamoth.gameObject, 100f, ref x, ref a, false);
+            UWE.Utils.TraceFPSTargetPosition(seamoth.gameObject, 100f, ref x, ref a, false);
 
             if (x == null || x == hook.gameObject)
             {
@@ -109,7 +109,7 @@ namespace SeamothArms.InternalArmHandlers
             hook.rb.velocity = a2 * 25f;
             Utils.PlayFMODAsset(shootSound, front, 15f);
 
-            grapplingStartPos = Seamoth.transform.position;
+            grapplingStartPos = seamoth.transform.position;
         }
         
         public void FixedUpdate()
@@ -124,12 +124,12 @@ namespace SeamothArms.InternalArmHandlers
 
                 if (magnitude > 1f)
                 {
-                    if (!IsUnderwater() && Seamoth.transform.position.y + 0.2f >= grapplingStartPos.y)
+                    if (!IsUnderwater() && seamoth.transform.position.y + 0.2f >= grapplingStartPos.y)
                     {
                         a.y = Mathf.Min(a.y, 0f);
                     }
 
-                    Seamoth.GetComponent<Rigidbody>().AddForce(a * seamothGrapplingAccel, ForceMode.Acceleration);
+                    seamoth.GetComponent<Rigidbody>().AddForce(a * seamothGrapplingAccel, ForceMode.Acceleration);
                     hook.GetComponent<Rigidbody>().AddForce(-a * 400f, ForceMode.Force);
                 }
 
@@ -166,14 +166,14 @@ namespace SeamothArms.InternalArmHandlers
 
         void ISeamothArm.SetRotation(SeamothArm arm, bool isDocked)
         {
-            if (Seamoth == null)
+            if (seamoth == null)
             {
                 return;
             }
 
             if (isDocked)
             {
-                SubRoot subRoot = Seamoth.GetComponentInParent<SubRoot>();
+                SubRoot subRoot = seamoth.GetComponentInParent<SubRoot>();
 
                 if (subRoot.isCyclops)
                 {
@@ -205,7 +205,7 @@ namespace SeamothArms.InternalArmHandlers
 
         private bool IsUnderwater()
         {
-            return Seamoth.transform.position.y < worldForces.waterDepth + 2f && !Seamoth.precursorOutOfWater;
+            return seamoth.transform.position.y < worldForces.waterDepth + 2f && !seamoth.precursorOutOfWater;
         }
 
         public bool GetIsGrappling()

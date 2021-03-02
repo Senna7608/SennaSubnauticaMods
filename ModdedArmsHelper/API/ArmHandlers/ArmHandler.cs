@@ -1,14 +1,28 @@
 ﻿using UnityEngine;
+#pragma warning disable IDE1006 //Naming styles
 
 namespace ModdedArmsHelper.API.ArmHandlers
 {
+    /// <summary>
+    /// The abstract component to inherit for handling the arm.
+    /// </summary>
     public abstract class ArmHandler : MonoBehaviour
     {
+        /// <summary>
+        /// Implement this method in your arm handler.
+        /// </summary>
         public abstract void Awake();
+        /// <summary>
+        /// Implement this method in your arm handler.
+        /// </summary>
         public abstract void Start();
 
         private Vehicle _vehicle = null;
-        public Vehicle Vehicle
+
+        /// <summary>
+        /// This property is returning the <see cref="Vehicle"/> component.
+        /// </summary>
+        public Vehicle vehicle
         {
             get
             {
@@ -22,7 +36,10 @@ namespace ModdedArmsHelper.API.ArmHandlers
         }
 
         private SeaMoth _seamoth = null;
-        public SeaMoth Seamoth
+        /// <summary>
+        /// This property is returning the <see cref="SeaMoth"/> component. If exists.
+        /// </summary> 
+        public SeaMoth seamoth
         {
             get
             {
@@ -36,7 +53,10 @@ namespace ModdedArmsHelper.API.ArmHandlers
         }
 
         private Exosuit _exosuit = null;
-        public Exosuit Exosuit
+        /// <summary>
+        /// This property is returning the <see cref="Exosuit"/> component. If exists.
+        /// </summary>
+        public Exosuit exosuit
         {
             get
             {
@@ -50,7 +70,10 @@ namespace ModdedArmsHelper.API.ArmHandlers
         }       
 
         private Animator _animator = null;
-        public Animator Animator
+        /// <summary>
+        /// This property is returning the <see cref="Animator"/> component. If exists in the arm gameobject.
+        /// </summary>
+        public Animator animator
         {
             get
             {
@@ -64,7 +87,10 @@ namespace ModdedArmsHelper.API.ArmHandlers
         }
 
         private EnergyInterface _energyInterface = null;
-        public EnergyInterface EnergyInterface
+        /// <summary>
+        /// This property is returning the <see cref="EnergyInterface"/> component. If exists in the arm parent gameobject.
+        /// </summary>
+        public EnergyInterface energyInterface
         {
             get
             {
@@ -78,7 +104,10 @@ namespace ModdedArmsHelper.API.ArmHandlers
         }
 
         private ArmTag _armTag = null;
-        public ArmTag ArmTag
+        /// <summary>
+        /// This property is returning the <see cref="ModdedArmsHelper.API.ArmTag"/> component.
+        /// </summary>
+        public ArmTag armTag
         {
             get
             {

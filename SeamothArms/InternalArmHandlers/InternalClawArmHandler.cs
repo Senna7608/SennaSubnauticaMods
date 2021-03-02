@@ -64,7 +64,7 @@ namespace SeamothArms.InternalArmHandlers
                 Pickupable pickupable = null;
                 PickPrefab x = null;                
 
-                GameObject activeTarget = ArmServices.main.GetActiveTarget(Seamoth);
+                GameObject activeTarget = ArmServices.main.GetActiveTarget(seamoth);
 
                 if (activeTarget)
                 {
@@ -74,9 +74,9 @@ namespace SeamothArms.InternalArmHandlers
                 if (pickupable != null && pickupable.isPickupable)
                 {
                     
-                    if (ArmServices.main.GetRoomForItem(Seamoth, pickupable) != null)
+                    if (ArmServices.main.GetRoomForItem(seamoth, pickupable) != null)
                     {
-                        Animator.SetTrigger("use_tool");
+                        animator.SetTrigger("use_tool");
                         cooldownTime = (cooldownDuration = cooldownPickup);
                         shownNoRoomNotification = false;
                         return true;
@@ -92,11 +92,11 @@ namespace SeamothArms.InternalArmHandlers
                 {
                     if (x != null)
                     {
-                        Animator.SetTrigger("use_tool");
+                        animator.SetTrigger("use_tool");
                         cooldownTime = (cooldownDuration = cooldownPickup);
                         return true;
                     }
-                    Animator.SetTrigger("bash");
+                    animator.SetTrigger("bash");
                     cooldownTime = (cooldownDuration = cooldownPunch);
                     fxControl.Play(0);
                     return true;
@@ -108,12 +108,12 @@ namespace SeamothArms.InternalArmHandlers
 
         public void OnHit()
         {            
-            if (Seamoth.CanPilot() && Seamoth.GetPilotingMode())
+            if (seamoth.CanPilot() && seamoth.GetPilotingMode())
             {
                 Vector3 position = default(Vector3);
                 GameObject targetObject = null;
 
-                UWE.Utils.TraceFPSTargetPosition(Seamoth.gameObject, 6.5f, ref targetObject, ref position, true);
+                UWE.Utils.TraceFPSTargetPosition(seamoth.gameObject, 6.5f, ref targetObject, ref position, true);
 
                 if (targetObject == null)
                 {
@@ -138,7 +138,7 @@ namespace SeamothArms.InternalArmHandlers
                     }
                     VFXSurface component2 = targetObject.GetComponent<VFXSurface>();
                     Vector3 euler = MainCameraControl.main.transform.eulerAngles + new Vector3(300f, 90f, 0f);
-                    VFXSurfaceTypeManager.main.Play(component2, vfxEventType, position, Quaternion.Euler(euler), Seamoth.gameObject.transform);
+                    VFXSurfaceTypeManager.main.Play(component2, vfxEventType, position, Quaternion.Euler(euler), seamoth.gameObject.transform);
                     targetObject.SendMessage("BashHit", this, SendMessageOptions.DontRequireReceiver);
                 }
             }
@@ -146,14 +146,14 @@ namespace SeamothArms.InternalArmHandlers
 
         public void OnPickup()
         {            
-            GameObject activeTarget = ArmServices.main.GetActiveTarget(Seamoth);
+            GameObject activeTarget = ArmServices.main.GetActiveTarget(seamoth);
 
             if (activeTarget)
             {
                 Pickupable pickupable = activeTarget.GetComponent<Pickupable>();
                 PickPrefab component = activeTarget.GetComponent<PickPrefab>();
 
-                ItemsContainer container = ArmServices.main.GetRoomForItem(Seamoth, pickupable);
+                ItemsContainer container = ArmServices.main.GetRoomForItem(seamoth, pickupable);
 
                 if (pickupable != null && pickupable.isPickupable && container != null)
                 {
@@ -191,14 +191,14 @@ namespace SeamothArms.InternalArmHandlers
 
         void ISeamothArm.SetRotation(SeamothArm arm, bool isDocked)
         {
-            if (Seamoth == null)
+            if (seamoth == null)
             {
                 return;
             }
 
             if (isDocked)
             {                
-                SubRoot subRoot = Seamoth.GetComponentInParent<SubRoot>();
+                SubRoot subRoot = seamoth.GetComponentInParent<SubRoot>();
                 
                 if (subRoot.isCyclops)
                 {

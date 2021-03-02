@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace ModdedArmsHelper
 {
+#pragma warning disable CS1591
     [QModCore]
     public static class Main
     {
@@ -30,4 +31,5 @@ namespace ModdedArmsHelper
             }
         }
     }
+#pragma warning restore CS1591
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using System;
+#pragma warning disable CS1591
 
 namespace Common.ConfigurationParser
 {
