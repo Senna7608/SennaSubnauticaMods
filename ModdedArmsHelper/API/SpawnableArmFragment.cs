@@ -1,6 +1,10 @@
-﻿using Common.Helpers.SMLHelpers;
+﻿using Common;
+using SMLExpander;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+#pragma warning disable CS1591 //XML documentation
 
 namespace ModdedArmsHelper.API
 {
@@ -21,7 +25,7 @@ namespace ModdedArmsHelper.API
             string techTypeName,
             string friendlyName,
             ArmTemplate fragmentTemplate,
-            LargeWorldEntity.CellLevel cellLevel = LargeWorldEntity.CellLevel.Medium,
+            string prefabFilePath,            
             float scanTime = 3,
             int totalFragments = 3
             )
@@ -30,9 +34,10 @@ namespace ModdedArmsHelper.API
             techTypeName,
             friendlyName,
             template: ArmFragmentTypes[fragmentTemplate],
+            prefabFilePath: prefabFilePath,
             slotType: EntitySlot.Type.Medium,
             prefabZUp: false,
-            cellLevel: cellLevel,
+            cellLevel: LargeWorldEntity.CellLevel.Medium,
             localScale: new Vector3(0.8f, 0.8f, 0.8f),
             scanTime: scanTime,
             totalFragments: totalFragments,
@@ -42,11 +47,11 @@ namespace ModdedArmsHelper.API
             ArmFragmentTemplate = fragmentTemplate;
         }
 
-        protected override void ModifyGameObject()
+        protected override IEnumerator ModifyGameObjectAsync(IOut<bool> success)
         {
             if (ArmFragmentTemplate == ArmTemplate.ClawArm)
             {
-                Main.graphics.ArmsTemplateCache.TryGetValue(ArmTemplate.ClawArm, out GameObject armPrefab);
+                Main.armsGraphics.ArmsTemplateCache.TryGetValue(ArmTemplate.ClawArm, out GameObject armPrefab);
 
                 SkinnedMeshRenderer smr = armPrefab.GetComponentInChildren<SkinnedMeshRenderer>();
                 Mesh clawMesh = smr.sharedMesh;
@@ -60,9 +65,19 @@ namespace ModdedArmsHelper.API
 
             GameObjectClone.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
 
-            PostModify();
+            TaskResult<bool> modifyResult = new TaskResult<bool>();
+            CoroutineTask<bool> modifyRequest = new CoroutineTask<bool>(PostModifyGameObjectAsync(modifyResult), modifyResult);
+            yield return modifyRequest;
+            if (!modifyRequest.GetResult())
+            {
+                SNLogger.Error("PostModifyGameObjectAsync failed!");
+                yield break;
+            }
+
+            success.Set(true);
+            yield break;
         }
 
-        protected abstract void PostModify();
+        protected abstract IEnumerator PostModifyGameObjectAsync(IOut<bool> success);
     }
 }

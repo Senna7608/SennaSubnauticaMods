@@ -1,9 +1,0 @@
-﻿{
-  "Id": "RotateMoonPool",
-  "DisplayName": "RotateMoonPool",
-  "Author": "Senna",
-  "Version": "1.0",   
-  "Enable": true,
-  "Game": "Subnautica",
-  "AssemblyName": "RotateMoonPool.dll" 
-}

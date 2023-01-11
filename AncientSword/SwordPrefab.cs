@@ -2,7 +2,11 @@
 using SMLHelper.V2.Crafting;
 using UnityEngine;
 using FMODUnity;
-using Common.Helpers.SMLHelpers;
+using SMLExpander;
+using SMLHelper.V2.Utility;
+using System.Collections;
+using UWE;
+using Common;
 
 namespace AncientSword
 {
@@ -11,33 +15,27 @@ namespace AncientSword
         public static TechType TechTypeID { get; private set; }
 
         internal SwordPrefab()
-            : base(nameID: "AncientSword",
-                  iconFilePath: $"{Main.modFolder}/Assets/AncientSword.png",
-                  iconTechType: TechType.None,
+            : base(techTypeName: "AncientSword",
                   friendlyName: "Ancient Sword",
                   description: "An ancient sword from Earth.\nFound in an ancient Precursor facility.",
                   template: TechType.None,
-                  newTabNode: null,
-                  fabricatorTypes: new CraftTree.Type[] { CraftTree.Type.Fabricator },
-                  fabricatorTabs: new string[][] { new string[] { "Personal", "Tools", "AncientSword" } },                  
-                  requiredAnalysis: TechType.None,
+                  gamerResourceFileName: "WorldEntities/Doodads/Precursor/Prison/Relics/Alien_relic_08.prefab",              
+                  requiredAnalysis: TechType.HeatBlade,
                   groupForPDA: TechGroup.Personal,
                   categoryForPDA: TechCategory.Tools,
                   equipmentType: EquipmentType.Hand,
                   quickSlotType: QuickSlotType.Passive,
                   backgroundType: CraftData.BackgroundType.Normal,
                   itemSize: new Vector2int(1,1),                  
-                  gamerResourceFileName: "worldentities/doodads/precursor/prison/relics/alien_relic_08",
                   fragment: null
                   )
         {
         }
-               
-        public override void Patch()
+
+        protected override void PrePatch()
         {
-            base.Patch();
-            TechTypeID = TechType;
-        }
+            TechTypeID = TechType;            
+        }                
         
         protected override TechData GetRecipe()
         {
@@ -52,22 +50,25 @@ namespace AncientSword
                     new Ingredient(TechType.Diamond, 2)
                 })
             };
+        }
+
+        protected override EncyData GetEncyclopediaData()
+        {
+            return null;
         }        
         
-        public override GameObject GetGameObject()
+        protected override IEnumerator ModifyGameObjectAsync(IOut<bool> success)
         {
-            base.GetGameObject();
-
-            GameObject modelGO = _GameObject.transform.Find("alien_relic_08_world_rot/alien_relic_08_hlpr/alien_relic_08_ctrl/alien_relic_08").gameObject;
+            GameObject modelGO = GameObjectClone.transform.Find("alien_relic_08_world_rot/alien_relic_08_hlpr/alien_relic_08_ctrl/alien_relic_08").gameObject;
             
-            modelGO.transform.SetParent(_GameObject.transform, false);
+            modelGO.transform.SetParent(GameObjectClone.transform, false);
             modelGO.name = "sword_model";
             modelGO.transform.localPosition = new Vector3(0.06f, 0.27f, 0.05f);
             modelGO.transform.localRotation = Quaternion.Euler(350f, 265f, 172f);
             modelGO.transform.localScale = new Vector3(0.63f, 0.63f, 0.63f);
 
             GameObject colliderGO = new GameObject("collider_container");
-            colliderGO.transform.SetParent(_GameObject.transform, false);
+            colliderGO.transform.SetParent(GameObjectClone.transform, false);
             colliderGO.transform.localPosition = new Vector3(0f, 0.13f, 0.02f);
             colliderGO.transform.localScale = new Vector3(1f, 1f, 1f);
             colliderGO.transform.localRotation = Quaternion.Euler(7f, 358f, 355f);
@@ -76,30 +77,30 @@ namespace AncientSword
             boxCollider.size = new Vector3(0.13f, 0.83f, 0.05f);
             boxCollider.center = new Vector3(0f, 0.12f, 0f);
 
-            Object.DestroyImmediate(_GameObject.FindChild("Cube"));
-            Object.DestroyImmediate(_GameObject.FindChild("alien_relic_08_world_rot"));
-            Object.DestroyImmediate(_GameObject.GetComponent<ImmuneToPropulsioncannon>());
-            Object.DestroyImmediate(_GameObject.GetComponent<CapsuleCollider>());
-            Object.DestroyImmediate(_GameObject.GetComponent<EntityTag>());
+            Object.DestroyImmediate(GameObjectClone.FindChild("Cube"));
+            Object.DestroyImmediate(GameObjectClone.FindChild("alien_relic_08_world_rot"));
+            Object.DestroyImmediate(GameObjectClone.GetComponent<ImmuneToPropulsioncannon>());
+            Object.DestroyImmediate(GameObjectClone.GetComponent<CapsuleCollider>());
+            Object.DestroyImmediate(GameObjectClone.GetComponent<EntityTag>());
 
-            _GameObject.EnsureComponent<PrefabIdentifier>().ClassId = ClassID;
-            _GameObject.EnsureComponent<TechTag>().type = TechType;
-            _GameObject.EnsureComponent<Pickupable>().isPickupable = true;
-            _GameObject.EnsureComponent<LargeWorldEntity>().cellLevel = LargeWorldEntity.CellLevel.Near;
+            GameObjectClone.EnsureComponent<PrefabIdentifier>().ClassId = ClassID;
+            GameObjectClone.EnsureComponent<TechTag>().type = TechType;
+            GameObjectClone.EnsureComponent<Pickupable>().isPickupable = true;
+            GameObjectClone.EnsureComponent<LargeWorldEntity>().cellLevel = LargeWorldEntity.CellLevel.Near;
 
-            _GameObject.EnsureComponent<VFXSurface>();
-            _GameObject.EnsureComponent<EcoTarget>();
-            _GameObject.EnsureComponent<FMOD_CustomEmitter>();
-            _GameObject.EnsureComponent<StudioEventEmitter>();
+            GameObjectClone.EnsureComponent<VFXSurface>();
+            GameObjectClone.EnsureComponent<EcoTarget>();
+            GameObjectClone.EnsureComponent<FMOD_CustomEmitter>();
+            GameObjectClone.EnsureComponent<StudioEventEmitter>();
 
-            SkyApplier skyApplier = _GameObject.EnsureComponent<SkyApplier>();
-            skyApplier.renderers = _GameObject.GetComponentsInChildren<MeshRenderer>();
+            SkyApplier skyApplier = GameObjectClone.EnsureComponent<SkyApplier>();
+            skyApplier.renderers = GameObjectClone.GetComponentsInChildren<MeshRenderer>();
             skyApplier.anchorSky = Skies.Auto;
 
-            Rigidbody rigidbody = _GameObject.EnsureComponent<Rigidbody>();
+            Rigidbody rigidbody = GameObjectClone.EnsureComponent<Rigidbody>();
             rigidbody.useGravity = false;
 
-            WorldForces worldForces = _GameObject.EnsureComponent<WorldForces>();
+            WorldForces worldForces = GameObjectClone.EnsureComponent<WorldForces>();
             worldForces.underwaterGravity = 1f;
             worldForces.handleGravity = true;
             worldForces.aboveWaterDrag = 1f;
@@ -114,23 +115,53 @@ namespace AncientSword
             vfxFabricating.eulerOffset = new Vector3(0f, 0f, 90f);
             vfxFabricating.scaleFactor = 1f;
 
-            AncientSword component = _GameObject.EnsureComponent<AncientSword>();
+            AncientSwordHandler component = GameObjectClone.EnsureComponent<AncientSwordHandler>();
 
-            Knife knife = Resources.Load<GameObject>("WorldEntities/Tools/Knife").GetComponent<Knife>();
+            //Knife knife = Resources.Load<GameObject>("WorldEntities/Tools/Knife").GetComponent<Knife>();
+
+            IPrefabRequest request = PrefabDatabase.GetPrefabForFilenameAsync("WorldEntities/Tools/Knife.prefab");
+
+            yield return request;
+
+            if (!request.TryGetPrefab(out GameObject prefab))
+            {
+                SNLogger.Error("Cannot load [Knife] prefab!");
+                yield break;
+            }
+
+            Knife knife = prefab.GetComponent<Knife>();
 
             component.mainCollider = boxCollider;
             component.socket = PlayerTool.Socket.RightHand;
             component.ikAimRightArm = true;
-            component.attackSound = Object.Instantiate(knife.attackSound, _GameObject.transform);
-            component.underwaterMissSound = Object.Instantiate(knife.underwaterMissSound, _GameObject.transform);
-            component.surfaceMissSound = Object.Instantiate(knife.surfaceMissSound, _GameObject.transform);
 
-            return _GameObject;
+            component.attackSound = Object.Instantiate(knife.attackSound, GameObjectClone.transform);
+            component.underwaterMissSound = Object.Instantiate(knife.underwaterMissSound, GameObjectClone.transform);
+            component.surfaceMissSound = Object.Instantiate(knife.surfaceMissSound, GameObjectClone.transform);
+
+            success.Set(true);
+            yield break;
         }
 
-        protected override EncyData GetEncyclopediaData()
+        protected override CrafTreeTypesData GetCraftTreeTypesData()
+        {
+            return new CrafTreeTypesData()
+            {
+                TreeTypes = new List<CraftTreeType>()
+                {
+                    new CraftTreeType(CraftTree.Type.Fabricator, new string[] { "Personal", "Tools" } )
+                }
+            };
+        }
+
+        protected override TabNode GetTabNodeData()
         {
             return null;
+        }
+
+        protected override Atlas.Sprite GetItemSprite()
+        {
+            return ImageUtils.LoadSpriteFromFile($"{Main.modFolder}/Assets/AncientSword.png");
         }
     }
 }

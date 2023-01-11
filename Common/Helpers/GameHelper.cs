@@ -13,10 +13,10 @@ namespace Common.Helpers
 
         public static void SetInteractColor(Color color, bool isSetSecondary = true)
         {
-            HandReticle.main.interactPrimaryText.color = color;
+            HandReticle.main.compTextHand.color = color;
 
             if (isSetSecondary)
-                HandReticle.main.interactSecondaryText.color = color;
+                HandReticle.main.compTextUse.color = color;
         }      
 
         public static int GetSlotIndex(Vehicle vehicle, TechType techType)

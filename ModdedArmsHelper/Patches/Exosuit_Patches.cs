@@ -11,7 +11,7 @@ namespace ModdedArmsHelper.Patches
         [HarmonyPrefix]
         public static bool Prefix(Exosuit __instance, TechType techType, ref GameObject __result)
         {
-            if (Main.graphics.ModdedArmPrefabs.TryGetValue(techType, out GameObject moddedArmPrefab))
+            if (Main.armsGraphics.ModdedArmPrefabs.TryGetValue(techType, out GameObject moddedArmPrefab))
             {
                 __result = moddedArmPrefab;
                 return false;
@@ -30,7 +30,7 @@ namespace ModdedArmsHelper.Patches
         [HarmonyPostfix]
         public static void Postfix(Exosuit __instance, TechType techType, Transform parent, ref IExosuitArm __result)
         {
-            if (Main.graphics.ModdedArmPrefabs.ContainsKey(techType))
+            if (Main.armsGraphics.ModdedArmPrefabs.ContainsKey(techType))
             {
                 __result.GetGameObject().SetActive(true);                
             }            
@@ -44,7 +44,7 @@ namespace ModdedArmsHelper.Patches
         [HarmonyPrefix]
         public static bool Prefix(Exosuit __instance, int slotID, TechType techType, bool added)
         {
-            if (Main.graphics.ModdedArmPrefabs.ContainsKey(techType))
+            if (Main.armsGraphics.ModdedArmPrefabs.ContainsKey(techType))
             {
                 __instance.MarkArmsDirty();
                 return false;

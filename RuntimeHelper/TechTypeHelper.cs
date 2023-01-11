@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace RuntimeHelper
 {
-    public partial class RuntimeHelper
+    public partial class RuntimeHelperManager
     {
         public List<TechTypeData> techTypeDatas = new List<TechTypeData>();
 
@@ -337,7 +337,7 @@ namespace RuntimeHelper
             TechType.StarshipDeskBlueprint,
             TechType.StarshipMonitorBlueprint,
             TechType.StasisRifleBlueprint,
-            TechType.StillsuitBlueprint,
+            //TechType.StillsuitBlueprint,
             TechType.TechlightBlueprint,
             TechType.TerraformerBlueprint,
             TechType.ThermalPlantBlueprint,
@@ -372,7 +372,7 @@ namespace RuntimeHelper
             TechType.BioreactorFragment,
             TechType.PrecursorLostRiverLabBones,
             TechType.DiveSuit,
-            TechType.StillsuitFragment,
+            //TechType.StillsuitFragment,
             TechType.CombustibleOld,
             TechType.SeamothFragment,
             TechType.DolomiteOld,

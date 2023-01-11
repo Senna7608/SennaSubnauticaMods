@@ -136,7 +136,7 @@ namespace RepairModule
                 energyMixin.ConsumeEnergy(powerConsumption * Time.deltaTime);                    
                 main.SetIcon(HandReticle.IconType.Progress, 1.5f);
                 thisVehicle.liveMixin.health += Time.deltaTime * repairPerSec;                    
-                main.SetInteractText("Repairing...", false, HandReticle.Hand.None);
+                main.SetText(HandReticle.TextType.Hand, "Repairing...", false, GameInput.Button.None);
 
                 if (thisVehicle.liveMixin.health < thisVehicle.liveMixin.maxHealth * 0.5f)                    
                 {
@@ -170,7 +170,8 @@ namespace RepairModule
                     weldSound.Stop();
                     idleTimer = Mathf.Max(0f, idleTimer - Time.deltaTime);
                     SetInteractColor(Color.red);
-                    main.SetInteractText("Warning!\nLow Power!", "Repair Module Disabled!", false, false, HandReticle.Hand.None);
+                    main.SetText(HandReticle.TextType.Hand, "Warning!\nLow Power!", false, GameInput.Button.None);
+                    main.SetText(HandReticle.TextType.HandSubscript, "Repair Module Disabled!", false, GameInput.Button.None);
                 }
                 else
                 {                        

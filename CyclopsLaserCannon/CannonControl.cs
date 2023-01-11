@@ -3,8 +3,9 @@ using UnityEngine;
 using UWE;
 using Common;
 using System.Collections;
-using MoreCyclopsUpgrades.API.Upgrades;
-using MoreCyclopsUpgrades.API;
+using SMLHelper.V2.Utility;
+using static Common.Helpers.GraphicsHelper;
+using System;
 
 namespace CyclopsLaserCannonModule
 {
@@ -29,12 +30,11 @@ namespace CyclopsLaserCannonModule
 
         public SubRoot subroot;
         public SubControl subcontrol;
-        public CannonCamera camera_instance;        
-
-        private AudioSource audioSource;
+        public CannonCamera camera_instance;
+        
         private readonly TechType laserCannon = CannonPrefab.TechTypeID;        
         
-        private readonly float fireRate = 0.5f;
+        private readonly float fireRate = 0.8f;
         private float nextFire;        
         private const float maxLaserDistance = 100f;        
         private float targetDist;
@@ -44,68 +44,121 @@ namespace CyclopsLaserCannonModule
         private Vector3[] left_left_beamPositions = new Vector3[2];
         private GameObject targetGameobject;        
         private Vector3 targetPosition;
-
-        private UpgradeHandler upgradeHandler;
-        
+        private FMODAsset turret_fire;
+        private FMOD_CustomEmitter turretLeftSound;
+        private FMOD_CustomEmitter turretRightSound;
+        public bool asyncOperationsComplete = false;
 
         public void Awake()
         {
+            SNLogger.Debug("CannonControl: Awake started...");
+
             Instance = this;
 
             This_Cyclops_Root = gameObject;
 
             subroot = This_Cyclops_Root.GetComponent<SubRoot>();
-            subcontrol = This_Cyclops_Root.GetComponent<SubControl>();            
+            subcontrol = This_Cyclops_Root.GetComponent<SubControl>();
 
+            subroot.upgradeConsole.modules.onEquip += OnEquip;
+            subroot.upgradeConsole.modules.onUnequip += OnUnequip;
+            
             Main.onConfigurationChanged.AddHandler(this, new Event<string>.HandleFunction(OnConfigurationChanged));
 
             CreateCannonCamera();
             CreateCannonButton();
-            CreateCannonRight();
-            CreateCannonLeft();
+            CreateUpgradeConsoleIcon();
 
-            LaserCannonSetActive(false);
+            StartCoroutine(AwakeAsync());
 
-            GameObject laser_sound = Instantiate(Main.assetBundle.LoadAsset<GameObject>("turret_sound"), CannonCamPosition.transform);
-            audioSource = laser_sound.GetComponent<AudioSource>();
+            SNLogger.Debug("AwakeAsync started...");
+        }        
+
+        public IEnumerator AwakeAsync()
+        {
+            TaskResult<bool> loadAssetsResult = new TaskResult<bool>();
+            CoroutineTask<bool> assetRequest = new CoroutineTask<bool>(LoadAssetsAsync(loadAssetsResult), loadAssetsResult);
+            yield return assetRequest;
+
+            if (!assetRequest.GetResult())
+            {
+                SNLogger.Error("LoadAssetsAsync failed!");
+                yield break;
+            }
+
+            TaskResult<bool> rightResult = new TaskResult<bool>();
+            CoroutineTask<bool> cannonRightRequest = new CoroutineTask<bool>(CreateCannonRightAsync(rightResult), rightResult);
+            yield return cannonRightRequest;
+
+            if (!cannonRightRequest.GetResult())
+            {
+                SNLogger.Error("CreateCannonRightAsync failed!");
+                yield break;
+            }
+
+            TaskResult<bool> leftResult = new TaskResult<bool>();
+            CoroutineTask<bool> cannonLeftRequest = new CoroutineTask<bool>(CreateCannonLeftAsync(leftResult), leftResult);
+            yield return cannonLeftRequest;
+
+            if (!cannonLeftRequest.GetResult())
+            {
+                SNLogger.Error("CreateCannonLeftAsync failed!");
+                yield break;
+            }
+
+            turret_fire = ScriptableObject.CreateInstance<FMODAsset>();
+            turret_fire.name = "turret_fire";
+            turret_fire.path = "event:/sub/seamoth/torpedo_fire";
+
+            turretLeftSound = cannon_left_rotation_point.AddComponent<FMOD_CustomEmitter>();
+            turretLeftSound.asset = turret_fire;
+
+            turretRightSound = cannon_right_rotation_point.AddComponent<FMOD_CustomEmitter>();
+            turretRightSound.asset = turret_fire;
 
             SetOnlyHostile();
             SetLaserStrength();
             SetLaserSFXVolume();
             SetWarningMessage();
+
+            SNLogger.Debug("AwakeAsync completed.");
+            asyncOperationsComplete = true;
+            StartCoroutine(LaserCannonSetActiveAsync(false));
+            yield break;
+        }
+
+        public IEnumerator LoadAssetsAsync(IOut<bool> success)
+        {
+            Texture2D cannon_Button = ImageUtils.LoadTextureFromFile($"{Main.modFolder}/Assets/cannon_Button.png");
+
+            Main.buttonSprite = Sprite.Create(cannon_Button, new Rect(0, 0, cannon_Button.width, cannon_Button.height), new Vector2(cannon_Button.width * 0.5f, cannon_Button.height * 0.5f));
+
+            TaskResult<Material> materialResult = new TaskResult<Material>();
+            CoroutineTask<Material> materialRequest = new CoroutineTask<Material>(GetResourceMaterialAsync("WorldEntities/Doodads/Precursor/PrecursorTeleporter.prefab", "precursor_interior_teleporter_02_01", 0, materialResult), materialResult);
+            yield return materialRequest;
+
+            if (materialRequest.GetResult() == null)
+            {
+                SNLogger.Error("GetResourceMaterialAsync failed!");
+                success.Set(false);
+                yield break;
+            }
+
+            Main.cannon_material = materialResult.Get();
+            Main.cannon_material.name = "cannon_material";
+            Main.isAssetsLoaded = true;
+
+            success.Set(true);
+            yield break;
         }
 
         public void Start()
-        {             
+        {
+            SNLogger.Debug("Start started...");
             Player.main.playerModeChanged.AddHandler(this, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
             Player.main.currentSubChangedEvent.AddHandler(this, new Event<SubRoot>.HandleFunction(OnSubRootChanged));
-
-            StartCoroutine(GetMCUHandler());            
-        }        
-
-        private IEnumerator GetMCUHandler()
-        {
-            SNLogger.Debug("CyclopsLaserCannonModule", $"GetMCUHandler coroutine started for this Cyclops: {This_Cyclops_Root.GetInstanceID()}");
-
-            while (upgradeHandler == null)
-            {
-                upgradeHandler = MCUServices.Find.CyclopsUpgradeHandler(subroot, CannonPrefab.TechTypeID);
-                SNLogger.Debug("CyclopsLaserCannonModule", $"MCU UpgradeHandler is not ready for this Cyclops: {This_Cyclops_Root.GetInstanceID()}");
-                yield return null;
-            }
-
-            SNLogger.Debug("CyclopsLaserCannonModule", $"MCU UpgradeHandler is ready for this Cyclops: {This_Cyclops_Root.GetInstanceID()}");
-
-            upgradeHandler.OnFinishedUpgrades = OnFinishedUpgrades;
-            upgradeHandler.OnClearUpgrades = OnClearUpgrades;
-
-            OnFirstTimeCheckModuleIsExists();
-
-            SNLogger.Debug("CyclopsLaserCannonModule", $"GetMCUHandler coroutine stopped for this Cyclops: {This_Cyclops_Root.GetInstanceID()}");
-
-            yield break;
-        }
-                     
+        }      
+                            
         public void OnDestroy()
         {
             Player.main.playerModeChanged.RemoveHandler(this, OnPlayerModeChanged);
@@ -215,10 +268,13 @@ namespace CyclopsLaserCannonModule
                 CalculateBeamVectors(maxLaserDistance);
         }
 
-        
-
         public void Update()
         {
+            if (!asyncOperationsComplete)
+            {
+                return;
+            }
+
             if (powerRelay != null)
             {
                 if (powerRelay.GetPower() < powerRelay.GetMaxPower() * 0.2f)
@@ -235,10 +291,12 @@ namespace CyclopsLaserCannonModule
             if (isModuleInserted && isActive && !isLowPower && isPiloting && camera_instance.usingCamera)
             {
                 if (GameInput.GetButtonDown(GameInput.Button.LeftHand) && Time.time > nextFire)
-                {                    
+                {
+                    turretLeftSound.Play();
+                    turretRightSound.Play();
+
                     nextFire = Time.time + fireRate;
                     isShoot = true;
-                    audioSource.Play();
 
                     if (powerRelay != null)
                     {
@@ -247,6 +305,8 @@ namespace CyclopsLaserCannonModule
                 }
                 if (Time.time > nextFire)
                 {
+                    turretLeftSound.Stop();
+                    turretRightSound.Stop();
                     isShoot = false;                    
                 }                
             }

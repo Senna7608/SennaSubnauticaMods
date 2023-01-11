@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using Common.Helpers;
 using SlotExtender.Configuration;
 
@@ -9,9 +10,9 @@ namespace SlotExtender
     public class uGUI_SlotTextHandler : MonoBehaviour
     {
         public static uGUI_SlotTextHandler Instance { get; private set; }
-        
-        private Dictionary<string, Text> ALLSLOTS_Text = new Dictionary<string, Text>();
-        
+
+        private Dictionary<string, TextMeshProUGUI> ALLSLOTS_Text = new Dictionary<string, TextMeshProUGUI>();
+
         public void Awake()
         {
             Instance = this;            
@@ -24,9 +25,9 @@ namespace SlotExtender
             {
                 if (SlotHelper.ALLSLOTS.TryGetValue(item.Key, out SlotData slotData))
                 {
-                    Text text = AddTextToSlot(item.Value.transform, slotData);
+                    TextMeshProUGUI TMProText = AddTextToSlot(item.Value.transform, slotData);
 
-                    ALLSLOTS_Text.Add(slotData.SlotID, text);
+                    ALLSLOTS_Text.Add(slotData.SlotID, TMProText);
                 }
             }
         }
@@ -39,29 +40,26 @@ namespace SlotExtender
             }
         }
 
-        // based on RandyKnapp's MoreQuickSlots Subnautica mod: "CreateNewText()" method
-        // found on GitHub:https://github.com/RandyKnapp/SubnauticaModSystem
-
-        private Text AddTextToSlot(Transform parent, SlotData slotData)
+        private TextMeshProUGUI AddTextToSlot(Transform parent, SlotData slotData)
         {
-            Text text = Instantiate(HandReticle.main.interactPrimaryText);
-            text.gameObject.layer = parent.gameObject.layer;
-            text.gameObject.name = slotData.SlotConfigIDName;
-            text.transform.SetParent(parent, false);
-            text.transform.localScale = new Vector3(1, 1, 1);
-            text.gameObject.SetActive(true);
-            text.enabled = true;
-            text.text = slotData.KeyCodeName;
-            text.fontSize = 17;
-            text.color = SEConfig.TEXTCOLOR;
-            RectTransformExtensions.SetParams(text.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), parent);
-            text.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 100);
-            text.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 100);
-            text.rectTransform.anchoredPosition = new Vector2(0, 70);
-            text.alignment = TextAnchor.MiddleCenter;
-            text.raycastTarget = false;
+            TextMeshProUGUI TMProText = Instantiate(HandReticle.main.compTextHand);
+            TMProText.gameObject.layer = parent.gameObject.layer;
+            TMProText.gameObject.name = slotData.SlotConfigIDName;
+            TMProText.transform.SetParent(parent, false);
+            TMProText.transform.localScale = new Vector3(1, 1, 1);
+            TMProText.gameObject.SetActive(true);
+            TMProText.enabled = true;
+            TMProText.text = slotData.KeyCodeName;
+            TMProText.fontSize = 17;
+            TMProText.color = SEConfig.TEXTCOLOR;
+            RectTransformExtensions.SetParams(TMProText.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), parent);
+            TMProText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 100);
+            TMProText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 100);
+            TMProText.rectTransform.anchoredPosition = new Vector2(0, 70);
+            TMProText.alignment = TextAlignmentOptions.Center;
+            TMProText.raycastTarget = false;
 
-            return text;
+            return TMProText;
         }
     }
 }

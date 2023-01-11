@@ -6,7 +6,7 @@ using Common.GUIHelper;
 
 namespace CheatManager
 {
-    public partial class CheatManager
+    public partial class CheatManagerControl
     {
         protected readonly Dictionary<IntVector, string> WarpTargets_Internal = new Dictionary<IntVector, string>()
         {

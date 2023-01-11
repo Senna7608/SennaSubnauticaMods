@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
+using SMLExpander;
 using SMLHelper.V2.Crafting;
-using UnityEngine;
-using Common.Helpers.SMLHelpers;
+using SMLHelper.V2.Utility;
 
 namespace SeamothEnergyShield
 {
@@ -10,15 +11,10 @@ namespace SeamothEnergyShield
         public static TechType TechTypeID { get; private set; }
 
         internal SeamothShieldPrefab()
-            : base(nameID: "SeamothEnergyShield",
-                  iconFilePath: $"{Main.modFolder}/Assets/SeamothEnergyShield.png",
-                  iconTechType: TechType.None,
+            : base(techTypeName: "SeamothEnergyShield",
                   friendlyName: "Seamoth Energy Shield",
                   description: "Allows Seamoth to use a miniaturized Cyclops energy shield.",
                   template: TechType.SeamothElectricalDefense,
-                  newTabNode: null,
-                  fabricatorTypes: new CraftTree.Type[] { CraftTree.Type.SeamothUpgrades },
-                  fabricatorTabs: new string[][] { new string[] { "SeamothModules" } },
                   requiredAnalysis: TechType.CyclopsShieldModule,
                   groupForPDA: TechGroup.VehicleUpgrades,
                   categoryForPDA: TechCategory.VehicleUpgrades,
@@ -32,12 +28,11 @@ namespace SeamothEnergyShield
         {
         }
                
-        public override void Patch()
+        protected override void PrePatch()
         {
-            base.Patch();
             TechTypeID = TechType;
-        }
-        
+        }        
+
         protected override TechData GetRecipe()
         {
             return new TechData()
@@ -53,16 +48,36 @@ namespace SeamothEnergyShield
             };
         }        
         
-        public override GameObject GetGameObject()
-        {
-            base.GetGameObject();            
-
-            return _GameObject;
-        }
-
         protected override EncyData GetEncyclopediaData()
         {
             return null;
+        }
+
+        protected override IEnumerator ModifyGameObjectAsync(IOut<bool> success)
+        {
+            success.Set(true);
+            yield break;
+        }
+
+        protected override CrafTreeTypesData GetCraftTreeTypesData()
+        {
+            return new CrafTreeTypesData()
+            {
+                TreeTypes = new List<CraftTreeType>()
+                {
+                    new CraftTreeType(CraftTree.Type.SeamothUpgrades, new string[] { "SeamothModules" } )
+                }
+            };
+        }
+
+        protected override TabNode GetTabNodeData()
+        {
+            return null;
+        }
+
+        protected override Atlas.Sprite GetItemSprite()
+        {
+            return ImageUtils.LoadSpriteFromFile($"{Main.modFolder}/Assets/SeamothEnergyShield.png");
         }
     }
 }

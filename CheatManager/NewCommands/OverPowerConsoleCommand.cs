@@ -1,6 +1,7 @@
 ﻿using Common.Helpers;
 using CheatManager.Configuration;
 using UnityEngine;
+using Common;
 
 namespace CheatManager.NewCommands
 {
@@ -15,7 +16,8 @@ namespace CheatManager.NewCommands
         {
             main = this;
             
-            DevConsole.RegisterConsoleCommand(this, "overpower");            
+            DevConsole.RegisterConsoleCommand(this, "overpower");
+            SNLogger.Log("Console command 'overpower' registered.");
         }
 
         private void OnConsoleCommand_overpower(NotificationCenter.Notification n)

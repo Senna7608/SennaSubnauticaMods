@@ -2,7 +2,7 @@
 using HarmonyLib;
 using UnityEngine;
 
-namespace MAC.Fahrenheit
+namespace Fahrenheit
 {
     [HarmonyPatch(typeof(uGUI_SeamothHUD))]
     [HarmonyPatch("Update")]

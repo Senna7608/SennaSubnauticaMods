@@ -18,8 +18,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\QMods\RuntimeHelper\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <OutputPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\BepInEx\plugins\RuntimeHelper\</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -27,12 +27,34 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>C:\Program Files\Epic Games\Subnautica\QMods\RuntimeHelper\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <OutputPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\BepInEx\plugins\RuntimeHelper\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Trace|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\BepInEx\plugins\RuntimeHelper\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'BEPIN_CORE|AnyCPU' ">
+    <DebugSymbols>false</DebugSymbols>
+    <OutputPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\BepInEx\plugins\RuntimeHelper\</OutputPath>
+    <DefineConstants>BEPIN_CORE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>none</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
@@ -47,15 +69,27 @@
       <HintPath>C:\Program Files\Epic Games\Subnautica\Subnautica_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="QModInstaller">
-      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\BepInEx\plugins\QModManager\QModInstaller.dll</HintPath>
+    <Reference Include="BepInEx">
+      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\BepInEx\core\BepInEx.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="FMODUnity">
+      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\Subnautica_Data\Managed\FMODUnity.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="SMLHelper">
-      <HintPath>C:\Program Files\Epic Games\Subnautica\QMods\Modding Helper\SMLHelper.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\BepInEx\plugins\Modding Helper\SMLHelper.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="Unity.ResourceManager">
+      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\Subnautica_Data\Managed\Unity.ResourceManager.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\Subnautica_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>C:\Program Files\Epic Games\Subnautica\Subnautica_Data\Managed\UnityEngine.dll</HintPath>
       <Private>False</Private>
@@ -101,6 +135,8 @@
     <Compile Include="Configuration\RuntimeHelper_Config.cs" />
     <Compile Include="EditModeStrings.cs" />
     <Compile Include="GUI\AddComponentWindow.cs" />
+    <Compile Include="GUI\MaterialWindow.cs" />
+    <Compile Include="GUI\FMODWindow.cs" />
     <Compile Include="GUI\MarkWindow.cs" />
     <Compile Include="Messages.cs" />
     <Compile Include="FileHelper\OpenFileName.cs" />
@@ -114,7 +150,7 @@
     <Compile Include="Handlers.cs" />
     <Compile Include="GUI\OutputWindow.cs" />
     <Compile Include="Logger\RHLogger.cs" />
-    <Compile Include="Main.cs" />
+    <Compile Include="RuntimeHelper.cs" />
     <Compile Include="Objects\ClipboardHelper.cs" />
     <Compile Include="Objects\FieldHelper.cs" />
     <Compile Include="Objects\PropertyHelper.cs" />
@@ -122,7 +158,7 @@
     <Compile Include="RaycastMode.cs" />
     <Compile Include="Renderers\RendererHelper.cs" />
     <Compile Include="Renderers\ShaderHelper.cs" />
-    <Compile Include="RuntimeHelper.cs" />
+    <Compile Include="RuntimeHelperManager.cs" />
     <Compile Include="SceneHelper\SceneHelper.cs" />
     <Compile Include="Structs.cs" />
     <Compile Include="TechTypeHelper.cs" />
@@ -133,11 +169,6 @@
     <Compile Include="Visuals\DrawObjectBounds.cs" />
     <Compile Include="Visuals\PointerHelper.cs" />
     <Compile Include="Visuals\LineHelper.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="mod.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup />
   <Import Project="..\Common\Common.projitems" Label="Shared" />

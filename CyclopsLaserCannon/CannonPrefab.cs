@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
+using SMLExpander;
 using SMLHelper.V2.Crafting;
 using SMLHelper.V2.Handlers;
-using Common.Helpers.SMLHelpers;
+using SMLHelper.V2.Utility;
 
 namespace CyclopsLaserCannonModule
 {
@@ -12,35 +14,29 @@ namespace CyclopsLaserCannonModule
         public static CannonOptions Config { get; } = new CannonOptions();       
 
         internal CannonPrefab()
-            : base(nameID: "CyclopsLaserCannonModule",
-                  iconFilePath: $"{Main.modFolder}/Assets/CyclopsLaserCannonModule.png",
-                  iconTechType: TechType.None,
+            : base(techTypeName: "CyclopsLaserCannonModule",
                   friendlyName: CannonConfig.language_settings["Item_Name"],
                   description: CannonConfig.language_settings["Item_Description"],
                   template: TechType.CyclopsHullModule1,
-                  newTabNode: null,
-                  fabricatorTypes: new CraftTree.Type[] { CraftTree.Type.CyclopsFabricator },
-                  fabricatorTabs: null,
+                  gamerResourceFileName: null,
                   requiredAnalysis: TechType.PrecursorPrisonArtifact7,
                   groupForPDA: TechGroup.VehicleUpgrades,
                   categoryForPDA: TechCategory.VehicleUpgrades,
                   equipmentType: EquipmentType.CyclopsModule,
                   quickSlotType: QuickSlotType.None,
                   backgroundType: CraftData.BackgroundType.Normal,
-                  itemSize: new Vector2int(1, 1),                  
-                  gamerResourceFileName: null,
+                  itemSize: new Vector2int(1, 1),
                   fragment: null
                   )
         {
         }
-               
-        public override void Patch()
+
+        protected override void PrePatch()
         {
-            base.Patch();
             TechTypeID = TechType;
             OptionsPanelHandler.RegisterModOptions(Config);
-        }
-        
+        }        
+                
         protected override TechData GetRecipe()
         {
             return new TechData()
@@ -59,6 +55,33 @@ namespace CyclopsLaserCannonModule
         protected override EncyData GetEncyclopediaData()
         {
             return null;
+        }
+
+        protected override IEnumerator ModifyGameObjectAsync(IOut<bool> success)
+        {
+            success.Set(true);
+            yield break;
+        }
+
+        protected override CrafTreeTypesData GetCraftTreeTypesData()
+        {
+            return new CrafTreeTypesData()
+            {
+                TreeTypes = new List<CraftTreeType>()
+                {
+                    new CraftTreeType(CraftTree.Type.CyclopsFabricator, new string[] { "" })
+                }
+            };
+        }
+
+        protected override TabNode GetTabNodeData()
+        {
+            return null;
+        }
+
+        protected override Atlas.Sprite GetItemSprite()
+        {
+            return ImageUtils.LoadSpriteFromFile($"{Main.modFolder}/Assets/CyclopsLaserCannonModule.png");
         }
     }
 }

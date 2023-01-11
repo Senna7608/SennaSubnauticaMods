@@ -44,7 +44,7 @@ namespace SlotExtender
         Slot_11,
         Slot_12,
         SeamothArmLeft,
-        SeamothArmRight        
+        SeamothArmRight
     };
 
     public enum SlotName
@@ -82,7 +82,22 @@ namespace SlotExtender
         SeamothModule11,
         SeamothModule12,
         SeamothArmLeft,
-        SeamothArmRight
+        SeamothArmRight,
+
+        CyclopsModule1,
+        CyclopsModule2,
+        CyclopsModule3,
+        CyclopsModule4,
+        CyclopsModule5,
+        CyclopsModule6,
+        CyclopsModule7,
+        CyclopsModule8,
+        CyclopsModule9,
+        CyclopsModule10,
+        CyclopsModule11,
+        CyclopsModule12,
+        CyclopsModule13,
+        CyclopsModule14,
     };
 
     public class SlotData
@@ -90,18 +105,20 @@ namespace SlotExtender
         public string SlotID;
         public SlotConfigID SlotConfigID;        
         public Vector2 SlotPos;
-        public SlotType SlotType;        
+        public SlotType SlotType;
 
+        public string uGui_SlotName { get; set; }
         public string KeyCodeName { get; set; }        
         public string SlotConfigIDName => SlotConfigID.ToString();
         public KeyCode KeyCode => InputHelper.GetInputNameAsKeyCode(KeyCodeName);
 
-        public SlotData(string slotID, SlotConfigID internalSlotID, Vector2 slotPOS, SlotType slotType)
+        public SlotData(string slotID, SlotConfigID internalSlotID, Vector2 slotPOS, SlotType slotType, string uGUI_SlotName = "")
         {
             SlotID = slotID;
             SlotConfigID = internalSlotID;            
             SlotPos = slotPOS;
-            SlotType = slotType;            
+            SlotType = slotType;
+            uGui_SlotName = uGUI_SlotName != "" ? uGUI_SlotName : slotID;            
         }   
     }
 

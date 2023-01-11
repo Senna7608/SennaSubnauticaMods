@@ -1,6 +1,7 @@
 ﻿using ModdedArmsHelper.API;
 using ModdedArmsHelper.API.ArmHandlers;
 using ModdedArmsHelper.API.Interfaces;
+using System.Collections;
 using UnityEngine;
 
 namespace SeamothArms.InternalArmHandlers
@@ -8,14 +9,40 @@ namespace SeamothArms.InternalArmHandlers
     internal class InternalClawArmHandler : ClawArmHandler, ISeamothArm
     {
         public override void Start()
-        {
+        {             
         }
 
         GameObject ISeamothArm.GetGameObject()
         {
             return gameObject;
         }
-        
+
+        GameObject ISeamothArm.GetInteractableRoot(GameObject target)
+        {
+            Pickupable componentInParent = target.GetComponentInParent<Pickupable>();
+
+            if (componentInParent != null && componentInParent.isPickupable)
+            {
+                return componentInParent.gameObject;
+            }
+
+            PickPrefab componentProfiled = target.GetComponentProfiled<PickPrefab>();
+
+            if (componentProfiled != null)
+            {
+                return componentProfiled.gameObject;
+            }
+
+            BreakableResource componentInParent2 = target.GetComponentInParent<BreakableResource>();
+
+            if (componentInParent2 != null)
+            {
+                return componentInParent2.gameObject;
+            }
+
+            return null;
+        }
+
         void ISeamothArm.SetSide(SeamothArm arm)
         {
             if (arm == SeamothArm.Right)
@@ -53,7 +80,7 @@ namespace SeamothArms.InternalArmHandlers
         {
         }
         
-        void ISeamothArm.Reset()
+        void ISeamothArm.ResetArm()
         {
         }
         
@@ -71,9 +98,9 @@ namespace SeamothArms.InternalArmHandlers
                     pickupable = activeTarget.GetComponent<Pickupable>();
                     x = activeTarget.GetComponent<PickPrefab>();
                 }
+
                 if (pickupable != null && pickupable.isPickupable)
-                {
-                    
+                {                    
                     if (ArmServices.main.GetRoomForItem(seamoth, pickupable) != null)
                     {
                         animator.SetTrigger("use_tool");
@@ -85,8 +112,7 @@ namespace SeamothArms.InternalArmHandlers
                     {
                         ErrorMessage.AddMessage(Language.main.Get("ContainerCantFit"));
                         shownNoRoomNotification = true;
-                    }
-                    
+                    }                    
                 }
                 else
                 {
@@ -126,6 +152,7 @@ namespace SeamothArms.InternalArmHandlers
                 if (targetObject)
                 {
                     LiveMixin liveMixin = targetObject.FindAncestor<LiveMixin>();
+
                     if (liveMixin)
                     {
                         bool flag = liveMixin.IsAlive();
@@ -151,24 +178,41 @@ namespace SeamothArms.InternalArmHandlers
             if (activeTarget)
             {
                 Pickupable pickupable = activeTarget.GetComponent<Pickupable>();
-                PickPrefab component = activeTarget.GetComponent<PickPrefab>();
+                PickPrefab pickprefab = activeTarget.GetComponent<PickPrefab>();
 
-                ItemsContainer container = ArmServices.main.GetRoomForItem(seamoth, pickupable);
-
-                if (pickupable != null && pickupable.isPickupable && container != null)
-                {
-                    pickupable = pickupable.Initialize();
-                    InventoryItem item = new InventoryItem(pickupable);
-                    container.UnsafeAdd(item);
-                    Utils.PlayFMODAsset(pickupSound, front, 5f);
-                }
-                else if (component != null && component.AddToContainer(container))
-                {
-                    component.SetPickedUp();
-                }
+                StartCoroutine(OnPickupAsync(pickupable, pickprefab));
             }
         }
-                
+
+        private IEnumerator OnPickupAsync(Pickupable pickupable, PickPrefab pickPrefab)
+        {
+            ItemsContainer container = ArmServices.main.GetRoomForItem(seamoth, pickupable);
+
+            if (pickupable != null && pickupable.isPickupable && container.HasRoomFor(pickupable))
+            {
+                pickupable.Initialize();
+
+                InventoryItem item = new InventoryItem(pickupable);
+
+                container.UnsafeAdd(item);
+
+                Utils.PlayFMODAsset(this.pickupSound, this.front, 5f);
+            }
+            else if (pickPrefab != null)
+            {
+                TaskResult<bool> result = new TaskResult<bool>();
+
+                yield return pickPrefab.AddToContainerAsync(container, result);
+
+                if (pickPrefab != null && result.Get())
+                {
+                    pickPrefab.SetPickedUp();
+                }
+            }
+
+            yield break;
+        }
+
         bool ISeamothArm.HasClaw()
         {
             return true;

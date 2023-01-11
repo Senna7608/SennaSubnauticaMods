@@ -10,7 +10,7 @@ using RuntimeHelper.Renderers;
 
 namespace RuntimeHelper
 {
-    public partial class RuntimeHelper
+    public partial class RuntimeHelperManager
     {        
         private bool showRendererWindow = false;        
 

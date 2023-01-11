@@ -3,8 +3,13 @@ using UnityEngine;
 
 namespace ModdedArmsHelper.API.ArmHandlers
 {
+    /// <summary>
+    /// The abstract class to inherit for handling the Torpedo arm base mechanics.
+    /// </summary>
     public abstract class TorpedoArmHandler : ArmHandler
     {
+#pragma warning disable CS1591 //XML documentation
+
         public GenericHandTarget handTarget { get; private set; }        
         public Transform siloFirst { get; private set; }
         public Transform siloSecond { get; private set; }
@@ -18,8 +23,13 @@ namespace ModdedArmsHelper.API.ArmHandlers
         public float cooldownTime = 5f;
         public float cooldownInterval = 1f;
         public float timeFirstShot = float.NegativeInfinity;
-        public float timeSecondShot = float.NegativeInfinity;        
+        public float timeSecondShot = float.NegativeInfinity;
 
+#pragma warning restore CS1591 //XML documentation
+
+        /// <summary>
+        /// If you implement this method in your modded arm handler, the first line should be 'base.Awake()'
+        /// </summary>
         public override void Awake()
         {
             ObjectHelper objectHelper = ArmServices.main.objectHelper;           
@@ -42,6 +52,9 @@ namespace ModdedArmsHelper.API.ArmHandlers
             torpedoDisarmed.name = "torpedo_disarmed";
         }
 
+        /// <summary>
+        /// If you implement this method in your modded arm handler, the first line should be 'base.Awake()'
+        /// </summary>
         public TechType[] GetTorpedoTypes()
         {
             TechType[] techTypes = new TechType[vehicle.torpedoTypes.Length];

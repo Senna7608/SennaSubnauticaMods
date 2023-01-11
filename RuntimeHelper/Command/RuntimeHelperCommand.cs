@@ -10,12 +10,13 @@ namespace RuntimeHelper.Command
 
         public override void RegisterCommand()
         {
-            DevConsole.RegisterConsoleCommand(this, "runtimehelper", false, false);
+            DevConsole.RegisterConsoleCommand(this, "rhelper", false, false);
+            SNLogger.Log("Console command 'rhelper' registered.");
         }
 
-        public void OnConsoleCommand_runtimehelper(NotificationCenter.Notification n)
+        public void OnConsoleCommand_rhelper(NotificationCenter.Notification n)
         {            
-            RuntimeHelper rh = new RuntimeHelper();
+            RuntimeHelperManager rh = new RuntimeHelperManager();
         }           
     }
 }

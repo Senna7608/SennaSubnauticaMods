@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using SMLHelper.V2.Crafting;
 using UnityEngine;
-using Common.Helpers.SMLHelpers;
 using ModdedArmsHelper.API;
 using SMLHelper.V2.Utility;
+using System.Collections;
+using SMLExpander;
 
 namespace RepulsionCannonArm
 {
@@ -22,10 +23,10 @@ namespace RepulsionCannonArm
         {
         }
 
-        protected override void RegisterArm()
+        protected override RegisterArmRequest RegisterArm()
         {
-            ArmServices.main.RegisterArm(this, new RepulsionCannonArmModdingRequest());
-        }
+            return new RegisterArmRequest(this, new RepulsionCannonArmModdingRequest());
+        }        
 
         protected override EncyData GetEncyclopediaData()
         {
@@ -56,11 +57,14 @@ namespace RepulsionCannonArm
         }
 
 
-        protected override void ModifyGameObject()
+        protected override IEnumerator ModifyGameObjectAsync(IOut<bool> success)
         {            
             GameObject model = PrefabClone.transform.Find("model/exosuit_rig_armLeft:exosuit_propulsion_geo").gameObject;                
 
-            Common.Helpers.GraphicsHelper.ChangeObjectTexture(model, 2, illumTex: Main.illumTex);            
+            Common.Helpers.GraphicsHelper.ChangeObjectTexture(model, 2, illumTex: Main.illumTex);
+
+            success.Set(true);
+            yield break;
         }        
     }
 }

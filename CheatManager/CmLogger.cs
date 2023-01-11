@@ -1,12 +1,9 @@
-﻿#define DEBUG_GAMELOG
-#define AUTOSCROLL
+﻿#define AUTOSCROLL
 
 using System.Collections.Generic;
 using UnityEngine;
 using Common.GUIHelper;
 using CheatManager.Configuration;
-using System.IO;
-using System;
 
 namespace CheatManager
 {
@@ -48,10 +45,7 @@ namespace CheatManager
         };        
         
         public void Awake()
-        {
-#if DEBUG
-            show = true;
-#endif          
+        {         
             Instance = this;            
             DontDestroyOnLoad(this);            
             useGUILayout = false;
@@ -60,7 +54,9 @@ namespace CheatManager
             scrollRect = new Rect(drawRect.x, drawRect.y + 5, drawRect.width - 5, drawRect.height - 37);
             scrollWidth = scrollRect.width - 42;
 
-            Application.logMessageReceived += HandleLog;            
+            Application.logMessageReceived += HandleLog;
+
+            show = CmConfig.isConsoleEnabled;
         }         
 
         public void OnDestroy()
@@ -71,7 +67,12 @@ namespace CheatManager
         }
 
         void OnGUI()
-        {             
+        {
+            if (!CmConfig.isConsoleEnabled)
+            {
+                return;
+            }
+
             if (!show)
             {
                 return;
@@ -79,7 +80,7 @@ namespace CheatManager
                         
             logStyle = SNStyles.GetGuiItemStyle(GuiItemType.LABEL, GuiColor.Green, TextAnchor.MiddleLeft, wordWrap: true);            
 
-            SNWindow.CreateWindow(windowRect, $"CheatManager Console (Press {CmConfig.KEYBINDINGS["ToggleConsole"]} to toggle)", true, true);            
+            SNWindow.CreateWindow(windowRect, $"CheatManager log window (Press {CmConfig.KEYBINDINGS["ToggleConsole"]} to toggle)", true, true);            
 
             scrollPos = GUI.BeginScrollView(scrollRect, scrollPos, new Rect(scrollRect.x, scrollRect.y, scrollWidth, drawingPos - scrollRect.y));
 
@@ -130,60 +131,17 @@ namespace CheatManager
             
         public void Update()
         {
+            if (!CmConfig.isConsoleEnabled)
+            {
+                return;
+            }
+
             if (Input.GetKeyDown(CmConfig.KEYBINDINGS["ToggleConsole"]))
             {
                 show = !show;                
             }
         }        
-
-        private void Write(string message)
-        {
-            logMessage.Add(new LOG()            
-            {
-                message = message,
-                stackTrace = "",
-                type = LogType.Log,
-            });
-
-            if (logMessage.Count == MAXLOG)           
-            {
-                logMessage.RemoveAt(0);                
-                messageCount--;
-            }
-        }
-
-        private void Write(string message, LogType type)
-        {
-            logMessage.Add(new LOG()            
-            {
-                message = message,
-                stackTrace = "",
-                type = type,
-            });
-
-            if (logMessage.Count == MAXLOG)            
-            {
-                logMessage.RemoveAt(0);                
-                messageCount--;
-            }
-        }        
-
-        private void Write(string message, LogType type, params object[] arg)
-        {
-            logMessage.Add(new LOG()            
-            {
-                message = string.Format(message, arg),
-                stackTrace = "",
-                type = type,
-            });
-
-            if (logMessage.Count == MAXLOG)            
-            {
-                logMessage.RemoveAt(0);                
-                messageCount--;
-            }
-        }
-
+        
         private void Write(string message, string stacktrace, LogType type)
         {            
             if (stacktrace != "")
@@ -205,15 +163,11 @@ namespace CheatManager
                 logMessage.RemoveAt(0);                
                 messageCount--;
             }
-
         }
 
-        public void Log(string message) => Instance.Write(message);
-
-        public void Log(string message, LogType type) => Instance.Write(message, type);
-
-        public void Log(string message, LogType type, params object[] arg) => Instance.Write(message, type, arg);
-
-        public void HandleLog(string message, string stacktrace, LogType type) => Instance.Write(message, stacktrace, type);
+        public void HandleLog(string message, string stacktrace, LogType type)
+        {
+            Instance.Write(message, stacktrace, type);
+        }
     }
 }

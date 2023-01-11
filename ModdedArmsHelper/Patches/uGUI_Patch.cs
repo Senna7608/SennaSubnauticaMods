@@ -23,22 +23,18 @@ namespace ModdedArmsAPI.Patches
 
             SNLogger.Debug("'ModdedArmsHelper' child gameObject created in 'uGUI.main'");
 
-            Main.helperRoot.AddComponent<ArmRegistrationListener>();
-
-            SNLogger.Debug("'RegistrationListener' attached to 'ModdedArmsHelper'");
-
-            if (Main.graphicsRoot != null)
+            if (Main.cacheRoot != null)
             {
-                Object.DestroyImmediate(Main.graphicsRoot);
+                Object.DestroyImmediate(Main.cacheRoot);
             }
 
-            Main.graphicsRoot = new GameObject("GraphicsRoot");
+            Main.cacheRoot = new GameObject("CacheRoot");
 
-            Main.graphicsRoot.transform.SetParent(Main.helperRoot.transform, false);
+            Main.cacheRoot.transform.SetParent(Main.helperRoot.transform, false);
 
-            Main.graphicsRoot.AddComponent<ArmsGraphics>();
+            Main.cacheRoot.AddComponent<ArmsGraphics>();
 
-            SNLogger.Debug("'GraphicsRoot' child gameObject created in 'ModdedArmsHelper'");
+            SNLogger.Debug("'CacheRoot' child gameObject created in 'ModdedArmsHelper'");            
         }
     }
 }

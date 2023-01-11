@@ -40,9 +40,9 @@ namespace RuntimeHelper.Configuration
         private static readonly List<ConfigData> DEFAULT_CONFIG = new List<ConfigData>
         {
             new ConfigData(SECTIONS[0], SECTION_SETTINGS[0], false.ToString()),
-            new ConfigData(SECTIONS[1], SECTION_HOTKEYS[0], KeyCode.X.ToString()),
+            new ConfigData(SECTIONS[1], SECTION_HOTKEYS[0], KeyCode.Y.ToString()),
             new ConfigData(SECTIONS[1], SECTION_HOTKEYS[1], KeyCode.R.ToString()),
-            new ConfigData(SECTIONS[1], SECTION_HOTKEYS[2], KeyCode.Y.ToString()),
+            new ConfigData(SECTIONS[1], SECTION_HOTKEYS[2], KeyCode.V.ToString()),
         };
 
         internal static void LoadConfig()
@@ -61,7 +61,7 @@ namespace RuntimeHelper.Configuration
 
                 if (CONFIG_VERSION.Equals(PROGRAM_VERSION))
                 {
-                    SNLogger.Log("RuntimeHelper", "Configuration file version match with program version.");
+                    SNLogger.Log("Configuration file version match with program version.");
                 }
                 else
                 {
@@ -78,21 +78,21 @@ namespace RuntimeHelper.Configuration
                 AUTOSTART = false;
             }
 
-            SNLogger.Log("RuntimeHelper", "Configuration loaded.");
+            SNLogger.Log("Configuration loaded.");
         }
 
         internal static void CreateDefaultConfigFile()
         {
-            SNLogger.Warn("RuntimeHelper", "Configuration file is missing or wrong version. Trying to create a new one.");
+            SNLogger.Warn("Configuration file is missing or wrong version. Trying to create a new one.");
 
             try
             {
                 ParserHelper.CreateDefaultConfigFile(FILENAME, "RuntimeHelper", PROGRAM_VERSION, DEFAULT_CONFIG);
-                SNLogger.Log("RuntimeHelper", "The new configuration file was successfully created.");
+                SNLogger.Log("The new configuration file was successfully created.");
             }
             catch
             {
-                SNLogger.Error("RuntimeHelper", "An error occured while creating the new configuration file!");
+                SNLogger.Error("An error occured while creating the new configuration file!");
             }
         }
 
@@ -100,7 +100,7 @@ namespace RuntimeHelper.Configuration
         {
             SetKeyBindings();
 
-            SNLogger.Log("RuntimeHelper", "Configuration initialized.");
+            SNLogger.Log("Configuration initialized.");
         }
 
         internal static void WriteConfig()
@@ -134,7 +134,7 @@ namespace RuntimeHelper.Configuration
                 }
                 catch (ArgumentException)
                 {
-                    SNLogger.Warn("RuntimeHelper", $"({kvp.Value}) is not a valid KeyCode! Setting default value!");
+                    SNLogger.Warn($"({kvp.Value}) is not a valid KeyCode! Setting default value!");
 
                     for (int i = 0; i < DEFAULT_CONFIG.Count; i++)
                     {

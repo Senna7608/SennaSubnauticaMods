@@ -62,7 +62,7 @@ namespace SlotExtender.Patches
 
                 _setSlotPos(temp_slot, slotData.SlotPos);
 
-                temp_slot.GetComponent<uGUI_EquipmentSlot>().slot = slotData.SlotID;           
+                temp_slot.GetComponent<uGUI_EquipmentSlot>().slot = slotData.uGui_SlotName;           
             }
 
             // initializing GameObject variables for cloning
@@ -70,21 +70,28 @@ namespace SlotExtender.Patches
             GameObject ArmLeftSlot = transform.Find("ExosuitArmLeft").gameObject;
             GameObject ArmRightSlot = transform.Find("ExosuitArmRight").gameObject;
             GameObject ChipSlot = transform.Find("Chip1").gameObject;
+            GameObject CyclopsSlot = transform.Find("CyclopsModule2").gameObject;
 
-            // processing player chip slots            
+            // processing Player chip slots            
             SlotHelper.NewChipSlots.ForEach(slotData => _processSlot(slotData, ChipSlot, null, null));
 
-            // processing seamoth slots            
+            // processing Cyclops slots            
+            SlotHelper.SessionCyclopsSlots.ForEach(slotData => _processSlot(slotData, CyclopsSlot, null, null));
+
+            // repositioning Cyclops background picture
+            transform.Find("CyclopsModule1/Cyclops").localPosition = SlotHelper.VehicleImgPos;
+
+            // processing Seamoth slots            
             SlotHelper.SessionSeamothSlots.ForEach(slotData => _processSlot(slotData, NormalModuleSlot, ArmLeftSlot, ArmRightSlot));
 
             // repositioning Seamoth background picture
             transform.Find("SeamothModule1/Seamoth").localPosition = SlotHelper.VehicleImgPos;
 
-            // processing exosuit slots
+            // processing Exosuit slots
             SlotHelper.SessionExosuitSlots.ForEach(slotData => _processSlot(slotData, NormalModuleSlot, ArmLeftSlot, ArmRightSlot));
 
             // repositioning Exosuit background picture
-            transform.Find("ExosuitModule1/Exosuit").localPosition = SlotHelper.VehicleImgPos;            
+            transform.Find("ExosuitModule1/Exosuit").localPosition = SlotHelper.VehicleImgPos;
 
             Main.uGUI_PrefixComplete = true;
 

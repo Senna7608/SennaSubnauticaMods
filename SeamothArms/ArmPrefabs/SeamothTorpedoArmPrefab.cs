@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using SMLHelper.V2.Crafting;
-using Common.Helpers.SMLHelpers;
 using ModdedArmsHelper.API;
 using SeamothArms.ArmHandlerRequesters;
+using SMLExpander;
+using System.Collections;
 
 namespace SeamothArms.ArmPrefabs
 {
@@ -15,17 +16,17 @@ namespace SeamothArms.ArmPrefabs
                  description: "A standard payload delivery system adapted to fire torpedoes.",
                  armType: ArmType.SeamothArm,
                  armTemplate: ArmTemplate.TorpedoArm,
-                 requiredForUnlock: TechType.ExosuitTorpedoArmModule,
+                 requiredForUnlock: TechType.None,
                  fragment: fragment
                  )
         {
         }
 
-        protected override void RegisterArm()
+        protected override RegisterArmRequest RegisterArm()
         {
-            ArmServices.main.RegisterArm(this, new SeamothTorpedoArmModdingRequest());
+            return new RegisterArmRequest(this, new SeamothTorpedoArmModdingRequest());
         }
-
+                
         protected override TechData GetRecipe()
         {
             return new TechData()
@@ -38,14 +39,17 @@ namespace SeamothArms.ArmPrefabs
                     new Ingredient(TechType.Aerogel, 1)
                 })
             };
-        }        
+        }
 
-        protected override void ModifyGameObject()
+        protected override IEnumerator ModifyGameObjectAsync(IOut<bool> success)
         {
             SeamothStorageContainer container = PrefabClone.GetComponent<SeamothStorageContainer>();
 
             container.width = 4;
             container.height = 4;
+
+            success.Set(true);
+            yield break;
         }
 
         protected override Atlas.Sprite GetItemSprite()

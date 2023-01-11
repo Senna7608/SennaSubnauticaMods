@@ -2,7 +2,7 @@
 
 namespace RuntimeHelper
 {
-    public partial class RuntimeHelper
+    public partial class RuntimeHelperManager
     {
         internal bool isRayEnabled = false;
 
@@ -19,9 +19,9 @@ namespace RuntimeHelper
             {
                 TechType techType = CraftData.GetTechType(target);
 
-                // HandReticle.main.SetInteractText(hitInfo.transform.name, "Press right mouse button\nto connect this gameobject.", false, false, HandReticle.Hand.Right);
-                HandReticle.main.SetInteractText($"Target: {target.name}\nTechType: {techType}\ndistance: {distance:F1} m", handSubScript, false, false, HandReticle.Hand.Right);
-                
+                HandReticle.main.SetText(HandReticle.TextType.Hand, $"Target: {target.name}\nTechType: {techType}\ndistance: {distance:F1} m", false);
+
+                HandReticle.main.SetText(HandReticle.TextType.HandSubscript, handSubScript, false, GameInput.Button.RightHand);
 
                 if (Input.GetMouseButton(1))
                 {

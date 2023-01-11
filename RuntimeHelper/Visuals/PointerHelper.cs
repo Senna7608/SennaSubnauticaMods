@@ -59,7 +59,7 @@ namespace RuntimeHelper.Visuals
 
                     if (distance > 10f)
                     {
-                        HandReticle.main.SetInteractText($"{(int)distance} m", false, HandReticle.Hand.None);
+                        HandReticle.main.SetText(HandReticle.TextType.Hand, $"{(int)distance} m", false);
                     }                    
                 }
 

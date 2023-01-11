@@ -18,8 +18,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>C:\Program Files\Epic Games\Subnautica\QMods\SeamothArms\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <OutputPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\BepInEx\plugins\SeamothArms\</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -27,13 +27,22 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>C:\Program Files\Epic Games\Subnautica\QMods\SeamothArms\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\BepInEx\plugins\SeamothArms\</OutputPath>
     <DefineConstants>
     </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Trace|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\BepInEx\plugins\SeamothArms\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
@@ -50,15 +59,23 @@
       <HintPath>C:\Program Files\Epic Games\Subnautica\Subnautica_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="QModInstaller">
-      <HintPath>C:\Program Files\Epic Games\Subnautica\BepInEx\plugins\QModManager\QModInstaller.dll</HintPath>
+    <Reference Include="BepInEx">
+      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\BepInEx\core\BepInEx.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="FMODUnity">
+      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\Subnautica_Data\Managed\FMODUnity.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="SMLHelper">
-      <HintPath>C:\Program Files\Epic Games\Subnautica\QMods\Modding Helper\SMLHelper.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\BepInEx\plugins\Modding Helper\SMLHelper.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\Subnautica_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files\Epic Games\Subnautica\Subnautica_Data\Managed\UnityEngine.dll</HintPath>
@@ -115,6 +132,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArmPrefabs\SeamothClawArmFragmentPrefab.cs" />
+    <Compile Include="ArmPrefabs\SeamothTorpedoArmFragmentPrefab.cs" />
+    <Compile Include="ArmPrefabs\SeamothPropulsionArmFragmentPrefab.cs" />
+    <Compile Include="ArmPrefabs\SeamothGrapplingArmFragmentPrefab.cs" />
     <Compile Include="ArmPrefabs\SeamothDrillArmFragmentPrefab.cs" />
     <Compile Include="InternalArmHandlers\InternalPropulsionArmHandler.cs" />
     <Compile Include="InternalArmHandlers\InternalTorpedoArmHandler.cs" />
@@ -124,7 +144,7 @@
     <Compile Include="ArmHandlerRequesters\SeamothPropulsionArmModdingRequest.cs" />
     <Compile Include="ArmHandlerRequesters\SeamothTorpedoArmModdingRequest.cs" />
     <Compile Include="ArmPrefabs\SeamothTorpedoArmPrefab.cs" />
-    <Compile Include="Main.cs" />
+    <Compile Include="SeamothArms.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="InternalArmHandlers\InternalClawArmHandler.cs" />
     <Compile Include="InternalArmHandlers\InternalDrillArmHandler.cs" />
@@ -133,11 +153,6 @@
     <Compile Include="InternalArmHandlers\InternalGrapplingArmHandler.cs" />
     <Compile Include="ArmPrefabs\SeamothGrapplingArmPrefab.cs" />
     <Compile Include="ArmPrefabs\SeamothDrillArmPrefab.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="mod.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ModdedArmsHelper\ModdedArmsHelper.csproj">

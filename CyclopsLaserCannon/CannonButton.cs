@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using Common;
 
 namespace CyclopsLaserCannonModule
 {
@@ -11,8 +12,10 @@ namespace CyclopsLaserCannonModule
         public Image image;
         public EventTrigger eventTrigger;        
 
-        public void Start()
+        public void Awake()
         {
+            SNLogger.Debug("CannonButton: Awake started...");
+
             image = GetComponent<Image>();
 
             image.sprite = Main.buttonSprite;                       
@@ -80,7 +83,7 @@ namespace CyclopsLaserCannonModule
             if (mouseHover)
             {                
                 HandReticle main = HandReticle.main;
-                main.SetInteractText(CannonConfig.language_settings["Item_Name"]);
+                main.SetText(HandReticle.TextType.Hand, CannonConfig.language_settings["Item_Name"], false);
             }
         }        
     }

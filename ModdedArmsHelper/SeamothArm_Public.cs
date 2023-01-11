@@ -1,4 +1,5 @@
-﻿using ModdedArmsHelper.API;
+﻿using Common;
+using ModdedArmsHelper.API;
 using ModdedArmsHelper.API.Interfaces;
 using UnityEngine;
 using UWE;
@@ -194,6 +195,8 @@ namespace ModdedArmsHelper
 
         internal void AddArm(SeamothArm arm, TechType techType)
         {
+            SNLogger.Debug($"AddArm: arm: {arm}, techType: {techType}");
+
             armsDirty = true;
 
             if (arm == SeamothArm.Left)
@@ -204,7 +207,7 @@ namespace ModdedArmsHelper
                     leftArm = null;
                 }
 
-                leftArm = Main.graphics.SpawnArm(techType, leftArmAttach);                
+                leftArm = Main.armsGraphics.SpawnArm(techType, leftArmAttach);                
                 leftArm.SetSide(Left);
                 leftArm.SetRotation(Left, seamoth.docked);
                 currentLeftArmType = techType;
@@ -217,7 +220,7 @@ namespace ModdedArmsHelper
                     rightArm = null;
                 }
 
-                rightArm = Main.graphics.SpawnArm(techType, rightArmAttach);                
+                rightArm = Main.armsGraphics.SpawnArm(techType, rightArmAttach);                
                 rightArm.SetSide(Right);
                 rightArm.SetRotation(Right, seamoth.docked);
                 currentRightArmType = techType;
@@ -233,8 +236,8 @@ namespace ModdedArmsHelper
 
         internal void ResetArms()
         {
-            leftArm?.Reset();
-            rightArm?.Reset();            
+            leftArm?.ResetArm();
+            rightArm?.ResetArm();            
         }
     }
 }

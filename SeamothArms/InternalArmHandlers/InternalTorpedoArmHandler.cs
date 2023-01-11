@@ -22,7 +22,12 @@ namespace SeamothArms.InternalArmHandlers
         GameObject ISeamothArm.GetGameObject()
         {            
             return gameObject;
-        }        
+        }
+
+        GameObject ISeamothArm.GetInteractableRoot(GameObject target)
+        {
+            return null;
+        }
 
         void ISeamothArm.SetSide(SeamothArm arm)
         {
@@ -81,7 +86,7 @@ namespace SeamothArms.InternalArmHandlers
         {
         }
         
-        void ISeamothArm.Reset()
+        void ISeamothArm.ResetArm()
         {
             animator.SetBool("use_tool", false);
         }
@@ -191,7 +196,8 @@ namespace SeamothArms.InternalArmHandlers
             {
                 return;
             }
-            HandReticle.main.SetInteractText("SeamothTorpedoStorage");
+            HandReticle.main.SetText(HandReticle.TextType.Hand, "SeamothTorpedoStorage", true, GameInput.Button.LeftHand);
+            HandReticle.main.SetText(HandReticle.TextType.HandSubscript, string.Empty, false, GameInput.Button.None);
             HandReticle.main.SetIcon(HandReticle.IconType.Hand, 1f);
         }
         
@@ -208,7 +214,7 @@ namespace SeamothArms.InternalArmHandlers
             }
 
             Inventory.main.SetUsedStorage(container, false);
-            Player.main.GetPDA().Open(PDATab.Inventory, useTransform, null, -1f);
+            Player.main.GetPDA().Open(PDATab.Inventory, useTransform, null);
         }
         
         private void OnDestroy()

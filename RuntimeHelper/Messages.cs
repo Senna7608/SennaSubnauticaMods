@@ -37,7 +37,8 @@ namespace RuntimeHelper
         COMPONENT_ADDED,
         OBJECT_MARKED,
         OBJECT_UNMARKED,
-        COMPONENT_INFORMATION_LOGGED
+        COMPONENT_INFORMATION_LOGGED,
+        FMOD_ASSET_PRINTED
     }
 
 
@@ -55,7 +56,10 @@ namespace RuntimeHelper
         TEMP_OBJECT_EMPTY,
         CANNOT_MARK,
         CANNOT_SET_MARKED,
-        CANNOT_REMOVE_MARKED
+        CANNOT_REMOVE_MARKED,
+        CANNOT_GET_FMODS_IS_READY,
+        CANNOT_PLAY_FMOD_ASSET,
+        CANNOT_STOP_FMOD_ASSET
     }
 
 
@@ -67,7 +71,7 @@ namespace RuntimeHelper
         CANNOT_SWITCH_TO_OBJECT
     }
 
-    public partial class RuntimeHelper
+    public partial class RuntimeHelperManager
     {
         public static readonly Dictionary<MESSAGES, string> MESSAGE_TEXT = new Dictionary<MESSAGES, string>
         {
@@ -105,6 +109,7 @@ namespace RuntimeHelper
             { MESSAGES.OBJECT_MARKED, "Gameobject [{0}] marked and added to list."},
             { MESSAGES.OBJECT_UNMARKED, "Gameobject [{0}] unmarked and removed from list."},
             { MESSAGES.COMPONENT_INFORMATION_LOGGED, "Component [{0}] information add to logfile."},
+            { MESSAGES.FMOD_ASSET_PRINTED, "FMOD asset [{0}], path: [{1}]"},
         };
 
 
@@ -123,6 +128,9 @@ namespace RuntimeHelper
             { WARNINGS.CANNOT_MARK, "Cannot mark. Gameobject is already in the list."},
             { WARNINGS.CANNOT_SET_MARKED, "Cannot set. List is empty."},
             { WARNINGS.CANNOT_REMOVE_MARKED, "Cannot remove. List is empty."},
+            { WARNINGS.CANNOT_PLAY_FMOD_ASSET, "Cannot play FMOD asset. List is empty."},
+            { WARNINGS.CANNOT_STOP_FMOD_ASSET, "Cannot stop FMOD asset. List is empty."},
+            { WARNINGS.CANNOT_GET_FMODS_IS_READY, "Cannot get FMOD assets. List is full."},
         };
 
 

@@ -6,7 +6,7 @@ using RuntimeHelper.Visuals;
 
 namespace RuntimeHelper
 {
-    public partial class RuntimeHelper
+    public partial class RuntimeHelperManager
     {
         private List<string> componentsToAdd = new List<string>();
         private List<GuiItem> guiItems_componentsToAdd = new List<GuiItem>();

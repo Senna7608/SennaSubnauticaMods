@@ -16,7 +16,12 @@ namespace SeamothArms.InternalArmHandlers
             return gameObject;
         }
 
-        public void SetSide(SeamothArm arm)
+        GameObject ISeamothArm.GetInteractableRoot(GameObject target)
+        {
+            return null;
+        }
+
+        void ISeamothArm.SetSide(SeamothArm arm)
         {
             if (arm == SeamothArm.Right)
             {
@@ -86,7 +91,7 @@ namespace SeamothArms.InternalArmHandlers
             }            
         }
         
-        void ISeamothArm.Reset()
+        void ISeamothArm.ResetArm()
         {
             animator.SetBool("use_tool", false);
             drilling = false;

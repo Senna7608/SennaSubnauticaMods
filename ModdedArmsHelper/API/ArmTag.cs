@@ -3,7 +3,7 @@
 namespace ModdedArmsHelper.API
 {
     /// <summary>
-    /// The basic elements of the modded arm. Initialized internally.
+    /// The basic elements of the modded arm.<br/>Initialized internally.
     /// </summary>
     [DisallowMultipleComponent]
     public class ArmTag : MonoBehaviour
@@ -11,16 +11,16 @@ namespace ModdedArmsHelper.API
         /// <summary>
         /// The <see cref="ArmType"/> of the modded arm.
         /// </summary>
-        public ArmType armType;
+        public ArmType armType { get; internal set; }
 
         /// <summary>
         /// The <see cref="ArmTemplate"/> of the modded arm.
         /// </summary>
-        public ArmTemplate armTemplate;
+        public ArmTemplate armTemplate { get; internal set; }
 
         /// <summary>
         /// The <see cref="TechType"/> of the modded arm.
         /// </summary>
-        public TechType techType;
+        public TechType techType { get; internal set; }
     }
 }

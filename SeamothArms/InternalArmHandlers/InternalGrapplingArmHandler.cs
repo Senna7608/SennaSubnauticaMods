@@ -2,6 +2,7 @@
 using ModdedArmsHelper.API;
 using ModdedArmsHelper.API.ArmHandlers;
 using ModdedArmsHelper.API.Interfaces;
+using FMOD.Studio;
 
 namespace SeamothArms.InternalArmHandlers
 {
@@ -10,6 +11,11 @@ namespace SeamothArms.InternalArmHandlers
         GameObject ISeamothArm.GetGameObject()
         {
             return gameObject;
+        }
+
+        GameObject ISeamothArm.GetInteractableRoot(GameObject target)
+        {
+            return null;
         }
 
         void ISeamothArm.SetSide(SeamothArm arm)
@@ -61,7 +67,7 @@ namespace SeamothArms.InternalArmHandlers
         {
         }
         
-        void ISeamothArm.Reset()
+        void ISeamothArm.ResetArm()
         {
             animator.SetBool("use_tool", false);
             ResetHook();
@@ -134,8 +140,17 @@ namespace SeamothArms.InternalArmHandlers
                 }
 
                 rope.SetIsHooked();
+                return;
             }
-            else if (hook.flying)
+            
+            if (rope && rope.isHooked)
+            {
+                ResetHook();
+                grapplingLoopSound.Play();
+                return;
+            }
+            
+            if (hook.flying)
             {
                 if ((hook.transform.position - front.position).magnitude > maxDistance)
                 {
@@ -147,6 +162,8 @@ namespace SeamothArms.InternalArmHandlers
             {
                 grapplingLoopSound.Stop();
             }
+
+            grapplingLoopSound.Stop(STOP_MODE.ALLOWFADEOUT);
         } 
         
         bool ISeamothArm.HasClaw()

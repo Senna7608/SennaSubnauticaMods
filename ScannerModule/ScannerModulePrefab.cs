@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
+using SMLExpander;
 using SMLHelper.V2.Crafting;
-using Common.Helpers.SMLHelpers;
+using SMLHelper.V2.Utility;
 
 namespace ScannerModule
 {
@@ -9,15 +11,10 @@ namespace ScannerModule
         public static TechType TechTypeID { get; private set; }        
 
         internal ScannerModulePrefab()
-            : base(nameID: "ScannerModule",
-                  iconFilePath: $"{Main.modFolder}/Assets/ScannerModule.png",
-                  iconTechType: TechType.None,
+            : base(techTypeName: "ScannerModule",                  
                   friendlyName: "Scanner Module",
                   description: "Allows to scan objects within Vehicles.",
-                  template: TechType.SeamothSonarModule,
-                  newTabNode: null,
-                  fabricatorTypes: new CraftTree.Type[] { CraftTree.Type.SeamothUpgrades },
-                  fabricatorTabs: new string[][] { new string[] { "CommonModules" } },
+                  template: TechType.SeamothSonarModule,                  
                   requiredAnalysis: TechType.BaseUpgradeConsole,
                   groupForPDA: TechGroup.VehicleUpgrades,
                   categoryForPDA: TechCategory.VehicleUpgrades,
@@ -31,12 +28,11 @@ namespace ScannerModule
         {
         }
                
-        public override void Patch()
+        protected override void PrePatch()
         {
-            base.Patch();            
             TechTypeID = TechType;            
-        }
-        
+        }       
+
         protected override TechData GetRecipe()
         {
             return new TechData()
@@ -53,6 +49,33 @@ namespace ScannerModule
         protected override EncyData GetEncyclopediaData()
         {
             return null;
+        }
+
+        protected override IEnumerator ModifyGameObjectAsync(IOut<bool> success)
+        {
+            success.Set(true);
+            yield break;
+        }
+
+        protected override CrafTreeTypesData GetCraftTreeTypesData()
+        {
+            return new CrafTreeTypesData()
+            {
+                TreeTypes = new List<CraftTreeType>()
+                {
+                    new CraftTreeType(CraftTree.Type.SeamothUpgrades, new string[] { "CommonModules" } )
+                }
+            };
+        }
+
+        protected override TabNode GetTabNodeData()
+        {
+            return null;
+        }
+
+        protected override Atlas.Sprite GetItemSprite()
+        {
+            return ImageUtils.LoadSpriteFromFile($"{Main.modFolder}/Assets/ScannerModule.png");
         }
     }
 }

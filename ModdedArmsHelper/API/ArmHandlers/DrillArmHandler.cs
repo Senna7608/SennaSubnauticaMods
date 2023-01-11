@@ -2,8 +2,14 @@
 
 namespace ModdedArmsHelper.API.ArmHandlers
 {
+    /// <summary>
+    /// The abstract class to inherit for handling the drill arm base mechanics.
+    /// </summary>
     public abstract class DrillArmHandler : ArmHandler
-    {        
+    {
+
+#pragma warning disable CS1591 //XML documentation
+
         public VFXController fxControl { get; private set; }
         public FMOD_CustomLoopingEmitter loop { get; private set; }
         public FMOD_CustomLoopingEmitter loopHit { get; private set; }        
@@ -23,6 +29,11 @@ namespace ModdedArmsHelper.API.ArmHandlers
         public GameObject drillTarget;
         public Quaternion smoothedDirection = Quaternion.identity;
 
+#pragma warning restore CS1591 //XML documentation
+
+        /// <summary>
+        /// If you implement this method in your modded arm handler, the first line should be 'base.Awake()'
+        /// </summary>
         public override void Awake()
         {            
             fxControl = GetComponent<VFXController>();

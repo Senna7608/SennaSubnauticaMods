@@ -3,7 +3,8 @@ using UnityEngine;
 using SMLHelper.V2.Crafting;
 using SMLHelper.V2.Utility;
 using ModdedArmsHelper.API;
-using Common.Helpers.SMLHelpers;
+using System.Collections;
+using SMLExpander;
 
 namespace PlasmaCannonArm
 {
@@ -22,9 +23,9 @@ namespace PlasmaCannonArm
         {
         }
 
-        protected override void RegisterArm()
+        protected override RegisterArmRequest RegisterArm()
         {
-            ArmServices.main.RegisterArm(this, new PlasmaCannonArmModdingRequest());
+            return new RegisterArmRequest(this, new PlasmaCannonArmModdingRequest());
         }
 
         protected override EncyData GetEncyclopediaData()
@@ -54,9 +55,9 @@ namespace PlasmaCannonArm
                     new Ingredient(TechType.ComputerChip, 1)
                 })
             };
-        }        
-        
-        protected override void ModifyGameObject()
+        }
+
+        protected override IEnumerator ModifyGameObjectAsync(IOut<bool> success)
         {            
             GameObject model = PrefabClone.transform.Find("model").gameObject;
 
@@ -97,7 +98,10 @@ namespace PlasmaCannonArm
                 material.SetTexture(Shader.PropertyToID("_MainTex"), _MainTex);
                 material.SetTexture(Shader.PropertyToID("_BumpMap"), _BumpMap);                
                 material.SetTexture(Shader.PropertyToID("_Illum"), _Illum);
-            }            
+            }
+
+            success.Set(true);
+            yield break;
         }        
     }
 }

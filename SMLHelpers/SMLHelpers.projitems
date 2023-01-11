@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>f386ba23-7a64-4a05-9545-d23ffef08231</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>SMLExpander</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Classes.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EncyData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EncyHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FragmentTracker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ModdedTechTypeHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ModPrefab_Craftable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ModPrefab_Fragment.cs" />
+  </ItemGroup>
+</Project>

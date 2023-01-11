@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
+using SMLExpander;
 using SMLHelper.V2.Crafting;
 using SMLHelper.V2.Handlers;
-using Common.Helpers.SMLHelpers;
+using SMLHelper.V2.Utility;
 
 namespace LaserCannon
 {
@@ -11,15 +13,10 @@ namespace LaserCannon
         public static LaserCannonOptions Config { get; } = new LaserCannonOptions();       
 
         internal LaserCannonPrefab()
-            : base(nameID: "LaserCannon",
-                  iconFilePath: $"{Main.modFolder}/Assets/LaserCannon.png",
-                  iconTechType: TechType.None,
+            : base(techTypeName: "LaserCannon",
                   friendlyName: LaserCannonConfig.language_settings["Item_Name"].ToString(),
                   description: LaserCannonConfig.language_settings["Item_Description"].ToString(),
-                  template: TechType.SeamothSonarModule,
-                  newTabNode: null,
-                  fabricatorTypes: new CraftTree.Type[] { CraftTree.Type.SeamothUpgrades },
-                  fabricatorTabs: new string[][] { new string[] { "SeamothModules" } },
+                  template: TechType.SeamothSonarModule,                  
                   requiredAnalysis: TechType.BaseUpgradeConsole,
                   groupForPDA: TechGroup.VehicleUpgrades,
                   categoryForPDA: TechCategory.VehicleUpgrades,
@@ -32,10 +29,9 @@ namespace LaserCannon
                   )
         {
         }
-               
-        public override void Patch()
-        {
-            base.Patch();                        
+
+        protected override void PrePatch()
+        {                                   
             TechTypeID = TechType;           
             OptionsPanelHandler.RegisterModOptions(Config);
         }
@@ -59,6 +55,33 @@ namespace LaserCannon
         protected override EncyData GetEncyclopediaData()
         {
             return null;
+        }
+
+        protected override IEnumerator ModifyGameObjectAsync(IOut<bool> success)
+        {
+            success.Set(true);
+            yield break;
+        }
+
+        protected override CrafTreeTypesData GetCraftTreeTypesData()
+        {
+            return new CrafTreeTypesData()
+            {
+                TreeTypes = new List<CraftTreeType>()
+                {
+                    new CraftTreeType(CraftTree.Type.SeamothUpgrades, new string[] { "SeamothModules" } )
+                }
+            };
+        }
+
+        protected override TabNode GetTabNodeData()
+        {
+            return null;
+        }
+
+        protected override Atlas.Sprite GetItemSprite()
+        {
+            return ImageUtils.LoadSpriteFromFile($"{Main.modFolder}/Assets/LaserCannon.png");
         }
     }
 }

@@ -7,38 +7,57 @@ namespace PlasmaCannonArm
     public class PlasmaCannonArmHandler : ArmHandler, IExosuitArm
     {
         public GameObject cannon_tube_right, cannon_tube_left;
-        public AudioSource audioSource;       
+        //public AudioSource audioSource;       
         public GameObject glowLeft, glowRight;
                 
         private float timeFirstShot = float.NegativeInfinity;
         private float timeSecondShot = float.NegativeInfinity;
         private const float coolDown = 0.5f;
         
-        private const float energyCosumption = 0.5f;       
-        
+        private const float energyCosumption = 0.5f;
+
+        public FMODAsset shootSound;
+        private FMOD_CustomEmitter loopingEmitter;
+        //private VFXController heatFX;
+
         public override void Awake()
         {
             GameObject plasmaCannon = ArmServices.main.objectHelper.FindDeepChild(gameObject, "plasmaCannon");
-            GameObject PlasmaArm = plasmaCannon.transform.Find("PlasmaArm").gameObject;
+            //GameObject PlasmaArm = plasmaCannon.transform.Find("PlasmaArm").gameObject;
 
-            audioSource = PlasmaArm.GetComponentInChildren<AudioSource>();
-            audioSource.volume = 0.08f;
+            //audioSource = lowerArm.GetComponentInChildren<AudioSource>();
+            //audioSource.volume = 0.08f;
+            shootSound = ScriptableObject.CreateInstance<FMODAsset>();
+            shootSound.name = "repulse";
+            shootSound.id = "fire";
+            shootSound.path = "event:/tools/gravcannon/fire";
+
+            loopingEmitter = gameObject.AddComponent<FMOD_CustomEmitter>();
+            loopingEmitter.asset = shootSound;
 
             cannon_tube_left = plasmaCannon.transform.Find("PlasmaTubeLeft").gameObject;
             cannon_tube_right = plasmaCannon.transform.Find("PlasmaTubeRight").gameObject;            
-            glowLeft = plasmaCannon.transform.Find("PlasmaArm/GlowTubeLeft/glowLeft").gameObject;
-            glowRight = plasmaCannon.transform.Find("PlasmaArm/GlowTubeRight/glowRight").gameObject;                    
-        }
+            glowLeft = lowerArm.transform.Find("PlasmaArm/GlowTubeLeft/glowLeft").gameObject;
+            glowRight = lowerArm.transform.Find("PlasmaArm/GlowTubeRight/glowRight").gameObject;
+
+            //heatFX = lowerArm.GetComponentInChildren<VFXController>();
+        }        
 
         public override void Start()
         {
+            //heatFX.Play();
         }
 
         GameObject IExosuitArm.GetGameObject()
         {           
             return gameObject;            
         }
-        
+
+        GameObject IExosuitArm.GetInteractableRoot(GameObject target)
+        {
+            return null;
+        }
+
         void IExosuitArm.SetSide(Exosuit.Arm arm)
         {
             if (arm == Exosuit.Arm.Right)
@@ -72,7 +91,7 @@ namespace PlasmaCannonArm
         {            
         }        
 
-        void IExosuitArm.Reset()
+        void IExosuitArm.ResetArm()
         {
             animator.SetBool("use_tool", false);
         }
@@ -107,12 +126,13 @@ namespace PlasmaCannonArm
             float speed = Vector3.Dot(aimingTransform.forward, rhs);
 
             plasmaBullet.Shoot(siloTransform.position, aimingTransform.rotation, speed, -1f);
-            
-            audioSource.Play();
 
+            //audioSource.Play();
+            loopingEmitter.Stop();
+            loopingEmitter.Play();
             animator.SetBool("use_tool", true);
 
-            Exosuit.GetComponent<EnergyInterface>().ConsumeEnergy(energyCosumption);
+            exosuit.GetComponent<EnergyInterface>().ConsumeEnergy(energyCosumption);
 
             return true;
         }  
@@ -158,6 +178,7 @@ namespace PlasmaCannonArm
                 }
             }
 
+            
             animator.SetBool("use_tool", false);
             cooldownDuration = 0f;
             return false;
@@ -168,9 +189,11 @@ namespace PlasmaCannonArm
             MeshRenderer glowLeftRenderer = glowLeft.GetComponent<MeshRenderer>();
             MeshRenderer glowRightRenderer = glowRight.GetComponent<MeshRenderer>();
 
-            glowLeftRenderer.materials[1].color = new Color(0.330f, 0.901f, 0.431f, 1f);
-            glowRightRenderer.materials[1].color = new Color(0.330f, 0.901f, 0.431f, 1f);
-        }
+            //glowLeftRenderer.materials[1].color = new Color(0.330f, 0.901f, 0.431f, 1f);
+
+            glowLeftRenderer.materials[1].color = new Color(0.113f, 0.721f, 0.203f, 1f);            
+            glowRightRenderer.materials[1].color = new Color(0.113f, 0.721f, 0.203f, 1f);
+        }               
     }
 }
 

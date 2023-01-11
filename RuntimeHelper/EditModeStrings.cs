@@ -62,5 +62,26 @@ namespace RuntimeHelper
             "Collider Center: y",
             "Collider Center: z"
         };
+
+        public static readonly string[] RECTTRANSFORM_MODES = new string[17]
+        {
+            "Position: x",
+            "Position: y",
+            "Width",
+            "Height",
+            "Scale: x,y",
+            "Scale: x",
+            "Scale: y",
+            "Pivot: x",
+            "Pivot: y",
+            "AnchorMin: x",
+            "AnchorMin: y",
+            "AnchorMax: x",
+            "AnchorMax: y",
+            "OffsetMin: x",
+            "OffsetMin: y",
+            "OffsetMax: x",
+            "OffsetMax: y",
+        };
     }
 }

@@ -1,5 +1,8 @@
 ﻿using HarmonyLib;
 using Common.Helpers;
+using System;
+using Common;
+using UnityEngine;
 
 namespace CheatManager
 {
@@ -22,11 +25,11 @@ namespace CheatManager
         {
             [HarmonyPostfix]
             internal static void Postfix(Exosuit __instance)
-            {                
-                __instance.gameObject.EnsureComponent<ExosuitOverDrive>();               
+            {
+                __instance.gameObject.EnsureComponent<ExosuitOverDrive>();
             }
         }
-        
+
         [HarmonyPatch(typeof(CyclopsMotorMode))]
         [HarmonyPatch("Start")]
         internal class CyclopsMotorMode_Start_Patch
@@ -44,7 +47,7 @@ namespace CheatManager
         {
             [HarmonyPostfix]
             internal static void Postfix(CyclopsMotorMode __instance, CyclopsMotorMode.CyclopsMotorModes newMode)
-            {                
+            {
                 __instance.gameObject.GetComponent<CyclopsOverDrive>().onCyclopsMotorModeChanged.Trigger(newMode);
             }
         }
@@ -56,9 +59,10 @@ namespace CheatManager
             [HarmonyPostfix]
             internal static void Postfix(Seaglide __instance)
             {
-                __instance.gameObject.EnsureComponent<SeaglideOverDrive>();                
+                __instance.gameObject.EnsureComponent<SeaglideOverDrive>();
             }
         }
+        
 
         [HarmonyPatch(typeof(DevConsole))]
         [HarmonyPatch("Submit")]

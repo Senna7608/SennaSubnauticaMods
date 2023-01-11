@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using ModdedArmsHelper.API;
 using ModdedArmsHelper.API.Interfaces;
+using System.Collections;
+using Common;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace PlasmaCannonArm
 {
@@ -16,7 +19,7 @@ namespace PlasmaCannonArm
             return null;
         }
 
-        public void SetUpArm(GameObject clonedArm, SetupHelper graphicsHelper)
+        public IEnumerator SetUpArmAsync(GameObject clonedArm, LowerArmHelper graphicsHelper, IOut<bool> success)
         {
             GameObject elbow = ArmServices.main.objectHelper.FindDeepChild(clonedArm, "elbow");
 
@@ -43,13 +46,25 @@ namespace PlasmaCannonArm
 
             GameObject ArmRig = ArmServices.main.objectHelper.FindDeepChild(clonedArm, "ArmRig"); ;
 
-            GameObject exosuit_arm_plasmaCannon_geo = ArmRig.FindChild("ArmModel");           
+            GameObject exosuit_arm_plasmaCannon_geo = ArmRig.FindChild("ArmModel");            
 
-            graphicsHelper.DisableLowerArmMesh();            
-
-            GameObject PlasmaArm = Object.Instantiate(Main.assetBundle.LoadAsset<GameObject>("PlasmaArm"), plasmaCannon.transform);
+            GameObject PlasmaArm = graphicsHelper.AttachNewLowerArm(Main.assetBundle.LoadAsset<GameObject>("PlasmaArm"), true);
+            
             PlasmaArm.name = "PlasmaArm";
-            GameObject precursorColumnMaze = Resources.Load("WorldEntities/Environment/Precursor/Gun/Precursor_Gun_ControlRoom_CentralColumn") as GameObject;
+
+            AsyncOperationHandle<GameObject> loadRequest_01 = AddressablesUtility.LoadAsync<GameObject>("WorldEntities/Environment/Precursor/Gun/Precursor_Gun_ControlRoom_CentralColumn.prefab");
+
+            yield return loadRequest_01;
+
+            if (loadRequest_01.Status == AsyncOperationStatus.Failed)
+            {
+                SNLogger.Error("Cannot find GameObject in Resources folder at path 'WorldEntities/Environment/Precursor/Gun/Precursor_Gun_ControlRoom_CentralColumn.prefab'");
+                yield break;
+            }
+
+            GameObject precursorColumnMaze = loadRequest_01.Result;
+
+            //GameObject precursorColumnMaze = Resources.Load("WorldEntities/Environment/Precursor/Gun/Precursor_Gun_ControlRoom_CentralColumn") as GameObject;
 
             GameObject precursorColumn = precursorColumnMaze.transform.Find("precursor_column_maze_08_06_08_hlpr/precursor_column_maze_08_06_08_ctrl/precursor_column_maze_08_06_08/precursor_column_maze_08_06_08_glass_02_hlpr/precursor_column_maze_08_06_08_glass_02_ctrl/precursor_column_maze_08_06_08_glass_02").gameObject;
 
@@ -63,6 +78,7 @@ namespace PlasmaCannonArm
             glowLeft.transform.localRotation = Quaternion.Euler(0, 0, 0);
 
             MeshRenderer glowLeftRenderer = glowLeft.GetComponent<MeshRenderer>();
+            glowLeftRenderer.materials[1].color = new Color(0.113f, 0.721f, 0.203f, 1f);
 
             foreach (Material material in glowLeftRenderer.materials)
             {
@@ -74,6 +90,9 @@ namespace PlasmaCannonArm
             glowRight.transform.localPosition = Vector3.zero;
             glowRight.transform.localScale = new Vector3(1.28f, 1.43f, 7.09f);
             glowRight.transform.localRotation = Quaternion.Euler(0, 0, 0);
+            
+            MeshRenderer glowRightRenderer = glowRight.GetComponent<MeshRenderer>();            
+            glowRightRenderer.materials[1].color = new Color(0.113f, 0.721f, 0.203f, 1f);
 
             Texture2D _MainTex = Main.assetBundle.LoadAsset<Texture2D>("PlasmaArm_MainTex");
             Texture2D _Illum = Main.assetBundle.LoadAsset<Texture2D>("PlasmaArm_Illum");
@@ -93,8 +112,8 @@ namespace PlasmaCannonArm
                 material.SetTexture(Shader.PropertyToID("_Illum"), _Illum);
             }
 
-            PlasmaArm.transform.localScale = new Vector3(0.13f, 0.13f, 0.13f);
-            PlasmaArm.transform.localPosition = new Vector3(-0.33f, 0.20f, -0.20f);
+            PlasmaArm.transform.localPosition = new Vector3(-0.68f, 0.30f, -0.20f);
+            PlasmaArm.transform.localScale = new Vector3(0.13f, 0.13f, 0.13f);            
             PlasmaArm.transform.localRotation = Quaternion.Euler(0, 270, 180);
 
             Object.DestroyImmediate(exosuit_arm_plasmaCannon_geo.FindChild("torpedo_innr1_geo"));
@@ -103,17 +122,28 @@ namespace PlasmaCannonArm
             Object.DestroyImmediate(exosuit_arm_plasmaCannon_geo.FindChild("torpedo_outr2_geo"));
             Object.DestroyImmediate(exosuit_arm_plasmaCannon_geo.FindChild("torpedo_reload_geo"));
 
-            GameObject powerTransmitter = CraftData.InstantiateFromPrefab(TechType.PowerTransmitter);
+            CoroutineTask<GameObject> powerTransmitterRequest = CraftData.GetPrefabForTechTypeAsync(TechType.PowerTransmitter);
+            yield return powerTransmitterRequest;
 
-            GameObject laserBeam = Object.Instantiate(powerTransmitter.GetComponent<PowerFX>().vfxPrefab, null, false);
+            GameObject powerTransmitterResult = powerTransmitterRequest.GetResult();
+
+            if (powerTransmitterResult == null)
+            {
+                SNLogger.Error($"Cannot get {TechType.PowerTransmitter} prefab from CraftData!");
+                success.Set(false);
+                yield break;
+            }
+
+            GameObject laserBeam = Object.Instantiate(powerTransmitterResult.GetComponent<PowerFX>().vfxPrefab, null, false);
 
             LineRenderer lineRenderer = laserBeam.GetComponent<LineRenderer>();
 
             Main.plasma_Material = Object.Instantiate(lineRenderer.material) as Material;
 
-            Object.DestroyImmediate(powerTransmitter);
+            Object.DestroyImmediate(laserBeam);
 
-            Object.DestroyImmediate(laserBeam);            
-        }
+            success.Set(true);
+            yield break;
+        }        
     }    
 }

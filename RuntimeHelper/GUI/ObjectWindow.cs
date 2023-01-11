@@ -1,12 +1,13 @@
 ﻿using Common.GUIHelper;
 using RuntimeHelper.Components;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace RuntimeHelper
 {
-    public partial class RuntimeHelper
+    public partial class RuntimeHelperManager
     {
         private static Rect ObjectWindow_Rect = new Rect(0, 732, 298, 258);
         private Rect ObjectWindow_drawRect;
@@ -33,7 +34,7 @@ namespace RuntimeHelper
 
             if (GUI.Button(new Rect(ObjectWindow_drawRect.x + 130, ObjectWindow_drawRect.y + 5, 163, 22), ObjectWindow[1], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
-                AddNewTechObject(techTypeDatas[selected_TechType].TechType);
+                StartCoroutine(AddNewTechObjectAsync(techTypeDatas[selected_TechType].TechType));
             }
 
             GuiItemEvent selValue = SNScrollView.CreateScrollView(new Rect(ObjectWindow_drawRect.x + 5, ObjectWindow_drawRect.y + 30, ObjectWindow_drawRect.width - 10, ObjectWindow_drawRect.height - 5), ref scrollPos_TechTypes, ref guiItems_TechTypes, "Selected TechType:", techTypeDatas[selected_TechType].Name, 7);
@@ -60,24 +61,25 @@ namespace RuntimeHelper
             OutputWindow_Log(MESSAGE_TEXT[MESSAGES.NEW_EMPTY_OBJECT_ADDED], newChild.name, newChild.transform.parent.name, newChild.transform.root.name);
         }
 
-        public void AddNewTechObject(TechType techType)
+        public IEnumerator AddNewTechObjectAsync(TechType techType)
         {
-            SetDirty(true);            
-
-            GameObject newChild = null;
+            CoroutineTask<GameObject> request = CraftData.GetPrefabForTechTypeAsync(techType);
+            yield return request;
 
             OutputWindow_Log(MESSAGE_TEXT[MESSAGES.TRY_TO_ADD_A_TECH_OBJECT], (int)techType, techType.ToString());
 
-            try
-            {
-               newChild = Instantiate(CraftData.GetPrefabForTechType(techType), Vector3.zero, Quaternion.Euler(Vector3.zero));
-            }
-            catch
+            GameObject result = request.GetResult();
+
+            if (result == null)
             {
                 OutputWindow_Log(WARNING_TEXT[WARNINGS.OBJECT_CANNOT_INSTANTIATE], LogType.Error, (int)techType, techType.ToString());
                 SetDirty(false);
-                return;
+                yield break;
             }
+
+            SetDirty(true);
+
+            GameObject newChild = Instantiate(result, Vector3.zero, Quaternion.Euler(Vector3.zero));
 
             ReleaseObjectDrawing();
 
@@ -143,6 +145,8 @@ namespace RuntimeHelper
             OnObjectChange(newChild);
 
             OutputWindow_Log(MESSAGE_TEXT[MESSAGES.NEW_TECH_OBJECT_ADDED], newChild.name, newChild.transform.parent.name, newChild.transform.root.name);
+
+            yield break;
         }
         
         private static List<Type> ValidTypes = new List<Type>

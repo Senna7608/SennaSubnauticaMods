@@ -33,7 +33,7 @@ namespace ModdedArmsHelper.API.ArmHandlers
         public Transform front { get; private set; }
 
         /// <summary>
-        /// This property is returning the claw arm. See also <see cref="VFXEventTypes"/> enumerator.
+        /// This property can be set. See also <see cref="VFXEventTypes"/> enum.
         /// </summary>
         public VFXEventTypes vfxEventType { get; set; }
 
@@ -63,7 +63,7 @@ namespace ModdedArmsHelper.API.ArmHandlers
         public float damage = 50f;
 
         /// <summary>
-        /// This field can be set. See also <see cref="DamageType"/> enumerator.
+        /// This field can be set. See also <see cref="DamageType"/> enum.
         /// </summary>
         public DamageType damageType = DamageType.Normal;
 
@@ -88,7 +88,7 @@ namespace ModdedArmsHelper.API.ArmHandlers
         public float energyCost = 0.5f;
 
         /// <summary>
-        /// If you implement this method in your modded  arm handler the first line should be 'base.Awake()'
+        /// If you implement this method in your modded arm handler, the first line should be 'base.Awake()'
         /// </summary>
         public override void Awake()
         {            

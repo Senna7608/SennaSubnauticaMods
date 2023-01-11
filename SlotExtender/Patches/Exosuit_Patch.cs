@@ -20,7 +20,7 @@ namespace SlotExtender.Patches
         [HarmonyPostfix]
         public static void Postfix(Exosuit __instance)
         {            
-            __instance.gameObject.EnsureComponent<SlotExtender>();
+            __instance.gameObject.EnsureComponent<SlotExtenderControl>();
             SNLogger.Debug($"Component added in Exosuit.Awake -> Postfix Patch. ID: {__instance.GetInstanceID()}");           
         }
     }

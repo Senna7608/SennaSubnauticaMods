@@ -1,22 +1,25 @@
 ﻿using System;
+using System.Collections;
 using System.IO;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using UWE;
 #pragma warning disable CS1591
 
 namespace Common.Helpers
 {
     public static class GraphicsHelper
     {
-        public static void GetResourceMaterial(string gameObjectPath, string meshName, int materialIndex, out Material material)
+        public static void GetResourceMaterial(string resourcePath, string meshName, int materialIndex, out Material material)
         {
-            GameObject gameObject = Resources.Load<GameObject>(gameObjectPath);
+            GameObject gameObject = Resources.Load<GameObject>(resourcePath);
 
             if (gameObject == null)
             {
                 material = null;
 
-                SNLogger.Error(Assembly.GetCallingAssembly().GetName().Name, $"GameObject not found in Resources at path [{gameObjectPath}]");
+                SNLogger.Error($"GameObject not found in Resources at path [{resourcePath}]");
 
                 return;
             }
@@ -31,11 +34,38 @@ namespace Common.Helpers
                 }
             }
 
-            SNLogger.Error(Assembly.GetCallingAssembly().GetName().Name, $"Mesh not found in gameobject [{meshName}]");
+            SNLogger.Error($"Mesh not found in gameobject [{meshName}]");
 
             material = null;
         }
 
+        public static IEnumerator GetResourceMaterialAsync(string resourcePath, string meshName, int materialIndex, IOut<Material> material)
+        {
+            IPrefabRequest resourceRequest = PrefabDatabase.GetPrefabForFilenameAsync(resourcePath);
+             
+            yield return resourceRequest;
+
+            if (!resourceRequest.TryGetPrefab(out GameObject prefab))
+            {
+                SNLogger.Error($"Resource cannot be loaded from this location: [{resourcePath}]");
+                yield break;
+            }
+                        
+            foreach (MeshRenderer meshRenderer in prefab.GetComponentsInChildren<MeshRenderer>(true))
+            {
+                if (meshRenderer.name.Equals(meshName, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    material.Set(UnityEngine.Object.Instantiate(meshRenderer.materials[materialIndex]) as Material);
+
+                    yield break;
+                }
+            }
+
+            SNLogger.Error($"Mesh not found in gameobject [{meshName}]");
+
+            material.Set(null);
+            yield break;
+        }
 
         public static void SetMeshMaterial(GameObject model, Material newMaterial, int index)
         {

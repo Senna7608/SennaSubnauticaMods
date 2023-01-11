@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using Common.ConfigurationParser;
 using Common;
@@ -213,7 +212,7 @@ namespace LaserCannon
                 ParserHelper.SetKeyValue(FILENAME, "Program", item.Key, item.Value);
             }
 
-            SNLogger.Log("LaserCannon", "Configuration saved.");
+            SNLogger.Log("Configuration saved.");
         }        
 
         internal static void ReadConfig()
@@ -238,11 +237,11 @@ namespace LaserCannon
                         colorNames.Add(item.Value.ToString());
                 }
 
-                SNLogger.Log("LaserCannon", "Configuration loaded.");
+                SNLogger.Log("Configuration loaded.");
             }
             catch
             {
-                SNLogger.Error("LaserCannon", "An error occurred while loading the configuration file!");
+                SNLogger.Error("An error occurred while loading the configuration file!");
             }
         }
 
@@ -251,9 +250,9 @@ namespace LaserCannon
 
         internal static void Config_CreateDefault()
         {
-            SNLogger.Debug("LaserCannon", "Method call: LaserCannonConfig.Config_CreateDefault()");
+            SNLogger.Debug("Method call: LaserCannonConfig.Config_CreateDefault()");
 
-            SNLogger.Warn("LaserCannon", "Configuration file is missing or wrong version. Trying to create a new one.");
+            SNLogger.Warn("Configuration file is missing or wrong version. Trying to create a new one.");
             
             try
             {
@@ -272,21 +271,21 @@ namespace LaserCannon
                     }
                 }                
 
-                SNLogger.Log("LaserCannon", "The new configuration file was successfully created.");
+                SNLogger.Log("The new configuration file was successfully created.");
             }
             catch
             {
-                SNLogger.Error("LaserCannon", "An error occured while creating the new configuration file!");
+                SNLogger.Error("An error occured while creating the new configuration file!");
             }            
         }
 
         private static bool Config_Check()
         {
-            SNLogger.Debug("LaserCannon", "Method call: LaserCannonConfig.Config_Check()");
+            SNLogger.Debug("Method call: LaserCannonConfig.Config_Check()");
 
             if (!File.Exists(FILENAME))
             {
-                SNLogger.Error("LaserCannon", "Configuration file open error!");
+                SNLogger.Error("Configuration file open error!");
                 return false;
             }
 
@@ -294,13 +293,13 @@ namespace LaserCannon
 
             if (!CONFIG_VERSION.Equals(PROGRAM_VERSION))
             {
-                SNLogger.Error("LaserCannon", "Configuration file version error!");
+                SNLogger.Error("Configuration file version error!");
                 return false;
             }
 
             if (!ParserHelper.CheckSectionKeys(FILENAME, "Program", SECTION_PROGRAM))
             {
-                SNLogger.Error("LaserCannon", "Configuration file [Program] section error!");
+                SNLogger.Error("Configuration file [Program] section error!");
                 return false;
             }
 
@@ -308,7 +307,7 @@ namespace LaserCannon
             {
                 if (!ParserHelper.CheckSectionKeys(FILENAME, lang, SECTION_LANGUAGE))
                 {
-                    SNLogger.Error("LaserCannon", "Configuration file [Language] section error!");
+                    SNLogger.Error("Configuration file [Language] section error!");
                     return false;
                 }
             }

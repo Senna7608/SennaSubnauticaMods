@@ -5,7 +5,7 @@ using Common.Helpers;
 
 namespace CheatManager
 {
-    public partial class CheatManager
+    public partial class CheatManagerControl
     {
         internal static readonly float[] DayNightSpeed = { 0.1f, 0.25f, 0.5f, 0.75f, 1f, 2f };
         

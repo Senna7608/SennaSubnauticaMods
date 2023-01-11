@@ -28,7 +28,7 @@ namespace Common
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            bool startScreen = scene.name == "StartScreen" ? true : false;
+            bool startScreen = scene.name == "XMenu" ? true : false;
             bool mainScreen = scene.name == "Main" ? true : false;
 
             foreach (ConsoleCommand command in commands)

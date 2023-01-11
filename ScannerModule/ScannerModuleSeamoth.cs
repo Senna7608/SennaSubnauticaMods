@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using UWE;
-using static Common.Helpers.GraphicsHelper;
 using static Common.Helpers.GameHelper;
 using Common;
+using System.Collections;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace ScannerModule
 {
@@ -18,7 +19,7 @@ namespace ScannerModule
         private SeaMoth thisSeamoth;
         private EnergyMixin energyMixin;
         private Transform leftTorpedoSlot;
-
+        
         private GameObject scanBeam;
         private float powerConsumption = 0.5f;
         private const float scanDistance = 30f;
@@ -30,8 +31,7 @@ namespace ScannerModule
         private Color scanCircuitColor = Color.white;
         private Texture scanOrganicTex;
         private Color scanOrganicColor = Color.white;
-
-        private VFXController fxControl;
+                
         private ScanState stateLast;
         private ScanState stateCurrent;
         private float idleTimer;
@@ -42,71 +42,15 @@ namespace ScannerModule
         private bool isToggle;
         private bool isScanning;
         private bool isActive;
-        private bool isPlayerInThisSeamoth;        
-
+        private bool isPlayerInThisSeamoth;
+                
         public void Awake()
         {            
             thisSeamoth = GetComponent<SeaMoth>();            
             leftTorpedoSlot = thisSeamoth.torpedoTubeLeft.transform;
-            energyMixin = thisSeamoth.GetComponent<EnergyMixin>();            
+            energyMixin = thisSeamoth.GetComponent<EnergyMixin>();
 
-            GameObject scannerPrefab = CraftData.InstantiateFromPrefab(TechType.Scanner);
-
-            scannerPrefab.SetActive(false);
-            Utils.ZeroTransform(scannerPrefab.transform);
-
-            ScannerTool scannerTool = scannerPrefab.GetComponent<ScannerTool>();
-            
-            GameObject ScannerModuleGO = new GameObject("ScannerModuleGO");
-            ScannerModuleGO.transform.SetParent(leftTorpedoSlot.transform, false);
-            Utils.ZeroTransform(ScannerModuleGO.transform);
-
-            scan_loop = ScriptableObject.CreateInstance<FMODAsset>();
-            scan_loop.name = "scan_loop";
-            scan_loop.path = "event:/tools/scanner/scan_loop";
-            scanSound = ScannerModuleGO.AddComponent<FMOD_CustomLoopingEmitter>();
-            scanSound.asset = scan_loop;
-            
-            completeSound = ScriptableObject.CreateInstance<FMODAsset>();
-            completeSound.name = "scan_complete";
-            completeSound.path = "event:/tools/scanner/scan_complete";
-
-            fxControl = Instantiate(scannerTool.fxControl) as VFXController;                      
-
-            scanBeam = Main.objectHelper.GetGameObjectClone(scannerPrefab.FindChild("x_ScannerBeam"), ScannerModuleGO.transform, false);
-
-            scanCircuitTex = CreateRWTextureFromNonReadableTexture(scannerTool.scanCircuitTex);            
-            scanOrganicTex = CreateRWTextureFromNonReadableTexture(scannerTool.scanOrganicTex);
-
-            scanCircuitColor = scannerTool.scanCircuitColor;
-            scanOrganicColor = scannerTool.scanOrganicColor;
-
-            scanBeam.transform.localPosition = new Vector3(0, 0, -0.37f);
-            scanBeam.transform.localScale = new Vector3(1, 4.41f, 1.55f);
-            scanBeam.transform.localRotation = Quaternion.Euler(280, 184, 185);                        
-
-            Destroy(scannerPrefab);
-            Destroy(ScannerModuleGO.FindChild("Scanner(Clone)(Clone)"));            
-        
-            SetFXActive(false);
-
-            Shader shader = Shader.Find("FX/Scanning");
-
-            if (shader != null)
-            {
-                scanMaterialCircuitFX = new Material(shader)
-                {
-                    hideFlags = HideFlags.HideAndDontSave
-                };
-                scanMaterialCircuitFX.SetTexture(ShaderPropertyID._MainTex, scanCircuitTex);
-                scanMaterialCircuitFX.SetColor(ShaderPropertyID._Color, scanCircuitColor);
-                scanMaterialOrganicFX = new Material(shader)
-                {
-                    hideFlags = HideFlags.HideAndDontSave
-                };
-                scanMaterialOrganicFX.SetTexture(ShaderPropertyID._MainTex, scanOrganicTex);
-                scanMaterialOrganicFX.SetColor(ShaderPropertyID._Color, scanOrganicColor);
-            }
+            CoroutineHost.StartCoroutine(InitializeScannerAsync());            
 
             thisSeamoth.onToggle += OnToggle;
             thisSeamoth.modules.onAddItem += OnAddItem;
@@ -115,6 +59,94 @@ namespace ScannerModule
             Player.main.playerMotorModeChanged.AddHandler(this, new Event<Player.MotorMode>.HandleFunction(OnPlayerMotorModeChanged));
 
             moduleCount = thisSeamoth.modules.GetCount(ScannerModulePrefab.TechTypeID);            
+        }
+
+        private IEnumerator InitializeScannerAsync()
+        {
+            CoroutineTask<GameObject> request = CraftData.GetPrefabForTechTypeAsync(TechType.Scanner);
+            yield return request;
+
+            GameObject result = request.GetResult();
+
+            if (result == null)
+            {
+                SNLogger.Error($"{TechType.Scanner} : Cannot instantiate prefab from TechType!");
+                yield break;
+            }
+
+            GameObject scannerPrefab = UWE.Utils.InstantiateDeactivated(result, leftTorpedoSlot.transform, Vector3.zero, Quaternion.identity);
+                                    
+            ScannerTool scannerTool = scannerPrefab.GetComponent<ScannerTool>();
+
+            GameObject ScannerModuleGO = new GameObject("ScannerModuleGO");
+            ScannerModuleGO.transform.SetParent(leftTorpedoSlot.transform, false);
+            Utils.ZeroTransform(ScannerModuleGO.transform);
+            ScannerModuleGO.SetActive(false);
+           
+            scan_loop = ScriptableObject.CreateInstance<FMODAsset>();
+            scan_loop.name = "scan_loop";
+            scan_loop.path = "event:/tools/scanner/scan_loop";
+            scanSound = ScannerModuleGO.AddComponent<FMOD_CustomLoopingEmitter>();
+            scanSound.asset = scan_loop;            
+            
+            completeSound = ScriptableObject.CreateInstance<FMODAsset>();
+            completeSound.name = "scan_complete";
+            completeSound.path = "event:/tools/scanner/scan_complete";
+            
+            scanBeam = scannerPrefab.FindChild("x_ScannerBeam");
+            scanBeam.transform.SetParent(ScannerModuleGO.transform);                  
+
+            AsyncOperationHandle<Texture2D> loadRequest_01 = AddressablesUtility.LoadAsync<Texture2D>("Assets/Textures/vfx/circuit_tile_01.tga");
+            yield return loadRequest_01;
+
+            if (loadRequest_01.Status == AsyncOperationStatus.Failed)
+            {
+                SNLogger.Error("Cannot find Texture2D in Resources folder at path 'Assets/Textures/vfx/circuit_tile_01.tga'");
+                yield break;
+            }
+
+            scanCircuitTex = loadRequest_01.Result;
+
+            AsyncOperationHandle<Texture2D> loadRequest_02 = AddressablesUtility.LoadAsync<Texture2D>("Assets/Textures/vfx/voronoi_tile_02.tga");
+            yield return loadRequest_02;
+
+            if (loadRequest_02.Status == AsyncOperationStatus.Failed)
+            {
+                SNLogger.Error("Cannot find Texture2D in Resources folder at path 'Assets/Textures/vfx/voronoi_tile_02.tga'");
+                yield break;
+            }
+
+            scanOrganicTex = loadRequest_02.Result;             
+
+            scanBeam.transform.localPosition = new Vector3(0, 0, -0.37f);
+            scanBeam.transform.localScale = new Vector3(1, 4.41f, 1.55f);
+            scanBeam.transform.localRotation = Quaternion.Euler(280, 184, 185);
+
+            DestroyImmediate(scannerPrefab);            
+
+            SetFXActive(false);
+
+            Shader scannerToolScanning = ShaderManager.preloadedShaders.scannerToolScanning;
+
+            if (scannerToolScanning != null)
+            {
+                scanMaterialCircuitFX = new Material(scannerToolScanning)
+                {
+                    hideFlags = HideFlags.HideAndDontSave
+                };
+                scanMaterialCircuitFX.SetTexture(ShaderPropertyID._MainTex, scanCircuitTex);
+                scanMaterialCircuitFX.SetColor(ShaderPropertyID._Color, scanCircuitColor);
+                scanMaterialOrganicFX = new Material(scannerToolScanning)
+                {
+                    hideFlags = HideFlags.HideAndDontSave
+                };
+                scanMaterialOrganicFX.SetTexture(ShaderPropertyID._MainTex, scanOrganicTex);
+                scanMaterialOrganicFX.SetColor(ShaderPropertyID._Color, scanOrganicColor);
+            }
+            
+            ScannerModuleGO.SetActive(true);
+
+            yield break;
         }
 
         private void OnPlayerMotorModeChanged(Player.MotorMode newMotorMode)
@@ -268,11 +300,7 @@ namespace ScannerModule
                 else if (result == PDAScanner.Result.Done || result == PDAScanner.Result.Researched)
                 {                    
                     idleTimer = 0.5f;
-                    PDASounds.queue.PlayIfFree(completeSound);
-                    if (fxControl != null)
-                    {
-                        fxControl.Play(0);
-                    }
+                    PDASounds.queue.PlayIfFree(completeSound);                    
                 }                
             }
             return result;
@@ -299,7 +327,7 @@ namespace ScannerModule
             if (result == PDAScanner.Result.Scan)
             {
                 HandReticle main = HandReticle.main;
-                main.SetInteractText(scanTarget.techType.AsString(false), true, HandReticle.Hand.Left);
+                main.SetText(HandReticle.TextType.Hand, scanTarget.techType.AsString(false), true);
                 main.SetIcon(HandReticle.IconType.Scan, 1.5f);
 
                 if (stateCurrent == ScanState.Scan)
@@ -338,9 +366,10 @@ namespace ScannerModule
                     if (scanFX.gameObject != scanTarget.gameObject)
                     {
                         StopScanFX();
+
                         scanFX = scanTarget.gameObject.AddComponent<VFXOverlayMaterial>();
-                        bool flag = scanTarget.gameObject.GetComponent<Creature>() != null;
-                        if (flag)
+
+                        if (scanTarget.gameObject.GetComponent<Creature>() != null)
                         {
                             scanFX.ApplyOverlay(scanMaterialOrganicFX, "VFXOverlay: Scanning", false, null);
                         }
@@ -353,8 +382,8 @@ namespace ScannerModule
                 else
                 {
                     scanFX = scanTarget.gameObject.AddComponent<VFXOverlayMaterial>();
-                    bool flag2 = scanTarget.gameObject.GetComponent<Creature>() != null;
-                    if (flag2)
+
+                    if (scanTarget.gameObject.GetComponent<Creature>() != null)
                     {
                         scanFX.ApplyOverlay(scanMaterialOrganicFX, "VFXOverlay: Scanning", false, null);
                     }
@@ -363,6 +392,18 @@ namespace ScannerModule
                         scanFX.ApplyOverlay(scanMaterialCircuitFX, "VFXOverlay: Scanning", false, null);
                     }
                 }
+
+                
+                float value = 1f;
+
+                if (!MiscSettings.flashes)
+                {
+                    value = 0.1f;
+                }
+
+                scanMaterialCircuitFX.SetFloat(ShaderPropertyID._TimeScale, value);
+                scanMaterialOrganicFX.SetFloat(ShaderPropertyID._TimeScale, value);
+                
             }
         }
         
@@ -384,28 +425,6 @@ namespace ScannerModule
             thisSeamoth.modules.onRemoveItem -= OnRemoveItem;
             Player.main.playerMotorModeChanged.RemoveHandler(this, OnPlayerMotorModeChanged);
         }
-        
-        /*
-        private void DestroyFakeScanners()
-        {
-            try
-            {
-                GameObject trash = gameObject.FindChild("Scanner(Clone)");
-
-                if (trash)
-                {
-                    Debug.Log($"[ScannerModule] Found fake scanner gameobject in seamoth hierarchy with ID: [{trash.GetInstanceID()}]");
-                    Debug.Log("and destroying it...");
-                    DestroyImmediate(trash);                    
-                }
-            }
-            catch
-            {
-                return;
-            }
-        }
-        */
-
     }
 }
 

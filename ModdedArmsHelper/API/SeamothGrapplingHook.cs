@@ -1,11 +1,14 @@
 ﻿using UnityEngine;
 
+#pragma warning disable CS1591 //XML documentation
+
 namespace ModdedArmsHelper.API
 {
     public class SeamothGrapplingHook : MonoBehaviour
     {
         public Rigidbody rb;
         public Collider collision;
+        private Collider attachedCollider;
         public FMODAsset hitSound;
         public VFXController fxControl;
         private FixedJoint fixedJoint;
@@ -67,11 +70,13 @@ namespace ModdedArmsHelper.API
 
             SeamothGrapplingHook component = collisionInfo.gameObject.GetComponent<SeamothGrapplingHook>();
 
-            if (staticAttached || (fixedJoint && fixedJoint.connectedBody) || componentInParent != null || component != null)
+            if (staticAttached || (fixedJoint && fixedJoint.connectedBody) || componentInParent != null || component != null || IsPropulsionCannonAmmo(collisionInfo.gameObject))
             {
                 return;
             }
 
+            attachedCollider = collisionInfo.collider;
+            
             Rigidbody targetRigidbody = GetTargetRigidbody(collisionInfo.gameObject);
 
             rb.velocity = Vector3.zero;
@@ -83,7 +88,14 @@ namespace ModdedArmsHelper.API
             else
             {
                 staticAttached = true;
-                rb.isKinematic = true;
+
+                MainGameController instance = MainGameController.Instance;
+
+                if (instance != null)
+                {
+                    instance.DeregisterHighFixedTimestepBehavior(this);
+                }
+                UWE.Utils.SetIsKinematicAndUpdateInterpolation(this.rb, true, false);
             }
 
             Utils.PlayFMODAsset(hitSound, transform, 5f);
@@ -120,14 +132,44 @@ namespace ModdedArmsHelper.API
         {
             fixedJoint = joint;
         }
-                
+
+        private bool IsPropulsionCannonAmmo(GameObject gameObject)
+        {
+            GameObject gameObject2 = UWE.Utils.GetEntityRoot(gameObject);
+            if (gameObject2 == null)
+            {
+                gameObject2 = gameObject;
+            }
+            return gameObject2.GetComponent<PropulseCannonAmmoHandler>() != null;
+        }
+
         private void FixedUpdate()
         {
-            if (fixedJoint && !fixedJoint.connectedBody)
+            bool flag = false;
+            if (fixedJoint || staticAttached)
             {
-                JointHelper.Disconnect(fixedJoint, true);
-                fixedJoint = null;
+                if (fixedJoint && !fixedJoint.connectedBody)
+                {
+                    flag = true;
+                }
+                else if (!attachedCollider || !attachedCollider.gameObject.activeInHierarchy)
+                {
+                    flag = true;
+                }
+                else if (IsPropulsionCannonAmmo(attachedCollider.gameObject))
+                {
+                    flag = true;
+                }
+            }
+            if (flag)
+            {
                 Debug.Log("disconnect, connected body lost");
+                if (fixedJoint)
+                {
+                    JointHelper.Disconnect(fixedJoint, true);
+                    fixedJoint = null;
+                }
+                staticAttached = false;
             }
         }
         
@@ -139,7 +181,19 @@ namespace ModdedArmsHelper.API
                 transform.localRotation = Quaternion.Slerp(transform.localRotation, Quaternion.identity, Time.deltaTime * 20f);
             }
         }
-        
+
+        private void OnDisable()
+        {
+            MainGameController instance = MainGameController.Instance;
+
+            if (instance == null)
+            {
+                return;
+            }
+
+            instance.DeregisterHighFixedTimestepBehavior(this);
+        }
+
         public void Release()
         {
             if (fixedJoint)
@@ -156,7 +210,27 @@ namespace ModdedArmsHelper.API
         
         public void SetFlying(bool isFlying)
         {
-            rb.isKinematic = !isFlying;
+            if (isFlying)
+            {
+                MainGameController instance = MainGameController.Instance;
+
+                if (instance != null)
+                {
+                    instance.RegisterHighFixedTimestepBehavior(this);
+                }
+            }
+            else
+            {
+                MainGameController instance2 = MainGameController.Instance;
+
+                if (instance2 != null)
+                {
+                    instance2.DeregisterHighFixedTimestepBehavior(this);
+                }
+            }
+
+            UWE.Utils.SetIsKinematicAndUpdateInterpolation(rb, !isFlying, false);
+
             collision.enabled = isFlying;
             fxControl.Play(0);
         }

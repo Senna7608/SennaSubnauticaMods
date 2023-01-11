@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using Common;
+using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace CyclopsLaserCannonModule
@@ -6,6 +8,7 @@ namespace CyclopsLaserCannonModule
     public class CannonCamera : MonoBehaviour, IInputHandler
     {
         public CannonControl control_instance;
+        public CannonCamera cannonCamera;
 
         public bool usingCamera;
         public float rotationSpeedDamper = 3f;
@@ -15,9 +18,15 @@ namespace CyclopsLaserCannonModule
 
         private RectTransform arrow;
         private Image Crosshair;
-        private Text Title;
+        private TextMeshProUGUI Title;
         private Transform SNCameraRoot_Parent;
-        public Text PowerText, DepthText, LowPowerText;       
+        public TextMeshProUGUI PowerText, DepthText, LowPowerText;       
+
+        private void Awake()
+        {
+            SNLogger.Debug("CannonCamera: Awake started...");
+            cannonCamera = this;
+        }
 
         private void Start()
         {  
@@ -26,14 +35,13 @@ namespace CyclopsLaserCannonModule
             Crosshair = gameObject.FindChild("Crosshair").GetComponent<Image>();
             Crosshair.color = Color.red;
 
-            Title = gameObject.transform.Find("Title/TitleText").gameObject.GetComponent<Text>();
+            Title = gameObject.transform.Find("Title/TitleText").gameObject.GetComponent<TextMeshProUGUI>();
             Title.text = CannonConfig.language_settings["Item_Name"];
 
             LowPowerText.text = $"{CannonConfig.language_settings["LowPower_Title"]}\n{CannonConfig.language_settings["LowPower_Message"]}";
             LowPowerText.color = Color.red;
-            LowPowerText.fontStyle = FontStyle.Bold;
-            LowPowerText.horizontalOverflow = HorizontalWrapMode.Overflow;
-            LowPowerText.verticalOverflow = VerticalWrapMode.Overflow;
+            LowPowerText.fontStyle = FontStyles.Bold;
+            LowPowerText.overflowMode = TextOverflowModes.Overflow;
 
             startRot = control_instance.CannonCamPosition.transform.localRotation.eulerAngles;
         }
@@ -120,12 +128,12 @@ namespace CyclopsLaserCannonModule
 
         private void SetPowerText()
         {            
-            PowerText.text = control_instance.PowerText.GetComponent<Text>().text;
+            PowerText.text = control_instance.PowerText.GetComponent<TextMeshProUGUI>().text;
         }
 
         private void SetDepthText()
         {            
-            DepthText.text = control_instance.DepthText.GetComponent<Text>().text;
+            DepthText.text = control_instance.DepthText.GetComponent<TextMeshProUGUI>().text;
         }
     }
 }

@@ -6,13 +6,13 @@ using UWE;
 
 namespace RuntimeHelper
 {
-    public partial class RuntimeHelper
+    public partial class RuntimeHelperManager
     {
         private GuiItemEvent ScrollView_marklist_event;
         private int current_marklist_index = 0;
         private List<GuiItem> guiItems_marklist = new List<GuiItem>();
         private Vector2 scrollpos_marklist = Vector2.zero;
-        private static Rect MarkWindow_Rect = new Rect(300, 305, 248, 270);
+        private static Rect MarkWindow_Rect = new Rect(300, 302, 248, 202);
         private Rect MarkWindow_drawRect;
         private List<GameObject> MARKED_OBJECTS = new List<GameObject>();
 
@@ -60,7 +60,7 @@ namespace RuntimeHelper
 
             ScrollView_marklist_event = SNScrollView.CreateScrollView(new Rect(MarkWindow_drawRect.x + 5, MarkWindow_drawRect.y, MarkWindow_drawRect.width - 10, 168), ref scrollpos_marklist, ref guiItems_marklist, "Selected:", markList[current_marklist_index], 7);
 
-            if (GUI.Button(new Rect(MarkWindow_drawRect.x + 5, MarkWindow_drawRect.y + 218, 40, 22), MarkWindow[0], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
+            if (GUI.Button(new Rect(MarkWindow_drawRect.x + 5, MarkWindow_drawRect.y + 152, 40, 22), MarkWindow[0], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
                 if (isEmpty)
                 {
@@ -72,7 +72,7 @@ namespace RuntimeHelper
                 }
             }
 
-            if (GUI.Button(new Rect(MarkWindow_drawRect.x + 50, MarkWindow_drawRect.y + 218, 60, 22), MarkWindow[1], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
+            if (GUI.Button(new Rect(MarkWindow_drawRect.x + 50, MarkWindow_drawRect.y + 152, 60, 22), MarkWindow[1], SNStyles.GetGuiItemStyle(GuiItemType.NORMALBUTTON, GuiColor.Gray)))
             {
                 if (isEmpty)
                 {

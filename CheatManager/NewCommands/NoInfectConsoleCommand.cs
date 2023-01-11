@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Common;
+using UnityEngine;
 
 namespace CheatManager.NewCommands
 {
@@ -11,7 +12,8 @@ namespace CheatManager.NewCommands
         public void Awake()
         {
             main = this;            
-            DevConsole.RegisterConsoleCommand(this, "noinfect");            
+            DevConsole.RegisterConsoleCommand(this, "noinfect");
+            SNLogger.Log("Console command 'noinfect' registered.");
         }
 
         private void OnConsoleCommand_noinfect(NotificationCenter.Notification n)

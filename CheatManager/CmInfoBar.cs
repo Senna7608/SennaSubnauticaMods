@@ -11,8 +11,7 @@ namespace CheatManager
         public CmInfoBar Instance { get; private set; }
 
         private Rect windowRect = new Rect(0, 0, Screen.width - (Screen.width / CmConfig.ASPECT) - 2 , Screen.height / 45);
-        private Rect drawRect;
-        internal bool isShow;
+        private Rect drawRect;        
         private Int3 currentBatch = new Int3();
         private string currentBiome = "";
         private int day = 0;
@@ -45,8 +44,10 @@ namespace CheatManager
 
         private Vector3 playerMainLastPosition = Vector3.zero;
         private float speed;
-
+        private Vector3 currVel;
         private float timeCount = 0.0f;
+
+        private bool refreshFixedUpdate = false;
 
         public void Awake()
         {            
@@ -54,7 +55,7 @@ namespace CheatManager
             useGUILayout = false;            
             DontDestroyOnLoad(this);
             drawRect = new Rect(windowRect.x + 5, windowRect.y, windowRect.width, windowRect.height);
-            isShow = true;
+            //isShow = true;
         }
 
         public void Start()
@@ -69,9 +70,14 @@ namespace CheatManager
 
         public void Update()
         {
+            if (!CmConfig.isInfoBarEnabled)
+            {
+                return;
+            }
+
             UpdateFPS();
 
-            if (Player.main != null && isShow)
+            if (Player.main != null && CmConfig.isInfoBarEnabled)
             {
                 timeCount += Time.deltaTime;
 
@@ -91,9 +97,9 @@ namespace CheatManager
                 currentWorldPos = Player.main.transform.position;
 
                 stringBuilder.Remove(0, stringBuilder.Length);
-                
+
                 stringBuilder.AppendFormat($"Biome: {currentBiome}" +
-                    $"   {string.Format("World Position: {0,3:N0}, {1,3:N0}, {2,3:N0}", currentWorldPos.x, currentWorldPos.y, currentWorldPos.z)}" +                    
+                    $"   {string.Format("World Position: {0,3:N0}, {1,3:N0}, {2,3:N0}", currentWorldPos.x, currentWorldPos.y, currentWorldPos.z)}" +
                     $"   Batch: {currentBatch}" +
                     $"   Infection: {playerInfectionLevel}%" +
                     $"   Day: {day}" +
@@ -102,8 +108,13 @@ namespace CheatManager
                     $"   Speed: {(int)speed} km/h" +
                     $"   {string.Format("FPS: {0,3:N0}", FPS)}" +
                     $"   {string.Format("MEM: {0,3:N0} MB (+{1,6:N2} MB/s)", totalmem, diffTotalmem)}" +
-                    $"   {string.Format("GC: {0,2:N0} ms (Total:{1,3})",  timeBetweenCollections, numCollections)}" +
-                    $"   Fixed Updates: {avgFixedUpdatesPerFrame}");
+                    $"   {string.Format("GC: {0,2:N0} ms (Total:{1,3})", timeBetweenCollections, numCollections)}" +
+                    $"   Fixed Updates: ");
+                
+                if (refreshFixedUpdate)
+                {
+                    stringBuilder.Append(avgFixedUpdatesPerFrame.ToTwoDecimalString());
+                }
 
                 infoText = stringBuilder.ToString();
             }
@@ -117,7 +128,12 @@ namespace CheatManager
                     $"   {string.Format("FPS: {0,3:N0}", FPS)}" +
                     $"   {string.Format("MEM: {0,3:N0} MB (+{1,6:N2} MB/s)", totalmem, diffTotalmem)}" +
                     $"   {string.Format("GC: {0,2:N0} ms (Total:{1,3})", timeBetweenCollections, numCollections)}" +
-                    $"   Fixed Updates: {avgFixedUpdatesPerFrame}");
+                    $"   Fixed Updates: ");
+
+                if (refreshFixedUpdate)
+                {
+                    stringBuilder.Append(avgFixedUpdatesPerFrame.ToTwoDecimalString());
+                }
 
                 infoText = stringBuilder.ToString();
             }
@@ -126,31 +142,50 @@ namespace CheatManager
 
         public void OnGUI()
         {
-            if (!isShow)
+            if (!CmConfig.isInfoBarEnabled)
             {
                 return;
             }
 
             SNWindow.CreateWindow(windowRect, null);
             GUI.Label(drawRect, infoText, SNStyles.GetGuiItemStyle(GuiItemType.LABEL, textColor: GuiColor.Green, textAnchor: TextAnchor.MiddleLeft));
-        }          
-
-        private void LateUpdate()
-        {
-            if (Player.main != null)
-            {
-                speed = (((Player.main.transform.position - playerMainLastPosition).magnitude) / Time.deltaTime);
-            }
         }
-
+        
         private void FixedUpdate()
         {
-            numFixedUpdates++;            
-            
-            if (Player.main != null)
+            if (!CmConfig.isInfoBarEnabled)
             {
-                playerMainLastPosition = Player.main.transform.position;                
-            }            
+                return;
+            }
+
+            if (Player.main != null)
+            {                
+                if (Player.main.GetVehicle() != null)
+                {
+                    speed = Player.main.GetVehicle().useRigidbody.velocity.magnitude * 3.6f;
+                }
+                else if (Player.main.currentSub != null && Player.main.currentSub.isCyclops)
+                {
+                    if (Player.main.isPiloting)
+                    {
+                        speed = Player.main.currentSub.rb.velocity.magnitude * 3.6f;
+                    }
+                    else
+                    {
+                        currVel = (Player.main.transform.position - playerMainLastPosition) / Time.fixedDeltaTime;
+                        speed = currVel.magnitude * 3.6f;
+                    }
+                }
+                else
+                {
+                    currVel = (Player.main.transform.position - playerMainLastPosition) / Time.fixedDeltaTime;
+                    speed = currVel.magnitude * 3.6f;
+                }
+
+                playerMainLastPosition = Player.main.transform.position;
+            }
+
+            numFixedUpdates++;            
         }
 
         private void UpdateFPS()
@@ -158,19 +193,18 @@ namespace CheatManager
             numAccumulatedFrames++;
             numUpdates++;
             accumulatedFrameTime += Time.unscaledDeltaTime;
-            bool flag = false;
-
+            
             if (Time.unscaledTime > timeNextSample)
             {
                 SampleTotalMemory();
                 timeNextSample = Time.unscaledTime + 1f;
-                flag = true;
+                refreshFixedUpdate = true;
             }
 
             if (Time.unscaledTime > timeNextUpdate)
             {
                 SampleFrameRate();
-                flag = true;
+                refreshFixedUpdate = true;
                 timeNextUpdate = Time.unscaledTime + 0.1f;
                 if (numUpdates > 0)
                 {
@@ -189,13 +223,13 @@ namespace CheatManager
                 timeBetweenCollections = unscaledTime - lastCollectionTime;
                 lastCollectionTime = unscaledTime;
                 numCollections++;
-                flag = true;
+                refreshFixedUpdate = true;
             }
 
             lastCollectionCount1 = num;
             lastCollectionCount2 = num2;
 
-            if (flag)
+            if (refreshFixedUpdate)
             {
                 totalmem = lastTotalMem / 1048576f;
                 diffTotalmem = diffTotalMem / 1048576f;

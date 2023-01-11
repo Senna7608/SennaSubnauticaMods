@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("APIBasedExosuitArms")]
-[assembly: AssemblyDescription("Subnautica QMod plugin")]
+[assembly: AssemblyDescription("Subnautica BepInEx Plugin")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("APIBasedExosuitArms")]
-[assembly: AssemblyCopyright("Copyright ©  2020 Senna")]
+[assembly: AssemblyCopyright("Copyright ©  2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

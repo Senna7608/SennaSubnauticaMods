@@ -1,5 +1,4 @@
-﻿using Common.Helpers;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
@@ -21,7 +20,7 @@ namespace RuntimeHelper.Objects
                 }
             }
 
-            public Type FieldType
+            public Type @Type
             {
                 get
                 {
@@ -42,9 +41,9 @@ namespace RuntimeHelper.Objects
                 fieldInfo = fInfo;
             }
 
-            public object GetField()
+            public ObjectField GetField()
             {
-                return Instance.GetPrivateField(Name, bindingFlags);
+                return this;
             }
 
             public object GetValue()
@@ -126,7 +125,7 @@ namespace RuntimeHelper.Objects
                 return false;
             }
 
-            public object GetField(string fieldName)
+            public ObjectField GetField(string fieldName)
             {
                 foreach (ObjectField fObject in fObjects)
                 {

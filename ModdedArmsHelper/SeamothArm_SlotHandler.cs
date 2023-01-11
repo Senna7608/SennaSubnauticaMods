@@ -14,7 +14,7 @@ namespace ModdedArmsHelper
 
         public void SlotArmDown()
         {
-#if DEBUG
+#if TESTOUTSIDE
 #else
             if (!Player.main.inSeamoth || !AvatarInputHandler.main.IsEnabled())
             {
@@ -75,7 +75,7 @@ namespace ModdedArmsHelper
                 
         public void SlotArmHeld()
         {
-#if OUTSIDE_TEST_ENABLED
+#if TESTOUTSIDE
 #else
             if (!Player.main.inSeamoth || !AvatarInputHandler.main.IsEnabled())
             {
@@ -133,7 +133,7 @@ namespace ModdedArmsHelper
         public void SlotArmUp()
         {
 
-#if OUTSIDE_TEST_ENABLED
+#if TESTOUTSIDE
 #else
             if (!Player.main.inSeamoth || !AvatarInputHandler.main.IsEnabled())
             {

@@ -20,7 +20,7 @@ namespace Common.ConfigurationParser
 
         public string GetKeyValueFromSection(string section, string key)
         {
-            if (!IsExists(section, key))
+            if (!IsExistsKey(section, key))
                 return "Error";
             try
             {
@@ -38,7 +38,7 @@ namespace Common.ConfigurationParser
             SetAndWrite(section, key, value);
         }
 
-        public bool IsExists(string section)
+        public bool IsExistsSection(string section)
         {
             try
             {
@@ -51,9 +51,9 @@ namespace Common.ConfigurationParser
             }            
         }
 
-        public bool IsExists(string section, string key)
+        public bool IsExistsKey(string section, string key)
         {
-            if (!IsExists(section))
+            if (!IsExistsSection(section))
                 return false;
             try
             {
@@ -66,9 +66,24 @@ namespace Common.ConfigurationParser
             }            
         }
 
+        public bool IsExistsKeyValue(string section, string key)
+        {
+            if (!IsExistsSection(section))
+                return false;
+            try
+            {
+                return _sections[section].GetKeyValue(key) != string.Empty;
+            }
+            catch
+            {
+                Console.WriteLine($"Parser Error! Section [{section}] or Key [{key}] is missing from file: '{_reader.FilePath}'");
+                return false;
+            }
+        }
+
         public Section GetSection(string section)
         {
-            if (IsExists(section))
+            if (IsExistsSection(section))
             {
                 return _sections[section];
             }

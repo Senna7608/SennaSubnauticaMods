@@ -58,7 +58,7 @@ namespace Common.ConfigurationParser
 
             foreach (ConfigData data in configData)
             {
-                if (!parser.IsExists(data.Section))
+                if (!parser.IsExistsSection(data.Section))
                     parser.AddNewSection(data.Section);
 
                 parser.SetKeyValueInSection(data.Section, data.Key, data.Value);
@@ -69,7 +69,7 @@ namespace Common.ConfigurationParser
         {
             Parser parser = new Parser(filename);
 
-            if (!parser.IsExists("Information"))
+            if (!parser.IsExistsSection("Information"))
                 parser.AddNewSection("Information");
 
             parser.SetKeyValueInSection("Information", key, value);
@@ -79,7 +79,7 @@ namespace Common.ConfigurationParser
         {
             Parser parser = new Parser(filename);
 
-            if (parser.IsExists(section, key))
+            if (parser.IsExistsKey(section, key))
             {
                 return parser.GetKeyValueFromSection(section, key);
             }
@@ -93,7 +93,7 @@ namespace Common.ConfigurationParser
 
             Dictionary<string, string> result = new Dictionary<string, string>();
 
-            if (!parser.IsExists(section))
+            if (!parser.IsExistsSection(section))
             {
                 result.Add(section, "Error");
                 return result;
@@ -101,7 +101,7 @@ namespace Common.ConfigurationParser
 
             foreach (string key in keys)
             {
-                if (parser.IsExists(section, key))
+                if (parser.IsExistsKey(section, key))
                 {
                     result.Add(key, parser.GetKeyValueFromSection(section, key));                    
                 }
@@ -118,18 +118,13 @@ namespace Common.ConfigurationParser
 
             Dictionary<string, string> result = new Dictionary<string, string>();
 
-            if (!parser.IsExists(section))
+            if (!parser.IsExistsSection(section))
             {
                 return result;
             }
 
             Section _section = parser.GetSection(section);
-            /*
-            if (_section == null)
-            {
-                return result;
-            }
-            */
+            
             foreach (KeyValuePair<string, string> kvp in _section)
             {
                 result.Add(kvp.Key, kvp.Value);
@@ -160,9 +155,14 @@ namespace Common.ConfigurationParser
         {
             Parser parser = new Parser(filename);
 
+            if (!parser.IsExistsSection(section))
+            {
+                return false;
+            }
+
             foreach (string key in keys)
             {
-                if (parser.IsExists(section, key))
+                if (parser.IsExistsKey(section, key))
                 {
                     continue;
                 }
@@ -179,7 +179,29 @@ namespace Common.ConfigurationParser
         {
             Parser parser = new Parser(filename);
 
-            return parser.IsExists(section, key) ? true : false;
+            return parser.IsExistsKey(section, key) ? true : false;
+        }
+
+        public static bool CheckSectionValuesExists(string filename, string section)
+        {
+            Parser parser = new Parser(filename);
+
+            if (!parser.IsExistsSection(section))
+            {
+                return false;
+            }
+
+            Section _section = parser.GetSection(section);
+
+            foreach (KeyValuePair<string, string> kvp in _section)
+            {
+                if (!parser.IsExistsKeyValue(section, kvp.Key))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public static void ClearSection(string filename, string section)

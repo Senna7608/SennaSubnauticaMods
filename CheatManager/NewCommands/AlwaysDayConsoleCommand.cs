@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Common;
+using UnityEngine;
 
 namespace CheatManager.NewCommands
 {
@@ -12,6 +13,7 @@ namespace CheatManager.NewCommands
         {
             main = this;
             DevConsole.RegisterConsoleCommand(this, "alwaysday");
+            SNLogger.Log("Console command 'alwaysday' registered.");
         }
 
         private void OnConsoleCommand_alwaysday(NotificationCenter.Notification n)

@@ -1,7 +1,8 @@
 ﻿using APIBasedExosuitArms.ArmModdingRequest;
-using Common.Helpers.SMLHelpers;
 using ModdedArmsHelper.API;
+using SMLExpander;
 using SMLHelper.V2.Crafting;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace APIBasedExosuitArms.Craftables
@@ -21,9 +22,18 @@ namespace APIBasedExosuitArms.Craftables
         {
         }
 
-        protected override void RegisterArm()
+        protected override RegisterArmRequest RegisterArm()
         {
-            ArmServices.main.RegisterArm(this, new APIBasedClawArmModdingRequest());
+            return new RegisterArmRequest(this, new APIBasedClawArmModdingRequest());
+        }
+
+        protected override EncyData GetEncyclopediaData()
+        {
+            return null;
+        }
+
+        protected override void SetCustomLanguageText()
+        {
         }
 
         protected override Atlas.Sprite GetItemSprite()
@@ -44,17 +54,10 @@ namespace APIBasedExosuitArms.Craftables
             };
         }
 
-        protected override EncyData GetEncyclopediaData()
-        {
-            return null;
-        }
-
-        protected override void ModifyGameObject()
-        {
-        }
-
-        protected override void SetCustomLanguageText()
+        protected override IEnumerator ModifyGameObjectAsync(IOut<bool> success)
         {            
+            success.Set(true);
+            yield break;
         }
     }
 }

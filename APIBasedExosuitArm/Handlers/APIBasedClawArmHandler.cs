@@ -1,4 +1,6 @@
-﻿using ModdedArmsHelper.API.ArmHandlers;
+﻿using ModdedArmsHelper.API;
+using ModdedArmsHelper.API.ArmHandlers;
+using System.Collections;
 using UnityEngine;
 
 namespace APIBasedExosuitArms.Handlers
@@ -12,6 +14,32 @@ namespace APIBasedExosuitArms.Handlers
         GameObject IExosuitArm.GetGameObject()
         {            
             return gameObject;
+        }
+
+        GameObject IExosuitArm.GetInteractableRoot(GameObject target)
+        {
+            Pickupable componentInParent = target.GetComponentInParent<Pickupable>();
+
+            if (componentInParent != null && componentInParent.isPickupable)
+            {
+                return componentInParent.gameObject;
+            }
+
+            PickPrefab componentProfiled = target.GetComponentProfiled<PickPrefab>();
+
+            if (componentProfiled != null)
+            {
+                return componentProfiled.gameObject;
+            }
+
+            BreakableResource componentInParent2 = target.GetComponentInParent<BreakableResource>();
+
+            if (componentInParent2 != null)
+            {
+                return componentInParent2.gameObject;
+            }
+
+            return null;
         }
 
         void IExosuitArm.SetSide(Exosuit.Arm arm)
@@ -51,7 +79,7 @@ namespace APIBasedExosuitArms.Handlers
         {
         }
 
-        void IExosuitArm.Reset()
+        void IExosuitArm.ResetArm()
         {
         }
 
@@ -62,7 +90,7 @@ namespace APIBasedExosuitArms.Handlers
                 Pickupable pickupable = null;
                 PickPrefab x = null;
 
-                GameObject activeTarget = Exosuit.GetActiveTarget();
+                GameObject activeTarget = exosuit.GetActiveTarget();
 
                 if (activeTarget)
                 {
@@ -72,7 +100,7 @@ namespace APIBasedExosuitArms.Handlers
                 if (pickupable != null && pickupable.isPickupable)
                 {
 
-                    if (Exosuit.storageContainer.container.HasRoomFor(pickupable))
+                    if (exosuit.storageContainer.container.HasRoomFor(pickupable))
                     {
                         animator.SetTrigger("use_tool");
                         cooldownTime = (cooldownDuration = cooldownPickup);
@@ -104,39 +132,14 @@ namespace APIBasedExosuitArms.Handlers
             return false;
         }
 
-        public void OnPickup()
-        {
-            GameObject activeTarget = Exosuit.GetActiveTarget();
-
-            if (activeTarget)
-            {
-                Pickupable pickupable = activeTarget.GetComponent<Pickupable>();
-                PickPrefab component = activeTarget.GetComponent<PickPrefab>();
-
-                bool hasRoomForItem = Exosuit.storageContainer.container.HasRoomFor(pickupable);
-
-                if (pickupable != null && pickupable.isPickupable && hasRoomForItem)
-                {
-                    pickupable = pickupable.Initialize();
-                    InventoryItem item = new InventoryItem(pickupable);
-                    Exosuit.storageContainer.container.UnsafeAdd(item);
-                    Utils.PlayFMODAsset(pickupSound, front, 5f);
-                }
-                else if (component != null && component.AddToContainer(Exosuit.storageContainer.container))
-                {
-                    component.SetPickedUp();
-                }
-            }
-        }
-
         public void OnHit()
         {
-            if (Exosuit.CanPilot() && Exosuit.GetPilotingMode())
+            if (exosuit.CanPilot() && exosuit.GetPilotingMode())
             {
                 Vector3 position = default(Vector3);
                 GameObject targetObject = null;
 
-                UWE.Utils.TraceFPSTargetPosition(Exosuit.gameObject, 6.5f, ref targetObject, ref position, true);
+                UWE.Utils.TraceFPSTargetPosition(exosuit.gameObject, 6.5f, ref targetObject, ref position, true);
 
                 if (targetObject == null)
                 {
@@ -161,10 +164,50 @@ namespace APIBasedExosuitArms.Handlers
                     }
                     VFXSurface component2 = targetObject.GetComponent<VFXSurface>();
                     Vector3 euler = MainCameraControl.main.transform.eulerAngles + new Vector3(300f, 90f, 0f);
-                    VFXSurfaceTypeManager.main.Play(component2, vfxEventType, position, Quaternion.Euler(euler), Exosuit.gameObject.transform);
+                    VFXSurfaceTypeManager.main.Play(component2, vfxEventType, position, Quaternion.Euler(euler), exosuit.gameObject.transform);
                     targetObject.SendMessage("BashHit", this, SendMessageOptions.DontRequireReceiver);
                 }
             }
-        }        
+        }
+
+        public void OnPickup()
+        {
+            GameObject activeTarget = ArmServices.main.GetActiveTarget(seamoth);
+
+            if (activeTarget)
+            {
+                Pickupable pickupable = activeTarget.GetComponent<Pickupable>();
+                PickPrefab pickprefab = activeTarget.GetComponent<PickPrefab>();
+
+                StartCoroutine(OnPickupAsync(pickupable, pickprefab));
+            }
+        }
+
+        private IEnumerator OnPickupAsync(Pickupable pickupable, PickPrefab pickPrefab)
+        {
+            if (pickupable != null && pickupable.isPickupable && exosuit.storageContainer.container.HasRoomFor(pickupable))
+            {
+                pickupable.Initialize();
+
+                InventoryItem item = new InventoryItem(pickupable);
+
+                exosuit.storageContainer.container.UnsafeAdd(item);
+
+                Utils.PlayFMODAsset(this.pickupSound, this.front, 5f);
+            }
+            else if (pickPrefab != null)
+            {
+                TaskResult<bool> result = new TaskResult<bool>();
+
+                yield return pickPrefab.AddToContainerAsync(exosuit.storageContainer.container, result);
+
+                if (pickPrefab != null && result.Get())
+                {
+                    pickPrefab.SetPickedUp();
+                }
+            }
+
+            yield break;
+        }
     }
 }

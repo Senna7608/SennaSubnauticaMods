@@ -133,13 +133,14 @@ namespace ScannerModule
                 {
                     if (result != PDAScanner.Result.Known)
                     {                        
-                        handReticleMain.SetInteractText("AutoScan", "Active", false, false, HandReticle.Hand.None);
+                        handReticleMain.SetText(HandReticle.TextType.Hand, "AutoScan", false);
+                        handReticleMain.SetText(HandReticle.TextType.HandSubscript, "Active", false);
                         handReticleMain.SetIcon(HandReticle.IconType.Scan, 1.5f);
                     }
                 }
                 else
-                {
-                    handReticleMain.SetInteractText(PDAScanner.scanTarget.techType.AsString(false), true, HandReticle.Hand.None);
+                {                    
+                    handReticleMain.SetText(HandReticle.TextType.Hand, PDAScanner.scanTarget.techType.AsString(false), true);
                     handReticleMain.SetIcon(HandReticle.IconType.Progress, 10f);
                     handReticleMain.progressText.text = Mathf.RoundToInt(PDAScanner.scanTarget.progress * 100f) + "%";
                     SetProgressColor(ColorHelper.Orange);

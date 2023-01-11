@@ -1,4 +1,4 @@
-﻿using Common.Helpers;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
@@ -20,6 +20,14 @@ namespace RuntimeHelper.Objects
                 }
             }
 
+            public Type @Type
+            {
+                get
+                {
+                    return propertyInfo.PropertyType;
+                }
+            }
+
             public override string ToString()
             {
                 return $"{Name} = {GetValue()}";
@@ -33,9 +41,9 @@ namespace RuntimeHelper.Objects
                 propertyInfo = pInfo;
             }
 
-            public object GetProperty()
+            public ObjectProperty GetProperty()
             {
-                return Instance.GetPrivateProperty(Name, bindingFlags);
+                return this;
             }
 
 
@@ -118,7 +126,7 @@ namespace RuntimeHelper.Objects
                 return false;
             }
 
-            public object GetProperty(string propertyName)
+            public ObjectProperty GetProperty(string propertyName)
             {
                 foreach (ObjectProperty pObject in pObjects)
                 {

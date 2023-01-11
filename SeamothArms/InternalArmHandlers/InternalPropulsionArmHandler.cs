@@ -2,6 +2,7 @@
 using ModdedArmsHelper.API;
 using ModdedArmsHelper.API.ArmHandlers;
 using ModdedArmsHelper.API.Interfaces;
+using System.Collections.Generic;
 
 namespace SeamothArms.InternalArmHandlers
 {
@@ -15,7 +16,17 @@ namespace SeamothArms.InternalArmHandlers
         {
             return gameObject;
         }
-        
+
+        GameObject ISeamothArm.GetInteractableRoot(GameObject target)
+        {
+            if (propulsionCannon.ValidateObject(target))
+            {
+                return target;
+            }
+
+            return null;
+        }
+
         void ISeamothArm.SetSide(SeamothArm arm)
         {
             if (arm == SeamothArm.Right)
@@ -55,13 +66,11 @@ namespace SeamothArms.InternalArmHandlers
             if (propulsionCannon.IsGrabbingObject())
             {
                 propulsionCannon.ReleaseGrabbedObject();
-            }
-
-            /*
-            else if (Seamoth != null && propulsionCannon.HasChargeForShot())
+            }                        
+            else if (seamoth != null && propulsionCannon.HasChargeForShot())
             {
                 List<IItemsContainer> containers = new List<IItemsContainer>();
-                Seamoth.GetAllStorages(containers);
+                seamoth.GetAllStorages(containers);
 
                 if (containers.Count < 1)
                 {
@@ -72,8 +81,7 @@ namespace SeamothArms.InternalArmHandlers
                     ErrorMessage.AddMessage(Language.main.Get("SeamothPropulsionCannonNoItems"));
                 }
                 
-            }
-            */
+            }           
 
             return true;
         }
@@ -84,7 +92,7 @@ namespace SeamothArms.InternalArmHandlers
             propulsionCannon.UpdateActive();
         }
         
-        void ISeamothArm.Reset()
+        void ISeamothArm.ResetArm()
         {
             propulsionCannon.usingCannon = (usingTool = false);
             propulsionCannon.ReleaseGrabbedObject();

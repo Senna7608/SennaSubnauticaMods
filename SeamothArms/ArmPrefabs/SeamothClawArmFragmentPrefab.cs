@@ -1,5 +1,7 @@
 ﻿using ModdedArmsHelper.API;
+using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace SeamothArms.ArmPrefabs
 {
@@ -9,10 +11,10 @@ namespace SeamothArms.ArmPrefabs
             : base(
                   techTypeName: "SeamothClawArmFragment",
                   friendlyName: "Seamoth claw arm fragment",                  
-                  fragmentTemplate: ArmTemplate.ClawArm,                  
-                  cellLevel: LargeWorldEntity.CellLevel.Near,                  
+                  fragmentTemplate: ArmTemplate.ClawArm,
+                  prefabFilePath: null,                 
                   scanTime: 5,
-                  totalFragments: 2                  
+                  totalFragments: 3                  
                   )
         {
         }
@@ -21,22 +23,21 @@ namespace SeamothArms.ArmPrefabs
         {
             return new List<LootDistributionData.BiomeData>()
             {
-                new LootDistributionData.BiomeData() { biome = BiomeType.GrassyPlateaus_Sand, count = 1, probability =   0.1f },
-                new LootDistributionData.BiomeData() { biome = BiomeType.GrassyPlateaus_TechSite, count = 1, probability =   0.1f },
-                new LootDistributionData.BiomeData() { biome = BiomeType.GrassyPlateaus_Grass, count = 1, probability =   0.1f },
-                new LootDistributionData.BiomeData() { biome = BiomeType.MushroomForest_Grass, count = 1, probability =   0.1f },
-                new LootDistributionData.BiomeData() { biome = BiomeType.MushroomForest_Sand, count = 1, probability =   0.1f },
+                new LootDistributionData.BiomeData() { biome = BiomeType.CrashZone_Sand, count = 1, probability = 0.08f },
+                new LootDistributionData.BiomeData() { biome = BiomeType.Kelp_Sand, count = 1, probability = 0.08f },
+                new LootDistributionData.BiomeData() { biome = BiomeType.GrassyPlateaus_Sand, count = 1, probability = 0.08f }                
             };
         }
-
-        protected override Atlas.Sprite GetItemSprite()
+        
+        protected override Sprite GetUnlockSprite()
         {
-            return SpriteManager.Get(TechType.ExosuitClawArmModule);
+            return GetUnitySprite(SpriteManager.Get(TechType.ExosuitClawArmModule));
         }
 
-        protected override void PostModify()
+        protected override IEnumerator PostModifyGameObjectAsync(IOut<bool> success)
         {
-            return;
+            success.Set(true);
+            yield break;
         }
     }
 }

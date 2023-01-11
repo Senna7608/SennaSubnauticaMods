@@ -10,6 +10,11 @@ namespace APIBasedExosuitArms.Handlers
             return gameObject;
         }
 
+        GameObject IExosuitArm.GetInteractableRoot(GameObject target)
+        {
+            return null;
+        }
+
         void IExosuitArm.SetSide(Exosuit.Arm arm)
         {
             if (arm == Exosuit.Arm.Right)
@@ -59,7 +64,7 @@ namespace APIBasedExosuitArms.Handlers
         {
         }
         
-        void IExosuitArm.Reset()
+        void IExosuitArm.ResetArm()
         {
             animator.SetBool("use_tool", false);
             ResetHook();
@@ -95,7 +100,7 @@ namespace APIBasedExosuitArms.Handlers
             GameObject x = null;
             Vector3 a = default(Vector3);
 
-            UWE.Utils.TraceFPSTargetPosition(Exosuit.gameObject, 100f, ref x, ref a, false);
+            UWE.Utils.TraceFPSTargetPosition(exosuit.gameObject, 100f, ref x, ref a, false);
 
             if (x == null || x == hook.gameObject)
             {
@@ -107,7 +112,7 @@ namespace APIBasedExosuitArms.Handlers
             hook.rb.velocity = a2 * 25f;
             Utils.PlayFMODAsset(shootSound, front, 15f);
 
-            grapplingStartPos = Exosuit.transform.position;
+            grapplingStartPos = exosuit.transform.position;
         }
         
         public void FixedUpdate()
@@ -122,12 +127,12 @@ namespace APIBasedExosuitArms.Handlers
 
                 if (magnitude > 1f)
                 {
-                    if (!IsUnderwater() && Exosuit.transform.position.y + 0.2f >= grapplingStartPos.y)
+                    if (!IsUnderwater() && exosuit.transform.position.y + 0.2f >= grapplingStartPos.y)
                     {
                         a.y = Mathf.Min(a.y, 0f);
                     }
 
-                    Exosuit.GetComponent<Rigidbody>().AddForce(a * exosuitGrapplingAccel, ForceMode.Acceleration);
+                    exosuit.GetComponent<Rigidbody>().AddForce(a * exosuitGrapplingAccel, ForceMode.Acceleration);
                     hook.GetComponent<Rigidbody>().AddForce(-a * 400f, ForceMode.Force);
                 }
 
@@ -149,7 +154,7 @@ namespace APIBasedExosuitArms.Handlers
 
         private bool IsUnderwater()
         {
-            return Exosuit.transform.position.y < worldForces.waterDepth + 2f && !Exosuit.precursorOutOfWater;
+            return exosuit.transform.position.y < worldForces.waterDepth + 2f && !exosuit.precursorOutOfWater;
         }
 
         public bool GetIsGrappling()

@@ -18,7 +18,7 @@ namespace LaserCannon
         {
             AddToggleOption(LaserCannonConfig.SECTION_PROGRAM[0], LaserCannonConfig.language_settings["Option_OnlyHostile"], bool.Parse(LaserCannonConfig.program_settings["OnlyHostile"]));
             AddChoiceOption(LaserCannonConfig.SECTION_PROGRAM[1], LaserCannonConfig.language_settings["Option_BeamColor"], LaserCannonConfig.colorNames.ToArray(), LaserCannonConfig.beamColor);
-            AddSliderOption(LaserCannonConfig.SECTION_PROGRAM[2], LaserCannonConfig.language_settings["Option_Damage"], 1f, 100f, float.Parse(LaserCannonConfig.program_settings["Damage"]));
+            AddSliderOption(LaserCannonConfig.SECTION_PROGRAM[2], LaserCannonConfig.language_settings["Option_Damage"], 1f, 100f, float.Parse(LaserCannonConfig.program_settings["Damage"]), 50f, "{0:F0}", 1f);
         }
         
         private void HostileOnly(object sender, ToggleChangedEventArgs args)

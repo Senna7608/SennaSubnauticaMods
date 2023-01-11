@@ -140,10 +140,11 @@ namespace ModdedArmsHelper
             CheckArmSlots();
         }
 
-
         private void OnEquip(string slot, InventoryItem item)
         {
-            if (IsSeamothArm(item.item.GetTechType(), out TechType techType))
+            SNLogger.Debug($"OnEquip: slot: {slot}, techType: {item.techType}");
+
+            if (IsSeamothArm(item.techType, out TechType techType))
             {
                 int slotID = seamoth.GetSlotIndex(slot);
 
@@ -162,6 +163,8 @@ namespace ModdedArmsHelper
 
         private void OnUnequip(string slot, InventoryItem item)
         {
+            SNLogger.Debug($"OnUnequip: slot: {slot}, techType: {item.techType}");
+
             if (IsSeamothArm(item.item.GetTechType(), out TechType techType))
             {
                 int slotID = seamoth.GetSlotIndex(slot);
@@ -178,7 +181,6 @@ namespace ModdedArmsHelper
                 }
             }
         }
-
 
         private void OnToggleSlot(int slotID, bool state)
         {
@@ -218,7 +220,7 @@ namespace ModdedArmsHelper
             bool pilotingMode = seamoth.GetPilotingMode();
             bool flag2 = pilotingMode && !seamoth.docked;
 
-#if DEBUG
+#if TESTOUTSIDE
 
             pilotingMode = true;
             flag2 = true;
@@ -309,17 +311,18 @@ namespace ModdedArmsHelper
 
                 if (hasPropCannon)
                 {
-                    string[] splittedHint = LanguageCache.GetButtonFormat("PropulsionCannonToRelease", GameInput.Button.AltTool).Split(' ');
-
-                    sb.AppendLine($"{splittedHint[0]} {splittedHint.GetLast()}");
-                    //sb.AppendLine(LanguageCache.GetButtonFormat("PropulsionCannonToRelease", GameInput.Button.AltTool));
+                    sb.AppendLine(LanguageCache.GetButtonFormat("PropulsionCannonToRelease", GameInput.Button.AltTool));
                 }
+                
+                lastHasPropCannon = hasPropCannon;
+                uiStringPrimary = sb.ToString();
 
                 lastHasPropCannon = hasPropCannon;
                 uiStringPrimary = sb.ToString();
             }
 
-            HandReticle.main.SetUseTextRaw(uiStringPrimary, string.Empty);
+            HandReticle.main.SetTextRaw(HandReticle.TextType.Use, uiStringPrimary);
+            HandReticle.main.SetTextRaw(HandReticle.TextType.UseSubscript, string.Empty);
             hasInitStrings = true;
         }
 
@@ -370,7 +373,7 @@ namespace ModdedArmsHelper
 
             if (canPickup || canDrill)
             {
-                Targeting.GetTarget(seamoth.gameObject, 4.8f, out targetObject, out float num, null);
+                Targeting.GetTarget(seamoth.gameObject, 4.8f, out targetObject, out float num);
             }
 
             if (targetObject)
@@ -408,9 +411,9 @@ namespace ModdedArmsHelper
                 else if (canPickup && objectType == TargetObjectType.Pickupable && GetSelectedArm().HasClaw())
                 {
                     Pickupable pickupable = activeTarget.GetComponent<Pickupable>();
-                    TechType techType = pickupable.GetTechType();
+                    TechType techType = pickupable.GetTechType();                    
                     
-                    HandReticle.main.SetInteractText(LanguageCache.GetPickupText(techType), false, HandReticle.Hand.Left);
+                    HandReticle.main.SetText(HandReticle.TextType.Hand, LanguageCache.GetPickupText(techType), false);
                     HandReticle.main.SetIcon(HandReticle.IconType.Hand, 1f);
                 }
             }
@@ -529,8 +532,7 @@ namespace ModdedArmsHelper
             }
 
             subName.DeserializeColors(hsbArray);           
-        } 
-        
+        }        
 
         /*
         private bool CheckSeamothArmSlots()
@@ -560,8 +562,6 @@ namespace ModdedArmsHelper
         }
         */
 
-        
-
         private void CheckArmSlots()
         {
             if (IsSeamothArm(seamoth.modules.GetTechTypeInSlot("SeamothArmLeft"), out TechType leftArmtechType))
@@ -577,7 +577,9 @@ namespace ModdedArmsHelper
 
         private bool IsSeamothArm(TechType techType, out TechType result)
         {
-            if (Main.graphics.ModdedArmPrefabs.TryGetValue(techType, out GameObject prefab))
+            SNLogger.Debug($"IsSeamothArm: techType: {techType}");
+
+            if (Main.armsGraphics.ModdedArmPrefabs.TryGetValue(techType, out GameObject prefab))
             {
                 if (prefab.GetComponent<ArmTag>().armType == ArmType.SeamothArm)
                 {

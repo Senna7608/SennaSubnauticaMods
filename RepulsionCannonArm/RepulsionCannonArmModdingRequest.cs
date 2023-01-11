@@ -2,6 +2,9 @@
 using ModdedArmsHelper.API;
 using ModdedArmsHelper.API.Interfaces;
 using Common.Helpers;
+using System.Collections;
+using UWE;
+using Common;
 
 namespace RepulsionCannonArm
 {
@@ -17,8 +20,8 @@ namespace RepulsionCannonArm
             return null;
         }
 
-        public void SetUpArm(GameObject clonedArm, ModdedArmsHelper.API.SetupHelper graphicsHelper)
-        {
+        public IEnumerator SetUpArmAsync(GameObject clonedArm, LowerArmHelper graphicsHelper, IOut<bool> success)
+        {            
             GameObject elbow = ArmServices.main.objectHelper.FindDeepChild(clonedArm, "elbow");
 
             Object.DestroyImmediate(clonedArm.FindChild("xPropulsionCannon_Beams"));
@@ -30,13 +33,23 @@ namespace RepulsionCannonArm
             repulsion.name = "repulsion";
 
             GameObject ArmRig = ArmServices.main.objectHelper.FindDeepChild(clonedArm, "ArmRig");
-            GameObject exosuit_repulsion_geo = ArmRig.FindChild("ArmModel");            
+            GameObject exosuit_repulsion_geo = ArmRig.FindChild("ArmModel");
 
-            Common.Helpers.GraphicsHelper.ChangeObjectTexture(exosuit_repulsion_geo, 2, illumTex: Main.illumTex);
+            GraphicsHelper.ChangeObjectTexture(exosuit_repulsion_geo, 2, illumTex: Main.illumTex);
+                        
+            IPrefabRequest request = PrefabDatabase.GetPrefabForFilenameAsync("WorldEntities/Tools/RepulsionCannon.prefab");
+            yield return request;
 
-            GameObject RepulsionCannonClone = ArmServices.main.objectHelper.GetGameObjectClone(Resources.Load<GameObject>("WorldEntities/Tools/RepulsionCannon"), clonedArm.transform);
-            RepulsionCannonClone.name = "RepulsionCannon";
-            /*
+            if (!request.TryGetPrefab(out GameObject prefab))
+            {
+                SNLogger.Error("Cannot load [RepulsionCannon] prefab!");
+                yield break;
+            }
+
+            GameObject RepulsionCannonClone = UWE.Utils.InstantiateDeactivated(prefab, clonedArm.transform, Vector3.zero, Quaternion.identity);
+
+            RepulsionCannonClone.name = "RepulsionCannon";            
+            
             Object.DestroyImmediate(RepulsionCannonClone.GetComponent<Pickupable>());
             Object.DestroyImmediate(RepulsionCannonClone.GetComponent<EnergyMixin>());
             Object.DestroyImmediate(RepulsionCannonClone.GetComponent<Rigidbody>());
@@ -51,7 +64,7 @@ namespace RepulsionCannonArm
             Object.DestroyImmediate(RepulsionCannonClone.transform.Find("1st Person Model").gameObject);
             Object.DestroyImmediate(RepulsionCannonClone.transform.Find("3rd Person Model").gameObject);
             Object.DestroyImmediate(RepulsionCannonClone.transform.Find("BatterySlot").gameObject);
-            */
+            
             Object.DestroyImmediate(clonedArm.GetComponent<VFXController>());
 
             RepulsionCannon repulsionCannon = RepulsionCannonClone.GetComponent<RepulsionCannon>();
@@ -90,7 +103,11 @@ namespace RepulsionCannonArm
             GameObject bubblesFX = ArmServices.main.objectHelper.GetGameObjectClone(repulsionCannon.bubblesFX, clonedArm.transform, false);
             bubblesFX.name = "xRepulsionCannon_Bubbles";
 
-            Object.DestroyImmediate(RepulsionCannonClone);
+            //Object.DestroyImmediate(RepulsionCannonClone);
+            success.Set(true);
+            yield break;
         }
+
+        
     }    
 }

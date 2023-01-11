@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Common;
 using Common.Helpers;
-using Common.Helpers.SMLHelpers;
+using SMLExpander;
 
 namespace CheatManager
 {
@@ -108,10 +108,21 @@ namespace CheatManager
                     case (EquipmentType)100:
                         TechnologyMatrix[(int)TechCategory.Upgrades].Add(new TechTypeData(kvp.Value, Language.main.Get(TechTypeExtensions.AsString(kvp.Value, false))));
                         break;
+                    case EquipmentType.Hand:
+                        TechnologyMatrix[(int)TechCategory.Tools].Add(new TechTypeData(kvp.Value, Language.main.Get(TechTypeExtensions.AsString(kvp.Value, false))));
+                        break;
+                    case EquipmentType.Head:
+                    case EquipmentType.Body:
+                    case EquipmentType.Gloves:
+                    case EquipmentType.Foots:
+                    case EquipmentType.Tank:
+                    case EquipmentType.Chip:
+                        TechnologyMatrix[(int)TechCategory.Equipment].Add(new TechTypeData(kvp.Value, Language.main.Get(TechTypeExtensions.AsString(kvp.Value, false))));
+                        break;
                 }
             }
 
-            SNLogger.Debug("CheatManager", "Modded TechTypes checked and added.");
+            SNLogger.Debug("Modded TechTypes checked and added.");
         }       
 
         public readonly Dictionary<TechCategory, TechType[]> baseTechMatrix = new Dictionary<TechCategory, TechType[]>()
@@ -175,7 +186,7 @@ namespace CheatManager
                     TechType.RadiationGloves,
                     TechType.ReinforcedDiveSuit,
                     TechType.ReinforcedGloves,
-                    TechType.Stillsuit,
+                    //TechType.Stillsuit,
                     TechType.Fins,
                     TechType.UltraGlideFins,
                     TechType.SwimChargeFins,
@@ -322,7 +333,7 @@ namespace CheatManager
                     TechType.FirstAidKit,
                     TechType.FilteredWater,
                     TechType.DisinfectedWater,
-                    TechType.StillsuitWater,
+                    //TechType.StillsuitWater,
                     TechType.BigFilteredWater,
                     TechType.CookedPeeper,
                     TechType.CookedHoleFish,
@@ -748,7 +759,7 @@ namespace CheatManager
                     TechType.StarshipChair,
                     TechType.StarshipDesk,
                     TechType.StasisRifle,
-                    TechType.Stillsuit,
+                    //TechType.Stillsuit,
                     TechType.SwimChargeFins,
 
                     TechType.Techlight,

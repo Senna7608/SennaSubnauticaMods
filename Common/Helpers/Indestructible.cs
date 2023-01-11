@@ -9,6 +9,7 @@ namespace Common.Helpers
         {
             gameObject.AddComponent<SceneCleanerPreserve>();
             DontDestroyOnLoad(gameObject);
+            SNLogger.Log("Indestructible component added.");
         }
     }
 }

@@ -2,11 +2,12 @@
 using System.Reflection;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using UWE;
 using Common.Helpers;
 using QuickSlotExtender.Configuration;
 using Common;
+using TMPro;
+using System.Collections;
 
 namespace QuickSlotExtender
 {
@@ -19,7 +20,8 @@ namespace QuickSlotExtender
         public static object slotextender_SLOTKEYSLIST;
         public List<string> SLOTEXTENDER_SLOTKEYSLIST;
         public Utils.MonitoredValue<bool> onConsoleInputFieldActive = new Utils.MonitoredValue<bool>();
-        private bool isConsoleActive = false;        
+        private bool isConsoleActive = false;
+        private bool waitForModeChange = false;
 
         public void Awake()
         {
@@ -40,14 +42,14 @@ namespace QuickSlotExtender
 
             try
             {
-                slotextender_SLOTKEYSLIST = Main.GetAssemblyClassPublicField("SlotExtender.Configuration.SEConfig", "SLOTKEYSLIST", BindingFlags.Static);                               
+                slotextender_SLOTKEYSLIST = QuickSlotExtender.GetAssemblyClassPublicField("SlotExtender.Configuration.SEConfig", "SLOTKEYSLIST", BindingFlags.Static);                               
 
                 foreach (string item in (List<string>)slotextender_SLOTKEYSLIST)
                 {
                     SLOTEXTENDER_SLOTKEYSLIST.Add(item);
                 }
 
-                SNLogger.Debug("QuickSlotExtender", $"SLOTEXTENDER_SLOTKEYSLIST.Count = [{SLOTEXTENDER_SLOTKEYSLIST.Count}]");
+                SNLogger.Debug($"SLOTEXTENDER_SLOTKEYSLIST.Count = [{SLOTEXTENDER_SLOTKEYSLIST.Count}]");
             }
             catch (Exception ex)
             {
@@ -58,6 +60,24 @@ namespace QuickSlotExtender
         public void Start()
         {
             onConsoleInputFieldActive.changedEvent.AddHandler(this, new Event<Utils.MonitoredValue<bool>>.HandleFunction(OnConsoleInputFieldActive));
+            Player.main.playerModeChanged.AddHandler(this, new Event<Player.Mode>.HandleFunction(OnPlayerModeChanged));
+        }
+
+        private void OnPlayerModeChanged(Player.Mode newMode)
+        {
+            StartCoroutine(WaitForPlayerModeChangeFinished(newMode));
+        }
+
+        private IEnumerator WaitForPlayerModeChangeFinished(Player.Mode newMode)
+        {
+            while (Player.main.currentMountedVehicle == null)
+            {
+                waitForModeChange = true;
+                yield return null;
+            }
+
+            waitForModeChange = false;
+            yield break;
         }
 
         private void OnConsoleInputFieldActive(Utils.MonitoredValue<bool> isActive)
@@ -67,7 +87,8 @@ namespace QuickSlotExtender
 
         public void OnDestroy()
         {
-            onConsoleInputFieldActive.changedEvent.RemoveHandler(this, OnConsoleInputFieldActive);            
+            onConsoleInputFieldActive.changedEvent.RemoveHandler(this, OnConsoleInputFieldActive);
+            Player.main.playerModeChanged.RemoveHandler(this, OnPlayerModeChanged);
         }       
 
         
@@ -129,7 +150,12 @@ namespace QuickSlotExtender
         }
 
         internal void AddQuickSlotText(uGUI_QuickSlots instance)
-        {            
+        {
+            if (waitForModeChange)
+            {
+                return;
+            }
+
             if (instance == null)
             {
                 return;
@@ -147,17 +173,20 @@ namespace QuickSlotExtender
                 return;
             }
 
-            SNLogger.Debug("QuickSlotExtender", $"icons.length = [{icons.Length}]");
+            SNLogger.Debug($"icons.length: [{icons.Length}]");
 
-            SNLogger.Debug("QuickSlotExtender", $"SLOTKEYSLIST.Count = [{QSEConfig.SLOTKEYSLIST.Count}]");
+            SNLogger.Debug($"SLOTKEYSLIST.Count: [{QSEConfig.SLOTKEYSLIST.Count}]");
 
-            SNLogger.Debug("QuickSlotExtender", $"Player.main.isPiloting = [{Player.main.isPiloting}]");
+            SNLogger.Debug($"Player.main.isPiloting: [{Player.main.isPiloting}]");
+
+            SNLogger.Debug($"isExists_SlotExtender: [{Main.isExists_SlotExtender}]");
+
+            SNLogger.Debug($"Player.main.inSeamoth: [{Player.main.inSeamoth}]");
 
             for (int i = 0; i < icons.Length; i++)
             {
                 if (Main.isExists_SlotExtender)
                 {
-
                     if (Player.main.GetPDA().state != PDA.State.Opening)
                     {
                         if (Player.main.inSeamoth)
@@ -199,14 +228,11 @@ namespace QuickSlotExtender
             }
 
             islabelsAdded = true;
-        }
+        }        
 
-        //based on RandyKnapp's Subnautica mod: MoreQuickSlots -> "CreateNewText()" method
-        //found on GitHub:https://github.com/RandyKnapp/SubnauticaModSystem
-
-        private Text AddTextToSlot(Transform parent, string buttonText)
+        private TextMeshProUGUI AddTextToSlot(Transform parent, string buttonText)
         {
-            Text text = Instantiate(HandReticle.main.interactPrimaryText);            
+            TextMeshProUGUI text = Instantiate(HandReticle.main.compTextHand);            
             text.gameObject.layer = parent.gameObject.layer;
             text.gameObject.name = "QSELabel";
             text.transform.SetParent(parent, false);
@@ -220,7 +246,7 @@ namespace QuickSlotExtender
             text.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 100);
             text.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 100);
             text.rectTransform.anchoredPosition = new Vector2(0, -40);
-            text.alignment = TextAnchor.MiddleCenter;
+            text.alignment = TextAlignmentOptions.Center;
             text.raycastTarget = false;
 
             return text;

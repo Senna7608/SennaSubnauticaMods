@@ -212,7 +212,7 @@ namespace QuickSlotExtender.Configuration
 
             QSEConfig.WriteConfig();
             QSEConfig.SetKeyBindings();
-            Main.GameInput_OnBindingsChanged();
+            QuickSlotExtender.GameInput_OnBindingsChanged();
             ErrorMessage.AddMessage("Quick Slot Extender message:\nConfiguration saved.");
             Destroy(this);
         }

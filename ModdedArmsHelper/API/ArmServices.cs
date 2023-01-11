@@ -14,15 +14,14 @@ namespace ModdedArmsHelper.API
     {
         static ArmServices()
         {
-            SNLogger.Debug("ArmServices created.");
+            SNLogger.Log("ArmServices created.");
         }
 
         private ArmServices()
-        {
+        {            
         }
 
         private static readonly ArmServices _main = new ArmServices();
-
 
         /// <summary>
         /// A property that can be used to access this class.
@@ -47,24 +46,16 @@ namespace ModdedArmsHelper.API
             }
         }
 
-        internal Dictionary<CraftableModdedArm, IArmModdingRequest> waitForRegistration = new Dictionary<CraftableModdedArm, IArmModdingRequest>();
-       
-        internal bool isWaitForRegistration = false;
-
-        /// <summary>
-        /// This method can be used to register the new modded arm.
-        /// </summary>
-        /// <remarks>
-        /// Call it from the <see cref="CraftableModdedArm.RegisterArm"/> method.
-        /// </remarks>
-        public void RegisterArm(CraftableModdedArm armPrefab, IArmModdingRequest armModdingRequest)
+        internal Dictionary<CraftableModdedArm, IArmModdingRequest> waitForRegistration = new Dictionary<CraftableModdedArm, IArmModdingRequest>();       
+                
+        internal void RegisterArm(CraftableModdedArm armPrefab, IArmModdingRequest armModdingRequest)
         {
+            SNLogger.Log($"TechType [{armPrefab.TechType}] applied for registration.");
+
             if (!waitForRegistration.ContainsKey(armPrefab))
             {
-                waitForRegistration.Add(armPrefab, armModdingRequest);
+                waitForRegistration.Add(armPrefab, armModdingRequest);               
             }
-
-            isWaitForRegistration = true;
         }
 
         /// <summary>

@@ -2,8 +2,13 @@
 
 namespace ModdedArmsHelper.API.ArmHandlers
 {
+    /// <summary>
+    /// The abstract class to inherit for handling the Seamoth grappling arm base mechanics.
+    /// </summary>
     public abstract class SeamothGrapplingArmHandler : ArmHandler
-    {        
+    {
+#pragma warning disable CS1591 //XML documentation
+
         public VFXGrapplingRope rope { get; private set; }
         public SeamothGrapplingHook hook { get; private set; }
         public FMOD_CustomLoopingEmitter grapplingLoopSound { get; private set; }
@@ -21,10 +26,15 @@ namespace ModdedArmsHelper.API.ArmHandlers
         public float targetGrapplingAccel = 400f;
         public Vector3 grapplingStartPos = Vector3.zero;
 
+#pragma warning restore CS1591 //XML documentation
+
+        /// <summary>
+        /// If you implement this method in your modded arm handler, the first line should be 'base.Awake()'
+        /// </summary>
         public override void Awake()
         {
             front = ArmServices.main.objectHelper.FindDeepChild(gameObject, "hook").transform;            
-            hookPrefab = Instantiate(Main.graphics.HookPrefab);
+            hookPrefab = Instantiate(Main.armsGraphics.HookPrefab);
 
             DestroyImmediate(hookPrefab.GetComponent<GrapplingHook>());
             hook = hookPrefab.AddComponent<SeamothGrapplingHook>();
@@ -44,6 +54,9 @@ namespace ModdedArmsHelper.API.ArmHandlers
             shootSound.name = "hook_shoot";
         }
 
+        /// <summary>
+        /// If you implement this method in your modded arm handler, the first line should be 'base.Start()'
+        /// </summary>
         public override void Start()
         {
             worldForces = vehicle.GetComponent<WorldForces>();

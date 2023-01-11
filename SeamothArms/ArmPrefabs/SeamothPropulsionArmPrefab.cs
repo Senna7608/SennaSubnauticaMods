@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using SMLHelper.V2.Crafting;
-using Common.Helpers.SMLHelpers;
 using ModdedArmsHelper.API;
 using SeamothArms.ArmHandlerRequesters;
 using SMLHelper.V2.Handlers;
+using SMLExpander;
+using System.Collections;
 
 namespace SeamothArms.ArmPrefabs
 {
@@ -16,15 +17,15 @@ namespace SeamothArms.ArmPrefabs
                  description: "Allows Seamoth to use Propulsion Arm.",
                  armType: ArmType.SeamothArm,
                  armTemplate: ArmTemplate.PropulsionArm,
-                 requiredForUnlock: TechType.ExosuitPropulsionArmModule,
+                 requiredForUnlock: TechType.None,
                  fragment: fragment
                  )
         {
         }
 
-        protected override void RegisterArm()
+        protected override RegisterArmRequest RegisterArm()
         {
-            ArmServices.main.RegisterArm(this, new SeamothPropulsionArmModdingRequest());
+            return new RegisterArmRequest(this, new SeamothPropulsionArmModdingRequest());
         }
 
         protected override TechData GetRecipe()
@@ -58,8 +59,10 @@ namespace SeamothArms.ArmPrefabs
             return null;
         }
 
-        protected override void ModifyGameObject()
+        protected override IEnumerator ModifyGameObjectAsync(IOut<bool> success)
         {
+            success.Set(true);
+            yield break;
         }
     }
 }

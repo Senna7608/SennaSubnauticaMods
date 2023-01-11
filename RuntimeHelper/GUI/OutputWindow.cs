@@ -5,7 +5,7 @@ using RuntimeHelper.Logger;
 
 namespace RuntimeHelper
 {
-    public partial class RuntimeHelper
+    public partial class RuntimeHelperManager
     {        
         private static GUIStyle logStyle;        
 
@@ -79,55 +79,7 @@ namespace RuntimeHelper
 
             GUI.EndScrollView();            
         }                
-
-        private void Write(string message)
-        {
-            logMessage.Add(new LOG()            
-            {
-                message = message,                
-                type = LogType.Log,
-            });
-
-            if (logMessage.Count == MAXLOG)
-            {
-                RemoveFirstLogEntry();
-            }
-
-            RHLogger.RH_Log(message);
-        }
-
-        private void Write(string message, LogType type)
-        {
-            logMessage.Add(new LOG()            
-            {
-                message = message,                
-                type = type
-            });
-
-            if (logMessage.Count == MAXLOG)
-            {
-                RemoveFirstLogEntry();
-            }
-
-            RHLogger.RH_Log(message, type);
-        }
-
-        private void Write(string message, params object[] arg)
-        {
-            logMessage.Add(new LOG()
-            {
-                message = string.Format(message, arg),
-                type = LogType.Log
-            });
-
-            if (logMessage.Count == MAXLOG)
-            {
-                RemoveFirstLogEntry();
-            }
-
-            RHLogger.RH_Log(message, arg);
-        }
-
+                
         private void Write(string message, LogType type, params object[] arg)
         {
             logMessage.Add(new LOG()            
@@ -141,7 +93,7 @@ namespace RuntimeHelper
                 RemoveFirstLogEntry();
             }
 
-            RHLogger.RH_Log(message, type, arg);
+            RHLogger.Log(string.Format(message, arg), (RHLogType)type);
         }        
 
         private void RemoveFirstLogEntry()
@@ -150,11 +102,11 @@ namespace RuntimeHelper
             messageCount--;
         }
 
-        public void OutputWindow_Log(string message) => Write(message);
+        public void OutputWindow_Log(string message) => Write(message, LogType.Log);
 
         public void OutputWindow_Log(string message, LogType type) => Write(message, type);
 
-        public void OutputWindow_Log(string message, params object[] arg) => Write(message, arg);
+        public void OutputWindow_Log(string message, params object[] arg) => Write(message, LogType.Log, arg);
 
         public void OutputWindow_Log(string message, LogType type, params object[] arg) => Write(message, type, arg);       
     }

@@ -1,17 +1,16 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("QuickSlotExtender")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Quick Slot Extender")]
+[assembly: AssemblyDescription("Subnautica BepInEx Plugin")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("QuickSlotExtender")]
-[assembly: AssemblyCopyright("Copyright ©  2019")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyProduct("Quick Slot Extender")]
+[assembly: AssemblyCopyright("Copyright © Senna 2022")]
+[assembly: AssemblyTrademark("Senna")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible

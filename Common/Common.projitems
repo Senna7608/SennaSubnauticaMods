@@ -21,14 +21,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\DebugHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\GraphicsHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\ObjectHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\SMLHelpers\BuildableModItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\ArrayUtils.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\SMLHelpers\EncyData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\SMLHelpers\EncyHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\SMLHelpers\FragmentTracker.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\SMLHelpers\ModPrefab_Fragment.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\SMLHelpers\SelfDestruct.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\SMLHelpers\ModPrefab_Craftable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\SelfDestruct.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\GameHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GUIHelper\SNDropDown.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GUIHelper\SNHorizontalSlider.cs" />
@@ -36,7 +30,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)GUIHelper\SNStyles.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GUIHelper\SNGUI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GUIHelper\SNWindow.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\SMLHelpers\ModdedTechTypeHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\TechTypeData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Indestructible.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\InputHelper.cs" />

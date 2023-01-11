@@ -1,4 +1,5 @@
 ﻿using Common;
+using System.Collections;
 
 namespace CyclopsLaserCannonModule
 {
@@ -10,11 +11,20 @@ namespace CyclopsLaserCannonModule
         public bool isPiloting = false;
         public bool isLowPower = false;
 
-        private void LaserCannonSetActive(bool value)
+        private IEnumerator LaserCannonSetActiveAsync(bool value)
         {
+            SNLogger.Debug($"LaserCannonSetActiveAsync ({value})started...");
+
+            while (!asyncOperationsComplete)
+            {
+                yield return null;
+            }
+
             cannon_base_right.SetActive(value);
             cannon_base_left.SetActive(value);
             Button_Cannon.SetActive(value);
+
+            yield break;
         }
         
         private void OnConfigurationChanged(string configToChange)
@@ -35,6 +45,8 @@ namespace CyclopsLaserCannonModule
 
         private void OnPlayerModeChanged(Player.Mode newMode)
         {
+            SNLogger.Debug($"OnPlayerModeChanged: newMode: {newMode}");
+
             if (newMode == Player.Mode.Piloting)
                 isPiloting = true;
             else
@@ -43,6 +55,8 @@ namespace CyclopsLaserCannonModule
 
         internal void OnSubRootChanged(SubRoot newSubRoot)
         {
+            SNLogger.Debug($"OnSubRootChanged: newSubRoot: {newSubRoot?.name}");
+
             if (newSubRoot == subroot)
             {
                 isActive = true;
@@ -52,30 +66,37 @@ namespace CyclopsLaserCannonModule
                 isActive = false;
             }            
         }
-        
-        private void OnFinishedUpgrades()
-        {            
-            if (upgradeHandler.TechType == CannonPrefab.TechTypeID && upgradeHandler.Count > 0)
+
+        private void OnUnequip(string slot, InventoryItem item)
+        {
+            SNLogger.Debug($"OnUnequip: slot: {slot}, item: {item.techType}");
+
+            if (item.techType == CannonPrefab.TechTypeID)
             {
-                isModuleInserted = true;
-                LaserCannonSetActive(isModuleInserted);
+                isModuleInserted = false;
+                StartCoroutine(LaserCannonSetActiveAsync(isModuleInserted));
             }
         }
 
-        private void OnClearUpgrades()
+        private void OnEquip(string slot, InventoryItem item)
         {
-            isModuleInserted = false;
-            LaserCannonSetActive(isModuleInserted);
-        }
+            SNLogger.Debug($"OnEquip: slot: {slot}, item: {item.techType}");
 
-        private void OnFirstTimeCheckModuleIsExists()
-        {
-            SNLogger.Log("CyclopsLaserCannonModule", "Trying to enable module...");
-
-            if (upgradeHandler.Count > 0)
+            if (item.techType == CannonPrefab.TechTypeID)
             {
                 isModuleInserted = true;
-                LaserCannonSetActive(isModuleInserted);
+                StartCoroutine(LaserCannonSetActiveAsync(isModuleInserted));
+            }
+        }
+
+        public void CyclopsUpgradeModuleChange(TechType techType)
+        {
+            SNLogger.Debug($"CyclopsUpgradeModuleChange: techType: {techType}");
+
+            if (techType == CannonPrefab.TechTypeID)
+            {
+                isModuleInserted = true;
+                StartCoroutine(LaserCannonSetActiveAsync(isModuleInserted));
             }
         }
     }

@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UWE;
-using Common;
 
 namespace SlotExtender
 {
@@ -10,8 +9,6 @@ namespace SlotExtender
 
         public void Awake()
         {
-            SNLogger.Debug("Method call: InputFieldListener.Awake()");
-
             onConsoleInputFieldActive.changedEvent.AddHandler(this, new Event<Utils.MonitoredValue<bool>>.HandleFunction(OnConsoleInputFieldActive));
         }
 

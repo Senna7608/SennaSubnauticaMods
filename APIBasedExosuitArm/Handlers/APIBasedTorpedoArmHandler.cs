@@ -21,7 +21,12 @@ namespace APIBasedExosuitArms.Handlers
         GameObject IExosuitArm.GetGameObject()
         {            
             return gameObject;
-        }        
+        }
+
+        GameObject IExosuitArm.GetInteractableRoot(GameObject target)
+        {
+            return null;
+        }
 
         void IExosuitArm.SetSide(Exosuit.Arm arm)
         {
@@ -34,12 +39,12 @@ namespace APIBasedExosuitArms.Handlers
             if (arm == Exosuit.Arm.Right)
             {
                 transform.localScale = new Vector3(-1f, 1f, 1f);
-                container = Exosuit.GetStorageInSlot(Exosuit.GetSlotIndex("ExosuitArmRight"), armTag.techType);
+                container = exosuit.GetStorageInSlot(exosuit.GetSlotIndex("ExosuitArmRight"), armTag.techType);
             }
             else
             {
                 transform.localScale = new Vector3(1f, 1f, 1f);
-                container = Exosuit.GetStorageInSlot(Exosuit.GetSlotIndex("ExosuitArmLeft"), armTag.techType);
+                container = exosuit.GetStorageInSlot(exosuit.GetSlotIndex("ExosuitArmLeft"), armTag.techType);
             }
 
             if (container != null)
@@ -77,7 +82,7 @@ namespace APIBasedExosuitArms.Handlers
         {
         }
         
-        void IExosuitArm.Reset()
+        void IExosuitArm.ResetArm()
         {
             animator.SetBool("use_tool", false);
         }
@@ -188,7 +193,8 @@ namespace APIBasedExosuitArms.Handlers
                 return;
             }
 
-            HandReticle.main.SetInteractText("SeamothTorpedoStorage");
+            HandReticle.main.SetText(HandReticle.TextType.Hand, "ExosuitTorpedoStorage", true, GameInput.Button.LeftHand);
+            HandReticle.main.SetText(HandReticle.TextType.HandSubscript, string.Empty, false, GameInput.Button.None);
             HandReticle.main.SetIcon(HandReticle.IconType.Hand, 1f);
         }
         
@@ -205,7 +211,7 @@ namespace APIBasedExosuitArms.Handlers
             }
 
             Inventory.main.SetUsedStorage(container, false);
-            Player.main.GetPDA().Open(PDATab.Inventory, useTransform, null, -1f);
+            Player.main.GetPDA().Open(PDATab.Inventory, useTransform, null);
         }
         
         private void OnDestroy()

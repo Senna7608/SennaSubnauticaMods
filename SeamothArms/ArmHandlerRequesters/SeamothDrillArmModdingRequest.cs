@@ -2,6 +2,7 @@
 using ModdedArmsHelper.API;
 using SeamothArms.InternalArmHandlers;
 using ModdedArmsHelper.API.Interfaces;
+using System.Collections;
 
 namespace SeamothArms.ArmHandlerRequesters
 {
@@ -17,8 +18,10 @@ namespace SeamothArms.ArmHandlerRequesters
             return clonedArm.AddComponent<InternalDrillArmHandler>();
         }
 
-        public void SetUpArm(GameObject clonedArm, SetupHelper graphicsHelper)
-        {            
+        public IEnumerator SetUpArmAsync(GameObject clonedArm, LowerArmHelper graphicsHelper, IOut<bool> success)
+        {
+            success.Set(true);
+            yield break;
         }
     }
 }

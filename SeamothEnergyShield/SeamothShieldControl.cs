@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using Common;
 using Common.Helpers;
 
 namespace SeamothEnergyShield

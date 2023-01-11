@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using SMLHelper.V2.Crafting;
-using Common.Helpers.SMLHelpers;
 using ModdedArmsHelper.API;
 using SeamothArms.ArmHandlerRequesters;
+using SMLExpander;
+using System.Collections;
 
 namespace SeamothArms.ArmPrefabs
 {
@@ -15,15 +16,15 @@ namespace SeamothArms.ArmPrefabs
                  description: "Fires a grappling hook for enhanced environment traversal.",
                  armType: ArmType.SeamothArm,
                  armTemplate: ArmTemplate.GrapplingArm,
-                 requiredForUnlock: TechType.ExosuitGrapplingArmModule,
+                 requiredForUnlock: TechType.None,
                  fragment: fragment                 
                  )
         {
         }
 
-        protected override void RegisterArm()
+        protected override RegisterArmRequest RegisterArm()
         {
-            ArmServices.main.RegisterArm(this, new SeamothGrapplingArmModdingRequest());
+            return new RegisterArmRequest(this, new SeamothGrapplingArmModdingRequest());
         }
 
         protected override TechData GetRecipe()
@@ -51,8 +52,10 @@ namespace SeamothArms.ArmPrefabs
             return null;
         }
 
-        protected override void ModifyGameObject()
+        protected override IEnumerator ModifyGameObjectAsync(IOut<bool> success)
         {
+            success.Set(true);
+            yield break;
         }
 
         protected override void SetCustomLanguageText()

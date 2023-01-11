@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 #pragma warning disable CS1591
@@ -167,24 +168,29 @@ namespace Common.Helpers
             go.SetActive(isActive);
         }
 
-        public GameObject GetModelCloneFromPrefab(TechType techType, string model, Transform newParent, bool setActive, string newName)
+        public IEnumerator GetModelCloneFromPrefabAsync(TechType techType, string model, Transform newParent, bool setActive, string newName, IOut<GameObject> result)
         {
+            CoroutineTask<GameObject> task = CraftData.GetPrefabForTechTypeAsync(techType);
+            yield return task;
+
             GameObject clone = null;
 
             try
             {
-                clone = FindDeepChild(Object.Instantiate(CraftData.GetPrefabForTechType(techType)), model);
+                clone = UnityEngine.Object.Instantiate(FindDeepChild(task.GetResult(), model));
             }
             catch
             {
-                return null;
+                result.Set(null);
+                yield break;
             }
 
             clone.SetActive(setActive);
             clone.transform.SetParent(newParent, false);
             clone.name = newName;
             Utils.ZeroTransform(clone.transform);
-            return clone;
+            result.Set(clone);
+            yield break;
         }
 
         public GameObject CreateGameObject(string name)

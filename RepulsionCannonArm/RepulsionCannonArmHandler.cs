@@ -21,7 +21,7 @@ namespace RepulsionCannonArm
             bubblesFX = transform.Find("xRepulsionCannon_Bubbles").gameObject;
 
             shootSound = ScriptableObject.CreateInstance<FMODAsset>();
-            shootSound.name = "repulsiom";
+            shootSound.name = "repulse";
             shootSound.id = "fire";
             shootSound.path = "event:/tools/gravcannon/fire";
         }
@@ -34,7 +34,12 @@ namespace RepulsionCannonArm
         {            
             return gameObject;
         }
-        
+
+        GameObject IExosuitArm.GetInteractableRoot(GameObject target)
+        {
+            return null;
+        }
+
         void IExosuitArm.SetSide(Exosuit.Arm arm)
         {
             if (arm == Exosuit.Arm.Right)
@@ -82,7 +87,7 @@ namespace RepulsionCannonArm
             }            
         }
         
-        void IExosuitArm.Reset()
+        void IExosuitArm.ResetArm()
         {
             animator.SetBool("cangrab_propulsioncannon", false);
         }
@@ -170,6 +175,6 @@ namespace RepulsionCannonArm
             propulseCannonAmmoHandler.ResetHandler(false, false);
 
             propulseCannonAmmoHandler.OnShot(false);
-        }        
+        }
     }
 }

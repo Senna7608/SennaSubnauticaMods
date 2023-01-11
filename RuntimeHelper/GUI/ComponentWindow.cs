@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace RuntimeHelper
 {
-    public partial class RuntimeHelper
+    public partial class RuntimeHelperManager
     {
         private static Rect ComponentWindow_Rect = new Rect(300, 732, 398, 258);
         private Rect ComponentWindow_drawRect;
@@ -35,10 +35,13 @@ namespace RuntimeHelper
 
         private bool isColliderSelected = false;
 
+        private bool isRectTransform = false;
+
         //private Dictionary<int, ComponentInfo> componentInfos = new Dictionary<int, ComponentInfo>();
 
         private void RefreshComponentsList()
         {
+            isRectTransform = false;
             components.Clear();
             componentNames.Clear();
             objects.Clear();
@@ -147,6 +150,18 @@ namespace RuntimeHelper
                     showObjectInfoWindow = true;
                 }
 
+                if (IsRectTransform(objects[selected_component]))
+                {
+                    isRectTransform = true;
+                    showObjectInfoWindow = true;
+                    RefreshEditModeList();
+                }
+                else
+                {
+                    isRectTransform = false;
+                    RefreshEditModeList();
+                }
+
                 if (IsComponentInBlacklist(objects[selected_component]))
                 {
                     changeEnabledproperty = null;
@@ -199,6 +214,10 @@ namespace RuntimeHelper
             return false;
         }
 
+        private bool IsRectTransform(UnityEngine.Object component)
+        {
+            return component.GetType() == typeof(RectTransform) ? true : false;
+        }
 
         private void RemoveComponent(UnityEngine.Object component)
         {
@@ -270,7 +289,7 @@ namespace RuntimeHelper
             typeof(Mesh),
             typeof(MeshFilter),
             typeof(Shader),
-            typeof(RuntimeHelper),
+            typeof(RuntimeHelperManager),
             typeof(DrawObjectBounds),
             typeof(DrawColliderBounds),
             typeof(TracePlayerPos)

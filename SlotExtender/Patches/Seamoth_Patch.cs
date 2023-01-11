@@ -24,7 +24,7 @@ namespace SlotExtender.Patches
         [HarmonyPostfix]
         public static void Postfix(SeaMoth __instance)
         {           
-            __instance.gameObject.EnsureComponent<SlotExtender>();
+            __instance.gameObject.EnsureComponent<SlotExtenderControl>();
 
             SNLogger.Log($"Component added to instance: {__instance.name} ID: {__instance.GetInstanceID()}");                      
         }
@@ -33,8 +33,10 @@ namespace SlotExtender.Patches
 
     internal static class SeamothStorageInputPatches
     {
-        private static ItemsContainer GetStorageInSlot(Vehicle vehicle, int slotID, TechType techType) =>
-             vehicle.GetStorageInSlot(slotID, techType) ?? vehicle.GetStorageInSlot(slotID + SEConfig.STORAGE_SLOTS_OFFSET, techType);
+        private static ItemsContainer GetStorageInSlot(Vehicle vehicle, int slotID, TechType techType)
+        {
+            return vehicle.GetStorageInSlot(slotID, techType) ?? vehicle.GetStorageInSlot(slotID + SEConfig.STORAGE_SLOTS_OFFSET, techType);
+        }
 
         // substitute call for 'this.seamoth.GetStorageInSlot()' with method above
         private static IEnumerable<CodeInstruction> SubstSlotGetter(IEnumerable<CodeInstruction> cins)

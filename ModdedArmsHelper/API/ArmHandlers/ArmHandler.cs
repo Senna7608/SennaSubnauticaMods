@@ -104,8 +104,9 @@ namespace ModdedArmsHelper.API.ArmHandlers
         }
 
         private ArmTag _armTag = null;
+
         /// <summary>
-        /// This property is returning the <see cref="ModdedArmsHelper.API.ArmTag"/> component.
+        /// This property is returning the <see cref="ArmTag"/> component.
         /// </summary>
         public ArmTag armTag
         {
@@ -120,5 +121,21 @@ namespace ModdedArmsHelper.API.ArmHandlers
             }
         }
 
+        private GameObject _lowerArm = null;
+        /// <summary>
+        /// This property is returning the lower arm gameobject container. Pivot point is the upper arm elbow.
+        /// </summary>
+        public GameObject lowerArm
+        {
+            get
+            {
+                if (_lowerArm == null)
+                {
+                    _lowerArm = ArmServices.main.objectHelper.FindDeepChild(transform, "ModdedLowerArmContainer");
+                }
+
+                return _lowerArm;
+            }
+        }
     }
 }

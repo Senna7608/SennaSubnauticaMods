@@ -1,82 +1,61 @@
 ﻿using System;
-using UnityEngine;
+using System.Diagnostics;
 
 namespace RuntimeHelper.Logger
 {
+    public enum RHLogType
+    {
+        Error = 0,
+        Assert = 1,
+        Warning = 2,
+        Log = 3,
+        Exception = 4,
+        Debug = 5
+    }
+
     public static class RHLogger
     {
-        public const string prefixLOG = "[Rh [Log] ";
-        public const string prefixWARNING = "[Rh [Warning] ";
-        public const string prefixERROR = "[Rh [Error] ";
-
-        public static void RH_Log(string message)
+        public static void Log(string formattedText, RHLogType type)
         {
-            Console.WriteLine(prefixLOG + message);
-        }
-
-        public static void RH_Log(string message, LogType type)
-        {
-            switch (type)
+            if (type == RHLogType.Debug)
             {
-                case LogType.Assert:
-                case LogType.Error:
-                case LogType.Exception:
-                    RH_Error(message);
-                    break;
-
-                case LogType.Warning:
-                    RH_Warning(message);
-                    break;
-
-                default:
-                    RH_Log(message);
-                    break;
+                Debug(formattedText);
             }
-        }
-
-        public static void RH_Log(string message, LogType type, params object[] args)
-        {
-            switch (type)
+            else
             {
-                case LogType.Assert:
-                case LogType.Error:
-                case LogType.Exception:
-                    RH_Error(message, args);
-                    break;
-
-                case LogType.Warning:
-                    RH_Warning(message, args);
-                    break;
-
-                default:
-                    RH_Log(message, args);
-                    break;
-            }
+                Console.WriteLine($"[Rh/{ type}] " + formattedText);
+            }            
         }
 
-        public static void RH_Log(string format, params object[] args)
+        public static void Error(string formattedText)
         {
-            Console.WriteLine(prefixLOG + string.Format(format, args));
+            Log(formattedText, RHLogType.Error);
         }
 
-        public static void RH_Warning(string message)
+        public static void Assert(string formattedText)
         {
-            Console.WriteLine(prefixWARNING + message);
+            Log(formattedText, RHLogType.Assert);
         }
 
-        public static void RH_Warning(string format, params object[] args)
+        public static void Warning(string formattedText)
         {
-            Console.WriteLine(prefixWARNING + string.Format(format, args));
+            Log(formattedText, RHLogType.Warning);
         }
 
-        public static void RH_Error(string message)
+        public static void Log(string formattedText)
         {
-            Console.WriteLine(prefixERROR + message);
+            Log(formattedText, RHLogType.Log);
+        }        
+
+        public static void Exception(string formattedText)
+        {
+            Log(formattedText, RHLogType.Exception);
         }
 
-        public static void RH_Error(string format, params object[] args)
+        [Conditional("DEBUG")]
+        public static void Debug(string formattedText)
         {
-            Console.WriteLine(prefixERROR + string.Format(format, args));
+            Console.WriteLine($"[Rh/DEBUG] " + formattedText);
         }
     }
 }

@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using SMLHelper.V2.Crafting;
-using Common.Helpers.SMLHelpers;
 using ModdedArmsHelper.API;
 using SeamothArms.ArmHandlerRequesters;
+using SMLExpander;
+using System.Collections;
 
 namespace SeamothArms.ArmPrefabs
 {
@@ -23,11 +24,11 @@ namespace SeamothArms.ArmPrefabs
         {
         }
 
-        protected override void RegisterArm()
+        protected override RegisterArmRequest RegisterArm()
         {
-            ArmServices.main.RegisterArm(this, new SeamothDrillArmModdingRequest());
+            return new RegisterArmRequest(this, new SeamothDrillArmModdingRequest());
         }
-
+                
         protected override TechData GetRecipe()
         {
             return new TechData()
@@ -52,8 +53,10 @@ namespace SeamothArms.ArmPrefabs
             return null;
         }
 
-        protected override void ModifyGameObject()
+        protected override IEnumerator ModifyGameObjectAsync(IOut<bool> success)
         {
+            success.Set(true);
+            yield break;
         }
 
         protected override void SetCustomLanguageText()

@@ -18,8 +18,8 @@
     <DebugSymbols>false</DebugSymbols>
     <DebugType>none</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\QMods\ModdedArmsHelper\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <OutputPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\BepInEx\plugins\ModdedArmsHelper\</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -27,14 +27,21 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\QMods\ModdedArmsHelper\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\BepInEx\plugins\ModdedArmsHelper\</OutputPath>
     <DefineConstants>
     </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Prefer32Bit>false</Prefer32Bit>
-    <DocumentationFile>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\QMods\ModdedArmsHelper\ModdedArmsHelper.xml</DocumentationFile>
+    <DocumentationFile>C:\Program Files\Epic Games\Subnautica\BepInEx\plugins\ModdedArmsHelper\ModdedArmsHelper.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Trace|AnyCPU'">
+    <OutputPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\BepInEx\plugins\ModdedArmsHelper\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
@@ -49,15 +56,27 @@
       <HintPath>C:\Program Files\Epic Games\Subnautica\Subnautica_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="QModInstaller">
-      <HintPath>C:\Program Files\Epic Games\Subnautica\BepInEx\plugins\QModManager\QModInstaller.dll</HintPath>
+    <Reference Include="BepInEx">
+      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\BepInEx\core\BepInEx.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="FMODUnity">
+      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\Subnautica_Data\Managed\FMODUnity.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="SMLHelper">
-      <HintPath>C:\Program Files\Epic Games\Subnautica\QMods\Modding Helper\SMLHelper.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\BepInEx\plugins\Modding Helper\SMLHelper.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="Unity.ResourceManager">
+      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\Subnautica_Data\Managed\Unity.ResourceManager.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\Subnautica\Subnautica_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>C:\Program Files\Epic Games\Subnautica\Subnautica_Data\Managed\UnityEngine.dll</HintPath>
       <Private>False</Private>
@@ -116,10 +135,11 @@
     <Compile Include="API\ArmHandlers\SeamothGrapplingArmHandler.cs" />
     <Compile Include="API\ArmHandlers\TorpedoArmHandler.cs" />
     <Compile Include="API\Enums.cs" />
+    <Compile Include="API\RegisterArmRequest.cs" />
     <Compile Include="API\Interfaces\ISeamothArm.cs" />
     <Compile Include="API\Interfaces\IArmModdingRequest.cs" />
     <Compile Include="API\ArmServices.cs" />
-    <Compile Include="API\SetupHelper.cs" />
+    <Compile Include="API\LowerArmHelper.cs" />
     <Compile Include="API\CraftableModdedArm.cs" />
     <Compile Include="API\SpawnableArmFragment.cs" />
     <Compile Include="API\SeamothDrillable.cs" />
@@ -127,8 +147,7 @@
     <Compile Include="API\ArmTag.cs" />
     <Compile Include="Patches\DrillablePatches.cs" />
     <Compile Include="Patches\Exosuit_Patches.cs" />
-    <Compile Include="ArmRegistrationListener.cs" />
-    <Compile Include="Main.cs" />
+    <Compile Include="ModdedArmsHelper.cs" />
     <Compile Include="Patches\SeamothPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ArmsGraphics.cs" />
@@ -137,12 +156,15 @@
     <Compile Include="SeamothArm_Public.cs" />
     <Compile Include="SeamothArm_SlotHandler.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="mod.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
   <ItemGroup />
   <Import Project="..\Common\Common.projitems" Label="Shared" />
+  <Import Project="..\SMLHelpers\SMLHelpers.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="CustomClean" BeforeTargets="CoreClean">
+    <Message Text="Cleaning BepInEx Cache folder" Importance="high" />
+    <ItemGroup>
+      <_CustomFilesToDelete Include="c:\Program Files\Epic Games\Subnautica\BepInEx\cache\**\*" />
+    </ItemGroup>
+    <Delete Files="@(_CustomFilesToDelete)" />
+  </Target>
 </Project>

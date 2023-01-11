@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+#pragma warning disable CS1591 //XML documentation
+
 namespace ModdedArmsHelper.API
 {
     public class SeamothDrillable : MonoBehaviour, IManagedUpdateBehaviour, IManagedBehaviour
@@ -54,12 +56,15 @@ namespace ModdedArmsHelper.API
 
             if (control && control.HasDrill())
             {                
-                HandReticle.main.SetInteractText(Language.main.GetFormat("DrillResource", Language.main.Get(drillable.primaryTooltip)), drillable.secondaryTooltip, false, true, HandReticle.Hand.Left);
+                HandReticle.main.SetText(HandReticle.TextType.Hand, Language.main.GetFormat("DrillResource", Language.main.Get(drillable.primaryTooltip)), false, GameInput.Button.LeftHand);
+                HandReticle.main.SetText(HandReticle.TextType.HandSubscript, drillable.secondaryTooltip, true, GameInput.Button.None);
+
                 HandReticle.main.SetIcon(HandReticle.IconType.Drill, 1f);
             }
             else
             {
-                HandReticle.main.SetInteractText(drillable.primaryTooltip, "NeedExoToMine");
+                HandReticle.main.SetText(HandReticle.TextType.Hand, drillable.primaryTooltip, true, GameInput.Button.None);
+                HandReticle.main.SetText(HandReticle.TextType.HandSubscript, "NeedExoToMine", true, GameInput.Button.None);
             }
         }
                
@@ -96,9 +101,9 @@ namespace ModdedArmsHelper.API
 
                     SpawnFX(drillable.breakFX, zero);
 
-                    if (Random.value < drillable.kChanceToSpawnResources)
+                    if (drillable.resources.Length != 0)
                     {
-                        SpawnLoot(zero);
+                        StartCoroutine(SpawnLootAsync(zero));
                     }
                 }
 
@@ -137,21 +142,25 @@ namespace ModdedArmsHelper.API
                     break;
                 }
             }
-        }       
+        }
 
-        private void SpawnLoot(Vector3 position)
+        private IEnumerator SpawnLootAsync(Vector3 position)
         {
             if (drillable.resources.Length > 0)
             {
-                int num = Random.Range(drillable.minResourcesToSpawn, drillable.maxResourcesToSpawn);
+                int numResources = Random.Range(drillable.minResourcesToSpawn, drillable.maxResourcesToSpawn);
 
-                for (int i = 0; i < num; i++)
+                TaskResult<GameObject> prefabResult = new TaskResult<GameObject>();
+
+                for (int i = 0; i < numResources; i++)
                 {
-                    GameObject _resource = ChooseRandomResource();
+                    yield return this.ChooseRandomResourceAsync(prefabResult);
 
-                    if (_resource)
+                    GameObject resourcePrefab = prefabResult.Get();
+
+                    if (resourcePrefab)
                     {
-                        GameObject resource = Instantiate(_resource);
+                        GameObject resource = Instantiate(resourcePrefab);
                         Vector3 position2 = position;
                         float num2 = 1f;
                         position2.x += Random.Range(-num2, num2);
@@ -209,18 +218,18 @@ namespace ModdedArmsHelper.API
             }
             return result;
         }
-        
-        private GameObject ChooseRandomResource()
-        {
-            GameObject result = null;
 
+        private IEnumerator ChooseRandomResourceAsync(IOut<GameObject> result)
+        {
             for (int i = 0; i < drillable.resources.Length; i++)
             {
                 Drillable.ResourceType resourceType = drillable.resources[i];
 
                 if (resourceType.chance >= 1f)
                 {
-                    result = CraftData.GetPrefabForTechType(resourceType.techType, true);
+                    CoroutineTask<GameObject> task = CraftData.GetPrefabForTechTypeAsync(resourceType.techType, true);
+                    yield return task;
+                    result.Set(task.GetResult());
                     break;
                 }
 
@@ -228,11 +237,14 @@ namespace ModdedArmsHelper.API
 
                 if (component.CheckChance(resourceType.techType, resourceType.chance))
                 {
-                    result = CraftData.GetPrefabForTechType(resourceType.techType, true);
+                    CoroutineTask<GameObject> task = CraftData.GetPrefabForTechTypeAsync(resourceType.techType, true);
+                    yield return task;
+                    result.Set(task.GetResult());
                     break;
                 }
             }
-            return result;
+
+            yield break;
         }
         
         private void SpawnFX(GameObject fx, Vector3 position)
@@ -285,7 +297,7 @@ namespace ModdedArmsHelper.API
                                     string arg = Language.main.Get(pickupable.GetTechName());
                                     ErrorMessage.AddMessage(Language.main.GetFormat("VehicleAddedToStorage", arg));
                                     uGUI_IconNotifier.main.Play(pickupable.GetTechType(), uGUI_IconNotifier.AnimationType.From, null);
-                                    pickupable = pickupable.Initialize();
+                                    pickupable.Initialize();
                                     InventoryItem item = new InventoryItem(pickupable);
                                     control.GetRoomForItem(pickupable).UnsafeAdd(item);
                                     pickupable.PlayPickupSound();

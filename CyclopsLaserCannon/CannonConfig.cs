@@ -138,96 +138,9 @@ namespace CyclopsLaserCannonModule
 
         internal static void Config_CreateDefault()
         {
-            SNLogger.Debug("LaserCannon", "Method call: LaserCannonConfig.Config_CreateDefault()");
+            SNLogger.Debug("Method call: LaserCannonConfig.Config_CreateDefault()");
 
-            SNLogger.Warn("LaserCannon", "Configuration file is missing or wrong version. Trying to create a new one.");
-
-            try
-            {
-                ParserHelper.CreateDefaultConfigFile(FILENAME, "LaserCannon", PROGRAM_VERSION, DEFAULT_CONFIG);
-
-                var configParser = new Parser(FILENAME);
-
-                foreach (string language in Languages)
-                {
-                    if (!configParser.AddNewSection(language))
-                        continue;
-
-                    foreach (string item in SECTION_LANGUAGE)
-                    {
-                        configParser.SetKeyValueInSection(language, item, "");
-                    }
-                }
-
-                SNLogger.Log("CyclopsLaserCannon", "The new configuration file was successfully created.");
-            }
-            catch
-            {
-                SNLogger.Error("CyclopsLaserCannon", "An error occured while creating the new configuration file!");
-            }
-        }
-
-        private static bool Config_Check()
-        {
-            SNLogger.Debug("CyclopsLaserCannon", "Method call: LaserCannonConfig.Config_Check()");
-
-            if (!File.Exists(FILENAME))
-            {
-                SNLogger.Error("CyclopsLaserCannon", "Configuration file open error!");
-                return false;
-            }
-
-            CONFIG_VERSION = ParserHelper.GetKeyValue(FILENAME, "LaserCannon", "Version");
-
-            if (!CONFIG_VERSION.Equals(PROGRAM_VERSION))
-            {
-                SNLogger.Error("CyclopsLaserCannon", "Configuration file version error!");
-                return false;
-            }
-
-            if (!ParserHelper.CheckSectionKeys(FILENAME, "Hotkeys", SECTION_PROGRAM))
-            {
-                SNLogger.Error("CyclopsLaserCannon", "Configuration file [Program] section error!");
-                return false;
-            }
-
-            if (!ParserHelper.CheckSectionKeys(FILENAME, "Settings", SECTION_LANGUAGE))
-            {
-                SNLogger.Error("CyclopsLaserCannon", "Configuration file [Language] section error!");
-                return false;
-            }
-
-            return true;
-        }
-        internal static void LoadConfig()
-        {
-            PROGRAM_VERSION = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
-
-            if (!File.Exists(FILENAME))
-            {
-                CreateDefaultConfigFile();
-            }
-            else
-            {
-                CONFIG_VERSION = ParserHelper.GetKeyValue(FILENAME, "CyclopsLaserCannon", "Version");
-
-
-                if (CONFIG_VERSION.Equals(PROGRAM_VERSION))
-                {
-                    SNLogger.Log("CyclopsLaserCannon", "Configuration version match with program version.");
-                }
-                else
-                {
-                    CreateDefaultConfigFile();
-                }
-            }
-
-            ReadConfig();                                             
-        }
-
-        internal static void CreateDefaultConfigFile()
-        {
-            SNLogger.Warn("CyclopsLaserCannon", "Configuration file is missing or wrong version. Trying to create a new one.");
+            SNLogger.Warn("Configuration file is missing or wrong version. Trying to create a new one.");
 
             try
             {
@@ -246,11 +159,100 @@ namespace CyclopsLaserCannonModule
                     }
                 }
 
-                SNLogger.Log("CyclopsLaserCannon", "The new configuration file was successfully created.");
+                SNLogger.Log("The new configuration file was successfully created.");
             }
             catch
             {
-                SNLogger.Error("CyclopsLaserCannon", "An error occured while creating the new configuration file!");
+                SNLogger.Error("An error occured while creating the new configuration file!");
+            }
+        }
+
+        private static bool Config_Check()
+        {
+            SNLogger.Debug("Method call: LaserCannonConfig.Config_Check()");
+
+            if (!File.Exists(FILENAME))
+            {
+                SNLogger.Error("Configuration file open error!");
+                return false;
+            }
+
+            CONFIG_VERSION = ParserHelper.GetKeyValue(FILENAME, "CyclopsLaserCannon", "Version");
+
+            if (!CONFIG_VERSION.Equals(PROGRAM_VERSION))
+            {
+                SNLogger.Error("Configuration file version error!");
+                return false;
+            }
+
+            if (!ParserHelper.CheckSectionKeys(FILENAME, "Program", SECTION_PROGRAM))
+            {
+                SNLogger.Error("Configuration file [Program] section error!");
+                return false;
+            }
+
+            if (!ParserHelper.CheckSectionKeys(FILENAME, "English", SECTION_LANGUAGE))
+            {
+                SNLogger.Error("Configuration file [Language] section error!");
+                return false;
+            }
+
+            return true;
+        }
+
+
+        internal static void LoadConfig()
+        {
+            PROGRAM_VERSION = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
+
+            if (!File.Exists(FILENAME))
+            {
+                CreateDefaultConfigFile();
+            }
+            else
+            {
+                CONFIG_VERSION = ParserHelper.GetKeyValue(FILENAME, "CyclopsLaserCannon", "Version");
+
+
+                if (CONFIG_VERSION.Equals(PROGRAM_VERSION))
+                {
+                    SNLogger.Log("Configuration version match with program version.");
+                }
+                else
+                {
+                    CreateDefaultConfigFile();
+                }
+            }
+
+            ReadConfig();                                             
+        }
+
+        internal static void CreateDefaultConfigFile()
+        {
+            SNLogger.Warn("Configuration file is missing or wrong version. Trying to create a new one.");
+
+            try
+            {
+                ParserHelper.CreateDefaultConfigFile(FILENAME, "CyclopsLaserCannon", PROGRAM_VERSION, DEFAULT_CONFIG);
+
+                var configParser = new Parser(FILENAME);
+
+                foreach (string language in Languages)
+                {
+                    if (!configParser.AddNewSection(language))
+                        continue;
+
+                    foreach (string item in SECTION_LANGUAGE)
+                    {
+                        configParser.SetKeyValueInSection(language, item, "");
+                    }
+                }
+
+                SNLogger.Log("The new configuration file was successfully created.");
+            }
+            catch
+            {
+                SNLogger.Error("An error occured while creating the new configuration file!");
             }
         }
 
@@ -266,13 +268,23 @@ namespace CyclopsLaserCannonModule
             try
             {
                 program_settings = ParserHelper.GetAllKeyValuesFromSection(FILENAME, "Program", SECTION_PROGRAM);
+
+                if(ParserHelper.CheckSectionValuesExists(FILENAME, Language.main.GetCurrentLanguage()))
+                {
+                    program_settings["Language"] = Language.main.GetCurrentLanguage();                    
+                }
+                else
+                {
+                    program_settings["Language"] = "English";
+                }
+
                 language_settings = ParserHelper.GetAllKeyValuesFromSection(FILENAME, program_settings["Language"], SECTION_LANGUAGE);
 
-                SNLogger.Log("CyclopsLaserCannon", "Configuration loaded.");
+                SNLogger.Log("Configuration loaded.");
             }
             catch
             {
-                SNLogger.Error("CyclopsLaserCannon", "An error occurred while loading the configuration file!");
+                SNLogger.Error("An error occurred while loading the configuration file!");
             }
         }
 
@@ -283,7 +295,7 @@ namespace CyclopsLaserCannonModule
                 ParserHelper.SetKeyValue(FILENAME, "Program", item.Key, item.Value);
             }
 
-            SNLogger.Log("CyclopsLaserCannon", "Configuration saved.");
+            SNLogger.Log("Configuration saved.");
         }                    
     }
 }

@@ -1,7 +1,11 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
-using static Common.Helpers.GraphicsHelper;
 using Common.Helpers;
+using System.Collections;
+using Common;
+using TMPro;
+using static Common.Helpers.GraphicsHelper;
+using UnityEngine.UI;
+using SMLHelper.V2.Utility;
 
 namespace CyclopsLaserCannonModule
 {
@@ -32,7 +36,8 @@ namespace CyclopsLaserCannonModule
 
         private void CreateCannonButton()
         {
-            GameObject Abilities = This_Cyclops_Root.transform.Find("HelmHUD/Canvas_RightHUD/Abilities").gameObject;
+            SNLogger.Debug("CreateCannonButton started...");
+            GameObject Abilities = This_Cyclops_Root.transform.Find("HelmHUD/HelmHUDVisuals/Canvas_RightHUD/Abilities").gameObject;
             GameObject Button_Camera = Abilities.FindChild("Button_Camera");
 
             Button_Cannon = Instantiate(Button_Camera, Abilities.transform, false);
@@ -46,8 +51,22 @@ namespace CyclopsLaserCannonModule
             button_instance.control_instance = this;            
         }
 
-        public void CreateCannonCamera()
+        private void CreateUpgradeConsoleIcon()
         {
+            Transform Icons = This_Cyclops_Root.transform.Find("UpgradeConsoleHUD/UpgradeConsole_Canvas_Main/Icons");
+
+            GameObject turretIcon = Instantiate(Icons.Find("ShieldIcon").gameObject, Icons, false);
+
+            turretIcon.GetComponent<CyclopsUpgradeConsoleIcon>().upgradeType = CannonPrefab.TechTypeID;
+
+            Atlas.Sprite hudSprite = ImageUtils.LoadSpriteFromFile($"{Main.modFolder}/Assets/UpgradeConsoleHUDIcon.png");
+
+            turretIcon.GetComponent<Image>().sprite = Main.cannonPrefab.GetUnitySprite(hudSprite);
+        }
+
+        private void CreateCannonCamera()
+        {
+            SNLogger.Debug("CreateCannonCamera started...");
             CamPosition_Keel = This_Cyclops_Root.transform.Find("ExternalCams/CamPosition_Keel").gameObject;
 
             CannonCamPosition = new GameObject("CannonCamPosition");
@@ -66,7 +85,7 @@ namespace CyclopsLaserCannonModule
 
             Cannon_Camera.name = "Cannon_Camera";
 
-            GameObject Canvas_CenterHUD = This_Cyclops_Root.transform.Find("HelmHUD/Canvas_CenterHUD").gameObject;
+            GameObject Canvas_CenterHUD = This_Cyclops_Root.transform.Find("HelmHUD/HelmHUDVisuals/Canvas_CenterHUD").gameObject;
             GameObject PowerStatus = Canvas_CenterHUD.FindChild("PowerStatus");            
             GameObject PowerIcon = PowerStatus.FindChild("PowerIcon");
 
@@ -94,21 +113,31 @@ namespace CyclopsLaserCannonModule
             camera_instance = Cannon_Camera.EnsureComponent<CannonCamera>();
             camera_instance.control_instance = this;
 
-            camera_instance.PowerText = PowerTextCopy.GetComponent<Text>();
-            camera_instance.DepthText = DepthTextCopy.GetComponent<Text>();
-            camera_instance.LowPowerText = LowPowerText.GetComponent<Text>();
+            camera_instance.PowerText = PowerTextCopy.GetComponent<TextMeshProUGUI>();
+            camera_instance.DepthText = DepthTextCopy.GetComponent<TextMeshProUGUI>();
+            camera_instance.LowPowerText = LowPowerText.GetComponent<TextMeshProUGUI>();
         }
 
-
-        private void CreateCannonRight()
+        private IEnumerator CreateCannonRightAsync(IOut<bool> success)
         {
             cannon_base_right = new GameObject("cannon_base_right");
             cannon_base_right.transform.SetParent(gameObject.transform, false);
             cannon_base_right.transform.localPosition = new Vector3(-3.55f, -7.19f, 0.81f);
             cannon_base_right.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
 
-            GameObject cannon_right_circuit_box = CraftData.InstantiateFromPrefab(TechType.StarshipCircuitBox);
-            cannon_right_circuit_box.transform.SetParent(cannon_base_right.transform, false);
+            CoroutineTask<GameObject> circuitBoxRequest = CraftData.GetPrefabForTechTypeAsync(TechType.StarshipCircuitBox);
+            yield return circuitBoxRequest;
+
+            GameObject circuitBoxResult = circuitBoxRequest.GetResult();
+
+            if (circuitBoxResult == null)
+            {
+                SNLogger.Error($"Cannot get {TechType.StarshipCircuitBox} prefab from CraftData!");
+                success.Set(false);
+                yield break;
+            }
+
+            GameObject cannon_right_circuit_box = Instantiate(circuitBoxResult, cannon_base_right.transform, false);
 
             cannon_right_circuit_box.CleanObject();
             cannon_right_circuit_box.name = "cannon_right_circuit_box";
@@ -116,8 +145,20 @@ namespace CyclopsLaserCannonModule
             cannon_right_circuit_box.transform.localScale = new Vector3(0.72f, -0.72f, 0.72f);
             cannon_right_circuit_box.transform.localRotation = Quaternion.Euler(78f, 270f, 180f);
 
-            GameObject cannon_pylon_right = CraftData.InstantiateFromPrefab(TechType.PowerTransmitter);
-            cannon_pylon_right.transform.SetParent(cannon_base_right.transform, false);
+            CoroutineTask<GameObject> powerTransmitterRequest = CraftData.GetPrefabForTechTypeAsync(TechType.PowerTransmitter);
+            yield return powerTransmitterRequest;
+
+            GameObject powerTransmitterResult = powerTransmitterRequest.GetResult();
+
+            if (powerTransmitterResult == null)
+            {
+                SNLogger.Error($"Cannot get {TechType.PowerTransmitter} prefab from CraftData!");
+                success.Set(false);
+                yield break;
+            }
+
+            GameObject cannon_pylon_right = Instantiate(powerTransmitterResult, cannon_base_right.transform, false);
+                        
             Utils.ZeroTransform(cannon_pylon_right.transform);
 
             GameObject laserBeam = Instantiate(cannon_pylon_right.GetComponent<PowerFX>().vfxPrefab, null, false);
@@ -141,8 +182,20 @@ namespace CyclopsLaserCannonModule
             cannon_right_rotation_point.transform.localPosition = new Vector3(0.00f, 0.98f, 0.00f);
             cannon_right_rotation_point.transform.localRotation = Quaternion.Euler(25f, 180f, 0f);
 
-            GameObject cannon_right = CraftData.InstantiateFromPrefab(TechType.ExosuitTorpedoArmModule);
-            cannon_right.transform.SetParent(cannon_right_rotation_point.transform, false);
+            CoroutineTask<GameObject> torpedoArmRequest = CraftData.GetPrefabForTechTypeAsync(TechType.ExosuitTorpedoArmModule);
+            yield return torpedoArmRequest;
+
+            GameObject torpedoArmResult = torpedoArmRequest.GetResult();
+
+            if (torpedoArmResult == null)
+            {
+                SNLogger.Error($"Cannot get {TechType.ExosuitTorpedoArmModule} prefab from CraftData!");
+                success.Set(false);
+                yield break;
+            }
+
+            GameObject cannon_right = Instantiate(torpedoArmResult, cannon_right_rotation_point.transform, false);
+                        
             Destroy(cannon_right.FindChild("GameObject"));
             cannon_right.transform.Find("model/exosuit_rig_armLeft:exosuit_torpedoLauncher_geo").name = "cannon_model";
 
@@ -166,26 +219,52 @@ namespace CyclopsLaserCannonModule
             right_left = cannon_right_tube_left.GetComponent<LineRenderer>();
 
             Destroy(laserBeam);
+
+            success.Set(true);
+            yield break;
         }
 
-        public void CreateCannonLeft()
+        private IEnumerator CreateCannonLeftAsync(IOut<bool> success)
         {
             cannon_base_left = new GameObject("cannon_base_left");
             cannon_base_left.transform.SetParent(gameObject.transform);
             cannon_base_left.transform.localPosition = new Vector3(3.55f, -7.19f, 0.81f);
             cannon_base_left.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
 
-            GameObject cannon_left_circuit_box = CraftData.InstantiateFromPrefab(TechType.StarshipCircuitBox);
-            cannon_left_circuit_box.transform.SetParent(cannon_base_left.transform, false);
+            CoroutineTask<GameObject> circuitBoxRequest = CraftData.GetPrefabForTechTypeAsync(TechType.StarshipCircuitBox);
+            yield return circuitBoxRequest;
 
+            GameObject circuitBoxResult = circuitBoxRequest.GetResult();
+
+            if (circuitBoxResult == null)
+            {
+                SNLogger.Error($"Cannot get {TechType.StarshipCircuitBox} prefab from CraftData!");
+                success.Set(false);
+                yield break;
+            }
+
+            GameObject cannon_left_circuit_box = Instantiate(circuitBoxResult, cannon_base_left.transform, false);
+            
             cannon_left_circuit_box.CleanObject();
             cannon_left_circuit_box.name = "cannon_left_circuit_box";
             cannon_left_circuit_box.transform.localPosition = new Vector3(0.56f, 0.48f, -0.66f);
             cannon_left_circuit_box.transform.localScale = new Vector3(0.72f, 0.72f, 0.72f);
             cannon_left_circuit_box.transform.localRotation = Quaternion.Euler(72f, 90f, 0f);
-            
-            GameObject cannon_pylon_left = CraftData.InstantiateFromPrefab(TechType.PowerTransmitter);
-            cannon_pylon_left.transform.SetParent(cannon_base_left.transform, false);
+
+            CoroutineTask<GameObject> powerTransmitterRequest = CraftData.GetPrefabForTechTypeAsync(TechType.PowerTransmitter);
+            yield return powerTransmitterRequest;
+
+            GameObject powerTransmitterResult = powerTransmitterRequest.GetResult();
+
+            if (powerTransmitterResult == null)
+            {
+                SNLogger.Error($"Cannot get {TechType.PowerTransmitter} prefab from CraftData!");
+                success.Set(false);
+                yield break;
+            }
+
+            GameObject cannon_pylon_left = Instantiate(powerTransmitterResult, cannon_base_left.transform, false);
+
             Utils.ZeroTransform(cannon_pylon_left.transform);
 
             GameObject laserBeam = Instantiate(cannon_pylon_left.GetComponent<PowerFX>().vfxPrefab, cannon_base_left.transform, false);
@@ -209,8 +288,19 @@ namespace CyclopsLaserCannonModule
             cannon_left_rotation_point.transform.localPosition = new Vector3(0.00f, 0.98f, 0.00f);
             cannon_left_rotation_point.transform.localRotation = Quaternion.Euler(25f, 180f, 0f);
 
-            GameObject cannon_left = CraftData.InstantiateFromPrefab(TechType.ExosuitTorpedoArmModule);
-            cannon_left.transform.SetParent(cannon_left_rotation_point.transform, false);
+            CoroutineTask<GameObject> torpedoArmRequest = CraftData.GetPrefabForTechTypeAsync(TechType.ExosuitTorpedoArmModule);
+            yield return torpedoArmRequest;
+
+            GameObject torpedoArmResult = torpedoArmRequest.GetResult();
+
+            if (torpedoArmResult == null)
+            {
+                SNLogger.Error($"Cannot get {TechType.ExosuitTorpedoArmModule} prefab from CraftData!");
+                success.Set(false);
+                yield break;
+            }
+
+            GameObject cannon_left = Instantiate(torpedoArmResult, cannon_left_rotation_point.transform, false);
 
             Destroy(cannon_left.FindChild("GameObject"));
             cannon_left.transform.Find("model/exosuit_rig_armLeft:exosuit_torpedoLauncher_geo").name = "cannon_model";
@@ -235,6 +325,9 @@ namespace CyclopsLaserCannonModule
             left_left = cannon_left_tube_left.GetComponent<LineRenderer>();
 
             Destroy(laserBeam);
+
+            success.Set(true);
+            yield break;
         }
     }
 }

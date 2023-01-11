@@ -37,8 +37,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SNTestMOD", "SNTestMOD\SNTe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fahrenheit", "Fahrenheit\Fahrenheit.csproj", "{50AB4C42-A1A6-4D6A-8C83-6A4657DF81ED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RotateMoonPool", "RotateMoonPool\RotateMoonPool.csproj", "{09E321ED-57FA-42EC-A5AA-A41CFD45E4B4}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModdedArmsHelper", "ModdedArmsHelper\ModdedArmsHelper.csproj", "{D569F78F-0516-4ECE-B36C-D3FC2294C87C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APIBasedExosuitArms", "APIBasedExosuitArm\APIBasedExosuitArms.csproj", "{29F99660-60AE-422E-9DC4-29C3C02E87E7}"
@@ -46,21 +44,32 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APIBasedExosuitArms", "APIB
 		{D569F78F-0516-4ECE-B36C-D3FC2294C87C} = {D569F78F-0516-4ECE-B36C-D3FC2294C87C}
 	EndProjectSection
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SMLExpander", "SMLHelpers\SMLExpander.shproj", "{F386BA23-7A64-4A05-9545-D23FFEF08231}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Common\Common.projitems*{091061ea-9a9c-4737-b6ca-2a57596ac087}*SharedItemsImports = 4
 		Common\Common.projitems*{1306dea8-6a8b-4e61-a63e-779b439b6590}*SharedItemsImports = 4
+		SMLHelpers\SMLHelpers.projitems*{1306dea8-6a8b-4e61-a63e-779b439b6590}*SharedItemsImports = 4
 		Common\Common.projitems*{1ed43566-559a-4962-804d-9b5a23163808}*SharedItemsImports = 4
+		SMLHelpers\SMLHelpers.projitems*{1ed43566-559a-4962-804d-9b5a23163808}*SharedItemsImports = 4
+		Common\Common.projitems*{38021293-9c9f-474a-a3f0-c782fc93a15a}*SharedItemsImports = 4
 		Common\Common.projitems*{50ab4c42-a1a6-4d6a-8c83-6a4657df81ed}*SharedItemsImports = 4
+		Common\Common.projitems*{6d5d5d27-03b0-40f0-afc4-20f03c629d3e}*SharedItemsImports = 4
+		SMLHelpers\SMLHelpers.projitems*{6d5d5d27-03b0-40f0-afc4-20f03c629d3e}*SharedItemsImports = 4
 		Common\Common.projitems*{7723914c-1e34-4c61-9965-7f00fb55a12d}*SharedItemsImports = 4
+		SMLHelpers\SMLHelpers.projitems*{7723914c-1e34-4c61-9965-7f00fb55a12d}*SharedItemsImports = 4
 		Common\Common.projitems*{99ed7304-8603-4a34-9cba-a38557a64d0c}*SharedItemsImports = 4
-		Common\Common.projitems*{9c9bc27c-81f7-4b9f-a0be-06622103a637}*SharedItemsImports = 4
+		SMLHelpers\SMLHelpers.projitems*{99ed7304-8603-4a34-9cba-a38557a64d0c}*SharedItemsImports = 4
 		Common\Common.projitems*{b2710992-57f8-4b97-8ff3-f96e1085fec2}*SharedItemsImports = 13
-		Debuggers\Debuggers.projitems*{b57d4bcb-0b41-4f6a-9da2-3947f300fdc0}*SharedItemsImports = 13
 		Common\Common.projitems*{b85e6d34-abed-4e6f-9a66-d84f423225be}*SharedItemsImports = 4
 		Common\Common.projitems*{c729fb4c-861b-4428-aeb5-d119142105c9}*SharedItemsImports = 4
+		SMLHelpers\SMLHelpers.projitems*{c729fb4c-861b-4428-aeb5-d119142105c9}*SharedItemsImports = 4
 		Common\Common.projitems*{cad5c123-3df0-4562-b3ac-5721d45072e8}*SharedItemsImports = 4
+		SMLHelpers\SMLHelpers.projitems*{cad5c123-3df0-4562-b3ac-5721d45072e8}*SharedItemsImports = 4
 		Common\Common.projitems*{d569f78f-0516-4ece-b36c-d3fc2294c87c}*SharedItemsImports = 4
+		SMLHelpers\SMLHelpers.projitems*{d569f78f-0516-4ece-b36c-d3fc2294c87c}*SharedItemsImports = 4
+		SMLHelpers\SMLHelpers.projitems*{f386ba23-7a64-4a05-9545-d23ffef08231}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -127,10 +136,6 @@ Global
 		{50AB4C42-A1A6-4D6A-8C83-6A4657DF81ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{50AB4C42-A1A6-4D6A-8C83-6A4657DF81ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{50AB4C42-A1A6-4D6A-8C83-6A4657DF81ED}.Release|Any CPU.Build.0 = Release|Any CPU
-		{09E321ED-57FA-42EC-A5AA-A41CFD45E4B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{09E321ED-57FA-42EC-A5AA-A41CFD45E4B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{09E321ED-57FA-42EC-A5AA-A41CFD45E4B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{09E321ED-57FA-42EC-A5AA-A41CFD45E4B4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D569F78F-0516-4ECE-B36C-D3FC2294C87C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D569F78F-0516-4ECE-B36C-D3FC2294C87C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D569F78F-0516-4ECE-B36C-D3FC2294C87C}.Release|Any CPU.ActiveCfg = Release|Any CPU

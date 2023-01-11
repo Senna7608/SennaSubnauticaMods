@@ -7,12 +7,17 @@ namespace APIBasedExosuitArms.Handlers
     {
         public override void Start()
         {
-            smoothedDirection = Exosuit.transform.rotation;
+            smoothedDirection = exosuit.transform.rotation;
         }
 
         GameObject IExosuitArm.GetGameObject()
         {            
             return gameObject;
+        }
+
+        GameObject IExosuitArm.GetInteractableRoot(GameObject target)
+        {
+            return null;
         }
 
         void IExosuitArm.SetSide(Exosuit.Arm arm)
@@ -70,24 +75,22 @@ namespace APIBasedExosuitArms.Handlers
             aimDirection = smoothedDirection;            
         }
 
-        void IExosuitArm.Reset()
+        void IExosuitArm.ResetArm()
         {
             animator.SetBool("use_tool", false);
             drilling = false;
             StopEffects();
-        }
-
-        
+        }        
 
         public void OnHit()
         {
-            if (Exosuit.CanPilot() && Exosuit.GetPilotingMode())
+            if (exosuit.CanPilot() && exosuit.GetPilotingMode())
             {
                 Vector3 pos = Vector3.zero;
                 GameObject hitObject = null;
                 drillTarget = null;
 
-                UWE.Utils.TraceFPSTargetPosition(Exosuit.gameObject, attackDist, ref hitObject, ref pos, true);
+                UWE.Utils.TraceFPSTargetPosition(exosuit.gameObject, attackDist, ref hitObject, ref pos, true);
 
                 if (hitObject == null)
                 {
@@ -106,7 +109,7 @@ namespace APIBasedExosuitArms.Handlers
 
                     if (drillable)
                     {
-                        drillable.OnDrill(fxSpawnPoint.position, Exosuit, out GameObject gameObject2);
+                        drillable.OnDrill(fxSpawnPoint.position, exosuit, out GameObject gameObject2);
 
                         if (!gameObject2)
                         {

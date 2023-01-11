@@ -26,6 +26,7 @@ namespace RuntimeHelper.SceneHelper
             }
         }
 
+        /*
         public static void GetRootTransforms(ref List<Transform> transforms)
         {
             List<SceneInfo> gameScenes = InitScenesList();
@@ -41,6 +42,36 @@ namespace RuntimeHelper.SceneHelper
             }
 
             SearchDefaultObjects(ref transforms);
+        }
+        */
+
+        public static void GetRootTransforms(GameObject ddolInclude, ref List<Transform> transforms)
+        {
+            List<SceneInfo> gameScenes = InitScenesList();
+
+            InitRootObjectsList(ref gameScenes);
+
+            foreach (SceneInfo sceneInfo in gameScenes)
+            {
+                foreach (GameObject rootObject in sceneInfo.RootObjects)
+                {
+                    transforms.Add(rootObject.transform);
+                }
+            }
+
+            List<GameObject> ddolObjects = new List<GameObject>();
+
+            ddolInclude.scene.GetRootGameObjects(ddolObjects);
+
+            foreach (GameObject ddolObject in ddolObjects)
+            {
+                if (!transforms.Contains(ddolObject.transform))
+                {
+                    transforms.Add(ddolObject.transform);
+                }
+            }
+
+            //SearchDefaultObjects(ref transforms);
         }
 
         private static void SearchDefaultObjects(ref List<Transform> transforms)

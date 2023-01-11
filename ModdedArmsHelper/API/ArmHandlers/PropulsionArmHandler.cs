@@ -1,7 +1,12 @@
 ﻿namespace ModdedArmsHelper.API.ArmHandlers
 {
+    /// <summary>
+    /// The abstract class to inherit for handling the Propulsion arm base mechanics.
+    /// </summary>
     public abstract class PropulsionArmHandler : ArmHandler
     {
+#pragma warning disable CS1591 //XML documentation
+
         private PropulsionCannon _propulsionCannon = null;
         public PropulsionCannon propulsionCannon
         {
@@ -18,6 +23,11 @@
 
         public bool usingTool;
 
+#pragma warning restore CS1591 //XML documentation
+
+        /// <summary>
+        /// If you implement this method in your modded arm handler, the first line should be 'base.Awake()'
+        /// </summary>
         public override void Awake()
         {
             vehicle.gameObject.EnsureComponent<ImmuneToPropulsioncannon>();            

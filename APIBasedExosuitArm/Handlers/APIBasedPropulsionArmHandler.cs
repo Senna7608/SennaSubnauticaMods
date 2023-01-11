@@ -14,7 +14,17 @@ namespace APIBasedExosuitArms.Handlers
         {
             return gameObject;
         }
-        
+
+        GameObject IExosuitArm.GetInteractableRoot(GameObject target)
+        {
+            if (propulsionCannon.ValidateObject(target))
+            {
+                return target;
+            }
+
+            return null;
+        }
+
         void IExosuitArm.SetSide(Exosuit.Arm arm)
         {
             if (arm == Exosuit.Arm.Right)
@@ -55,7 +65,7 @@ namespace APIBasedExosuitArms.Handlers
             {
                 propulsionCannon.ReleaseGrabbedObject();
             }
-            else if (Exosuit != null && propulsionCannon.HasChargeForShot() && !propulsionCannon.OnReload(new List<IItemsContainer> { Exosuit.storageContainer.container }))
+            else if (exosuit != null && propulsionCannon.HasChargeForShot() && !propulsionCannon.OnReload(new List<IItemsContainer> { exosuit.storageContainer.container }))
             {
                 ErrorMessage.AddMessage(Language.main.Get("ExosuitPropulsionCannonNoItems"));
             }
@@ -69,7 +79,7 @@ namespace APIBasedExosuitArms.Handlers
             propulsionCannon.UpdateActive();
         }
         
-        void IExosuitArm.Reset()
+        void IExosuitArm.ResetArm()
         {
             propulsionCannon.usingCannon = (usingTool = false);
             propulsionCannon.ReleaseGrabbedObject();

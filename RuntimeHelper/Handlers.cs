@@ -8,7 +8,7 @@ using Common.Helpers;
 
 namespace RuntimeHelper
 {
-    public partial class RuntimeHelper
+    public partial class RuntimeHelperManager
     {
         public void UpdateVisuals()
         {
@@ -188,7 +188,7 @@ namespace RuntimeHelper
 
             TRANSFORMS.Clear();            
 
-            GetRootTransforms(ref TRANSFORMS);
+            GetRootTransforms(gameObject, ref TRANSFORMS);
 
             TRANSFORMS.Sort(TransformsHelper.SortByName);
 
